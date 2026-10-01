@@ -23,6 +23,12 @@ public sealed class WorkshopModService : IWorkshopModService
     private readonly IActivityLog _activityLog;
     private readonly ILogger<WorkshopModService> _logger;
 
+    /// <summary>
+    /// Test seam invoked after each successful live replacement and before the next.
+    /// Not used in production.
+    /// </summary>
+    internal Action<ModLiveReplacementContext>? AfterLiveReplacementForTests { get; set; }
+
     public WorkshopModService(
         ISettingsService settings,
         ISteamCmdService steamCmd,
@@ -174,6 +180,7 @@ public sealed class WorkshopModService : IWorkshopModService
         }
 
         var staged = new List<(WorkshopMod Mod, StagedWorkshopPak Pak)>(targets.Count);
+        ModBatchTransaction? batch = null;
         try
         {
             foreach (var mod in targets)
@@ -182,16 +189,99 @@ public sealed class WorkshopModService : IWorkshopModService
                 staged.Add((mod, pak));
             }
 
+            if (staged.Count == 0)
+            {
+                return;
+            }
+
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var liveTargets = new List<ModBatchTarget>(staged.Count);
             foreach (var item in staged)
             {
-                await CommitStagedAsync(item.Mod, item.Pak, cancellationToken).ConfigureAwait(false);
+                RevalidateStagedPak(item.Pak);
+                liveTargets.Add(new ModBatchTarget(
+                    item.Mod.WorkshopId,
+                    ResolveLivePakPath(item.Pak.FileName),
+                    item.Pak.PakPath,
+                    item.Pak.FileName));
             }
+
+            batch = ModBatchTransaction.Prepare(_paths.StagingDirectory, liveTargets, _logger);
+
+            // Once live mutation begins, cancellation must not leave a half-applied batch.
+            Exception? commitFailure = null;
+            try
+            {
+                foreach (var record in batch.Records)
+                {
+                    batch.ReplaceLive(record);
+                    AfterLiveReplacementForTests?.Invoke(new ModLiveReplacementContext(
+                        record.WorkshopId,
+                        record.LivePath,
+                        record.RollbackPath,
+                        batch.RollbackDirectory,
+                        batch.Records.Count(r => r.Replaced)));
+                }
+            }
+            catch (Exception ex) when (ex is not OutOfMemoryException)
+            {
+                commitFailure = ex;
+            }
+
+            if (commitFailure is null)
+            {
+                try
+                {
+                    await PersistSuccessfulBatchAsync(staged, CancellationToken.None).ConfigureAwait(false);
+                }
+                catch (Exception ex) when (ex is not OutOfMemoryException)
+                {
+                    commitFailure = ex;
+                }
+            }
+
+            if (commitFailure is not null)
+            {
+                var rollbackCompleted = batch.TryRollback(_logger);
+                batch.KeepRollbackForRecovery = !rollbackCompleted;
+                if (rollbackCompleted)
+                {
+                    batch.CleanupRollback();
+                }
+
+                throw new ModBatchCommitException(
+                    rollbackCompleted
+                        ? $"Live Workshop mod replacement failed: {commitFailure.Message} Previous mod set was restored."
+                        : $"Live Workshop mod replacement failed: {commitFailure.Message} Rollback was incomplete.",
+                    rollbackCompleted,
+                    recoveryRequired: !rollbackCompleted,
+                    commitFailure);
+            }
+
+            batch.CleanupRollback();
+            batch = null;
+        }
+        catch (ModBatchCommitException batchEx)
+        {
+            throw new UserFacingException(
+                batchEx.RecoveryRequired ? "Mod update failed — recovery required" : "Workshop mod update failed",
+                batchEx.Message,
+                batchEx.RecoveryRequired
+                    ? "Mod update failed and rollback was incomplete. Server was left offline to prevent starting with an inconsistent mod set."
+                    : "Previous live mods were restored. The update did not succeed.",
+                batchEx);
         }
         finally
         {
             foreach (var item in staged)
             {
                 TryDeleteStaging(item.Pak.StagingDirectory);
+            }
+
+            if (batch is not null && !batch.KeepRollbackForRecovery)
+            {
+                batch.CleanupRollback();
             }
         }
     }
@@ -382,7 +472,26 @@ public sealed class WorkshopModService : IWorkshopModService
         return new StagedWorkshopPak(mod.WorkshopId, pak, fileName, staging);
     }
 
-    private async Task CommitStagedAsync(WorkshopMod mod, StagedWorkshopPak staged, CancellationToken cancellationToken)
+    private static void RevalidateStagedPak(StagedWorkshopPak staged)
+    {
+        if (!File.Exists(staged.PakPath))
+        {
+            throw new UserFacingException(
+                "Staged Workshop pak is missing",
+                $"Workshop ID {staged.WorkshopId} passed validation, but {staged.FileName} is no longer in staging.",
+                "Keep the previously installed version and try the update again.");
+        }
+
+        if (new FileInfo(staged.PakPath).Length <= 0)
+        {
+            throw new UserFacingException(
+                "Staged Workshop pak is empty",
+                $"Workshop ID {staged.WorkshopId} staged {staged.FileName} with 0 bytes.",
+                "Keep the previously installed version and try the update again.");
+        }
+    }
+
+    private string ResolveLivePakPath(string fileName)
     {
         var install = _settings.Current.ServerPaths.ServerInstallDirectory
                       ?? _settings.Current.ServerPaths.ServerWorkingDirectory;
@@ -396,17 +505,41 @@ public sealed class WorkshopModService : IWorkshopModService
 
         var modsDir = Path.Combine(install, "ConanSandbox", "Mods");
         Directory.CreateDirectory(modsDir);
-        var dest = Path.Combine(modsDir, staged.FileName);
-        var tempDest = dest + ".new";
-        File.Copy(staged.PakPath, tempDest, overwrite: true);
-        if (File.Exists(dest))
+        return Path.Combine(modsDir, fileName);
+    }
+
+    private async Task PersistSuccessfulBatchAsync(
+        IReadOnlyList<(WorkshopMod Mod, StagedWorkshopPak Pak)> staged,
+        CancellationToken cancellationToken)
+    {
+        var installedAt = DateTimeOffset.UtcNow;
+        await _settings.UpdateAsync(s =>
         {
-            File.Replace(tempDest, dest, dest + ".bak");
-        }
-        else
+            foreach (var item in staged)
+            {
+                var found = s.Mods.Mods.First(m => m.WorkshopId == item.Mod.WorkshopId);
+                found.LocalFileName = item.Pak.FileName;
+                found.InstalledTimestamp = installedAt;
+                found.UpdateAvailable = false;
+                found.Error = null;
+            }
+        }, cancellationToken).ConfigureAwait(false);
+
+        await WriteModListAsync(cancellationToken).ConfigureAwait(false);
+        foreach (var item in staged)
         {
-            File.Move(tempDest, dest, overwrite: true);
+            await _activityLog.AddAsync(
+                    "Mods",
+                    $"Installed/updated Workshop mod {item.Mod.WorkshopId}.",
+                    cancellationToken: cancellationToken)
+                .ConfigureAwait(false);
         }
+    }
+
+    private async Task CommitStagedAsync(WorkshopMod mod, StagedWorkshopPak staged, CancellationToken cancellationToken)
+    {
+        var dest = ResolveLivePakPath(staged.FileName);
+        ModBatchTransaction.ReplaceLiveFile(staged.PakPath, dest);
 
         await _settings.UpdateAsync(s =>
         {

@@ -407,6 +407,122 @@ public class QaActionGateAndPipelineTests
     }
 
     [Fact]
+    [Trait("Category", "QA-KnownFailure")]
+    [Trait("Issue", "QA-016")]
+    public async Task Partial_live_commit_must_not_restart_onto_a_mixed_mod_set()
+    {
+        var (data, paths, settings) = QaTestSupport.CreateData();
+        var install = QaTestSupport.InstallRoot(data);
+        await QaTestSupport.ConfigureInstallAsync(settings, install);
+        var modsDir = Path.Combine(install, "ConanSandbox", "Mods");
+        Directory.CreateDirectory(modsDir);
+        var firstPak = Path.Combine(modsDir, "Mod1.pak");
+        var secondPak = Path.Combine(modsDir, "Mod2.pak");
+        await File.WriteAllTextAsync(firstPak, "MOD1-OLD");
+        Directory.CreateDirectory(secondPak);
+        await settings.UpdateAsync(s =>
+        {
+            s.Mods.Mods.Add(new WorkshopMod { WorkshopId = 1, Name = "One", Enabled = true, LoadOrder = 1, LocalFileName = "Mod1.pak" });
+            s.Mods.Mods.Add(new WorkshopMod { WorkshopId = 2, Name = "Two", Enabled = true, LoadOrder = 2, LocalFileName = "Mod2.pak" });
+            s.Backups.BackupBeforeServerUpdate = true;
+            s.Backups.BackupBeforeModUpdate = true;
+        });
+
+        var gate = new ServerActionGate();
+        var server = new RecordingServer(gate);
+        server.State.Status = ServerStatus.Online;
+        var steam = new ScriptedSteamCmd
+        {
+            OnWorkshop = (id, dir, _) =>
+            {
+                Directory.CreateDirectory(dir);
+                File.WriteAllText(Path.Combine(dir, id == 2 ? "Mod2.pak" : "Mod1.pak"), id == 2 ? "MOD2-NEW" : "MOD1-NEW");
+                return Task.CompletedTask;
+            }
+        };
+        var activity = new RecordingActivityLog();
+        var mods = new WorkshopModService(
+            settings,
+            steam,
+            new CountingBackup(),
+            gate,
+            paths,
+            new EmptyWorkshopClient(),
+            activity,
+            NullLogger<WorkshopModService>.Instance);
+        var updates = new ServerUpdateService(
+            settings,
+            steam,
+            server,
+            new CountingBackup(),
+            mods,
+            gate,
+            activity,
+            NullLogger<ServerUpdateService>.Instance);
+
+        var error = await Record.ExceptionAsync(() => updates.UpdateEverythingAsync());
+        var mod1 = await File.ReadAllTextAsync(firstPak);
+        var partial = mod1 == "MOD1-NEW";
+        var restarted = server.Calls.Contains("start-under-lock");
+        var claimedSuccess = activity.Messages.Any(m => m.Contains("Update everything completed", StringComparison.Ordinal));
+
+        Assert.True(
+            error is UserFacingException
+            && !claimedSuccess
+            && !(partial && restarted),
+            $"A failed live commit must not start a previously online server on a mixed mod set. " +
+            $"Either roll the replaced pak back before start, or leave the server stopped. " +
+            $"error={error?.GetType().Name}: {error?.Message}; partial={partial}; restarted={restarted}; " +
+            $"status={server.State.Status}; calls=[{string.Join(", ", server.Calls)}]; mod1={mod1}; " +
+            $"mod2IsDir={Directory.Exists(secondPak)}; activity=[{string.Join(" | ", activity.Messages)}]");
+    }
+
+    [Fact]
+    [Trait("Issue", "QA-003")]
+    public async Task Update_server_failure_while_offline_stays_offline()
+    {
+        var fx = PipelineFixture.Create(ServerStatus.Offline);
+        fx.Steam.ServerException = new InvalidOperationException("steam exploded");
+
+        var error = await Record.ExceptionAsync(() => fx.Updates.UpdateAsync(restartAfter: true));
+
+        Assert.IsType<UserFacingException>(error);
+        Assert.Equal(ServerStatus.Offline, fx.Server.State.Status);
+        Assert.DoesNotContain("start-under-lock", fx.Server.Calls);
+        Assert.DoesNotContain("stop-under-lock", fx.Server.Calls);
+        Assert.False(fx.Gate.IsBusy);
+    }
+
+    [Fact]
+    [Trait("Issue", "QA-008")]
+    public async Task Disposed_lease_and_a_lease_from_another_gate_cannot_start_under_lock()
+    {
+        var (manager, gate) = await CreateRealManagerWithGateAsync();
+        Assert.True(gate.TryBegin("Update server", out var lease));
+        var otherGate = new ServerActionGate();
+        Assert.True(otherGate.TryBegin("other", out var foreign));
+        try
+        {
+            var wrongGate = await Record.ExceptionAsync(() => manager.StartUnderLockAsync(foreign!));
+            Assert.IsType<InvalidOperationException>(wrongGate);
+
+            lease!.Dispose();
+            var disposed = await Record.ExceptionAsync(() => manager.StartUnderLockAsync(lease));
+            Assert.IsType<InvalidOperationException>(disposed);
+            Assert.Equal(ServerStatus.Offline, manager.State.Status);
+            Assert.False(gate.IsBusy);
+        }
+        finally
+        {
+            foreign!.Dispose();
+            if (!lease!.IsDisposed)
+            {
+                lease.Dispose();
+            }
+        }
+    }
+
+    [Fact]
     public async Task Update_all_downloads_every_enabled_mod_including_ones_without_update_available()
     {
         var (data, paths, settings) = QaTestSupport.CreateData();
