@@ -5,9 +5,15 @@
     <StackPanel DockPanel.Dock="Top">
       <TextBlock Text="Mods" FontSize="24" FontWeight="SemiBold" />
       <TextBlock Margin="0,8,0,12" TextWrapping="Wrap" Foreground="{StaticResource MutedBrush}"
-                 Text="The manager controls the SERVER mod list only. Players need a licensed Conan Exiles client; Steam Workshop updates their local mods. This application does not distribute game files or bypass Steam DRM." />
+                 Text="The manager controls the SERVER mod list. Local .pak mods need no Steam or SteamCMD. Workshop mods need the optional SteamCMD. Standalone clients do not receive mods automatically: export a client bundle for players. This application does not distribute game files or bypass Steam DRM." />
+      <WrapPanel Margin="0,0,0,8">
+        <Button Style="{StaticResource PrimaryButton}" Content="IMPORT LOCAL .PAK" Command="{Binding ImportLocalCommand}" />
+        <Button Style="{StaticResource GhostButton}" Content="REPLACE LOCAL .PAK" Command="{Binding ReplaceLocalCommand}" />
+        <Button Style="{StaticResource GhostButton}" Content="EXPORT CLIENT BUNDLE" Command="{Binding ExportClientBundleCommand}" />
+      </WrapPanel>
+      <TextBlock Text="Workshop ID or local .pak file name" Foreground="{StaticResource MutedBrush}" Margin="0,0,0,4" />
       <DockPanel Margin="0,0,0,8">
-        <Button DockPanel.Dock="Right" Style="{StaticResource PrimaryButton}" Content="ADD MOD" Command="{Binding AddCommand}" />
+        <Button DockPanel.Dock="Right" Style="{StaticResource GhostButton}" Content="ADD WORKSHOP MOD" Command="{Binding AddCommand}" />
         <TextBox Text="{Binding WorkshopId}" />
       </DockPanel>
       <WrapPanel>

@@ -103,6 +103,7 @@ public static class DiagnosticCheckIds
 
     public const string WorldFiles = "world.files";
 
+    public const string ModsSources = "mods.sources";
     public const string ModsDirectory = "mods.directory";
     public const string ModsModList = "mods.modlist";
     public const string ModsPakFiles = "mods.pak-files";

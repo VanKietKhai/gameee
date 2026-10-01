@@ -92,6 +92,59 @@ public sealed class ServerUpdateService : IServerUpdateService
     public Task UpdateEverythingAsync(IProgress<PipelineProgress>? progress = null, CancellationToken cancellationToken = default) =>
         RunLockedAsync("Update everything", restartAfter: false, updateServer: true, updateMods: true, "pre-update-everything", progress, cancellationToken);
 
+    public Task ImportLocalModAsync(string sourcePakPath, IProgress<PipelineProgress>? progress = null, CancellationToken cancellationToken = default) =>
+        RunLocalModAsync("Import local mod", "pre-local-mod-import", sourcePakPath, replaceModKey: null, progress, cancellationToken);
+
+    public Task ReplaceLocalModAsync(string modKey, string sourcePakPath, IProgress<PipelineProgress>? progress = null, CancellationToken cancellationToken = default)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(modKey);
+        return RunLocalModAsync("Replace local mod", "pre-local-mod-update", sourcePakPath, modKey, progress, cancellationToken);
+    }
+
+    /// <summary>
+    /// Local mod import/manual update. The .pak is validated, copied and hashed BEFORE the
+    /// server is touched, so a bad file never stops the server. The commit then runs inside the
+    /// same locked pipeline as Workshop updates (stop if running, verified cold backup,
+    /// transactional commit, restart only if it was running). SteamCMD is never used.
+    /// </summary>
+    private async Task RunLocalModAsync(
+        string actionName,
+        string backupReason,
+        string sourcePakPath,
+        string? replaceModKey,
+        IProgress<PipelineProgress>? progress,
+        CancellationToken cancellationToken)
+    {
+        if (_mods is not IModCatalogService catalog)
+        {
+            throw new UserFacingException(
+                "Local mods are not available",
+                "The configured mod service does not support Local mods.",
+                "Restart Conan Server Control.");
+        }
+
+        var staged = await catalog.StageLocalPakAsync(sourcePakPath, cancellationToken).ConfigureAwait(false);
+        try
+        {
+            await RunLockedAsync(
+                    actionName,
+                    restartAfter: false,
+                    updateServer: false,
+                    updateMods: true,
+                    backupReason,
+                    progress,
+                    cancellationToken,
+                    workshopIds: null,
+                    modStep: ct => catalog.CommitLocalPakAsync(staged, replaceModKey, ct),
+                    modStepDescription: $"Installing local mod {staged.FileName}...")
+                .ConfigureAwait(false);
+        }
+        finally
+        {
+            catalog.DiscardStagedLocalPak(staged);
+        }
+    }
+
     private async Task RunLockedAsync(
         string actionName,
         bool restartAfter,
@@ -100,7 +153,9 @@ public sealed class ServerUpdateService : IServerUpdateService
         string backupReason,
         IProgress<PipelineProgress>? progress,
         CancellationToken cancellationToken,
-        IReadOnlyList<long>? workshopIds = null)
+        IReadOnlyList<long>? workshopIds = null,
+        Func<CancellationToken, Task>? modStep = null,
+        string? modStepDescription = null)
     {
         if (!_gate.TryBegin(actionName, out var lease) || lease is null)
         {
@@ -180,8 +235,15 @@ public sealed class ServerUpdateService : IServerUpdateService
                 if (updateMods)
                 {
                     mutationStarted = true;
-                    Report(progress, _pipeline.TransitionTo(UpdatePipelineState.UpdatingMods, "Updating Steam Workshop mods..."));
-                    await _mods.ApplyUpdatesAsync(workshopIds, cancellationToken).ConfigureAwait(false);
+                    Report(progress, _pipeline.TransitionTo(UpdatePipelineState.UpdatingMods, modStepDescription ?? "Updating Steam Workshop mods..."));
+                    if (modStep is not null)
+                    {
+                        await modStep(cancellationToken).ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        await _mods.ApplyUpdatesAsync(workshopIds, cancellationToken).ConfigureAwait(false);
+                    }
                 }
 
                 Report(progress, _pipeline.TransitionTo(UpdatePipelineState.Validating, "Validating update..."));

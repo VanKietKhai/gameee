@@ -11,6 +11,35 @@ public sealed partial class IntegrationDiagnosticsService
 
     // ---------------------------------------------------------------- Mods (server)
 
+    private DiagnosticCheckResult CheckModSources(CheckContext context)
+    {
+        const string id = DiagnosticCheckIds.ModsSources;
+        const string name = "Mod sources (Local / Workshop)";
+        var mods = context.Settings.Mods.Mods;
+        var local = mods.Count(m => m.SourceType == Core.Models.ModSourceType.Local);
+        var workshop = mods.Count - local;
+        var enabledWorkshop = mods.Count(m => m.Enabled && m.SourceType == Core.Models.ModSourceType.Workshop);
+        var steamCmdAvailable = _steamCmd.IsInstalled;
+        var facts = new Dictionary<string, string>
+        {
+            ["LocalMods"] = local.ToString(),
+            ["WorkshopMods"] = workshop.ToString(),
+            ["SteamCmdAvailable"] = steamCmdAvailable ? Yes : No
+        };
+
+        if (enabledWorkshop > 0 && !steamCmdAvailable)
+        {
+            return Result(id, DiagnosticCategories.Mods, name, DiagnosticStatus.Warning,
+                $"{enabledWorkshop} enabled Workshop mod(s) cannot be downloaded or updated because the optional SteamCMD is not available.",
+                action: "Import those mods as Local .pak files instead, or install SteamCMD.",
+                facts: facts);
+        }
+
+        return Result(id, DiagnosticCategories.Mods, name, DiagnosticStatus.Pass,
+            $"{local} Local mod(s) (manual update, no SteamCMD needed), {workshop} Workshop mod(s).",
+            facts: facts);
+    }
+
     private DiagnosticCheckResult CheckModsDirectory(CheckContext context)
     {
         const string id = DiagnosticCheckIds.ModsDirectory;
@@ -232,7 +261,7 @@ public sealed partial class IntegrationDiagnosticsService
     private static DiagnosticCheckResult CheckWorkshopLive() =>
         Result(DiagnosticCheckIds.ModsWorkshopLive, DiagnosticCategories.Mods, "Workshop download / mod load",
             DiagnosticStatus.NotTested,
-            "Real Workshop download and Conan mod loading have not been exercised.",
+            "Workshop download (optional SteamCMD) and Conan mod loading have not been exercised.",
             DiagnosticEvidence.NotExercised,
             details: "Diagnostics never download Workshop items or touch .pak files. A .pak existing does not mean Conan loaded it.",
             action: "Exercised by the guarded M3 Task 4 live test.");

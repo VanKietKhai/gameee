@@ -5,6 +5,8 @@
     <StackPanel>
       <TextBlock Text="Settings" FontSize="24" FontWeight="SemiBold" Margin="0,0,0,16" />
       <TextBlock Text="Server paths" Foreground="{StaticResource MutedBrush}" />
+      <TextBlock Text="Use an existing Conan Dedicated Server installation (SteamCMD is optional). Never the game client." TextWrapping="Wrap" Margin="0,4,0,4" />
+      <Button Style="{StaticResource GhostButton}" Content="Use existing server installation" Command="{Binding UseExistingServerCommand}" HorizontalAlignment="Left" Margin="0,0,0,8" />
       <TextBlock Text="Conan server executable" Margin="0,8,0,4" />
       <DockPanel LastChildFill="True" Margin="0,0,0,8">
         <Button DockPanel.Dock="Right" Style="{StaticResource GhostButton}" Content="Browse" Command="{Binding BrowseExecutableCommand}" />

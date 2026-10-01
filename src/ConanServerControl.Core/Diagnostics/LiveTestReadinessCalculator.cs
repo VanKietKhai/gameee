@@ -4,6 +4,7 @@ namespace ConanServerControl.Core.Diagnostics;
 /// Derives high-level M3 Task 4 readiness from individual diagnostic checks.
 /// Readiness means "safe and sufficiently configured to attempt a guarded live test",
 /// never "live verified". The standalone client is never required for server tests.
+/// SteamCMD is optional: it is only needed when no valid existing Dedicated Server is configured.
 /// </summary>
 public static class LiveTestReadinessCalculator
 {
@@ -13,7 +14,6 @@ public static class LiveTestReadinessCalculator
     /// <summary>Checks that must exist and be Pass or Warning.</summary>
     private static readonly (string Id, string Reason)[] ServerRequiredUsable =
     [
-        (DiagnosticCheckIds.SteamCmdExecutable, "SteamCMD is not configured/found"),
         (DiagnosticCheckIds.ServerWorkspace, "Dedicated server workspace is not safe or not configured"),
         (DiagnosticCheckIds.AppBackupRoot, "Backup root is not valid")
     ];
@@ -53,15 +53,31 @@ public static class LiveTestReadinessCalculator
             }
         }
 
+        // Server source: a valid existing ConanSandboxServer.exe, OR SteamCMD available to install one.
+        var serverExe = Find(checks, DiagnosticCheckIds.ServerExecutable);
+        var steamCmd = Find(checks, DiagnosticCheckIds.SteamCmdExecutable);
+        var existingServer = serverExe is { Status: DiagnosticStatus.Pass };
+        var steamCmdUsable = steamCmd is not null && IsUsable(steamCmd.Status);
+        if (!existingServer && !steamCmdUsable)
+        {
+            blockers.Add(
+                "No dedicated server source: configure an existing ConanSandboxServer.exe installation, or install the optional SteamCMD to download one " +
+                $"({DiagnosticCheckIds.ServerExecutable}: {Describe(serverExe)}; {DiagnosticCheckIds.SteamCmdExecutable}: {Describe(steamCmd)})");
+        }
+
         var notes = new List<string>
         {
-            "Configuration checks only. SteamCMD download, server boot, Workshop download, mod load and player join have not been live verified."
+            "Configuration checks only. Server boot, mod load and player join have not been live verified."
         };
 
-        var serverExe = Find(checks, DiagnosticCheckIds.ServerExecutable);
-        if (serverExe is not null && serverExe.Status != DiagnosticStatus.Pass && blockers.Count == 0)
+        if (!existingServer && steamCmdUsable && blockers.Count == 0)
         {
-            notes.Add("Dedicated server is not installed at the configured path yet; the live test will install it into the configured workspace.");
+            notes.Add("Dedicated server is not installed at the configured path yet; the live test will install it into the configured workspace with SteamCMD.");
+        }
+
+        if (existingServer && !steamCmdUsable)
+        {
+            notes.Add("SteamCMD is not available. That is fine for a standalone setup: the existing server installation and Local mods do not need it. Workshop mods and automatic server install/update are unavailable.");
         }
 
         var ready = blockers.Count == 0;

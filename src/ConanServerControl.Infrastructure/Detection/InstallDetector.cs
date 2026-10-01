@@ -129,13 +129,7 @@ public sealed class InstallDetector : IInstallDetector
             return null;
         }
 
-        var candidates = new[]
-        {
-            Path.Combine(directory, AppConstants.DefaultServerSubPath),
-            Path.Combine(directory, "ConanSandbox", "Binaries", "Win64", AppConstants.DedicatedServerShippingExecutable),
-            Path.Combine(directory, AppConstants.DedicatedServerExecutable)
-        };
-
-        return candidates.FirstOrDefault(File.Exists);
+        // Only ConanSandboxServer.exe is launchable (the start gate blocks the -Shipping binary).
+        return Core.Mods.DedicatedServerLocator.Find(directory);
     }
 }

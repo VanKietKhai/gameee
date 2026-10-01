@@ -2,6 +2,7 @@ using System.Text.RegularExpressions;
 using ConanServerControl.Core;
 using ConanServerControl.Core.Diagnostics;
 using ConanServerControl.Core.Models;
+using ConanServerControl.Core.Mods;
 using ConanServerControl.Core.Validation;
 
 namespace ConanServerControl.Infrastructure.Diagnostics;
@@ -27,19 +28,16 @@ public sealed partial class IntegrationDiagnosticsService
 
         if (exe is null)
         {
-            var expected = context.InstallDirectory is null
-                ? null
-                : Path.Combine(context.InstallDirectory, AppConstants.DefaultServerSubPath);
-            if (expected is not null)
+            var located = DedicatedServerLocator.Find(context.InstallDirectory);
+            if (located is not null)
             {
-                facts["ExpectedPath"] = expected;
-                facts["ExpectedPathExists"] = File.Exists(expected) ? Yes : No;
+                facts["FoundInInstallDirectory"] = located;
             }
 
             return Result(id, DiagnosticCategories.DedicatedServer, name, DiagnosticStatus.NotConfigured,
-                "Dedicated server executable is not configured.",
-                details: expected is null ? null : $"Expected after install: {expected}",
-                action: "Set the ConanSandboxServer.exe path in Settings, or configure an install directory for the live install.",
+                "Dedicated server is not configured (not installed or not selected).",
+                details: located is null ? null : $"Found in the install directory: {located}",
+                action: "Settings > Use existing server installation: choose the Dedicated Server folder that contains ConanSandboxServer.exe. Installing with SteamCMD is optional.",
                 facts: facts);
         }
 
@@ -149,14 +147,14 @@ public sealed partial class IntegrationDiagnosticsService
 
         var conanSandbox = Path.Combine(install, "ConanSandbox");
         var binaries = Path.Combine(install, "ConanSandbox", "Binaries", "Win64");
-        var serverExe = Path.Combine(install, AppConstants.DefaultServerSubPath);
+        var serverExe = DedicatedServerLocator.Find(install);
         var clientExe = Path.Combine(install, ConanExecutableClassifier.ClientExecutable);
         facts["ConanSandboxDirectory"] = Directory.Exists(conanSandbox) ? Yes : No;
         facts["BinariesWin64"] = Directory.Exists(binaries) ? Yes : No;
-        facts["ServerExecutableAtDefaultPath"] = File.Exists(serverExe) ? Yes : No;
+        facts["LocatedServerExecutable"] = serverExe ?? "none";
         ReadAppManifest(install, facts);
 
-        if (File.Exists(clientExe) && !File.Exists(serverExe))
+        if (File.Exists(clientExe) && serverExe is null)
         {
             return Result(id, DiagnosticCategories.DedicatedServer, name, DiagnosticStatus.Fail,
                 "This folder contains the Conan game CLIENT (ConanSandbox.exe), not the dedicated server.",
@@ -378,8 +376,7 @@ public sealed partial class IntegrationDiagnosticsService
                 "Standalone client not configured or not found (optional).");
         }
 
-        if (File.Exists(Path.Combine(root, AppConstants.DedicatedServerExecutable)) ||
-            File.Exists(Path.Combine(root, AppConstants.DefaultServerSubPath)))
+        if (DedicatedServerLocator.Find(root) is not null)
         {
             return Result(id, DiagnosticCategories.StandaloneClient, name, DiagnosticStatus.Fail,
                 "This folder contains the DEDICATED SERVER, not the game client.",
@@ -538,7 +535,7 @@ public sealed partial class IntegrationDiagnosticsService
                 $"Standalone client is missing {missing.Length} of {serverMods.Count} server mod(s). Client Workshop sync is not automatic.",
                 DiagnosticEvidence.FilesystemInspected,
                 details: string.Join(Environment.NewLine, missing),
-                action: "Copy these .pak files into the client ConanSandbox\\Mods and add them to the client modlist.txt manually.",
+                action: "Export a Client Mod Bundle (Mods page) and copy it to each standalone client. Client sync is not automatic.",
                 facts: facts);
         }
 

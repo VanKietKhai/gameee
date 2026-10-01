@@ -1,8 +1,36 @@
 namespace ConanServerControl.Core.Models;
 
+/// <summary>
+/// Where a server mod's .pak comes from. Missing in older settings files, which
+/// therefore deserialize as <see cref="Workshop"/> (backwards compatible).
+/// </summary>
+public enum ModSourceType
+{
+    /// <summary>Steam Workshop item downloaded through the optional SteamCMD integration.</summary>
+    Workshop = 0,
+
+    /// <summary>Administrator-supplied .pak file. No remote update source; updated manually.</summary>
+    Local = 1
+}
+
+/// <summary>
+/// A server mod entry. Despite the historical name it covers both Workshop and Local mods;
+/// <see cref="WorkshopId"/> is only meaningful for <see cref="ModSourceType.Workshop"/> and is 0 for Local mods.
+/// </summary>
 public sealed class WorkshopMod
 {
+    public ModSourceType SourceType { get; set; } = ModSourceType.Workshop;
+
     public long WorkshopId { get; set; }
+
+    /// <summary>
+    /// Local mods only: the file the administrator imported from. Metadata only; the
+    /// source file is never modified, moved or deleted.
+    /// </summary>
+    public string? LocalSourcePath { get; set; }
+
+    /// <summary>SHA-256 (hex) of the installed .pak when known (always set for Local mods).</summary>
+    public string? Sha256 { get; set; }
 
     public string Name { get; set; } = string.Empty;
 

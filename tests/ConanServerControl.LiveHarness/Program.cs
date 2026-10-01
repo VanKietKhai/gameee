@@ -8,6 +8,7 @@ using ConanServerControl.Core.Abstractions;
 using ConanServerControl.Core.Diagnostics;
 using ConanServerControl.Core.LiveTesting;
 using ConanServerControl.Core.Models;
+using ConanServerControl.Core.Mods;
 using ConanServerControl.Core.Validation;
 using ConanServerControl.Infrastructure;
 using ConanServerControl.Infrastructure.Logging;
@@ -229,7 +230,8 @@ internal sealed class Harness : IAsyncDisposable
         _log = log;
     }
 
-    private string ServerExe => Path.Combine(_layout.Server, AppConstants.DefaultServerSubPath);
+    private string ServerExe =>
+        DedicatedServerLocator.Find(_layout.Server) ?? Path.Combine(_layout.Server, AppConstants.DedicatedServerExecutable);
 
     private string ServerLog => Path.Combine(_layout.Server, "ConanSandbox", "Saved", "Logs", "ConanSandbox.log");
 
@@ -261,7 +263,8 @@ internal sealed class Harness : IAsyncDisposable
             s.SteamCmd.InstallDirectory = layout.SteamCmd;
             s.SteamCmd.UseAnonymousLogin = true;
             s.ServerPaths.ServerInstallDirectory = layout.Server;
-            s.ServerPaths.ServerExecutablePath = Path.Combine(layout.Server, AppConstants.DefaultServerSubPath);
+            s.ServerPaths.ServerExecutablePath =
+                DedicatedServerLocator.Find(layout.Server) ?? Path.Combine(layout.Server, AppConstants.DedicatedServerExecutable);
             s.ServerPaths.ServerWorkingDirectory = null;
             s.Client.RootDirectory = string.IsNullOrWhiteSpace(clientRoot) ? null : clientRoot;
             s.Server.ServerName = "CSC-M3-LiveTest";

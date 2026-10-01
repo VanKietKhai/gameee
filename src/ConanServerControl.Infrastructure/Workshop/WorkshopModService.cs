@@ -9,10 +9,10 @@ using Microsoft.Extensions.Logging;
 namespace ConanServerControl.Infrastructure.Workshop;
 
 /// <summary>
-/// Workshop catalog and ordering. SteamCMD download/sync is implemented;
-/// remote Workshop metadata polling is Phase 2 and is marked clearly.
+/// Server mod catalog and ordering for both sources: Workshop mods (optional SteamCMD
+/// download) and Local mods (administrator-supplied .pak, see WorkshopModService.Local.cs).
 /// </summary>
-public sealed class WorkshopModService : IWorkshopModService
+public sealed partial class WorkshopModService : IWorkshopModService, IModCatalogService
 {
     private readonly ISettingsService _settings;
     private readonly ISteamCmdService _steamCmd;
@@ -96,7 +96,10 @@ public sealed class WorkshopModService : IWorkshopModService
         }
     }
 
-    public async Task RemoveAsync(long workshopId, bool confirmed, CancellationToken cancellationToken = default)
+    public Task RemoveAsync(long workshopId, bool confirmed, CancellationToken cancellationToken = default) =>
+        RemoveAsync(WorkshopKey(workshopId), confirmed, cancellationToken);
+
+    public async Task RemoveAsync(string modKey, bool confirmed, CancellationToken cancellationToken = default)
     {
         if (!confirmed)
         {
@@ -113,36 +116,42 @@ public sealed class WorkshopModService : IWorkshopModService
 
         await _settings.UpdateAsync(s =>
         {
-            s.Mods.Mods.RemoveAll(m => m.WorkshopId == workshopId);
+            s.Mods.Mods.RemoveAll(m => ModKeys.Matches(m, modKey));
             ModListGenerator.ApplySequentialOrder(s.Mods.Mods);
         }, cancellationToken).ConfigureAwait(false);
 
         await WriteModListAsync(cancellationToken).ConfigureAwait(false);
-        await _activityLog.AddAsync("Mods", $"Removed Workshop mod {workshopId}.", cancellationToken: cancellationToken)
+        await _activityLog.AddAsync("Mods", $"Removed mod {DescribeKey(modKey)}.", cancellationToken: cancellationToken)
             .ConfigureAwait(false);
     }
 
-    public async Task SetEnabledAsync(long workshopId, bool enabled, CancellationToken cancellationToken = default)
+    public Task SetEnabledAsync(long workshopId, bool enabled, CancellationToken cancellationToken = default) =>
+        SetEnabledAsync(WorkshopKey(workshopId), enabled, cancellationToken);
+
+    public async Task SetEnabledAsync(string modKey, bool enabled, CancellationToken cancellationToken = default)
     {
         await _settings.UpdateAsync(s =>
         {
-            var mod = s.Mods.Mods.FirstOrDefault(m => m.WorkshopId == workshopId)
-                      ?? throw new UserFacingException("Mod not found", $"Workshop ID {workshopId} is not in the list.");
+            var mod = s.Mods.Mods.FirstOrDefault(m => ModKeys.Matches(m, modKey))
+                      ?? throw NotFound(modKey);
             mod.Enabled = enabled;
         }, cancellationToken).ConfigureAwait(false);
 
         await WriteModListAsync(cancellationToken).ConfigureAwait(false);
     }
 
-    public async Task MoveAsync(long workshopId, int newIndex, CancellationToken cancellationToken = default)
+    public Task MoveAsync(long workshopId, int newIndex, CancellationToken cancellationToken = default) =>
+        MoveAsync(WorkshopKey(workshopId), newIndex, cancellationToken);
+
+    public async Task MoveAsync(string modKey, int newIndex, CancellationToken cancellationToken = default)
     {
         await _settings.UpdateAsync(s =>
         {
             var ordered = s.Mods.Mods.OrderBy(m => m.LoadOrder).ToList();
-            var current = ordered.FindIndex(m => m.WorkshopId == workshopId);
+            var current = ordered.FindIndex(m => ModKeys.Matches(m, modKey));
             if (current < 0)
             {
-                throw new UserFacingException("Mod not found", $"Workshop ID {workshopId} is not in the list.");
+                throw NotFound(modKey);
             }
 
             var moved = ModListGenerator.Reorder(ordered, current, newIndex);
@@ -151,7 +160,7 @@ public sealed class WorkshopModService : IWorkshopModService
         }, cancellationToken).ConfigureAwait(false);
 
         await WriteModListAsync(cancellationToken).ConfigureAwait(false);
-        await _activityLog.AddAsync("Mods", $"Changed mod load order for {workshopId}.", cancellationToken: cancellationToken)
+        await _activityLog.AddAsync("Mods", $"Changed mod load order for {DescribeKey(modKey)}.", cancellationToken: cancellationToken)
             .ConfigureAwait(false);
     }
 
@@ -163,15 +172,17 @@ public sealed class WorkshopModService : IWorkshopModService
 
     public async Task ApplyUpdatesAsync(IReadOnlyList<long>? workshopIds, CancellationToken cancellationToken = default)
     {
+        // Only Workshop mods have a remote update source. Local mods are updated manually
+        // (CommitLocalPakAsync with a replace key) and are never downloaded or replaced here.
         IReadOnlyList<WorkshopMod> targets;
         if (workshopIds is null)
         {
-            targets = _settings.Current.Mods.Mods.Where(m => m.Enabled).ToArray();
+            targets = _settings.Current.Mods.Mods.Where(m => m.Enabled && IsWorkshop(m)).ToArray();
         }
         else
         {
             var wanted = workshopIds.ToHashSet();
-            targets = _settings.Current.Mods.Mods.Where(m => wanted.Contains(m.WorkshopId)).ToArray();
+            targets = _settings.Current.Mods.Mods.Where(m => IsWorkshop(m) && wanted.Contains(m.WorkshopId)).ToArray();
             var missing = wanted.Except(targets.Select(m => m.WorkshopId)).ToArray();
             if (missing.Length > 0)
             {
@@ -300,14 +311,14 @@ public sealed class WorkshopModService : IWorkshopModService
         }
     }
 
-    private static ModBatchCommitException ToBatchCommitException(Exception commitFailure, RollbackResult rollback)
+    private static ModBatchCommitException ToBatchCommitException(Exception commitFailure, RollbackResult rollback, string source = "Workshop")
     {
         var verified = rollback.IsSafeToRestart;
         var message = verified
-            ? $"Live Workshop mod replacement failed: {commitFailure.Message} Previous mod set was restored."
+            ? $"Live {source} mod replacement failed: {commitFailure.Message} Previous mod set was restored."
             : rollback.Error is not null
-                ? $"Live Workshop mod replacement failed: {commitFailure.Message} Rollback could not be verified."
-                : $"Live Workshop mod replacement failed: {commitFailure.Message} Rollback was incomplete.";
+                ? $"Live {source} mod replacement failed: {commitFailure.Message} Rollback could not be verified."
+                : $"Live {source} mod replacement failed: {commitFailure.Message} Rollback was incomplete.";
 
         return new ModBatchCommitException(
             message,
@@ -318,9 +329,9 @@ public sealed class WorkshopModService : IWorkshopModService
             inner: rollback.Error ?? commitFailure);
     }
 
-    private static UserFacingException ToUserFacing(ModBatchCommitException batchEx) =>
+    private static UserFacingException ToUserFacing(ModBatchCommitException batchEx, string source = "Workshop") =>
         new(
-            batchEx.RecoveryRequired ? ModBatchCommitException.RecoveryRequiredTitle : "Workshop mod update failed",
+            batchEx.RecoveryRequired ? ModBatchCommitException.RecoveryRequiredTitle : $"{source} mod update failed",
             batchEx.Message,
             batchEx.RecoveryRequired
                 ? ModBatchCommitException.UnverifiedRollbackGuidance
@@ -349,7 +360,7 @@ public sealed class WorkshopModService : IWorkshopModService
 
     public async Task CheckForUpdatesAsync(CancellationToken cancellationToken = default)
     {
-        var mods = _settings.Current.Mods.Mods.ToArray();
+        var mods = _settings.Current.Mods.Mods.Where(IsWorkshop).ToArray();
         if (mods.Length == 0)
         {
             return;
@@ -364,7 +375,7 @@ public sealed class WorkshopModService : IWorkshopModService
         var updates = 0;
         await _settings.UpdateAsync(s =>
         {
-            foreach (var mod in s.Mods.Mods)
+            foreach (var mod in s.Mods.Mods.Where(IsWorkshop))
             {
                 mod.LastChecked = DateTimeOffset.UtcNow;
                 if (!byId.TryGetValue(mod.WorkshopId, out var remote))
@@ -405,8 +416,9 @@ public sealed class WorkshopModService : IWorkshopModService
     {
         var lines = new List<string>
         {
-            "Conan Server Control — required Workshop mods",
-            "Players need a licensed Conan Exiles client. Steam Workshop installs client mods.",
+            "Conan Server Control — required server mods",
+            "Players need a licensed Conan Exiles client. Mods are not synchronized to standalone clients automatically;",
+            "use the Client Mod Bundle export (mod files + modlist.txt + manifest) to give players the exact server mod set.",
             "This manager does not distribute game files and does not bypass Steam DRM.",
             string.Empty
         };
@@ -414,7 +426,9 @@ public sealed class WorkshopModService : IWorkshopModService
         foreach (var mod in Mods)
         {
             var status = mod.Enabled ? "enabled" : "disabled";
-            lines.Add($"{mod.LoadOrder}. {mod.Name} ({mod.WorkshopId}) [{status}] https://steamcommunity.com/sharedfiles/filedetails/?id={mod.WorkshopId}");
+            lines.Add(mod.SourceType == ModSourceType.Local
+                ? $"{mod.LoadOrder}. {mod.Name} (local file {mod.LocalFileName}) [{status}]"
+                : $"{mod.LoadOrder}. {mod.Name} ({mod.WorkshopId}) [{status}] https://steamcommunity.com/sharedfiles/filedetails/?id={mod.WorkshopId}");
         }
 
         if (Mods.Count == 0)
@@ -508,6 +522,19 @@ public sealed class WorkshopModService : IWorkshopModService
                 "Workshop download contained an unsafe file name",
                 fileName,
                 "Keep the previously installed version.");
+        }
+
+        // Never let a Workshop download overwrite a .pak that belongs to another mod (for
+        // example a Local mod with the same file name).
+        var owner = _settings.Current.Mods.Mods.FirstOrDefault(m =>
+            !ModKeys.Matches(m, ModKeys.For(mod)) &&
+            string.Equals(m.LocalFileName, fileName, StringComparison.OrdinalIgnoreCase));
+        if (owner is not null)
+        {
+            throw new UserFacingException(
+                "Workshop download conflicts with an existing mod file",
+                $"Workshop ID {mod.WorkshopId} produced {fileName}, which already belongs to {ModKeys.Describe(owner)}.",
+                "The existing mod file was left unchanged. Remove one of the two mods before installing the other.");
         }
 
         return new StagedWorkshopPak(mod.WorkshopId, pak, fileName, staging);
@@ -620,6 +647,31 @@ public sealed class WorkshopModService : IWorkshopModService
             _logger.LogDebug(ex, "Could not delete Workshop staging directory {Path}", staging);
         }
     }
+
+    private static bool IsWorkshop(WorkshopMod mod) =>
+        mod.SourceType == ModSourceType.Workshop && mod.WorkshopId > 0;
+
+    private static string WorkshopKey(long workshopId)
+    {
+        if (workshopId <= 0)
+        {
+            throw new UserFacingException("Mod not found", $"Workshop ID {workshopId} is not in the list.");
+        }
+
+        return ModKeys.Workshop(workshopId);
+    }
+
+    private static string DescribeKey(string modKey) =>
+        modKey.StartsWith(ModKeys.LocalPrefix, StringComparison.OrdinalIgnoreCase)
+            ? $"local {modKey[ModKeys.LocalPrefix.Length..]}"
+            : modKey.StartsWith(ModKeys.WorkshopPrefix, StringComparison.OrdinalIgnoreCase)
+                ? $"Workshop {modKey[ModKeys.WorkshopPrefix.Length..]}"
+                : modKey;
+
+    private static UserFacingException NotFound(string modKey) =>
+        modKey.StartsWith(ModKeys.WorkshopPrefix, StringComparison.OrdinalIgnoreCase)
+            ? new UserFacingException("Mod not found", $"Workshop ID {modKey[ModKeys.WorkshopPrefix.Length..]} is not in the list.")
+            : new UserFacingException("Mod not found", $"Mod {DescribeKey(modKey)} is not in the list.");
 
     private readonly record struct StagedWorkshopPak(
         long WorkshopId,

@@ -7,6 +7,7 @@ using ConanServerControl.Infrastructure.Diagnostics;
 using ConanServerControl.Infrastructure.Health;
 using ConanServerControl.Infrastructure.Hosting;
 using ConanServerControl.Infrastructure.Logging;
+using ConanServerControl.Infrastructure.Mods;
 using ConanServerControl.Infrastructure.Paths;
 using ConanServerControl.Infrastructure.ProcessManagement;
 using ConanServerControl.Infrastructure.Rcon;
@@ -44,6 +45,8 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IBackupVerifier, SqliteBackupVerifier>();
         services.AddSingleton<IBackupService, BackupService>();
         services.AddSingleton<IWorkshopModService, WorkshopModService>();
+        services.AddSingleton<IModCatalogService>(sp => (IModCatalogService)sp.GetRequiredService<IWorkshopModService>());
+        services.AddSingleton<IClientModBundleService, ClientModBundleService>();
         services.AddSingleton<IServerUpdateService, ServerUpdateService>();
         services.AddSingleton<IDelayedRestartService, DelayedRestartService>();
         services.AddSingleton<IServerHealthService, ServerHealthService>();

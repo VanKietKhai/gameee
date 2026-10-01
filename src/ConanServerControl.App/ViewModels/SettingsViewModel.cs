@@ -3,7 +3,9 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ConanServerControl.App.Services;
 using ConanServerControl.Core.Abstractions;
+using ConanServerControl.Core.Diagnostics;
 using ConanServerControl.Core.Models;
+using ConanServerControl.Core.Mods;
 using ConanServerControl.Core.Security;
 using ConanServerControl.Core.Settings;
 using ConanServerControl.Core.Validation;
@@ -86,6 +88,39 @@ public partial class SettingsViewModel : ObservableObject
         {
             SteamCmdDirectory = path;
         }
+    }
+
+    [RelayCommand]
+    private void UseExistingServer()
+    {
+        var folder = _dialogs.PickFolder("Choose the existing Conan Dedicated Server folder (contains ConanSandboxServer.exe)");
+        if (folder is null)
+        {
+            return;
+        }
+
+        var exe = DedicatedServerLocator.Find(folder);
+        if (exe is null)
+        {
+            _dialogs.Alert(
+                "Dedicated server not found",
+                $"ConanSandboxServer.exe was not found in:{Environment.NewLine}{folder}{Environment.NewLine}{Environment.NewLine}Looked for:{Environment.NewLine}" +
+                string.Join(Environment.NewLine, DedicatedServerLocator.CandidatePaths(folder)) +
+                $"{Environment.NewLine}{Environment.NewLine}This must be the Dedicated Server, not the game client (ConanSandbox.exe / Run Me!.bat).");
+            return;
+        }
+
+        var gate = ServerExecutableGate.Evaluate(exe, StandaloneClientRoot);
+        if (!gate.Allowed)
+        {
+            _dialogs.Alert("This folder cannot be used as the dedicated server", $"{gate.Reason}{Environment.NewLine}{exe}");
+            return;
+        }
+
+        ServerExecutablePath = exe;
+        ServerInstallDirectory = folder;
+        ServerWorkingDirectory = null;
+        _dialogs.Alert("Existing dedicated server selected", $"{exe}{Environment.NewLine}{Environment.NewLine}Click Save settings to keep it. SteamCMD is not required for an existing installation.");
     }
 
     [RelayCommand]
@@ -259,12 +294,21 @@ public partial class LogsViewModel : ObservableObject
 public partial class ModsViewModel : ObservableObject
 {
     private readonly IWorkshopModService _mods;
+    private readonly IModCatalogService _catalog;
+    private readonly IClientModBundleService _bundles;
     private readonly IServerUpdateService _updates;
     private readonly IUiDialogs _dialogs;
 
-    public ModsViewModel(IWorkshopModService mods, IServerUpdateService updates, IUiDialogs dialogs)
+    public ModsViewModel(
+        IWorkshopModService mods,
+        IModCatalogService catalog,
+        IClientModBundleService bundles,
+        IServerUpdateService updates,
+        IUiDialogs dialogs)
     {
         _mods = mods;
+        _catalog = catalog;
+        _bundles = bundles;
         _updates = updates;
         _dialogs = dialogs;
         Reload();
@@ -297,11 +341,84 @@ public partial class ModsViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private async Task ImportLocalAsync()
+    {
+        var path = _dialogs.PickFile("Conan mod package (*.pak)|*.pak", "Choose a local mod .pak to import");
+        if (path is null)
+        {
+            return;
+        }
+
+        try
+        {
+            await _updates.ImportLocalModAsync(path);
+            Reload();
+            _dialogs.Alert("Local mod imported",
+                $"{System.IO.Path.GetFileName(path)} was copied, verified (SHA-256) and installed in the server Mods folder. Your original file was not changed.");
+        }
+        catch (Exception ex)
+        {
+            MainViewModel.ShowError(ex);
+            Reload();
+        }
+    }
+
+    [RelayCommand]
+    private async Task ReplaceLocalAsync()
+    {
+        if (!TrySelectedKey(out var key) || !key.StartsWith(ModKeys.LocalPrefix, StringComparison.OrdinalIgnoreCase))
+        {
+            _dialogs.Alert("Select a local mod", "Type the local mod's .pak file name shown in the list, then click Replace local .pak.");
+            return;
+        }
+
+        var path = _dialogs.PickFile("Conan mod package (*.pak)|*.pak", "Choose the newer .pak (same file name)");
+        if (path is null)
+        {
+            return;
+        }
+
+        try
+        {
+            await _updates.ReplaceLocalModAsync(key, path);
+            Reload();
+            _dialogs.Alert("Local mod updated", "The newer file was verified and installed. Your original file was not changed.");
+        }
+        catch (Exception ex)
+        {
+            MainViewModel.ShowError(ex);
+            Reload();
+        }
+    }
+
+    [RelayCommand]
+    private async Task ExportClientBundleAsync()
+    {
+        var folder = _dialogs.PickFolder("Choose where to create the client mod bundle (not inside a game client)");
+        if (folder is null)
+        {
+            return;
+        }
+
+        try
+        {
+            var export = await _bundles.ExportAsync(folder);
+            _dialogs.Alert("Client mod bundle exported",
+                $"{export.Manifest.Mods.Count} mod(s) exported to:{Environment.NewLine}{export.BundleDirectory}{Environment.NewLine}{Environment.NewLine}" +
+                "It contains only mod files, modlist.txt, manifest.json (SHA-256) and README.txt. Give it to players with standalone clients; nothing was copied into any client.");
+        }
+        catch (Exception ex)
+        {
+            MainViewModel.ShowError(ex);
+        }
+    }
+
+    [RelayCommand]
     private async Task RemoveAsync()
     {
-        if (!WorkshopIdValidator.TryParse(WorkshopId, out var id))
+        if (!TrySelectedKey(out var key))
         {
-            _dialogs.Alert("Select a mod", "Enter the Workshop ID to remove.");
+            _dialogs.Alert("Select a mod", "Enter the Workshop ID or local .pak name to remove.");
             return;
         }
 
@@ -314,7 +431,7 @@ public partial class ModsViewModel : ObservableObject
 
         try
         {
-            await _mods.RemoveAsync(id, confirmed: true);
+            await _catalog.RemoveAsync(key, confirmed: true);
             Reload();
         }
         catch (Exception ex)
@@ -328,20 +445,20 @@ public partial class ModsViewModel : ObservableObject
     {
         Shareable = _mods.GetShareableModList();
         System.Windows.Clipboard.SetText(Shareable);
-        _dialogs.Alert("Mod list copied", "Players still need a licensed Conan Exiles client. Steam Workshop handles their local mods.");
+        _dialogs.Alert("Mod list copied", "Players need a licensed Conan Exiles client. Standalone clients do not receive mods automatically; use Export client bundle.");
     }
 
     [RelayCommand]
     private async Task EnableAsync()
     {
-        if (!TrySelectedId(out var id))
+        if (!TrySelectedKey(out var key))
         {
             return;
         }
 
         try
         {
-            await _mods.SetEnabledAsync(id, true);
+            await _catalog.SetEnabledAsync(key, true);
             Reload();
         }
         catch (Exception ex)
@@ -353,14 +470,14 @@ public partial class ModsViewModel : ObservableObject
     [RelayCommand]
     private async Task DisableAsync()
     {
-        if (!TrySelectedId(out var id))
+        if (!TrySelectedKey(out var key))
         {
             return;
         }
 
         try
         {
-            await _mods.SetEnabledAsync(id, false);
+            await _catalog.SetEnabledAsync(key, false);
             Reload();
         }
         catch (Exception ex)
@@ -372,7 +489,7 @@ public partial class ModsViewModel : ObservableObject
     [RelayCommand]
     private async Task MoveUpAsync()
     {
-        if (!TrySelectedId(out var id))
+        if (!TrySelectedKey(out var key))
         {
             return;
         }
@@ -387,13 +504,13 @@ public partial class ModsViewModel : ObservableObject
         try
         {
             var current = _mods.Mods.ToList();
-            var index = current.FindIndex(m => m.WorkshopId == id);
+            var index = current.FindIndex(m => ModKeys.Matches(m, key));
             if (index <= 0)
             {
                 return;
             }
 
-            await _mods.MoveAsync(id, index - 1);
+            await _catalog.MoveAsync(key, index - 1);
             Reload();
         }
         catch (Exception ex)
@@ -405,7 +522,7 @@ public partial class ModsViewModel : ObservableObject
     [RelayCommand]
     private async Task MoveDownAsync()
     {
-        if (!TrySelectedId(out var id))
+        if (!TrySelectedKey(out var key))
         {
             return;
         }
@@ -420,13 +537,13 @@ public partial class ModsViewModel : ObservableObject
         try
         {
             var current = _mods.Mods.ToList();
-            var index = current.FindIndex(m => m.WorkshopId == id);
+            var index = current.FindIndex(m => ModKeys.Matches(m, key));
             if (index < 0 || index >= current.Count - 1)
             {
                 return;
             }
 
-            await _mods.MoveAsync(id, index + 1);
+            await _catalog.MoveAsync(key, index + 1);
             Reload();
         }
         catch (Exception ex)
@@ -508,21 +625,37 @@ public partial class ModsViewModel : ObservableObject
             return true;
         }
 
-        _dialogs.Alert("Select a mod", "Enter the Workshop ID shown in the list first.");
+        _dialogs.Alert("Select a Workshop mod", "Enter the Workshop ID shown in the list first. Local mods are updated with Replace local .pak.");
+        return false;
+    }
+
+    private bool TrySelectedKey(out string key)
+    {
+        if (ModKeys.TryParseUserInput(WorkshopId, out key))
+        {
+            return true;
+        }
+
+        _dialogs.Alert("Select a mod", "Enter the Workshop ID or the local .pak file name shown in the list first.");
         return false;
     }
 
     private void Reload()
     {
         Listing = string.Join(Environment.NewLine, _mods.Mods.Select(m =>
-            $"{(m.Enabled ? "[x]" : "[ ]")} {m.Name}  Workshop ID: {m.WorkshopId}  Order: {m.LoadOrder}  {(m.UpdateAvailable ? "Update available" : "Installed")}  {m.Error}"));
+            m.SourceType == ModSourceType.Local
+                ? $"{(m.Enabled ? "[x]" : "[ ]")} {m.Name}  LOCAL (manual update)  File: {m.LocalFileName}  Order: {m.LoadOrder}  SHA-256: {Short(m.Sha256)}  {m.Error}"
+                : $"{(m.Enabled ? "[x]" : "[ ]")} {m.Name}  Workshop ID: {m.WorkshopId}  Order: {m.LoadOrder}  {(m.UpdateAvailable ? "Update available" : "Installed")}  {m.Error}"));
         if (string.IsNullOrWhiteSpace(Listing))
         {
-            Listing = "No mods yet. Paste a Steam Workshop ID and click Add Mod.";
+            Listing = "No mods yet. Import a local .pak (no SteamCMD needed), or paste a Steam Workshop ID and click Add Workshop mod (needs the optional SteamCMD).";
         }
 
         Shareable = _mods.GetShareableModList();
     }
+
+    private static string Short(string? hash) =>
+        string.IsNullOrEmpty(hash) ? "-" : hash.Length > 12 ? hash[..12] + "..." : hash;
 }
 
 public partial class BackupsViewModel : ObservableObject

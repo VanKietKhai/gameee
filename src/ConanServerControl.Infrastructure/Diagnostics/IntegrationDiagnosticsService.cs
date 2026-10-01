@@ -158,6 +158,7 @@ public sealed partial class IntegrationDiagnosticsService : IIntegrationDiagnost
 
         Add(DiagnosticCheckIds.WorldFiles, DiagnosticCategories.World, "World database files", () => CheckWorldFiles(context));
 
+        Add(DiagnosticCheckIds.ModsSources, DiagnosticCategories.Mods, "Mod sources (Local / Workshop)", () => CheckModSources(context));
         Add(DiagnosticCheckIds.ModsDirectory, DiagnosticCategories.Mods, "Server Mods directory", () => CheckModsDirectory(context));
         Add(DiagnosticCheckIds.ModsModList, DiagnosticCategories.Mods, "Server modlist.txt", () => CheckModList(context));
         Add(DiagnosticCheckIds.ModsPakFiles, DiagnosticCategories.Mods, "Server .pak files", () => CheckPakFiles(context));
@@ -451,12 +452,12 @@ public sealed partial class IntegrationDiagnosticsService : IIntegrationDiagnost
                     "steamcmd.exe was not found in the configured SteamCMD folder.",
                     DiagnosticEvidence.FilesystemInspected,
                     details: exe,
-                    action: "Correct the SteamCMD folder in Settings, or use Install SteamCMD.", facts: facts)
+                    action: "Correct the SteamCMD folder in Settings, clear it, or use Install SteamCMD. SteamCMD is optional.", facts: facts)
                 : Result(id, DiagnosticCategories.SteamCmd, name, DiagnosticStatus.NotConfigured,
-                    "SteamCMD is not installed or configured.",
+                    "SteamCMD is not installed. It is optional: only Workshop mods and automatic server install/update need it.",
                     DiagnosticEvidence.FilesystemInspected,
                     details: exe,
-                    action: "Use Install SteamCMD on this page, or set an existing SteamCMD folder in Settings.", facts: facts);
+                    action: "Not needed for an existing server installation and Local mods. Use Install SteamCMD only if you want Workshop mods or automatic server updates.", facts: facts);
         }
 
         var directory = Path.GetDirectoryName(exe);
@@ -486,9 +487,9 @@ public sealed partial class IntegrationDiagnosticsService : IIntegrationDiagnost
     private static DiagnosticCheckResult CheckSteamCmdLive() =>
         Result(DiagnosticCheckIds.SteamCmdLive, DiagnosticCategories.SteamCmd, "SteamCMD live download",
             DiagnosticStatus.NotTested,
-            "SteamCMD has not downloaded the Conan dedicated server in a verified live run.",
+            "Optional SteamCMD integration: a SteamCMD download has not been verified in a live run.",
             DiagnosticEvidence.NotExercised,
-            details: "Diagnostics never execute SteamCMD or app_update.",
+            details: "Diagnostics never execute SteamCMD or app_update. SteamCMD is optional for a standalone setup.",
             action: "Exercised by the guarded M3 Task 4 live test.");
 
     // ---------------------------------------------------------------- Backups

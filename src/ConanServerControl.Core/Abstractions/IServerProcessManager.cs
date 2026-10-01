@@ -65,6 +65,19 @@ public interface IServerUpdateService
     Task UpdateSelectedModsAsync(long workshopId, IProgress<PipelineProgress>? progress = null, CancellationToken cancellationToken = default);
 
     Task UpdateEverythingAsync(IProgress<PipelineProgress>? progress = null, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Imports an administrator-supplied .pak as a Local mod. Validation and staging happen
+    /// first; then the locked pipeline runs (stop if running, verified cold backup, transactional
+    /// commit, restart only if it was running). Does not use SteamCMD.
+    /// </summary>
+    Task ImportLocalModAsync(string sourcePakPath, IProgress<PipelineProgress>? progress = null, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Manual update of an existing Local mod from a newer .pak with the same file name,
+    /// through the same locked, transactional pipeline.
+    /// </summary>
+    Task ReplaceLocalModAsync(string modKey, string sourcePakPath, IProgress<PipelineProgress>? progress = null, CancellationToken cancellationToken = default);
 }
 
 public sealed class ServerUpdateCheckResult
