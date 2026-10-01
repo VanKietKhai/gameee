@@ -145,6 +145,7 @@ internal static class Program
                 "client-compare" => harness.ClientCompare(args[1], args[2]),
                 "configure-rcon" => await harness.ConfigureRconAsync(),
                 "stop" => await harness.StopExistingAsync(),
+                "graceful-test" => await harness.GracefulTestAsync(args[1]),
                 _ => Unknown(command)
             };
         }
@@ -281,6 +282,10 @@ internal sealed class Harness : IAsyncDisposable
         services.AddSingleton<ISteamCmdService>(sp =>
             recording = new RecordingSteamCmd(ActivatorUtilities.CreateInstance<SteamCmdService>(sp)));
         var provider = services.BuildServiceProvider(); // hosted services are never started
+
+        // Same database initialization the app performs at startup (activity log table).
+        await ActivatorUtilities.CreateInstance<ConanServerControl.Infrastructure.Hosting.DatabaseInitializerHostedService>(provider)
+            .StartAsync(CancellationToken.None);
 
         var settings = provider.GetRequiredService<ISettingsService>();
         await settings.LoadAsync();
@@ -795,6 +800,67 @@ internal sealed class Harness : IAsyncDisposable
         }
 
         return await StopAndRecordAsync(server, "stop", timeline) ? 0 : 1;
+    }
+
+    /// <summary>
+    /// Bounded experiment: boot, wait for readiness, send ONE candidate shutdown command over RCON,
+    /// record the reply and whether the server exits cleanly within 60 s. Falls back to the
+    /// application's normal stop when it does not.
+    /// </summary>
+    public async Task<int> GracefulTestAsync(string command)
+    {
+        if (!EnsureNoForeignServer("graceful-test"))
+        {
+            return 1;
+        }
+
+        var server = _services.GetRequiredService<IServerProcessManager>();
+        var timeline = TrackStates(server);
+        var clock = Stopwatch.StartNew();
+        await server.StartAsync();
+        _log.Write("graceful-test", "StartAsync (readiness)", server.State.Status == ServerStatus.Online ? "PASS" : "FAIL", clock.Elapsed,
+            Facts(("Status", server.State.Status.ToString()), ("Timeline", string.Join(" -> ", timeline)), ("Processes", DescribeProcesses())));
+        if (server.State.Status != ServerStatus.Online)
+        {
+            await TryStopAsync(server);
+            return 1;
+        }
+
+        var logOffset = FileLength(ServerLog);
+        string reply;
+        try
+        {
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+            reply = await _services.GetRequiredService<IRconService>().SendCommandAsync(command, cts.Token);
+        }
+        catch (Exception ex)
+        {
+            reply = "(exception) " + ex.Message;
+        }
+
+        var exitClock = Stopwatch.StartNew();
+        while (exitClock.Elapsed < TimeSpan.FromSeconds(60) && Program.ServerProcesses().Count > 0)
+        {
+            await Task.Delay(1000);
+        }
+
+        var exited = Program.ServerProcesses().Count == 0;
+        _log.Write("graceful-test", $"RCON '{command}'", exited ? "PASS" : "FAIL", exitClock.Elapsed,
+            Facts(("Command", command), ("Reply", string.IsNullOrEmpty(reply) ? "(empty)" : reply), ("ExitedWithin60s", exited.ToString()),
+                ("ExitCode", server.State.LastExitCode?.ToString() ?? "n/a"), ("Processes", DescribeProcesses())),
+            Interesting(ReadLogFrom(ServerLog, logOffset, int.MaxValue), scanMods: false) + Environment.NewLine +
+            "--- last log lines ---" + Environment.NewLine + ReadLogFrom(ServerLog, logOffset, 15));
+
+        if (!exited)
+        {
+            await StopAndRecordAsync(server, "graceful-test", timeline);
+        }
+        else
+        {
+            await server.RefreshAsync();
+        }
+
+        return exited ? 0 : 1;
     }
 
     // ------------------------------------------------------------ RCON for the throwaway test server

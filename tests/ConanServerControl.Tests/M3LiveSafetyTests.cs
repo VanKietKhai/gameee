@@ -361,6 +361,72 @@ public sealed class M3LiveSafetyTests
         Assert.Contains(ServerStatus.Stopping, seen);
     }
 
+    // ------------------------------------------------------------ Readiness: world loaded, not just port bound (live finding)
+
+    [Theory]
+    [InlineData(0, false)]
+    [InlineData(57, true)]
+    public async Task Port_bound_is_not_ready_while_the_current_run_log_is_still_on_frame_zero(int frame, bool expectedReady)
+    {
+        using var udp = new System.Net.Sockets.UdpClient(new System.Net.IPEndPoint(System.Net.IPAddress.Loopback, 0));
+        var port = ((System.Net.IPEndPoint)udp.Client.LocalEndPoint!).Port;
+        var started = DateTimeOffset.UtcNow.AddSeconds(-10);
+        var (settings, _) = await ProbeSettingsAsync(port,
+            $"[{Stamp(started.AddSeconds(5))}][  0]LogNet: IpNetDriver listening on port {port}",
+            $"[{Stamp(started.AddSeconds(8))}][{frame,3}]LogServerStats: something");
+        var probe = new Infrastructure.Health.EndpointServerReadinessProbe(settings, new FakeRcon(), NullLogger<Infrastructure.Health.EndpointServerReadinessProbe>.Instance);
+
+        var result = await probe.ProbeAsync(new Core.Abstractions.ServerReadinessContext { GamePort = port, ProcessId = 1, StartedAt = started });
+
+        Assert.Equal(expectedReady, result.IsReady);
+        Assert.Contains(expectedReady ? "ticking" : "still loading", result.Reason, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async Task Stale_log_from_a_previous_run_does_not_block_port_readiness()
+    {
+        using var udp = new System.Net.Sockets.UdpClient(new System.Net.IPEndPoint(System.Net.IPAddress.Loopback, 0));
+        var port = ((System.Net.IPEndPoint)udp.Client.LocalEndPoint!).Port;
+        var started = DateTimeOffset.UtcNow;
+        var (settings, _) = await ProbeSettingsAsync(port, $"[{Stamp(started.AddHours(-1))}][  0]LogInit: old run still loading");
+        var probe = new Infrastructure.Health.EndpointServerReadinessProbe(settings, new FakeRcon(), NullLogger<Infrastructure.Health.EndpointServerReadinessProbe>.Instance);
+
+        var result = await probe.ProbeAsync(new Core.Abstractions.ServerReadinessContext { GamePort = port, ProcessId = 1, StartedAt = started });
+
+        Assert.True(result.IsReady);
+    }
+
+    [Fact]
+    public async Task Rcon_reply_is_not_ready_while_the_world_is_still_loading()
+    {
+        var started = DateTimeOffset.UtcNow.AddSeconds(-10);
+        var (settings, _) = await ProbeSettingsAsync(1, $"[{Stamp(started.AddSeconds(5))}][  0]LogRcon: Display: Rcon is ready for client connections");
+        await settings.UpdateSecretsAsync(s => s.RconPassword = "test-only-rcon");
+        await settings.UpdateAsync(s => s.Rcon.Enabled = true);
+        var probe = new Infrastructure.Health.EndpointServerReadinessProbe(settings, new FakeRcon(), NullLogger<Infrastructure.Health.EndpointServerReadinessProbe>.Instance);
+
+        var result = await probe.ProbeAsync(new Core.Abstractions.ServerReadinessContext { GamePort = 1, ProcessId = 1, StartedAt = started });
+
+        Assert.False(result.IsReady);
+    }
+
+    private static async Task<(Infrastructure.Settings.JsonSettingsService Settings, string Install)> ProbeSettingsAsync(int gamePort, params string[] logLines)
+    {
+        var (_, _, settings) = QaTestSupport.CreateData();
+        var install = Path.Combine(Path.GetTempPath(), "csc-m3-probe", Guid.NewGuid().ToString("n"));
+        var logs = Directory.CreateDirectory(Path.Combine(install, "ConanSandbox", "Saved", "Logs")).FullName;
+        await File.WriteAllLinesAsync(Path.Combine(logs, "ConanSandbox.log"), logLines);
+        await settings.UpdateAsync(s =>
+        {
+            s.ServerPaths.ServerInstallDirectory = install;
+            s.Server.GamePort = gamePort;
+        });
+        return (settings, install);
+    }
+
+    private static string Stamp(DateTimeOffset utc) =>
+        utc.UtcDateTime.ToString("yyyy.MM.dd-HH.mm.ss:fff", System.Globalization.CultureInfo.InvariantCulture);
+
     private sealed class CountingStarter : Core.Abstractions.IProcessStarter
     {
         public int Starts { get; private set; }
