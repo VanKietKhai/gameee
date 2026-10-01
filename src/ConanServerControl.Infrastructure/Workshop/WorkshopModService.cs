@@ -155,9 +155,27 @@ public sealed class WorkshopModService : IWorkshopModService
 
     public async Task UpdateAllAsync(CancellationToken cancellationToken = default)
     {
-        foreach (var mod in _settings.Current.Mods.Mods.Where(m => m.Enabled).ToArray())
+        var targets = _settings.Current.Mods.Mods.Where(m => m.Enabled).ToArray();
+        var staged = new List<(WorkshopMod Mod, StagedWorkshopPak Pak)>(targets.Length);
+        try
         {
-            await DownloadAndStageAsync(mod, cancellationToken).ConfigureAwait(false);
+            foreach (var mod in targets)
+            {
+                var pak = await DownloadAndValidateAsync(mod, cancellationToken).ConfigureAwait(false);
+                staged.Add((mod, pak));
+            }
+
+            foreach (var item in staged)
+            {
+                await CommitStagedAsync(item.Mod, item.Pak, cancellationToken).ConfigureAwait(false);
+            }
+        }
+        finally
+        {
+            foreach (var item in staged)
+            {
+                TryDeleteStaging(item.Pak.StagingDirectory);
+            }
         }
     }
 
@@ -241,9 +259,19 @@ public sealed class WorkshopModService : IWorkshopModService
 
     private async Task DownloadAndStageAsync(WorkshopMod mod, CancellationToken cancellationToken)
     {
-        var staging = Path.Combine(_paths.StagingDirectory, "workshop", mod.WorkshopId.ToString());
+        var staged = await DownloadAndValidateAsync(mod, cancellationToken).ConfigureAwait(false);
+        try
+        {
+            await CommitStagedAsync(mod, staged, cancellationToken).ConfigureAwait(false);
+        }
+        finally
+        {
+            TryDeleteStaging(staged.StagingDirectory);
+        }
+    }
 
-        // Prefer app staging directory via settings-relative path reconstructed from steamcmd dir parent.
+    private async Task<StagedWorkshopPak> DownloadAndValidateAsync(WorkshopMod mod, CancellationToken cancellationToken)
+    {
         var install = _settings.Current.ServerPaths.ServerInstallDirectory
                       ?? _settings.Current.ServerPaths.ServerWorkingDirectory;
         if (string.IsNullOrWhiteSpace(install))
@@ -254,19 +282,23 @@ public sealed class WorkshopModService : IWorkshopModService
                 "Set the dedicated server folder in Settings before downloading mods.");
         }
 
+        var staging = Path.Combine(_paths.StagingDirectory, "workshop", mod.WorkshopId.ToString());
+        PrepareFreshStaging(staging);
+        var startedUtc = DateTime.UtcNow;
+
         await _steamCmd.DownloadWorkshopItemAsync(mod.WorkshopId, staging, cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
-        var pak = Directory.EnumerateFiles(staging, "*.pak", SearchOption.AllDirectories).FirstOrDefault();
-        if (pak is null)
+        if (!Directory.Exists(staging))
         {
-            var workshopContent = Path.Combine(staging, "steamapps", "workshop", "content", AppConstants.ConanExilesAppId.ToString());
-            if (Directory.Exists(workshopContent))
-            {
-                pak = Directory.EnumerateFiles(workshopContent, "*.pak", SearchOption.AllDirectories).FirstOrDefault();
-            }
+            throw new UserFacingException(
+                "Workshop download did not contain a .pak file",
+                $"Workshop ID {mod.WorkshopId} downloaded, but the staging folder was missing.",
+                "Keep the previously installed version. Check the SteamCMD log, then try again.");
         }
-        if (pak is null)
+
+        var candidates = Directory.GetFiles(staging, "*.pak", SearchOption.AllDirectories);
+        if (candidates.Length == 0)
         {
             throw new UserFacingException(
                 "Workshop download did not contain a .pak file",
@@ -274,24 +306,75 @@ public sealed class WorkshopModService : IWorkshopModService
                 "Keep the previously installed version. Check the SteamCMD log, then try again.");
         }
 
+        if (candidates.Length > 1)
+        {
+            var names = string.Join(", ", candidates.Select(Path.GetFileName));
+            throw new UserFacingException(
+                "Workshop download contained multiple .pak files",
+                $"Workshop ID {mod.WorkshopId} produced {candidates.Length} .pak files ({names}). This manager installs one .pak per Workshop item and will not guess which file to use.",
+                "Keep the previously installed version. Remove extra files from the Workshop item or install it manually.");
+        }
+
+        var pak = candidates[0];
+        var info = new FileInfo(pak);
+        if (info.Length <= 0)
+        {
+            throw new UserFacingException(
+                "Workshop download produced an empty .pak file",
+                $"Workshop ID {mod.WorkshopId} downloaded {info.Name} with 0 bytes.",
+                "Keep the previously installed version. Check the SteamCMD log, then try again.");
+        }
+
+        if (info.LastWriteTimeUtc < startedUtc.AddSeconds(-5))
+        {
+            throw new UserFacingException(
+                "Workshop download reused a leftover staging file",
+                $"Workshop ID {mod.WorkshopId} did not produce a new .pak. {info.Name} is older than this download.",
+                "Keep the previously installed version. Check the SteamCMD log, then try again.");
+        }
+
+        var fileName = info.Name;
+        if (!PathValidator.IsSafeRelativeName(fileName))
+        {
+            throw new UserFacingException(
+                "Workshop download contained an unsafe file name",
+                fileName,
+                "Keep the previously installed version.");
+        }
+
+        return new StagedWorkshopPak(mod.WorkshopId, pak, fileName, staging);
+    }
+
+    private async Task CommitStagedAsync(WorkshopMod mod, StagedWorkshopPak staged, CancellationToken cancellationToken)
+    {
+        var install = _settings.Current.ServerPaths.ServerInstallDirectory
+                      ?? _settings.Current.ServerPaths.ServerWorkingDirectory;
+        if (string.IsNullOrWhiteSpace(install))
+        {
+            throw new UserFacingException(
+                "Server install directory is not configured",
+                "Workshop mods are copied into the dedicated server Mods folder.",
+                "Set the dedicated server folder in Settings before downloading mods.");
+        }
+
         var modsDir = Path.Combine(install, "ConanSandbox", "Mods");
         Directory.CreateDirectory(modsDir);
-        var dest = Path.Combine(modsDir, Path.GetFileName(pak));
+        var dest = Path.Combine(modsDir, staged.FileName);
         var tempDest = dest + ".new";
-        File.Copy(pak, tempDest, overwrite: true);
+        File.Copy(staged.PakPath, tempDest, overwrite: true);
         if (File.Exists(dest))
         {
             File.Replace(tempDest, dest, dest + ".bak");
         }
         else
         {
-            File.Move(tempDest, dest);
+            File.Move(tempDest, dest, overwrite: true);
         }
 
         await _settings.UpdateAsync(s =>
         {
             var found = s.Mods.Mods.First(m => m.WorkshopId == mod.WorkshopId);
-            found.LocalFileName = Path.GetFileName(dest);
+            found.LocalFileName = staged.FileName;
             found.InstalledTimestamp = DateTimeOffset.UtcNow;
             found.UpdateAvailable = false;
             found.Error = null;
@@ -301,6 +384,37 @@ public sealed class WorkshopModService : IWorkshopModService
         await _activityLog.AddAsync("Mods", $"Installed/updated Workshop mod {mod.WorkshopId}.", cancellationToken: cancellationToken)
             .ConfigureAwait(false);
     }
+
+    private static void PrepareFreshStaging(string staging)
+    {
+        if (Directory.Exists(staging))
+        {
+            Directory.Delete(staging, recursive: true);
+        }
+
+        Directory.CreateDirectory(staging);
+    }
+
+    private void TryDeleteStaging(string staging)
+    {
+        try
+        {
+            if (Directory.Exists(staging))
+            {
+                Directory.Delete(staging, recursive: true);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogDebug(ex, "Could not delete Workshop staging directory {Path}", staging);
+        }
+    }
+
+    private readonly record struct StagedWorkshopPak(
+        long WorkshopId,
+        string PakPath,
+        string FileName,
+        string StagingDirectory);
 
     private async Task WriteModListAsync(CancellationToken cancellationToken)
     {

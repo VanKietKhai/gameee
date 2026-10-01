@@ -68,11 +68,14 @@ public class QaWorkshopFileSafetyTests
     [Fact]
     public async Task Missing_staging_directory_does_not_change_the_installed_pak()
     {
+        // Staging is created empty before SteamCMD. A previously missing folder is
+        // now an empty validated result, not DirectoryNotFoundException.
         var fx = await Fixture.CreateAsync();
 
         var error = await Record.ExceptionAsync(() => fx.Mods.UpdateAsync(111));
 
-        Assert.IsType<DirectoryNotFoundException>(error);
+        Assert.IsType<UserFacingException>(error);
+        Assert.Contains("pak", error!.Message, StringComparison.OrdinalIgnoreCase);
         await fx.AssertLiveUntouchedAsync();
     }
 
@@ -231,6 +234,24 @@ public class QaWorkshopFileSafetyTests
         Assert.True(
             error is not null && first == Fixture.GoodBytes && secondText == "MOD2-OLD",
             $"A failed Update All must not keep a half-applied set. error={error?.GetType().Name}: {error?.Message}; first={first}; second={secondText}");
+    }
+
+    [Fact]
+    [Trait("Issue", "QA-002")]
+    public async Task Valid_pak_replaces_the_installed_mod()
+    {
+        var fx = await Fixture.CreateAsync();
+        fx.Steam.OnWorkshop = (_, dir, _) =>
+        {
+            Directory.CreateDirectory(dir);
+            File.WriteAllText(Path.Combine(dir, "Working.pak"), "MOD1-NEW");
+            return Task.CompletedTask;
+        };
+
+        await fx.Mods.UpdateAsync(111);
+
+        Assert.Equal("MOD1-NEW", await File.ReadAllTextAsync(fx.LivePak));
+        Assert.Contains("Working.pak", await File.ReadAllTextAsync(fx.ModListPath), StringComparison.Ordinal);
     }
 
     [Fact]
