@@ -6,7 +6,7 @@
 ## Current Milestone
 M3 — Live Windows Integration & Diagnostics, **Task 4 in progress** (guarded live integration), with the product direction now **standalone-first**.
 
-Paused before 4C (first real server boot): no dedicated server installation is available yet. See `M3_LIVE_TEST_REPORT.md` and `HANDOFF.md`.
+Checkpoint **4C/4D PASSED** on the existing dedicated server `D:\conan exiles\Conan Exiles Dedicated Server`: boot, readiness, Start/Stop/Restart, graceful RCON stop, and a verified cold backup of the real Enhanced world. Waiting for review before 4E. See `M3_LIVE_TEST_REPORT.md`.
 
 ## Implemented and Verified
 

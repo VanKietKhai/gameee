@@ -1,6 +1,6 @@
 # M3 Task 4 — Live Test Report
 
-Status: **IN PROGRESS — paused after 4B.**
+Status: **IN PROGRESS: checkpoint 4C/4D PASSED** on an existing dedicated server installation. Waiting for review before 4E (one Local mod).
 
 - The product direction changed to **standalone-first** (see "Direction change").
 - No dedicated server has been booted yet.
@@ -81,6 +81,68 @@ The full 4B command was: `+force_install_dir "E:\CSC-M3-Live\server" +login anon
 - The app behaved correctly: a user-facing failure, a FAIL log entry, and nothing installed or deleted.
 - No workarounds were attempted: no system or network changes, no VPN or proxy, no firewall or antivirus changes, no `steam.cfg`, no host overrides.
 - SteamCMD stays installed in `E:\CSC-M3-Live\steamcmd` for optional future use.
+
+## Checkpoint 4C/4D: real dedicated server (existing installation)
+
+### Server and gate
+
+- Server root: `D:\conan exiles\Conan Exiles Dedicated Server`, a sibling of the client `D:\conan exiles\Conan Exiles Enhanced`.
+- `DedicatedServerLocator` picked `D:\conan exiles\Conan Exiles Dedicated Server\ConanSandboxServer.exe`, the install root (the first candidate).
+  - This file is a 332,648-byte Unreal `BootstrapPackagedGame` launcher, signed **Funcom Oslo AS** (valid).
+  - It spawns `ConanSandbox\Binaries\Win64\ConanSandboxServer-Win64-Shipping.exe` (186 MB, Funcom-signed) as a child process.
+- Build `++exiles+release-beta-CL-378132` (beta branch). The standalone client is `++exiles+release-CL-377096`; the versions **differ**.
+- Working directory: not set, so the executable's folder (the server root) is used.
+- Gate: `DedicatedServer`, start allowed. Path overlap: PASS (siblings; neither is nested in the other).
+- Configured through the harness with the same locator and gate logic as Settings "Use existing server installation". No SteamCMD, no `app_update`, nothing copied.
+
+### Diagnostics before the first boot
+
+`READY FOR SERVER LIVE TEST`, with no FAIL. Warnings, all expected before a first boot:
+- the `Saved` folder doesn't exist yet
+- no world yet
+- RCON password not set
+- the client has no `Mods` folder
+
+SteamCMD is optional, and network-blocked for downloads.
+
+### Live run (server log timestamps are UTC)
+
+| Step | Result | Detail |
+| --- | --- | --- |
+| 7 first boot (old probe) | Process PASS, **readiness premature** | Online at 5.4 s on "game port 7777 bound". The log was still on engine frame 0, and the world only started ticking ~45 s later. |
+| 7 stop (old harness) | **Aborted** | The harness's own `StateChanged` handler threw (empty timeline) inside `StopAsync`, leaving status `Stopping` with the server running. The server was later stopped through the app (attach + stop, forced after the timeout, no RCON configured). **Product fix:** subscribers are isolated. |
+| 8 process identity | PASS | Bootstrap PID → `-Shipping` child, both under the server root. Arguments `-log -port=7777 -QueryPort=27015` come from the app. No client process at any point. |
+| Signal timing (boot 2) | — | UDP 7777 at 5 s; RCON listen + `listplayers` reply at 5 s; query 27015 at 27 s; **log frame advancing at 34 s**. UDP 7778 is never bound (this Unreal 5 build only uses 7777). |
+| Graceful command | — | `DoExit` was received but ignored (not in `RconCommandLog`); `exit` → "Couldn't find the command: exit"; RCON `help` lists **`Shutdown`**; `shutdown` → "Successfully executed: shutdown", exit code 0 after ~57 s, no WAL/SHM left. **Product fix:** default command is `shutdown`, graceful timeout raised from 30 s to 120 s. |
+| 9 boot + stop (fixed app) | **PASS** | Online at 31 s ("World is ticking (server log frame 2)"). Graceful stop 65.3 s, exit code 0, no processes left. |
+| 10 Start | **PASS** | Online at 32 s. |
+| 10 Stop | **PASS** | 63.5 s, exit code 0 (RCON `shutdown`). |
+| 10 Start | **PASS** | Online at 30.7 s. |
+| 10 Restart | **PASS** | 89.6 s: Stopping → Offline (61 s) → Starting → Online (29 s). |
+| 10 Stop | **PASS** | 59.6 s, exit code 0. Post-cycle check found no processes. |
+| 11 world files | Enhanced | After a graceful stop: `game_0.db` only (WAL/SHM checkpointed away). After forced kills, `game_0.db-wal` / `-shm` remained. Conan also keeps `game_0_backup_1..4.db` and `game_0_upgrade_tags_%d30_1.db`. |
+| 12 boot / stop | **PASS** | Online at 30 s (frame 4); graceful stop 62.2 s, exit code 0. |
+| 12 cold backup | **PASS** | `2026-10-02_032514`: WorldType Enhanced, main `game_0.db` 667,648 B. |
+
+**Step 12 backup verification detail:**
+- SHA-256 `323575125C7086D45CEF68BD83D823DB7759B2892D1548D152D8B07B1AAD91C7`. The manifest recorded it, and an independent hash of the backup copy matches.
+- `ManifestWritten` / `HashesVerified` / `SqliteVerified` are all True; `quick_check` = `ok`.
+- The live world files were identical before and after the backup.
+
+### Findings (not blocking)
+
+1. The Conan server log reports `Autologin attempt failed, unable to register server!` (server-list registration).
+2. Readiness fix: `ConanSandbox.log` current-run frame 0 means not ready. Live Online times are now 30–32 s.
+3. The backup copy's folder gains `game_0.db-shm` (32 KB) and `game_0.db-wal` (0 B) after verification. SQLite creates them when `quick_check` opens the **copy**. The copied `game_0.db` hash still matches the manifest, and the live world is untouched. A follow-up could open with `immutable=1` or verify a temporary copy.
+4. The backup copies the whole `Saved` tree into `world\` (including `Config` and `Logs`) and also into `config\`, so the configuration is stored twice. This is pre-existing design.
+5. Client/server build mismatch (beta vs live). This is relevant for 4F.
+6. `configure-rcon` wrote `[RconPlugin]` into the throwaway server's `Saved\Config\WindowsServer\Game.ini`. Conan requires the RCON password in plaintext there. It is random, and the app stores it only with DPAPI.
+
+### Safety
+
+- Client: **0 files modified** under `D:\conan exiles\Conan Exiles Enhanced` since the session started.
+- Nothing was written to the `D:\conan exiles` top level.
+- SteamCMD was not used. Router and firewall were not modified.
 
 ## Direction change: standalone-first
 

@@ -144,7 +144,21 @@ Live details are in **`M3_LIVE_TEST_REPORT.md`**. Task 3's handoff is in git his
   - then run: `ConanServerControl.LiveHarness install-server`
   - It stops after verifying `ConanSandboxServer.exe` and the gate; it never boots the server.
 
-## Next required input (before 4C first boot)
+## Checkpoint 4C/4D (live, PASSED)
+
+Full table in `M3_LIVE_TEST_REPORT.md`. In short:
+- The gate passed, and the sibling layout passed.
+- First boot found that readiness was premature, and that the stop could be aborted by a throwing subscriber.
+- The graceful command is `shutdown`, not `DoExit`; a clean exit takes ~57 s.
+- After the fixes, Start, Stop, Start, Restart and Stop all PASS with exit code 0. The cold backup of `game_0.db` is verified (manifest, SHA-256, `quick_check` ok).
+- The client was not modified, and SteamCMD was not used.
+
+Product fixes from this checkpoint (unit-tested; 290 / 290):
+- `ServerProcessManager` isolates `StateChanged` subscribers.
+- `EndpointServerReadinessProbe`: a current-run Conan log still on frame 0 means not ready.
+- `Rcon.ShutdownCommand` defaults to `shutdown`; the graceful timeout default is 120 s.
+
+## Next required input (before 4C first boot), historical
 
 A **valid existing Conan Exiles Dedicated Server installation** containing `ConanSandboxServer.exe`.
 
