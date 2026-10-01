@@ -1,70 +1,125 @@
-# M3 — Task 1 Foundation Handoff
+# M3 — Task 2 Core Behaviour Handoff
 
-## Base Revision
+## Baseline
 
-`b422e1fbaf11dc0f9dfd3e977e24298a9307da64` on `cursor/conan-server-control-a853` (stabilization CLOSED, 108/108).
+130 / 130
 
-New branch: `cursor/m3-live-windows-integration-a853`
+Confirmed on `cursor/m3-live-windows-integration-a853` before Task 2 edits (`90ee3bd`): Release build 0 warnings / 0 errors; 130 tests passed.
 
-`architect/review-2`, QA branches, and unrelated `main` changes were **not** merged.
+## Server Readiness
 
-## RCON Settings
+`IServerReadinessProbe` is injected into `ServerProcessManager`. It is not wired into WPF ViewModels.
 
-The Settings UI and dashboard now read/write `Rcon.Port`. `Server.RconPort` is `[Obsolete]` and used only for JSON deserialization.
+`StartCoreAsync` lifecycle is now:
 
-`JsonSettingsService.LoadAsync` migrates once: if `Rcon.Port` is still the default (25575) and legacy `Server.RconPort` differs, copy it and persist. An explicit `Rcon.Port` is never overwritten. Repeated loads are stable.
+Offline → Starting → process launched → probe loop → Online
 
-`RconService` already used `Rcon.Port`; no dual-field runtime consumers remain.
+The previous `Task.Delay(2s)` then Online path is gone.
 
-## Secret Storage
+Production probe (`EndpointServerReadinessProbe`): ready when the configured game UDP port is bound **or** (optional) RCON ping succeeds. RCON password is **not** required for basic readiness. Process-alive is owned by the process manager.
 
-Settings has a write-only RCON PasswordBox, a "Password configured" / "Not configured" indicator, and an explicit **Clear RCON password** action (blank save does not erase).
+Test seam: `ImmediateReadyProbe` / `ScriptedReadinessProbe`.
 
-The password is stored only through `ISecretProtector` (`DpapiSecretProtector` on Windows). It is not serialized into `settings.json`, not loaded into the PasswordBox, and not logged.
+## QA-011
 
-## Process Cancellation
+Fixed.
 
-Once `ProcessRunner` has started a child:
+- Process starts, probe becomes ready → Starting → Online
+- Probe never ready + timeout → `ServerStatus.Unresponsive`, **not** Online
+- Process exits during startup → startup failure (`Error`), not Online
+- Transient not-ready then ready → Online
+- Cancellation during readiness wait → `OperationCanceledException`, not Online
+- Probe throws → logged, treated as not-ready, retried until ready or timeout; never fake Online
+- Post-update `StartUnderLockAsync` uses the same probe; Online is not reported before ready
 
-- normal exit → no Kill
-- timeout → `Kill(entireProcessTree: true)`, result is TimedOut (not success)
-- caller `CancellationToken` cancelled after start → kill tree, then rethrow cancellation
-- cancellation before start → no Start, no Kill
-- Kill throwing is logged; the operation is not converted to success
+**Override vs Architect AC3-2:** Architect text said timeout → Online + Unresponsive. The Task 2 assignment requires timeout **must not** report Online. Implemented: `Status=Unresponsive`, `Health=ServerUnresponsive`, explicit `UserFacingException`. UI is not left at Starting.
 
-Only the process instance started by that invocation is killed.
+## Cold Backup Ordering
 
-## QA-013
+`RunLockedAsync` now:
 
-`BackupNowCoreAsync` used a tautological `dest == dest` check. Destinations now must satisfy `PathValidator.IsUnderRoot(dest, BackupsDirectory)` or the backup fails closed. Traversal, absolute paths outside the root, and prefix-confusion (`Backup` vs `Backup-Evil`) are rejected. No naive `StartsWith`.
+1. Acquire lease
+2. Capture `wasRunning`
+3. Stop if running and **confirm** Offline/Error (otherwise abort; no backup, no mutation)
+4. Cold backup + hash + SQLite verify (when backup-before-update is enabled)
+5. Server update and/or transactional mod commit
+6. Start only if originally online **and** resulting state is safe
+7. Same readiness probe; Online is required for a successful return-to-online
 
-## Conan World Files
+`UpdatePipelineStateMachine` allows `Stopping → Backup`. Happy path tests record `stop → backup → update → start`.
 
-`ConanWorldFiles` (Core) lists Enhanced `game_0.db` / `-wal` / `-shm` and legacy `game.db` / `-wal` / `-shm`. `Present(savedDir)` returns only those names that exist as files in that directory. Unrelated `.db` files and nested copies are ignored. No world files are deleted or opened. `GameDbRelative` remains as a documented legacy constant.
+`StopCoreAsync` no longer claims stopped if the managed process is still alive after the force-stop wait.
+
+Manual BACKUP NOW while Online: stop → verified cold backup → start (same lease). Offline: backup → verify → remain offline. A live SQLite copy is rejected (`EnsureServerStoppedForColdBackup`).
+
+## Backup Manifest
+
+Each completed backup `metadata.json` / `BackupRecord` includes:
+
+- `CreatedAt`
+- `WorldType` (`Enhanced` / `Legacy`)
+- `MainDbFileName`
+- `WorldFiles`: logical name, filename, size, SHA-256 of the **backup copy** (streaming `SHA256.HashData`)
+- `ManifestWritten`, `HashesVerified`, `SqliteVerified`, `VerificationDetail`, `VerifiedAt`, `Succeeded`
+
+Known files only via `ConanWorldFiles` (`game_0.db*` / `game.db*`). Unrelated `.db` files may still sit in the copied Saved tree but are not in the world manifest.
+
+## SQLite Verification
+
+`IBackupVerifier` / `SqliteBackupVerifier` opens the **copied** main DB read-only (`Microsoft.Data.Sqlite` `Mode=ReadOnly`) and runs `PRAGMA quick_check`. Success requires a single `ok` row.
+
+Invalid when: main DB missing, cannot open, quick_check is not `ok`, hash/size mismatch, hashing throws.
+
+WAL/SHM are copied when present and hashed; absence of WAL/SHM is not a failure. Live WAL/SHM are never deleted, checkpointed, VACUUMed, or migrated.
+
+**"Backup completed"** is logged only when copy + manifest + hashes + SQLite verification all succeeded.
+
+## Update Pipeline Changes
+
+Update Everything remains one coordinated run: one stop, one cold verified safety backup, server update, mod batch (`ModBatchTransaction` / `RollbackResult` unchanged), one restart if originally online and safe, then readiness.
+
+Recovery-required unverified rollback still leaves the server **offline**.
+
+## Failure Semantics
+
+| Failure | Mutation | Server state |
+| --- | --- | --- |
+| Cannot stop | none | unchanged (still running) |
+| Backup copy / hash / `quick_check` fails | none | was-online **may** restart; was-offline stays offline. Log: `update aborted because safety backup failed.` |
+| Server update fails | binaries may have changed | preserve backup; restart if was-online and not recovery-required |
+| Mod commit fails | existing transactional rollback rules | restart only if rollback verified; otherwise recovery-required / OFFLINE |
+| Post-update readiness fails | mutation already applied | process may exist; status is **not** Online; operation FAILED/unresponsive; no second start attempt |
 
 ## Files Changed
 
+- `src/ConanServerControl.Core/Abstractions/IServerReadinessProbe.cs`
+- `src/ConanServerControl.Core/Abstractions/IBackupVerifier.cs`
+- `src/ConanServerControl.Core/Backups/BackupFileHasher.cs`
+- `src/ConanServerControl.Core/Backups/ConanWorldFiles.cs`
+- `src/ConanServerControl.Core/Models/WorkshopMod.cs` (`BackupRecord` / `BackupWorldFileRecord`)
 - `src/ConanServerControl.Core/Settings/AppSettings.cs`
 - `src/ConanServerControl.Core/AppConstants.cs`
-- `src/ConanServerControl.Core/Backups/ConanWorldFiles.cs`
-- `src/ConanServerControl.Infrastructure/Settings/JsonSettingsService.cs`
-- `src/ConanServerControl.Infrastructure/ProcessManagement/ProcessRunner.cs`
+- `src/ConanServerControl.Core/Updates/UpdatePipelineStateMachine.cs`
+- `src/ConanServerControl.Infrastructure/Health/EndpointServerReadinessProbe.cs`
+- `src/ConanServerControl.Infrastructure/Health/ServerHealthService.cs`
+- `src/ConanServerControl.Infrastructure/ProcessManagement/ServerProcessManager.cs`
 - `src/ConanServerControl.Infrastructure/Backups/BackupService.cs`
-- `src/ConanServerControl.App/ViewModels/SettingsViewModel.cs`
-- `src/ConanServerControl.App/ViewModels/DashboardViewModel.cs`
-- `src/ConanServerControl.App/Views/SettingsView.xaml`
-- `src/ConanServerControl.App/Views/SettingsView.xaml.cs`
-- `tests/ConanServerControl.Tests/M3RconSettingsTests.cs`
-- `tests/ConanServerControl.Tests/M3ProcessRunnerTests.cs`
-- `tests/ConanServerControl.Tests/M3BackupPathTests.cs`
-- `tests/ConanServerControl.Tests/M3ConanWorldFilesTests.cs`
+- `src/ConanServerControl.Infrastructure/Backups/SqliteBackupVerifier.cs`
+- `src/ConanServerControl.Infrastructure/Updates/ServerUpdateService.cs`
+- `src/ConanServerControl.Infrastructure/ServiceCollectionExtensions.cs`
+- `src/ConanServerControl.Infrastructure/ConanServerControl.Infrastructure.csproj`
+- tests listed below
 - `STATUS.md`, `HANDOFF.md`
 
 ## Tests Added
 
-RCON migration (legacy copies, explicit wins, stable reload). RCON secret (not in settings JSON, goes through `ISecretProtector`, not logged). ProcessRunner (cancel-after-start kills tree within 2 s, timeout kills, normal exit does not, pre-start cancel does not start, kill-throw is not success). QA-013 (child allowed; traversal / absolute / prefix-confusion rejected). ConanWorldFiles (Enhanced only; Enhanced+wal+shm; legacy; empty; unrelated ignored).
+Readiness: delayed success, timeout, process exit, transient failure, cancellation, probe exception, always-throw timeout, post-update not-Online-before-ready, UDP port probe, RCON not required.
 
-No existing tests were deleted, skipped, or weakened.
+Cold order: online Stop→Backup→Update→Start; Update Everything one cycle; offline no stop/start; backup failure blocks mutation and restarts previously-online server; cannot-stop aborts with no backup/update.
+
+Backup verification: Enhanced main DB; Enhanced+WAL/SHM when present; Legacy; missing main DB; non-SQLite; quick_check/corrupt; hash manifest + mismatch revalidation; unrelated `.db` ignored; missing copied main; manual Online backup stop/backup/start.
+
+Tiny temp SQLite fixtures only. No real Conan save. No skipped tests.
 
 ## Build
 
@@ -74,25 +129,50 @@ PASS
 
 ## Tests
 
-130 passed
-0 failed
-130 total
+157 / 157
 
-## Architect Acceptance Criteria Covered
+130 previous + Task 2 tests. 0 failed. 0 skipped.
 
-- **AC3-1** (Task 1 portion): 0 warnings; all 108 pre-existing tests pass; new unit tests added
-- **AC3-5**: caller cancel after start observes `Kill(true)` within 2 s
-- **AC3-6**: `Server.RconPort=25580` + default `Rcon.Port` loads as `Rcon.Port=25580`; password stored only via `ISecretProtector` and is absent from settings JSON (integration-report redaction is Task 3)
-- **AC3-7** (QA-013): destination outside `BackupsDirectory` throws
-- World-file support (Task 1 portion of AC3-4): `ConanWorldFiles.Present` only; hashes / `quick_check` are Task 2
+## Architect Acceptance Criteria
 
-## Deferred To Task 2
+Mapped to M3 ACs from `ARCHITECTURE_REVIEW.md` (branch `architect/review-2`, not merged):
 
-- `IServerReadinessProbe`
-- QA-011 (Starting until ready)
-- Stop → Backup pipeline reorder
-- `BackupRecord` world hashes
-- SQLite `PRAGMA quick_check`
-- `IBackupVerifier`
+| AC | Task 2 status |
+| --- | --- |
+| AC3-1 0 warnings; prior tests green; none skipped/weakened | **Met** (130 remain; 157 total) |
+| AC3-2 QA-011 Starting until ready; timeout behaviour | **Met with Task 2 override:** timeout is **not** Online (assignment). Fake never-ready → Unresponsive. Probe ready → Online within poll interval. |
+| AC3-3 online order Stop→Backup→work→Start; backup-fail-after-stop restarts, no mutation | **Met** |
+| AC3-4 `game_0.db` set hashed; valid `quick_check` verified; corrupt/truncated invalid | **Met with Task 2 override:** invalid backup **fails the operation** and blocks mutation (assignment). Architect “Unverified but continue” is **not** used for safety backups. Failed verified backups keep metadata and are not logged as completed. |
+| AC3-5 ProcessRunner cancel kills tree | **Met in Task 1** (unchanged) |
+| AC3-6 RCON port migration + secret protector | **Met in Task 1**. Report redaction is Task 3. |
+| AC3-7 QA-013 backup root | **Met in Task 1** |
+| AC3-8 Integration diagnostics | **Deferred to Task 3** |
+| AC3-9 LiveWindows skips/guards | **Deferred to Task 4** |
+| AC3-10 QA-017 UPDATE EVERYTHING label | **Deferred to Task 3** (pipeline behaviour already single-cycle; offline stays offline) |
+| AC3-11 LIVE LV-01…14 | **Deferred to Task 4** |
 
-Also still deferred: Integration Diagnostics UI, LiveWindows harness, Delayed Restart, Wait Until Empty, Web Admin expansion, `app_info_print`, Update Available / Verify-All split.
+## Deferred to Task 3
+
+IntegrationDiagnosticsService
+Diagnostics UI
+report redaction
+standalone client path diagnostics
+STARTING label / Verified badge / UPDATE EVERYTHING rename (QA-017 UI)
+
+## Deferred to Task 4
+
+real SteamCMD
+real Conan Dedicated Server
+real Workshop
+real .pak
+standalone client join/mod compatibility
+attach-to-existing-process readiness
+LiveWindows harness
+
+## Known Limitations
+
+- Production readiness uses game UDP bind and optional RCON ping, not a full “players can join” check.
+- Attach-to-existing process still sets Online without probing.
+- `ServerHealthService` 20-second “still starting” heuristic was removed; health now follows status + port/RCON.
+- Delayed Restart backup-first was not redesigned (feature deferred).
+- Linux agent did not launch `ConanSandboxServer.exe`, `ConanSandbox.exe`, `Run Me!.bat`, or SteamCMD. Standalone client `D:\conan exiles\` is client-only and was not referenced by server management.
