@@ -42,7 +42,7 @@ internal static class Program
     {
         if (args.Length == 0)
         {
-            Console.WriteLine("usage: <plan|init|diag|install-steamcmd|install-server|boot|cycle|backup|add-mod ID|update-mod ID|mod-boot|client-snapshot LABEL|client-compare A B> [--hold SECONDS]");
+            Console.WriteLine("usage: <plan|init|diag|install-steamcmd|install-server|boot|cycle|backup|configure-rcon|add-mod ID|update-mod ID|mod-boot|client-snapshot LABEL|client-compare A B> [--hold SECONDS]");
             return 2;
         }
 
@@ -143,6 +143,7 @@ internal static class Program
                 "update-mod" => await harness.UpdateModAsync(long.Parse(args[1])),
                 "client-snapshot" => harness.ClientSnapshot(args[1]),
                 "client-compare" => harness.ClientCompare(args[1], args[2]),
+                "configure-rcon" => await harness.ConfigureRconAsync(),
                 _ => Unknown(command)
             };
         }
@@ -286,7 +287,7 @@ internal sealed class Harness : IAsyncDisposable
                 DedicatedServerLocator.Find(serverDir) ?? Path.Combine(serverDir, AppConstants.DedicatedServerExecutable);
             s.ServerPaths.ServerWorkingDirectory = null;
             s.Client.RootDirectory = string.IsNullOrWhiteSpace(clientRoot) ? null : clientRoot;
-            s.Server.ServerName = "CSC-M3-LiveTest";
+            s.Server.ServerName = "CSC M3 Live Test";
             s.General.StartServerWhenManagerLaunches = false;
             s.Advanced.RestartAfterCrash = false; // never auto-restart while diagnosing live boots
             s.WebAdmin.Enabled = false;
@@ -673,6 +674,58 @@ internal sealed class Harness : IAsyncDisposable
         return ok ? 0 : 1;
     }
 
+    // ------------------------------------------------------------ RCON for the throwaway test server
+
+    /// <summary>
+    /// Enables RCON on the throwaway test server so graceful stop (RCON DoExit) can be exercised.
+    /// Writes only the server's own Saved\Config\WindowsServer\Game.ini [RconPlugin] section and
+    /// the app's DPAPI-protected secret. The password is random and never printed.
+    /// </summary>
+    public async Task<int> ConfigureRconAsync()
+    {
+        if (Program.ServerProcesses().Count > 0)
+        {
+            _log.Write("4C-rcon", "configure RCON", "FAIL", null, Facts(("Processes", DescribeProcesses())), "Stop the server first.");
+            return 1;
+        }
+
+        var configDir = Path.Combine(Saved, "Config", "WindowsServer");
+        if (!Directory.Exists(configDir))
+        {
+            _log.Write("4C-rcon", "configure RCON", "FAIL", null, Facts(("ConfigDirectory", configDir)), "Boot the server once so Conan creates its config first.");
+            return 1;
+        }
+
+        var gameIni = Path.Combine(configDir, "Game.ini");
+        var existed = File.Exists(gameIni);
+        var lines = existed ? File.ReadAllLines(gameIni).ToList() : new List<string>();
+        var start = lines.FindIndex(l => l.Trim().Equals("[RconPlugin]", StringComparison.OrdinalIgnoreCase));
+        if (start >= 0)
+        {
+            var end = lines.FindIndex(start + 1, l => l.TrimStart().StartsWith('['));
+            lines.RemoveRange(start, (end < 0 ? lines.Count : end) - start);
+        }
+
+        const string alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789";
+        var password = new string(Enumerable.Range(0, 24).Select(_ => alphabet[RandomNumberGenerator.GetInt32(alphabet.Length)]).ToArray());
+        var port = _settings.Current.Rcon.Port;
+        if (lines.Count > 0 && lines[^1].Length > 0)
+        {
+            lines.Add(string.Empty);
+        }
+
+        lines.AddRange(["[RconPlugin]", "RconEnabled=1", $"RconPassword={password}", $"RconPort={port}", "RconMaxKarma=60"]);
+        File.WriteAllLines(gameIni, lines);
+        await _settings.UpdateSecretsAsync(sec => sec.RconPassword = password);
+        await _settings.UpdateAsync(st => st.Rcon.Enabled = true);
+
+        _log.Write("4C-rcon", "configure RCON on throwaway server", "PASS", null,
+            Facts(("GameIni", gameIni), ("GameIniExisted", existed.ToString()), ("RconPort", port.ToString()),
+                ("RconPasswordConfigured", "YES"), ("Written", "[RconPlugin] RconEnabled=1, RconPassword=(redacted), RconPort, RconMaxKarma=60")),
+            liveFilesChanged: "server Game.ini [RconPlugin] only");
+        return 0;
+    }
+
     // ------------------------------------------------------------ 4F client snapshots (read-only)
 
     public int ClientSnapshot(string label)
@@ -738,6 +791,15 @@ internal sealed class Harness : IAsyncDisposable
 
     private bool EnsureNoForeignServer(string step)
     {
+        var game = _settings.Current.Server.GamePort;
+        if (UdpBound(game))
+        {
+            _log.Write(step, "pre-start port check", "FAIL", null,
+                Facts(($"UdpBound{game}", "True"), ("Processes", DescribeProcesses())),
+                $"UDP game port {game} is already in use before start, so the readiness probe would be meaningless. Refusing to start.");
+            return false;
+        }
+
         var existing = Program.ServerProcesses();
         if (existing.Count == 0)
         {
@@ -836,7 +898,18 @@ internal sealed class Harness : IAsyncDisposable
     private static string DescribeProcesses()
     {
         var list = Program.ServerProcesses();
-        return list.Count == 0 ? "none" : string.Join("; ", list.Select(p => $"{p.Name} pid={p.Pid} path={p.Path ?? "?"}"));
+        var server = list.Count == 0 ? "none" : string.Join("; ", list.Select(p => $"{p.Name} pid={p.Pid} path={p.Path ?? "?"}"));
+        var clients = new List<string>();
+        foreach (var name in new[] { "ConanSandbox", "ConanSandbox-Win64-Shipping", "ConanSandbox_BE" })
+        {
+            foreach (var p in Process.GetProcessesByName(name))
+            {
+                clients.Add($"{p.ProcessName} pid={p.Id}");
+                p.Dispose();
+            }
+        }
+
+        return clients.Count == 0 ? $"{server} | client processes: none" : $"{server} | CLIENT PROCESSES: {string.Join("; ", clients)}";
     }
 
     private static bool UdpBound(int port) =>
