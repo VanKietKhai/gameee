@@ -25,6 +25,8 @@ namespace ConanServerControl.LiveHarness;
 /// Environment:
 ///   CSC_LIVE_ROOT    dedicated live workspace root (required)
 ///   CSC_CLIENT_ROOT  standalone Conan client root (optional; protected, read-only)
+///   CSC_SERVER_DIR   dedicated server directory (optional; default &lt;root&gt;\server). May live outside
+///                    the workspace, e.g. a sibling of the client; validated by LiveTestGuard.
 ///   CSC_LIVE_TESTS=1 required for every command except 'plan'
 /// The workspace root must contain .csc-live-test for every command except 'plan'/'init'.
 /// </summary>
@@ -55,7 +57,7 @@ internal static class Program
         var clientRoot = Environment.GetEnvironmentVariable("CSC_CLIENT_ROOT");
         var layout = LiveTestGuard.CreateLayout(root);
         var forbidden = ProtectedLocations(clientRoot);
-        var problems = LiveTestGuard.ValidateLayout(layout, forbidden);
+        IReadOnlyList<string> problems = LiveTestGuard.ValidateLayout(layout, forbidden);
 
         Console.WriteLine("Proposed M3 live workspace:");
         Console.WriteLine($"  root      {layout.Root}");
@@ -65,8 +67,15 @@ internal static class Program
             Console.WriteLine($"  {label,-9} {path}  (exists: {Directory.Exists(path)})");
         }
 
+        var serverDirectory = ResolveServerDirectory(layout);
+        var external = !PathValidator.PathsEqual(serverDirectory, layout.Server);
         Console.WriteLine($"  protected {string.Join(" | ", forbidden)}");
         Console.WriteLine($"  free      {FreeGb(layout.Root)}");
+        Console.WriteLine($"  SERVER    {serverDirectory}  (exists: {Directory.Exists(serverDirectory)}; {(external ? "external, CSC_SERVER_DIR" : "workspace default")}; free {FreeGb(serverDirectory)})");
+        if (external)
+        {
+            problems = problems.Concat(LiveTestGuard.ValidateExternalServerDirectory(serverDirectory, layout, clientRoot)).ToList();
+        }
         if (problems.Count > 0)
         {
             Console.Error.WriteLine("LAYOUT REJECTED:");
@@ -78,7 +87,7 @@ internal static class Program
             return 3;
         }
 
-        Console.WriteLine("  overlap   PASS (no overlap with protected locations or between sub-folders)");
+        Console.WriteLine("  overlap   PASS (workspace and server directory do not overlap the client, the launcher folder or each other)");
         if (command == "plan")
         {
             return 0;
@@ -118,7 +127,7 @@ internal static class Program
             return 4;
         }
 
-        var harness = await Harness.CreateAsync(layout, clientRoot);
+        var harness = await Harness.CreateAsync(layout, serverDirectory, clientRoot);
         try
         {
             return command switch
@@ -153,6 +162,14 @@ internal static class Program
     {
         var index = Array.IndexOf(args, "--hold");
         return index >= 0 && index + 1 < args.Length ? int.Parse(args[index + 1]) : 0;
+    }
+
+    private static string ResolveServerDirectory(LiveTestLayout layout)
+    {
+        var configured = Environment.GetEnvironmentVariable("CSC_SERVER_DIR");
+        return string.IsNullOrWhiteSpace(configured) || !PathValidator.IsSafeAbsolutePath(configured)
+            ? layout.Server
+            : PathValidator.NormalizeFullPath(configured);
     }
 
     private static string[] ProtectedLocations(string? clientRoot)
@@ -214,15 +231,17 @@ internal static class Program
 internal sealed class Harness : IAsyncDisposable
 {
     private readonly LiveTestLayout _layout;
+    private readonly string _serverDir;
     private readonly string? _clientRoot;
     private readonly ServiceProvider _services;
     private readonly ISettingsService _settings;
     private readonly RecordingSteamCmd _steam;
     private readonly LiveLog _log;
 
-    private Harness(LiveTestLayout layout, string? clientRoot, ServiceProvider services, RecordingSteamCmd steam, LiveLog log)
+    private Harness(LiveTestLayout layout, string serverDir, string? clientRoot, ServiceProvider services, RecordingSteamCmd steam, LiveLog log)
     {
         _layout = layout;
+        _serverDir = serverDir;
         _clientRoot = clientRoot;
         _services = services;
         _settings = services.GetRequiredService<ISettingsService>();
@@ -231,13 +250,13 @@ internal sealed class Harness : IAsyncDisposable
     }
 
     private string ServerExe =>
-        DedicatedServerLocator.Find(_layout.Server) ?? Path.Combine(_layout.Server, AppConstants.DedicatedServerExecutable);
+        DedicatedServerLocator.Find(_serverDir) ?? Path.Combine(_serverDir, AppConstants.DedicatedServerExecutable);
 
-    private string ServerLog => Path.Combine(_layout.Server, "ConanSandbox", "Saved", "Logs", "ConanSandbox.log");
+    private string ServerLog => Path.Combine(_serverDir, "ConanSandbox", "Saved", "Logs", "ConanSandbox.log");
 
-    private string Saved => Path.Combine(_layout.Server, "ConanSandbox", "Saved");
+    private string Saved => Path.Combine(_serverDir, "ConanSandbox", "Saved");
 
-    public static async Task<Harness> CreateAsync(LiveTestLayout layout, string? clientRoot)
+    public static async Task<Harness> CreateAsync(LiveTestLayout layout, string serverDir, string? clientRoot)
     {
         var paths = new AppPaths(layout.AppData);
         paths.EnsureCreated();
@@ -262,9 +281,9 @@ internal sealed class Harness : IAsyncDisposable
             s.IsSetupComplete = true;
             s.SteamCmd.InstallDirectory = layout.SteamCmd;
             s.SteamCmd.UseAnonymousLogin = true;
-            s.ServerPaths.ServerInstallDirectory = layout.Server;
+            s.ServerPaths.ServerInstallDirectory = serverDir;
             s.ServerPaths.ServerExecutablePath =
-                DedicatedServerLocator.Find(layout.Server) ?? Path.Combine(layout.Server, AppConstants.DedicatedServerExecutable);
+                DedicatedServerLocator.Find(serverDir) ?? Path.Combine(serverDir, AppConstants.DedicatedServerExecutable);
             s.ServerPaths.ServerWorkingDirectory = null;
             s.Client.RootDirectory = string.IsNullOrWhiteSpace(clientRoot) ? null : clientRoot;
             s.Server.ServerName = "CSC-M3-LiveTest";
@@ -280,7 +299,7 @@ internal sealed class Harness : IAsyncDisposable
             secrets.RconPassword, secrets.ServerPassword, secrets.AdminPassword, secrets.SteamPassword, secrets.WebAdminPasswordHash
         ]);
         var log = new LiveLog(Path.Combine(layout.LiveTest, "m3-live-log.jsonl"), redactor);
-        return new Harness(layout, clientRoot, provider, recording!, log);
+        return new Harness(layout, serverDir, clientRoot, provider, recording!, log);
     }
 
     public async ValueTask DisposeAsync()
@@ -356,13 +375,24 @@ internal sealed class Harness : IAsyncDisposable
 
     public async Task<int> InstallServerAsync()
     {
+        // SteamCMD's bootstrapper must reach Valve's update CDN before it can download anything.
+        // Check first so a blocked network creates nothing (the service creates the target folder).
+        var preflight = await SteamUpdateHostReachableAsync();
+        if (preflight is not null)
+        {
+            _log.Write("4B", "network preflight (client-update.steamstatic.com)", "BLOCKED", null,
+                Facts(("ServerDirectory", _serverDir), ("Reason", preflight), ("ServerDirectoryCreated", "no")),
+                liveFilesChanged: "no");
+            return 5;
+        }
+
         var steam = _services.GetRequiredService<ISteamCmdService>();
         var clock = Stopwatch.StartNew();
         ProcessExecutionResult? result = null;
         string? error = null;
         try
         {
-            result = await steam.InstallOrUpdateDedicatedServerAsync(_layout.Server, validate: true, new Progress<string>(_ => { }));
+            result = await steam.InstallOrUpdateDedicatedServerAsync(_serverDir, validate: true, new Progress<string>(_ => { }));
         }
         catch (Exception ex)
         {
@@ -377,7 +407,7 @@ internal sealed class Harness : IAsyncDisposable
 
         var gate = ServerExecutableGate.Evaluate(ServerExe, _clientRoot);
         var exists = File.Exists(ServerExe);
-        var manifest = Path.Combine(_layout.Server, "steamapps", $"appmanifest_{AppConstants.ConanDedicatedServerAppId}.acf");
+        var manifest = Path.Combine(_serverDir, "steamapps", $"appmanifest_{AppConstants.ConanDedicatedServerAppId}.acf");
         var ok = error is null && exists && gate.Allowed;
         _log.Write("4B", "SteamCmdService.InstallOrUpdateDedicatedServerAsync(validate)", ok ? "PASS" : "FAIL", clock.Elapsed,
             Facts(
@@ -392,7 +422,7 @@ internal sealed class Harness : IAsyncDisposable
                 ("StartAllowed", gate.Allowed.ToString()),
                 ("GateReason", gate.Reason),
                 ("AppManifest", File.Exists(manifest) ? File.ReadAllText(manifest).Replace('\t', ' ').Replace("\r\n", " ").Replace('\n', ' ') : "missing"),
-                ("ServerTopLevel", Directory.Exists(_layout.Server) ? string.Join(", ", Directory.EnumerateFileSystemEntries(_layout.Server).Select(Path.GetFileName)) : "missing"),
+                ("ServerTopLevel", Directory.Exists(_serverDir) ? string.Join(", ", Directory.EnumerateFileSystemEntries(_serverDir).Select(Path.GetFileName)) : "missing"),
                 ("Win64", Directory.Exists(Path.GetDirectoryName(ServerExe)) ? string.Join(", ", Directory.EnumerateFiles(Path.GetDirectoryName(ServerExe)!, "*.exe").Select(Path.GetFileName)) : "missing")),
             Tail(_steam.Records), "server folder only (fresh install)");
         return ok ? 0 : 1;
@@ -615,7 +645,7 @@ internal sealed class Harness : IAsyncDisposable
     private int RecordModResult(string step, string operation, long workshopId, TimeSpan duration, string? error)
     {
         var mod = _settings.Current.Mods.Mods.FirstOrDefault(m => m.WorkshopId == workshopId);
-        var modsDir = Path.Combine(_layout.Server, "ConanSandbox", "Mods");
+        var modsDir = Path.Combine(_serverDir, "ConanSandbox", "Mods");
         var modList = Path.Combine(modsDir, AppConstants.ModListFileName);
         var record = _steam.Records.LastOrDefault(r => r.Command.Contains("workshop_download_item", StringComparison.Ordinal));
         if (record is not null)
@@ -755,6 +785,21 @@ internal sealed class Harness : IAsyncDisposable
         catch
         {
             // best effort; reported by the caller
+        }
+    }
+
+    private static async Task<string?> SteamUpdateHostReachableAsync()
+    {
+        try
+        {
+            using var http = new HttpClient { Timeout = TimeSpan.FromSeconds(20) };
+            using var request = new HttpRequestMessage(HttpMethod.Head, "https://client-update.steamstatic.com/steam_cmd_win64");
+            using var response = await http.SendAsync(request);
+            return response.IsSuccessStatusCode ? null : $"HTTP {(int)response.StatusCode}";
+        }
+        catch (Exception ex)
+        {
+            return ex.GetBaseException().Message;
         }
     }
 

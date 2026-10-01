@@ -98,6 +98,78 @@ public static class LiveTestGuard
         return problems;
     }
 
+    /// <summary>
+    /// Validates a dedicated server directory that lives OUTSIDE the workspace root (for example
+    /// a sibling of the standalone client: <c>D:\conan exiles\Conan Exiles Dedicated Server</c>
+    /// next to <c>D:\conan exiles\Conan Exiles Enhanced</c>). Returns every problem; empty means safe.
+    /// A sibling inside the client's launcher folder is allowed; the client itself, the launcher
+    /// folder itself and anything containing them are not. An existing non-empty folder must
+    /// already be a dedicated server install; client files inside it are refused.
+    /// </summary>
+    public static IReadOnlyList<string> ValidateExternalServerDirectory(
+        string serverDirectory,
+        LiveTestLayout layout,
+        string? standaloneClientRoot)
+    {
+        ArgumentNullException.ThrowIfNull(layout);
+        var problems = new List<string>();
+        if (!PathValidator.IsSafeAbsolutePath(serverDirectory))
+        {
+            problems.Add($"Server directory is not a safe absolute path: {serverDirectory}");
+            return problems;
+        }
+
+        var full = PathValidator.NormalizeFullPath(serverDirectory);
+        var driveRoot = Path.TrimEndingDirectorySeparator(Path.GetPathRoot(full) ?? string.Empty);
+        if (string.Equals(Path.TrimEndingDirectorySeparator(full), driveRoot, StringComparison.OrdinalIgnoreCase))
+        {
+            problems.Add($"Server directory is a drive root: {serverDirectory}");
+        }
+
+        if (PathValidator.IsSafeAbsolutePath(standaloneClientRoot))
+        {
+            var client = PathValidator.NormalizeFullPath(standaloneClientRoot!);
+            if (PathValidator.Overlaps(full, client))
+            {
+                problems.Add($"Server directory overlaps the standalone client: {client}");
+            }
+
+            var launcher = Path.GetDirectoryName(client);
+            if (launcher is not null && PathValidator.IsUnderRoot(launcher, full))
+            {
+                problems.Add($"Server directory is, or contains, the client launcher folder: {launcher}");
+            }
+        }
+
+        foreach (var (label, path) in layout.Children.Where(c => c.Label != "server"))
+        {
+            if (PathValidator.Overlaps(full, path))
+            {
+                problems.Add($"Server directory overlaps the workspace {label} folder: {path}");
+            }
+        }
+
+        if (Directory.Exists(full))
+        {
+            foreach (var clientFile in new[] { Diagnostics.ConanExecutableClassifier.ClientLauncherBatch, Diagnostics.ConanExecutableClassifier.ClientExecutable })
+            {
+                if (File.Exists(Path.Combine(full, clientFile)))
+                {
+                    problems.Add($"Server directory contains the game client file {clientFile}.");
+                }
+            }
+
+            var manifest = Path.Combine(full, "steamapps", $"appmanifest_{AppConstants.ConanDedicatedServerAppId}.acf");
+            var isServerInstall = File.Exists(manifest) || Mods.DedicatedServerLocator.Find(full) is not null;
+            if (!isServerInstall && Directory.EnumerateFileSystemEntries(full).Any())
+            {
+                problems.Add($"Server directory is not empty and is not a dedicated server install; refusing to install over unknown files: {full}");
+            }
+        }
+
+        return problems;
+    }
+
     public static bool IsEnabled(string? environmentValue) =>
         string.Equals(environmentValue?.Trim(), "1", StringComparison.Ordinal);
 

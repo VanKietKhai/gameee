@@ -255,6 +255,86 @@ public sealed class M3LiveSafetyTests
         Assert.Throws<InvalidOperationException>(() => LiveTestGuard.EnsureInsideMarkedWorkspace(Path.GetTempPath(), root));
     }
 
+    // ------------------------------------------------------------ External server directory (sibling of client)
+
+    [Theory]
+    [InlineData(@"D:\conan exiles\Conan Exiles Dedicated Server")]
+    [InlineData(@"D:\conan exiles\Conan Exiles Dedicated Server\")]
+    [InlineData(@"F:\ConanServer")]
+    public void External_server_directory_sibling_of_client_is_allowed(string serverDir)
+    {
+        var layout = LiveTestGuard.CreateLayout(@"E:\CSC-M3-Live");
+
+        Assert.Empty(LiveTestGuard.ValidateExternalServerDirectory(serverDir, layout, ClientRoot));
+        Assert.Empty(LiveTestGuard.ValidateExternalServerDirectory(serverDir, layout, ClientRoot + @"\"));
+    }
+
+    [Theory]
+    [InlineData(@"D:\conan exiles\Conan Exiles Enhanced")]
+    [InlineData(@"D:\conan exiles\Conan Exiles Enhanced\Server")]
+    [InlineData(@"D:\conan exiles")]
+    [InlineData(@"D:\conan exiles\")]
+    [InlineData(@"D:\")]
+    [InlineData(@"E:\CSC-M3-Live\steamcmd\server")]
+    [InlineData(@"E:\CSC-M3-Live\app-data")]
+    public void External_server_directory_overlapping_client_launcher_or_workspace_is_rejected(string serverDir)
+    {
+        var layout = LiveTestGuard.CreateLayout(@"E:\CSC-M3-Live");
+
+        Assert.NotEmpty(LiveTestGuard.ValidateExternalServerDirectory(serverDir, layout, ClientRoot));
+    }
+
+    [Fact]
+    public void External_server_directory_with_client_or_unknown_files_is_rejected_but_existing_install_is_allowed()
+    {
+        var temp = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), "csc-m3-extserver", Guid.NewGuid().ToString("n"))).FullName;
+        var client = Path.Combine(temp, "conan exiles", "Conan Exiles Enhanced");
+        var layout = LiveTestGuard.CreateLayout(Path.Combine(temp, "workspace"));
+
+        var withClientFile = Directory.CreateDirectory(Path.Combine(temp, "conan exiles", "WithClient")).FullName;
+        File.WriteAllText(Path.Combine(withClientFile, "Run Me!.bat"), "launcher");
+        Assert.Contains(LiveTestGuard.ValidateExternalServerDirectory(withClientFile, layout, client),
+            p => p.Contains("Run Me!.bat", StringComparison.Ordinal));
+
+        var unknown = Directory.CreateDirectory(Path.Combine(temp, "conan exiles", "Unknown")).FullName;
+        File.WriteAllText(Path.Combine(unknown, "notes.txt"), "user file");
+        Assert.Contains(LiveTestGuard.ValidateExternalServerDirectory(unknown, layout, client),
+            p => p.Contains("not empty", StringComparison.Ordinal));
+
+        var empty = Directory.CreateDirectory(Path.Combine(temp, "conan exiles", "Empty")).FullName;
+        Assert.Empty(LiveTestGuard.ValidateExternalServerDirectory(empty, layout, client));
+
+        var installed = Directory.CreateDirectory(Path.Combine(temp, "conan exiles", "Conan Exiles Dedicated Server")).FullName;
+        Directory.CreateDirectory(Path.Combine(installed, "steamapps"));
+        File.WriteAllText(Path.Combine(installed, "steamapps", "appmanifest_443030.acf"), "\"AppState\" {}");
+        Assert.Empty(LiveTestGuard.ValidateExternalServerDirectory(installed, layout, client));
+    }
+
+    [Fact]
+    public async Task Diagnostics_and_gate_accept_server_installed_as_sibling_of_the_client()
+    {
+        var h = await DiagnosticsHarness.CreateAsync();
+        var clientRoot = h.CreateClient();
+        var launcher = Path.GetDirectoryName(clientRoot)!;
+        var server = Directory.CreateDirectory(Path.Combine(launcher, "Conan Exiles Dedicated Server")).FullName;
+        Directory.CreateDirectory(Path.Combine(server, "ConanSandbox", "Binaries", "Win64"));
+        var exe = Path.Combine(server, "ConanSandboxServer.exe");
+        await File.WriteAllTextAsync(exe, "server");
+        await h.Settings.UpdateAsync(s =>
+        {
+            s.Client.RootDirectory = clientRoot + Path.DirectorySeparatorChar;
+            s.ServerPaths.ServerInstallDirectory = server;
+            s.ServerPaths.ServerExecutablePath = exe;
+        });
+
+        var report = await h.Service.RunAsync();
+
+        Assert.True(ServerExecutableGate.Evaluate(exe, clientRoot).Allowed);
+        Assert.Equal(DiagnosticStatus.Pass, report.Find(DiagnosticCheckIds.ServerExecutable)!.Status);
+        Assert.Equal(DiagnosticStatus.Pass, report.Find(DiagnosticCheckIds.ServerWorkspace)!.Status);
+        Assert.Equal(DiagnosticStatus.Pass, report.Find(DiagnosticCheckIds.ClientExecutable)!.Status);
+    }
+
     private sealed class CountingStarter : Core.Abstractions.IProcessStarter
     {
         public int Starts { get; private set; }
