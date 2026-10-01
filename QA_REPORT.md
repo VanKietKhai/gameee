@@ -471,9 +471,9 @@ The one failure is the new QA-016 regression `Partial_live_commit_must_not_resta
 | QA-008 | P2 | RESOLVED | `EnsureOwns` requires `IServerActionGate.Owns(lease)` (same lease id, not disposed, gate busy). Null lease, a fake `IServerOperationLease`, a disposed owning lease, and a lease from a different gate all throw `InvalidOperationException` and leave the process Offline. The owning lease starts. This is an accidental-misuse check, not a cryptographic one. |
 | QA-009 | P2 | RESOLVED | `SteamWorkshopClient` skips `result != 1`. `Check_must_not_overwrite_a_working_mod_when_steam_returns_no_file_details` passed: name stays `Working Mod`, error text is set, pak and modlist unchanged. Check still does not stop, start, or download. |
 | QA-010 | P2 | RESOLVED | Anonymous `POST /api/server/update-server` is 401, not 302. `GET /api/me` is 401. Authenticated `POST /api/server/update-mods` without `X-CSRF-TOKEN` is rejected and the body contains “antiforgery”; the update delegate is not entered (`RunAction` validates before `work()`). The same check is on start/stop/restart/backup/check/update and on delayed-restart/cancel. `site.js` sends `X-CSRF-TOKEN` and renders player, log, and activity text with `textContent`. |
-| QA-011 | P2 | OPEN | Unchanged. Status becomes Online after two seconds while health stays Starting. |
+| QA-011 | P2 | START PATH ADDRESSED | The two-second Online transition is gone. `StartCore` stays Starting until `IServerReadinessProbe` succeeds; timeout is Unresponsive; process exit during startup is Error. `TryAttachToExistingProcess` still sets Online without the probe. |
 | QA-012 | P1 | RESOLVED | `RestoreAsync` takes “Restore backup” for the safety backup and the copy, and disposes the lease in `finally`. A held “Update server” lease rejects restore. After a copy failure the gate accepts a new lease. Online status is still refused before the copy. |
-| QA-013 | P3 | OPEN | Destination check still compares a full path to itself, so the branch cannot throw. |
+| QA-013 | P3 | RESOLVED | `EnsureDestinationIsUnderBackupRoot` throws unless `PathValidator.IsUnderRoot` is true. Traversal, an absolute path outside the root, and a `Backup` / `Backup-Evil` prefix are rejected (`M3BackupPathTests`). |
 | QA-014 | P3 | OPEN | Unchanged. Load-order backup flag and delayed-restart update flags are still unwired. |
 | QA-015 | P3 | OPEN | Unchanged. Non-Windows secret storage is still reversible base64. Two session lifetimes remain. |
 
@@ -699,3 +699,64 @@ CODE/UNIT VERIFIED: rollback verify/copy/compare failures stay offline with reco
 LIVE WINDOWS TEST STILL REQUIRED: SteamCMD, Conan Dedicated Server, Workshop download, real pak replace, restart/join
 SAFE TO CONTINUE: YES
 NEXT ACTION: Ready for CONAN ARCHITECT to select the next milestone.
+
+# M3 Pre-Live Review
+
+Reviewed builder branch `claude/m3-task3-diagnostics` at `0352f4040208fc48590b15e92a4933c08e8b7405` (`docs: hand off M3 task 3 integration diagnostics`), merged into `cursor/qa-gate-workshop-58f9` as `ebf3ab3f7788098e5852d2ff2a77b0fbd64c5243`. No production code was edited by QA. No SteamCMD, Conan, or live Windows process was started.
+
+REVISION: 0352f4040208fc48590b15e92a4933c08e8b7405
+BUILD: PASS — `dotnet build -c Release` succeeded, 0 Warning(s), 0 Error(s). Matches the builder claim.
+TESTS: PASS — `dotnet test -c Release`: Passed 203, Failed 0, Skipped 0, Total 203. Matches 203/203, 0 skipped.
+TASK 2 COLD BACKUP: PASS
+SERVER READINESS: PASS
+TASK 3 READ-ONLY: PASS
+STANDALONE CLIENT SEPARATION: PASS
+REPORT REDACTION: PASS
+LIVE CLAIM ACCURACY: PASS
+P0 OPEN: none
+P1 OPEN: none
+NON-BLOCKING DEBT: QA-014, QA-015, QA-017, QA-018; Update All still re-downloads every enabled mod; dashboard button still says UPDATE EVERYTHING & RESTART; dashboard status text is the enum uppercased, so Starting displays STARTING; last-backup line is a timestamp with no Verified badge; mods row says "Update available" and the action is CHECK UPDATES / UPDATE ALL, not Verify-All; Web Admin password is a visible TextBox while typing and is hashed then cleared (stored plaintext is not loaded back)
+LIVE TEST BLOCKER: SteamCMD not installed
+SAFE FOR M3 TASK 4: YES
+NEXT ACTION: Ready for CONAN BUILDER to perform guarded M3 Task 4 Live Windows integration.
+
+## Test integrity
+
+- Previous QA regression tests removed: **NO**. `Qa016ModBatchTransactionTests.cs` and `QaWebAdminTests.cs` are byte-identical to `581d208`. No `[Fact]` / `[Theory]` from that commit is missing.
+- Assertions weakened: **NO**. `QaActionGateAndPipelineTests` adds the timeline assert `stop, backup, update, start` and passes `ImmediateReadyProbe` into the new `ServerProcessManager` constructor. `QaRestoreSafetyTests` constructs `SqliteBackupVerifier` and, on the success case, writes a valid `game.db` and requires `Succeeded` and `SqliteVerified`; the missing-world and copy-failure cases still require that "Backup completed" is not logged. `QaWorkshopFileSafetyTests` keeps the Linux path at zero process-runner calls and an untouched live pak. The Windows branch expects one failing runner call and the same untouched-pak assert. That branch did not run here.
+- Skipped or disabled: **NO**. No `Skip` attribute. The Release run reported Skipped: 0.
+- New redaction test: not added. `Exported_report_redacts_all_known_secrets_and_protected_blob` already serializes a report with RCON, server, admin, and Steam passwords, the Web Admin hash, the Steam username, and the secrets-file blob, and asserts none of those values appear in the exported JSON, the Markdown, or `JsonSerializer.Serialize(report)`.
+
+## Area evidence
+
+- Task 2 cold backup: `ServerUpdateService.RunLockedAsync` stops, then throws unless status is Offline or Error, then calls `BackupNowAsync`, and sets `mutationStarted` only after that returns. `StopCoreAsync` throws if the process has not exited. `BackupNowCoreAsync` throws on a missing main world DB, a copy/hash failure, or a failed `SqliteBackupVerifier` result, and logs "Backup completed" only when the manifest, hashes, SQLite check, and `Succeeded` are all true. Offline updates do not start. `M3ColdBackupPipelineTests` and `M3BackupVerificationTests` passed, including stop-failure, backup-failure, hash/quick_check failure, and manual Backup Now while online.
+- Backup verification: hashes are SHA-256 of the backup copies. `ConanWorldFiles.Present` names only `game_0.db`/`game.db` and their `-wal`/`-shm`. An unrelated `.db` is not the world. `SqliteBackupVerifier` opens the copy with `SqliteOpenMode.ReadOnly`, pooling off, and `PRAGMA quick_check`; it does not VACUUM, checkpoint, or repair. `PRAGMA query_only=ON` is attempted and a failure is logged, then the check continues under the read-only connection. The live database is not opened.
+- Server readiness: process start sets Starting and becomes Online only after the probe returns ready. Timeout sets Unresponsive and throws. Exit during startup sets Error and throws. The post-update start uses the same `StartUnderLockAsync` path and throws unless status is Online. Limitation: UDP bind or an RCON ping is not proof a player can join. `TryAttachToExistingProcess` still marks an already-running process Online without the probe.
+- Task 3 read-only: `IntegrationDiagnosticsService.RunAsync` only reads files, settings, and (when the process manager already reports Online) UDP listeners and, if RCON is enabled with a password, one `listplayers` command. It does not start `Run Me!.bat`, `ConanSandbox.exe`, or `ConanSandboxServer.exe`, does not run SteamCMD or `app_update`, does not download Workshop mods, does not write `modlist.txt` or Conan configs, does not open the live world database, and does not change firewall, router, or Tailscale settings. The Diagnostics page button "Install SteamCMD" calls `SteamCmdService.InstallAsync` only when that button is used; the report run does not.
+- Standalone client: `ConanSandbox.exe`, `ConanSandbox-Win64-Shipping.exe`, `Run Me!.bat`, and `.bat`/`.cmd`/`.ps1`/`.vbs`/`.lnk` are Fail as the dedicated-server executable. A server path inside the client root, a workspace that overlaps the client, and an install folder that contains the client exe without the server exe are Fail. Classification is case-insensitive and splits on `\` and `/`. `..` is resolved by `Path.GetFullPath` before overlap checks. Missing client root does not block server-live readiness. Client mod parity is a separate warning and the notes say Workshop sync is not automatic.
+- Report redaction: exported JSON and Markdown, and the in-memory report, pass through `DiagnosticReportRedactor`. Known secrets are the RCON, server, admin, and Steam passwords, the Web Admin password hash, the Steam username, and the secrets-file text. RCON facts are `PasswordConfigured` YES/NO. Paths stay visible.
+- Live claim accuracy: SteamCMD existence is `FilesystemInspected` with `Executed=NO` and `steamcmd.live` is NotTested. Server exe existence is not a boot (`server.live` NotTested, `Started=NO`). A `.pak` check says a file existing is not Conan loading it (`mods.workshop-live` NotTested). Port text says firewall/router reachability was not tested. `ConfigurationOnly` stays true and no check uses `LiveVerified`. The diagnostics header says nothing was live verified.
+- Real path safety: export stems are `integration-{timestamp}` under `DataDirectory/diagnostics`, with `FileMode.CreateNew`. The stem is not user input, so it cannot traverse out of that directory. `Run_is_read_only_and_export_writes_only_to_diagnostics_folder` passed.
+
+## QA-018
+
+- **Severity:** P2
+- **Status:** OPEN, non-blocking
+- **Component:** `ConanExecutableClassifier.GetFileName`, `ServerProcessManager.StartCoreAsync`
+- **Description:** A trailing `\` or `/` makes the classifier return an empty file name, so `ConanSandbox.exe\` and `Run Me!.bat\` are Unknown (Warning) instead of Fail, and that Warning does not block "READY FOR SERVER LIVE TEST". 8.3 names such as `CONANS~1.EXE` are also Unknown; `GetFullPath` expands short directory names only when the path exists, and the classifier itself does not. `StartCoreAsync` logs a warning and still launches an executable whose name is not `ConanSandboxServer`.
+- **Why it does not block Task 4:** The canonical path `D:\conan exiles\Conan Exiles Enhanced\ConanSandbox.exe`, `Run Me!.bat`, scripts, and a workspace inside that client install are Fail and block server-live readiness. A guarded Task 4 uses the long dedicated-server path and does not Start the client.
+
+## Task 4 guardrails
+
+- Install SteamCMD in its own directory. Do not put it inside `D:\conan exiles\Conan Exiles Enhanced` or inside the dedicated-server workspace.
+- Install or attach the dedicated server only as `ConanSandboxServer.exe` (or the shipping server binary) in a folder that does not contain `Run Me!.bat` or `ConanSandbox.exe`.
+- Leave backup-before-update enabled. The online order is stop, confirm the process exited, cold backup, verify, then mutate, then start and wait for the readiness probe.
+- Call the server Online only after the probe. UDP bind and RCON are not proof a player can join. Do not treat attach-to-an-existing-process as that probe.
+- Run one Workshop mod test only after the dedicated server is Online. Copy mods to the standalone client manually; the app does not sync them.
+- Do not click Diagnostics "Install SteamCMD" against the client folder. A diagnostics run while the server is already Online and RCON is configured sends one `listplayers` command.
+
+## Prior IDs touched by this revision
+
+- QA-011 start path is addressed, as above. Attach-without-probe remains a limitation inside that item.
+- QA-013 self-compare is gone. See the status table.
+- QA-014, QA-015, QA-016, and QA-017 are unchanged. QA-016 stays resolved. QA-017 stays the dashboard wording issue.
