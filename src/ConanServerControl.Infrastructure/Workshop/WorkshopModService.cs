@@ -18,6 +18,7 @@ public sealed class WorkshopModService : IWorkshopModService
     private readonly ISteamCmdService _steamCmd;
     private readonly IBackupService _backups;
     private readonly IAppPaths _paths;
+    private readonly ISteamWorkshopClient _workshopClient;
     private readonly IActivityLog _activityLog;
     private readonly ILogger<WorkshopModService> _logger;
 
@@ -26,6 +27,7 @@ public sealed class WorkshopModService : IWorkshopModService
         ISteamCmdService steamCmd,
         IBackupService backups,
         IAppPaths paths,
+        ISteamWorkshopClient workshopClient,
         IActivityLog activityLog,
         ILogger<WorkshopModService> logger)
     {
@@ -33,6 +35,7 @@ public sealed class WorkshopModService : IWorkshopModService
         _steamCmd = steamCmd;
         _backups = backups;
         _paths = paths;
+        _workshopClient = workshopClient;
         _activityLog = activityLog;
         _logger = logger;
     }
@@ -158,13 +161,58 @@ public sealed class WorkshopModService : IWorkshopModService
         }
     }
 
-    public Task CheckForUpdatesAsync(CancellationToken cancellationToken = default)
+    public async Task CheckForUpdatesAsync(CancellationToken cancellationToken = default)
     {
-        cancellationToken.ThrowIfCancellationRequested();
-        _logger.LogInformation(
-            "Workshop metadata polling is not implemented yet. Installed mods: {Count}.",
-            _settings.Current.Mods.Mods.Count);
-        return Task.CompletedTask;
+        var mods = _settings.Current.Mods.Mods.ToArray();
+        if (mods.Length == 0)
+        {
+            return;
+        }
+
+        var details = await _workshopClient.GetPublishedFileDetailsAsync(
+                mods.Select(m => m.WorkshopId).ToArray(),
+                cancellationToken)
+            .ConfigureAwait(false);
+        var byId = details.ToDictionary(d => d.WorkshopId);
+
+        var updates = 0;
+        await _settings.UpdateAsync(s =>
+        {
+            foreach (var mod in s.Mods.Mods)
+            {
+                mod.LastChecked = DateTimeOffset.UtcNow;
+                if (!byId.TryGetValue(mod.WorkshopId, out var remote))
+                {
+                    mod.Error = "Steam did not return Workshop details for this ID. The installed copy was not removed.";
+                    continue;
+                }
+
+                mod.Name = remote.Title;
+                if (!string.IsNullOrWhiteSpace(remote.FileName) && string.IsNullOrWhiteSpace(mod.LocalFileName))
+                {
+                    mod.LocalFileName = remote.FileName;
+                }
+
+                mod.LatestWorkshopTimestamp = remote.TimeUpdated;
+                mod.UpdateAvailable = WorkshopUpdateComparer.IsUpdateAvailable(mod.InstalledTimestamp, remote.TimeUpdated);
+                mod.Error = null;
+                if (mod.UpdateAvailable)
+                {
+                    updates++;
+                }
+            }
+        }, cancellationToken).ConfigureAwait(false);
+
+        if (updates > 0)
+        {
+            await _activityLog.AddAsync(
+                    "Mods",
+                    $"Workshop update detected: {updates} mod(s).",
+                    cancellationToken: cancellationToken)
+                .ConfigureAwait(false);
+        }
+
+        _logger.LogInformation("Workshop check complete. {Updates} of {Total} mods need updates.", updates, mods.Length);
     }
 
     public string GetShareableModList()
@@ -210,6 +258,14 @@ public sealed class WorkshopModService : IWorkshopModService
             .ConfigureAwait(false);
 
         var pak = Directory.EnumerateFiles(staging, "*.pak", SearchOption.AllDirectories).FirstOrDefault();
+        if (pak is null)
+        {
+            var workshopContent = Path.Combine(staging, "steamapps", "workshop", "content", AppConstants.ConanExilesAppId.ToString());
+            if (Directory.Exists(workshopContent))
+            {
+                pak = Directory.EnumerateFiles(workshopContent, "*.pak", SearchOption.AllDirectories).FirstOrDefault();
+            }
+        }
         if (pak is null)
         {
             throw new UserFacingException(

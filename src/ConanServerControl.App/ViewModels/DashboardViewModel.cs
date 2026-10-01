@@ -116,19 +116,10 @@ public partial class DashboardViewModel : ObservableObject
     private Task UpdateServerAsync() => Run(() => _updates.UpdateAsync(restartAfter: true));
 
     [RelayCommand]
-    private Task UpdateModsAsync()
-    {
-        _dialogs.Alert("Update mods", "Workshop metadata polling and bulk mod update automation is not finished yet. You can still add Workshop IDs on the Mods page and download them with SteamCMD.");
-        return Task.CompletedTask;
-    }
+    private Task UpdateModsAsync() => Run(() => _updates.UpdateModsAsync(restartAfter: true));
 
     [RelayCommand]
-    private Task UpdateEverythingAsync() => Run(async () =>
-    {
-        await _updates.UpdateAsync(restartAfter: false);
-        _dialogs.Alert("Update everything", "Server files were updated. Automatic Workshop update-all plus restart pipeline will land in the next implementation step.");
-        await _server.StartAsync();
-    });
+    private Task UpdateEverythingAsync() => Run(() => _updates.UpdateEverythingAsync());
 
     [RelayCommand]
     private Task BackupNowAsync() => Run(async () =>

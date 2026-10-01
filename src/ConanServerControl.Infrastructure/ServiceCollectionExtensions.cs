@@ -38,6 +38,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IProcessRunner, ProcessRunner>();
         services.AddSingleton<IServerProcessManager, ServerProcessManager>();
         services.AddSingleton<ISteamCmdService, SteamCmdService>();
+        services.AddSingleton<ISteamWorkshopClient, SteamWorkshopClient>();
         services.AddSingleton<IRconService, RconService>();
         services.AddSingleton<IBackupService, BackupService>();
         services.AddSingleton<IWorkshopModService, WorkshopModService>();
@@ -52,6 +53,11 @@ public static class ServiceCollectionExtensions
         services.AddHttpClient(SteamCmdService.HttpClientName, client =>
         {
             client.Timeout = TimeSpan.FromMinutes(10);
+            client.DefaultRequestHeaders.UserAgent.ParseAdd("ConanServerControl/0.1");
+        });
+        services.AddHttpClient(SteamWorkshopClient.HttpClientName, client =>
+        {
+            client.Timeout = TimeSpan.FromSeconds(30);
             client.DefaultRequestHeaders.UserAgent.ParseAdd("ConanServerControl/0.1");
         });
 

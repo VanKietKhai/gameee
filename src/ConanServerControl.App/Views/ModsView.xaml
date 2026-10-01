@@ -12,6 +12,14 @@
       </DockPanel>
       <WrapPanel>
         <Button Style="{StaticResource DangerButton}" Content="REMOVE MOD" Command="{Binding RemoveCommand}" />
+        <Button Style="{StaticResource GhostButton}" Content="ENABLE" Command="{Binding EnableCommand}" />
+        <Button Style="{StaticResource GhostButton}" Content="DISABLE" Command="{Binding DisableCommand}" />
+        <Button Style="{StaticResource GhostButton}" Content="MOVE UP" Command="{Binding MoveUpCommand}" />
+        <Button Style="{StaticResource GhostButton}" Content="MOVE DOWN" Command="{Binding MoveDownCommand}" />
+        <Button Style="{StaticResource GhostButton}" Content="CHECK UPDATES" Command="{Binding CheckUpdatesCommand}" />
+        <Button Style="{StaticResource GhostButton}" Content="UPDATE SELECTED" Command="{Binding UpdateSelectedCommand}" />
+        <Button Style="{StaticResource GhostButton}" Content="UPDATE ALL" Command="{Binding UpdateAllCommand}" />
+        <Button Style="{StaticResource GhostButton}" Content="OPEN WORKSHOP PAGE" Command="{Binding OpenWorkshopCommand}" />
         <Button Style="{StaticResource GhostButton}" Content="COPY MOD LIST" Command="{Binding CopyListCommand}" />
       </WrapPanel>
     </StackPanel>

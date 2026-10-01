@@ -14,6 +14,16 @@ public interface IServerProcessManager
 
     Task RestartAsync(CancellationToken cancellationToken = default);
 
+    /// <summary>
+    /// Starts the process when the caller already holds <see cref="IServerActionGate"/>.
+    /// </summary>
+    Task StartUnderLockAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Stops the process when the caller already holds <see cref="IServerActionGate"/>.
+    /// </summary>
+    Task StopUnderLockAsync(bool force = false, CancellationToken cancellationToken = default);
+
     bool IsConanServerProcess(string processName);
 
     Task RefreshAsync(CancellationToken cancellationToken = default);
@@ -49,6 +59,10 @@ public interface IServerUpdateService
     Task<ServerUpdateCheckResult> CheckAsync(CancellationToken cancellationToken = default);
 
     Task UpdateAsync(bool restartAfter, IProgress<PipelineProgress>? progress = null, CancellationToken cancellationToken = default);
+
+    Task UpdateModsAsync(bool restartAfter, IProgress<PipelineProgress>? progress = null, CancellationToken cancellationToken = default);
+
+    Task UpdateEverythingAsync(IProgress<PipelineProgress>? progress = null, CancellationToken cancellationToken = default);
 }
 
 public sealed class ServerUpdateCheckResult
@@ -81,6 +95,24 @@ public interface IWorkshopModService
     Task CheckForUpdatesAsync(CancellationToken cancellationToken = default);
 
     string GetShareableModList();
+}
+
+public sealed class WorkshopPublishedFileDetails
+{
+    public long WorkshopId { get; init; }
+
+    public string Title { get; init; } = string.Empty;
+
+    public DateTimeOffset TimeUpdated { get; init; }
+
+    public string? FileName { get; init; }
+}
+
+public interface ISteamWorkshopClient
+{
+    Task<IReadOnlyList<WorkshopPublishedFileDetails>> GetPublishedFileDetailsAsync(
+        IReadOnlyList<long> workshopIds,
+        CancellationToken cancellationToken = default);
 }
 
 public interface IBackupService

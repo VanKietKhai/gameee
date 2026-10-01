@@ -29,6 +29,7 @@ public static class AppConstants
 
     public const string SteamCmdExecutableWindows = "steamcmd.exe";
     public const string SteamCmdZipUrl = "https://steamcdn-a.akamaihd.net/client/installer/steamcmd.zip";
+    public const string SteamPublishedFileDetailsUrl = "https://api.steampowered.com/ISteamRemoteStorage/GetPublishedFileDetails/v1/";
 
     public const int DefaultGamePort = 7777;
     public const int DefaultQueryPort = 27015;

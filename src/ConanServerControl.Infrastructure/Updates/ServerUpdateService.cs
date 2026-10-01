@@ -39,7 +39,7 @@ public sealed class ServerUpdateService : IServerUpdateService
         _logger = logger;
     }
 
-    public Task<ServerUpdateCheckResult> CheckAsync(CancellationToken cancellationToken = default)
+    public async Task<ServerUpdateCheckResult> CheckAsync(CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
         var install = _settings.Current.ServerPaths.ServerInstallDirectory
@@ -54,23 +54,51 @@ public sealed class ServerUpdateService : IServerUpdateService
             }
         }
 
-        var summary = installed is null
-            ? "Installed build is unknown. Use Update Server to let SteamCMD refresh files."
-            : $"Installed dedicated server build: {installed}";
+        await _mods.CheckForUpdatesAsync(cancellationToken).ConfigureAwait(false);
+        var modsNeeding = _settings.Current.Mods.Mods.Count(m => m.UpdateAvailable);
+        _server.State.InstalledBuild = installed;
+        _server.State.LastUpdateCheckAt = DateTimeOffset.UtcNow;
+        _server.State.ModsRequiringUpdate = modsNeeding;
+        _server.State.InstalledModCount = _settings.Current.Mods.Mods.Count;
 
+        var serverLine = installed is null
+            ? "Installed dedicated server build is unknown. Use Update Server to let SteamCMD refresh files."
+            : $"Installed dedicated server build: {installed}. Latest Steam depot comparison is not available without a Steam Web API key; Update Server still runs SteamCMD app_update.";
+        var modsLine = modsNeeding == 0
+            ? "No Workshop mod updates were flagged."
+            : $"{modsNeeding} Workshop mod(s) have a newer Steam timestamp than the last successful install.";
+
+        var summary = serverLine + " " + modsLine;
         _logger.LogInformation("Update check: {Summary}", summary);
-        return Task.FromResult(new ServerUpdateCheckResult
+        await _activityLog.AddAsync("Updates", summary, cancellationToken: cancellationToken).ConfigureAwait(false);
+        return new ServerUpdateCheckResult
         {
             InstalledBuild = installed,
             AvailableBuild = null,
-            UpdateAvailable = false,
-            Summary = summary + " Latest Steam build comparison is not fully wired yet (no Steam Web API key is used in Phase 1)."
-        });
+            UpdateAvailable = modsNeeding > 0,
+            Summary = summary
+        };
     }
 
-    public async Task UpdateAsync(bool restartAfter, IProgress<PipelineProgress>? progress = null, CancellationToken cancellationToken = default)
+    public Task UpdateAsync(bool restartAfter, IProgress<PipelineProgress>? progress = null, CancellationToken cancellationToken = default) =>
+        RunLockedAsync("Update server", restartAfter, updateServer: true, updateMods: false, "pre-server-update", progress, cancellationToken);
+
+    public Task UpdateModsAsync(bool restartAfter, IProgress<PipelineProgress>? progress = null, CancellationToken cancellationToken = default) =>
+        RunLockedAsync("Update mods", restartAfter, updateServer: false, updateMods: true, "pre-mod-update", progress, cancellationToken);
+
+    public Task UpdateEverythingAsync(IProgress<PipelineProgress>? progress = null, CancellationToken cancellationToken = default) =>
+        RunLockedAsync("Update everything", restartAfter: true, updateServer: true, updateMods: true, "pre-update-everything", progress, cancellationToken);
+
+    private async Task RunLockedAsync(
+        string actionName,
+        bool restartAfter,
+        bool updateServer,
+        bool updateMods,
+        string backupReason,
+        IProgress<PipelineProgress>? progress,
+        CancellationToken cancellationToken)
     {
-        if (!_gate.TryBegin("Update server", out var lease) || lease is null)
+        if (!_gate.TryBegin(actionName, out var lease) || lease is null)
         {
             throw new UserFacingException(
                 "Another action is already running",
@@ -81,59 +109,75 @@ public sealed class ServerUpdateService : IServerUpdateService
         using (lease)
         {
             _pipeline.Begin();
+            var wasRunning = _server.State.Status is not ServerStatus.Offline and not ServerStatus.Error;
             try
             {
-                Report(progress, _pipeline.TransitionTo(UpdatePipelineState.Checking, "Checking install directory..."));
-
-                var install = _settings.Current.ServerPaths.ServerInstallDirectory
-                              ?? _settings.Current.ServerPaths.ServerWorkingDirectory;
-                if (string.IsNullOrWhiteSpace(install))
+                Report(progress, _pipeline.TransitionTo(UpdatePipelineState.Checking, "Preparing update..."));
+                if (updateServer)
                 {
-                    throw new UserFacingException(
-                        "Dedicated server folder is not set",
-                        "SteamCMD needs an install directory for app 443030.",
-                        "Open Settings, set the server install folder, then try Update Server again.");
+                    var install = _settings.Current.ServerPaths.ServerInstallDirectory
+                                  ?? _settings.Current.ServerPaths.ServerWorkingDirectory;
+                    if (string.IsNullOrWhiteSpace(install))
+                    {
+                        throw new UserFacingException(
+                            "Dedicated server folder is not set",
+                            "SteamCMD needs an install directory for app 443030.",
+                            "Open Settings, set the server install folder, then try Update Server again.");
+                    }
                 }
 
-                if (_settings.Current.Backups.BackupBeforeServerUpdate)
+                var shouldBackup = (updateServer && _settings.Current.Backups.BackupBeforeServerUpdate)
+                                   || (updateMods && _settings.Current.Backups.BackupBeforeModUpdate);
+                if (shouldBackup)
                 {
                     Report(progress, _pipeline.TransitionTo(UpdatePipelineState.Backup, "Creating backup..."));
-                    await _backups.BackupNowAsync("pre-server-update", cancellationToken).ConfigureAwait(false);
+                    await _backups.BackupNowAsync(backupReason, cancellationToken).ConfigureAwait(false);
                 }
 
-                if (_server.State.Status is not ServerStatus.Offline and not ServerStatus.Error)
+                if (wasRunning)
                 {
                     Report(progress, _pipeline.TransitionTo(UpdatePipelineState.Stopping, "Stopping server..."));
-                    await _server.StopAsync(force: false, cancellationToken).ConfigureAwait(false);
+                    await _server.StopUnderLockAsync(force: false, cancellationToken).ConfigureAwait(false);
                 }
 
-                Report(progress, _pipeline.TransitionTo(UpdatePipelineState.UpdatingServer, "Downloading server files..."));
-                await _steamCmd.InstallOrUpdateDedicatedServerAsync(
-                        install,
-                        _settings.Current.SteamCmd.ValidateAfterUpdate,
-                        new Progress<string>(line => _logger.LogInformation("SteamCMD: {Line}", line)),
-                        cancellationToken)
-                    .ConfigureAwait(false);
+                if (updateServer)
+                {
+                    var install = _settings.Current.ServerPaths.ServerInstallDirectory
+                                  ?? _settings.Current.ServerPaths.ServerWorkingDirectory!;
+                    Report(progress, _pipeline.TransitionTo(UpdatePipelineState.UpdatingServer, "Downloading server files..."));
+                    await _steamCmd.InstallOrUpdateDedicatedServerAsync(
+                            install,
+                            _settings.Current.SteamCmd.ValidateAfterUpdate,
+                            new Progress<string>(line => _logger.LogInformation("SteamCMD: {Line}", line)),
+                            cancellationToken)
+                        .ConfigureAwait(false);
+                }
+
+                if (updateMods)
+                {
+                    Report(progress, _pipeline.TransitionTo(UpdatePipelineState.UpdatingMods, "Updating Steam Workshop mods..."));
+                    await _mods.UpdateAllAsync(cancellationToken).ConfigureAwait(false);
+                }
 
                 Report(progress, _pipeline.TransitionTo(UpdatePipelineState.Validating, "Validating update..."));
-                if (restartAfter)
+                if (restartAfter || wasRunning)
                 {
                     Report(progress, _pipeline.TransitionTo(UpdatePipelineState.Starting, "Starting server..."));
-                    await _server.StartAsync(cancellationToken).ConfigureAwait(false);
+                    await _server.StartUnderLockAsync(cancellationToken).ConfigureAwait(false);
                     Report(progress, _pipeline.TransitionTo(UpdatePipelineState.HealthCheck, "Checking process..."));
                 }
 
                 Report(progress, _pipeline.TransitionTo(UpdatePipelineState.Completed, "Update completed. Existing saves were not deleted."));
-                await _activityLog.AddAsync("Updates", "Dedicated server update completed.", cancellationToken: cancellationToken)
+                await _activityLog.AddAsync("Updates", $"{actionName} completed.", cancellationToken: cancellationToken)
                     .ConfigureAwait(false);
             }
             catch (Exception ex)
             {
                 _pipeline.Fail(ex.Message);
                 progress?.Report(_pipeline.Snapshot());
-                _logger.LogError(ex, "Server update failed. Existing server files were not deleted.");
+                _logger.LogError(ex, "{Action} failed. Existing server files were not deleted.", actionName);
                 throw new UserFacingException(
-                    "Server update failed",
+                    $"{actionName} failed",
                     ex is UserFacingException ufe ? ufe.Message : ex.Message,
                     "The existing dedicated server and world saves were not deleted. Open the SteamCMD log, fix the error, then retry.",
                     ex);

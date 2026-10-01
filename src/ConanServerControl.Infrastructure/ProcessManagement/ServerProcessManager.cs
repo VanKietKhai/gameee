@@ -139,11 +139,34 @@ public sealed class ServerProcessManager : IServerProcessManager, IDisposable
         }
     }
 
+    public Task StartUnderLockAsync(CancellationToken cancellationToken = default)
+    {
+        EnsureLockHeld("start");
+        return StartCoreAsync(cancellationToken);
+    }
+
+    public Task StopUnderLockAsync(bool force = false, CancellationToken cancellationToken = default)
+    {
+        EnsureLockHeld("stop");
+        return StopCoreAsync(force, expected: true, cancellationToken);
+    }
+
     public void Dispose()
     {
         _monitorCts?.Cancel();
         _process?.Dispose();
         _monitorCts?.Dispose();
+    }
+
+    private void EnsureLockHeld(string operation)
+    {
+        if (_actionGate.IsBusy)
+        {
+            return;
+        }
+
+        throw new InvalidOperationException(
+            $"Cannot {operation} under lock because no server action lease is held. Use the public Start/Stop methods instead.");
     }
 
     private async Task StartCoreAsync(CancellationToken cancellationToken)

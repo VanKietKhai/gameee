@@ -336,6 +336,187 @@ public partial class ModsViewModel : ObservableObject
         _dialogs.Alert("Mod list copied", "Players still need a licensed Conan Exiles client. Steam Workshop handles their local mods.");
     }
 
+    [RelayCommand]
+    private async Task EnableAsync()
+    {
+        if (!TrySelectedId(out var id))
+        {
+            return;
+        }
+
+        try
+        {
+            await _mods.SetEnabledAsync(id, true);
+            Reload();
+        }
+        catch (Exception ex)
+        {
+            MainViewModel.ShowError(ex);
+        }
+    }
+
+    [RelayCommand]
+    private async Task DisableAsync()
+    {
+        if (!TrySelectedId(out var id))
+        {
+            return;
+        }
+
+        try
+        {
+            await _mods.SetEnabledAsync(id, false);
+            Reload();
+        }
+        catch (Exception ex)
+        {
+            MainViewModel.ShowError(ex);
+        }
+    }
+
+    [RelayCommand]
+    private async Task MoveUpAsync()
+    {
+        if (!TrySelectedId(out var id))
+        {
+            return;
+        }
+
+        if (!_dialogs.Confirm(
+                "Change load order?",
+                "Changing mod load order can affect saves and mod compatibility. A backup is recommended before restarting the server."))
+        {
+            return;
+        }
+
+        try
+        {
+            var current = _mods.Mods.ToList();
+            var index = current.FindIndex(m => m.WorkshopId == id);
+            if (index <= 0)
+            {
+                return;
+            }
+
+            await _mods.MoveAsync(id, index - 1);
+            Reload();
+        }
+        catch (Exception ex)
+        {
+            MainViewModel.ShowError(ex);
+        }
+    }
+
+    [RelayCommand]
+    private async Task MoveDownAsync()
+    {
+        if (!TrySelectedId(out var id))
+        {
+            return;
+        }
+
+        if (!_dialogs.Confirm(
+                "Change load order?",
+                "Changing mod load order can affect saves and mod compatibility. A backup is recommended before restarting the server."))
+        {
+            return;
+        }
+
+        try
+        {
+            var current = _mods.Mods.ToList();
+            var index = current.FindIndex(m => m.WorkshopId == id);
+            if (index < 0 || index >= current.Count - 1)
+            {
+                return;
+            }
+
+            await _mods.MoveAsync(id, index + 1);
+            Reload();
+        }
+        catch (Exception ex)
+        {
+            MainViewModel.ShowError(ex);
+        }
+    }
+
+    [RelayCommand]
+    private async Task CheckUpdatesAsync()
+    {
+        try
+        {
+            await _mods.CheckForUpdatesAsync();
+            Reload();
+            var needing = _mods.Mods.Count(m => m.UpdateAvailable);
+            _dialogs.Alert("Workshop check", needing == 0
+                ? "No Workshop updates were flagged. The server was not restarted."
+                : $"{needing} mod(s) have updates available. Use UPDATE ALL when you are ready. The server was not restarted.");
+        }
+        catch (Exception ex)
+        {
+            MainViewModel.ShowError(ex);
+            Reload();
+        }
+    }
+
+    [RelayCommand]
+    private async Task UpdateSelectedAsync()
+    {
+        if (!TrySelectedId(out var id))
+        {
+            return;
+        }
+
+        try
+        {
+            await _mods.UpdateAsync(id);
+            Reload();
+        }
+        catch (Exception ex)
+        {
+            MainViewModel.ShowError(ex);
+            Reload();
+        }
+    }
+
+    [RelayCommand]
+    private async Task UpdateAllAsync()
+    {
+        try
+        {
+            await _mods.UpdateAllAsync();
+            Reload();
+        }
+        catch (Exception ex)
+        {
+            MainViewModel.ShowError(ex);
+            Reload();
+        }
+    }
+
+    [RelayCommand]
+    private void OpenWorkshop()
+    {
+        if (!TrySelectedId(out var id))
+        {
+            return;
+        }
+
+        var url = $"https://steamcommunity.com/sharedfiles/filedetails/?id={id}";
+        System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo { FileName = url, UseShellExecute = true });
+    }
+
+    private bool TrySelectedId(out long id)
+    {
+        if (WorkshopIdValidator.TryParse(WorkshopId, out id))
+        {
+            return true;
+        }
+
+        _dialogs.Alert("Select a mod", "Enter the Workshop ID shown in the list first.");
+        return false;
+    }
+
     private void Reload()
     {
         Listing = string.Join(Environment.NewLine, _mods.Mods.Select(m =>
