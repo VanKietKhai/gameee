@@ -15,6 +15,7 @@ public sealed class BackupService : IBackupService
     private readonly IAppPaths _paths;
     private readonly ISettingsService _settings;
     private readonly IServerProcessManager _server;
+    private readonly IServerActionGate _actionGate;
     private readonly IActivityLog _activityLog;
     private readonly ILogger<BackupService> _logger;
 
@@ -22,12 +23,14 @@ public sealed class BackupService : IBackupService
         IAppPaths paths,
         ISettingsService settings,
         IServerProcessManager server,
+        IServerActionGate actionGate,
         IActivityLog activityLog,
         ILogger<BackupService> logger)
     {
         _paths = paths;
         _settings = settings;
         _server = server;
+        _actionGate = actionGate;
         _activityLog = activityLog;
         _logger = logger;
     }
@@ -163,6 +166,26 @@ public sealed class BackupService : IBackupService
 
     public async Task RestoreAsync(string backupId, bool startAfter, CancellationToken cancellationToken = default)
     {
+        if (!_actionGate.TryBegin("Restore backup", out var lease) || lease is null)
+        {
+            throw new UserFacingException(
+                "Server action already running",
+                $"Cannot restore because another action is in progress: {_actionGate.CurrentAction}.",
+                "Wait for the current action to finish, then try again.");
+        }
+
+        try
+        {
+            await RestoreCoreAsync(backupId, startAfter, cancellationToken).ConfigureAwait(false);
+        }
+        finally
+        {
+            lease.Dispose();
+        }
+    }
+
+    private async Task RestoreCoreAsync(string backupId, bool startAfter, CancellationToken cancellationToken)
+    {
         if (!PathValidator.IsSafeRelativeName(backupId))
         {
             throw new UserFacingException(
@@ -267,7 +290,7 @@ public sealed class BackupService : IBackupService
 
         if (startAfter)
         {
-            await _server.StartAsync(cancellationToken).ConfigureAwait(false);
+            await _server.StartUnderLockAsync(cancellationToken).ConfigureAwait(false);
         }
     }
 
