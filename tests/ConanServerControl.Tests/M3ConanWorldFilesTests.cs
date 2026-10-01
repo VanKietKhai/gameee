@@ -33,6 +33,8 @@ public class M3ConanWorldFilesTests
         File.WriteAllText(Path.Combine(saved, "game.db-wal"), "wal");
 
         Assert.Equal(["game.db", "game.db-wal"], ConanWorldFiles.Present(saved));
+        Assert.Equal(ConanWorldFiles.WorldTypeLegacy, ConanWorldFiles.DetectWorldType(ConanWorldFiles.Present(saved)));
+        Assert.Equal("game.db", ConanWorldFiles.MainDatabaseFileName(ConanWorldFiles.Present(saved)));
     }
 
     [Fact]

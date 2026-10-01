@@ -21,6 +21,14 @@ public static class ConanWorldFiles
         "game.db-shm"
     ];
 
+    public const string EnhancedMain = "game_0.db";
+
+    public const string LegacyMain = "game.db";
+
+    public const string WorldTypeEnhanced = "Enhanced";
+
+    public const string WorldTypeLegacy = "Legacy";
+
     /// <summary>
     /// Returns the known world-file names that exist directly under <paramref name="savedDir"/>.
     /// Does not recurse and does not open or modify the files.
@@ -50,5 +58,53 @@ public static class ConanWorldFiles
         }
 
         return found;
+    }
+
+    public static string? DetectWorldType(IEnumerable<string>? present)
+    {
+        if (ContainsName(present, EnhancedMain))
+        {
+            return WorldTypeEnhanced;
+        }
+
+        if (ContainsName(present, LegacyMain))
+        {
+            return WorldTypeLegacy;
+        }
+
+        return null;
+    }
+
+    public static string? MainDatabaseFileName(IEnumerable<string>? present)
+    {
+        if (ContainsName(present, EnhancedMain))
+        {
+            return EnhancedMain;
+        }
+
+        if (ContainsName(present, LegacyMain))
+        {
+            return LegacyMain;
+        }
+
+        return null;
+    }
+
+    private static bool ContainsName(IEnumerable<string>? names, string expected)
+    {
+        if (names is null)
+        {
+            return false;
+        }
+
+        foreach (var name in names)
+        {
+            if (string.Equals(name, expected, StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

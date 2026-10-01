@@ -172,6 +172,14 @@ public sealed class AdvancedSettings
     public int HealthCheckIntervalSeconds { get; set; } = 5;
 
     public bool QueryEnabled { get; set; }
+
+    /// <summary>
+    /// Maximum time to wait after process launch for the readiness probe.
+    /// Timeout must not report the server Online.
+    /// </summary>
+    public int StartupReadyTimeoutSeconds { get; set; } = AppConstants.DefaultStartupReadyTimeoutSeconds;
+
+    public int ReadinessPollIntervalMilliseconds { get; set; } = AppConstants.DefaultReadinessPollIntervalMilliseconds;
 }
 
 /// <summary>

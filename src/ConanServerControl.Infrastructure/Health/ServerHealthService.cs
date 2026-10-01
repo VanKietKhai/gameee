@@ -35,14 +35,14 @@ public sealed class ServerHealthService : IServerHealthService
             return HealthCheckResult.ServerOffline;
         }
 
-        if (state.Status is ServerStatus.Starting)
+        if (state.Status is ServerStatus.Starting or ServerStatus.Restarting or ServerStatus.Updating or ServerStatus.Stopping)
         {
             return HealthCheckResult.ServerStarting;
         }
 
-        if (state.StartedAt is not null && DateTimeOffset.UtcNow - state.StartedAt < TimeSpan.FromSeconds(20))
+        if (state.Status is ServerStatus.Unresponsive)
         {
-            return HealthCheckResult.ServerStarting;
+            return HealthCheckResult.ServerUnresponsive;
         }
 
         var port = _settings.Current.Server.GamePort;

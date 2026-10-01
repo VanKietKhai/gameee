@@ -47,6 +47,9 @@ public static class AppConstants
     public const int CrashRestartMaxAttempts = 3;
     public const int CrashRestartWindowMinutes = 10;
 
+    public const int DefaultStartupReadyTimeoutSeconds = 600;
+    public const int DefaultReadinessPollIntervalMilliseconds = 1000;
+
     public const string WebAdminCookieName = "csc_session";
     public const string AuditActorSystem = "System";
 }
