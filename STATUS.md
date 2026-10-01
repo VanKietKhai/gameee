@@ -64,11 +64,13 @@ Unchanged gate / lease / readiness / cold-backup / `ModBatchTransaction`. Additi
 
 ## Current Blockers
 
-- **A valid existing Conan Exiles Dedicated Server installation (`ConanSandboxServer.exe`) is required for 4C.** SteamCMD download of app 443030 is blocked by this network.
+- None for 4E (one Local mod). Waiting for checkpoint review.
+- SteamCMD download (optional) is still blocked by network (Valve Fastly CDN).
+- 4F risk: the server is on the beta build (CL-378132) and the client on the live build (CL-377096). Joining may require matching builds. No authentication bypass will be implemented.
 
 ## Next Recommended Work
 
-Provide or copy a legitimate dedicated server install outside `D:\conan exiles\`, then continue M3 Task 4C–4E. 4F (client observation) follows a working modded server.
+After review: M3 Task 4E, one Local `.pak` mod on the real server (verified cold backup first, then the transactional commit, then server mod-load evidence from logs).
 
 ## Last Completed Task
 
