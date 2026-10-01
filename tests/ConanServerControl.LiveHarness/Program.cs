@@ -501,7 +501,7 @@ internal sealed class Harness : IAsyncDisposable
 
         if (holdSeconds > 0)
         {
-            // Hold for a manual client test. Creating live-testelease-hold ends the hold early;
+            // Hold for a manual client test. Creating the live-test "release-hold" file ends the hold early;
             // the server is then stopped through the application as usual.
             var release = Path.Combine(_layout.LiveTest, "release-hold");
             Console.WriteLine($"Holding the server online for up to {holdSeconds}s (client observation window). Create {release} to end early.");
