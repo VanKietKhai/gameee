@@ -241,6 +241,54 @@ public sealed partial class WorkshopModService
         }
     }
 
+    /// <summary>
+    /// After a Local mod is removed from the catalog and modlist.txt, moves its installed .pak out of the
+    /// server Mods folder into %DATA%\removed-mods\&lt;stamp&gt;\ (recoverable; never a permanent delete).
+    /// Only the exact file this application installed (matching SHA-256) is moved; anything else, and the
+    /// administrator's original source file, is left untouched.
+    /// </summary>
+    private void RetireLocalPak(WorkshopMod removed)
+    {
+        var modsDir = ServerModsDirectoryOrNull();
+        if (modsDir is null || string.IsNullOrWhiteSpace(removed.LocalFileName) || !PathValidator.IsSafeRelativeName(removed.LocalFileName))
+        {
+            return;
+        }
+
+        var live = Path.Combine(modsDir, removed.LocalFileName);
+        if (!File.Exists(live))
+        {
+            return;
+        }
+
+        if (_settings.Current.Mods.Mods.Any(m => string.Equals(m.LocalFileName, removed.LocalFileName, StringComparison.OrdinalIgnoreCase)))
+        {
+            _logger.LogWarning("Removed local mod {File} is still referenced by another catalog entry; the file was left in place.", removed.LocalFileName);
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(removed.Sha256) ||
+            !string.Equals(BackupFileHasher.Sha256File(live), removed.Sha256, StringComparison.OrdinalIgnoreCase))
+        {
+            _logger.LogWarning(
+                "Removed local mod {File}: the file in the Mods folder no longer matches the installed SHA-256; it was left in place.",
+                removed.LocalFileName);
+            return;
+        }
+
+        try
+        {
+            var retired = Path.Combine(_paths.DataDirectory, "removed-mods", DateTime.Now.ToString("yyyyMMdd-HHmmss-fff"));
+            Directory.CreateDirectory(retired);
+            File.Move(live, Path.Combine(retired, removed.LocalFileName));
+            _logger.LogInformation("Moved removed local mod {File} out of the server Mods folder to {Dir}.", removed.LocalFileName, retired);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Could not move removed local mod {File} out of the server Mods folder.", removed.LocalFileName);
+        }
+    }
+
     private static void RevalidateStagedLocal(StagedLocalPak staged)
     {
         if (!File.Exists(staged.StagedPath) || new FileInfo(staged.StagedPath).Length != staged.SizeBytes)

@@ -114,13 +114,22 @@ public sealed partial class WorkshopModService : IWorkshopModService, IModCatalo
             await _backups.BackupNowAsync("pre-mod-removal", cancellationToken).ConfigureAwait(false);
         }
 
+        var removed = _settings.Current.Mods.Mods.FirstOrDefault(m => ModKeys.Matches(m, modKey));
+        var removedLocal = removed is { SourceType: ModSourceType.Local } ? Snapshot(removed) : null;
+
         await _settings.UpdateAsync(s =>
         {
             s.Mods.Mods.RemoveAll(m => ModKeys.Matches(m, modKey));
             ModListGenerator.ApplySequentialOrder(s.Mods.Mods);
         }, cancellationToken).ConfigureAwait(false);
 
+        // modlist.txt no longer references the mod before its file is touched.
         await WriteModListAsync(cancellationToken).ConfigureAwait(false);
+        if (removedLocal is not null)
+        {
+            RetireLocalPak(removedLocal);
+        }
+
         await _activityLog.AddAsync("Mods", $"Removed mod {DescribeKey(modKey)}.", cancellationToken: cancellationToken)
             .ConfigureAwait(false);
     }

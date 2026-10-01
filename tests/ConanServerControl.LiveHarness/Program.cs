@@ -145,6 +145,9 @@ internal static class Program
                 "client-compare" => harness.ClientCompare(args[1], args[2]),
                 "configure-rcon" => await harness.ConfigureRconAsync(),
                 "stop" => await harness.StopExistingAsync(),
+                "import-local" => await harness.ImportLocalAsync(args[1]),
+                "remove-local" => await harness.RemoveLocalAsync(args[1]),
+                "cold-backup" => await harness.ColdBackupCommandAsync(),
                 "graceful-test" => await harness.GracefulTestAsync(args[1]),
                 _ => Unknown(command)
             };
@@ -493,7 +496,8 @@ internal sealed class Harness : IAsyncDisposable
                 ($"TcpListenRcon{_settings.Current.Rcon.Port}", TcpListening(_settings.Current.Rcon.Port).ToString()),
                 ("RconPasswordConfigured", string.IsNullOrEmpty(_settings.Secrets.RconPassword) ? "NO" : "YES"),
                 ("ServerLog", ServerLog)),
-            Interesting(ReadLogFrom(ServerLog, logOffset, int.MaxValue), scanMods), "server Saved folder (Conan creates world/logs)");
+            scanMods ? ModEvidence(ReadLogFrom(ServerLog, logOffset, int.MaxValue)) : Interesting(ReadLogFrom(ServerLog, logOffset, int.MaxValue), scanMods),
+            "server Saved folder (Conan creates world/logs)");
 
         if (observeSeconds > 0)
         {
@@ -879,6 +883,155 @@ internal sealed class Harness : IAsyncDisposable
 
         return exited ? 0 : 1;
     }
+
+    // ------------------------------------------------------------ 4E Local mod
+
+    public async Task<int> ColdBackupCommandAsync() => await ColdBackupAsync("4E-backup", "m3-live-cold-backup") ? 0 : 1;
+
+    public async Task<int> ImportLocalAsync(string source)
+    {
+        if (Program.ServerProcesses().Count > 0 || _services.GetRequiredService<IServerProcessManager>().State.Status is not ServerStatus.Offline and not ServerStatus.Error)
+        {
+            _log.Write("4E-import", "precondition: server offline", "FAIL", null, Facts(("Processes", DescribeProcesses())));
+            return 1;
+        }
+
+        var modsDir = Path.Combine(_serverDir, "ConanSandbox", "Mods");
+        var modList = Path.Combine(modsDir, AppConstants.ModListFileName);
+        var sourceExists = File.Exists(source);
+        var sourceHash = sourceExists ? Sha256(source) : "missing";
+        var sourceInfo = sourceExists ? new FileInfo(source) : null;
+        _log.Write("4E-baseline", "pre-mutation state", "INFO", null,
+            Facts(
+                ("Source", source),
+                ("SourceExists", sourceExists.ToString()),
+                ("SourceSizeBytes", sourceInfo?.Length.ToString() ?? "n/a"),
+                ("SourceSha256", sourceHash),
+                ("SourceInsideServerMods", PathValidator.IsUnderRoot(source, modsDir).ToString()),
+                ("ModsDirectory", DescribeDirectory(modsDir)),
+                ("ModList", File.Exists(modList) ? File.ReadAllText(modList).Replace("\r\n", " | ").Replace('\n', '|') : "missing"),
+                ("Catalog", string.Join("; ", _settings.Current.Mods.Mods.Select(m => $"{m.LoadOrder}:{ModKeys.Describe(m)}"))),
+                ("WorldFiles", string.Join("; ", WorldSnapshot()))),
+            liveFilesChanged: "no");
+
+        if (!await ColdBackupAsync("4E-pre", "pre-local-mod-baseline"))
+        {
+            Console.Error.WriteLine("Verified cold backup failed; refusing to import the mod.");
+            return 1;
+        }
+
+        var clock = Stopwatch.StartNew();
+        string? error = null;
+        try
+        {
+            await _services.GetRequiredService<IServerUpdateService>().ImportLocalModAsync(source, new Progress<PipelineProgress>(p =>
+                Console.WriteLine($"    pipeline> {p.State} {p.StepDescription} {p.Error}")));
+        }
+        catch (Exception ex)
+        {
+            error = ex.Message;
+        }
+
+        var fileName = Path.GetFileName(source);
+        var mod = _settings.Current.Mods.Mods.FirstOrDefault(m => m.SourceType == ModSourceType.Local &&
+            string.Equals(m.LocalFileName, fileName, StringComparison.OrdinalIgnoreCase));
+        var installed = Path.Combine(modsDir, fileName);
+        var installedHash = File.Exists(installed) ? Sha256(installed) : "missing";
+        var sourceAfter = File.Exists(source) ? Sha256(source) : "missing";
+        var ok = error is null && mod is not null &&
+                 string.Equals(installedHash, sourceHash, StringComparison.OrdinalIgnoreCase) &&
+                 string.Equals(sourceAfter, sourceHash, StringComparison.OrdinalIgnoreCase);
+        _log.Write("4E-import", "IServerUpdateService.ImportLocalModAsync", ok ? "PASS" : "FAIL", clock.Elapsed,
+            Facts(
+                ("Error", error ?? string.Empty),
+                ("Source", source),
+                ("SourceSha256", sourceHash),
+                ("SourceStillPresentAndUnchanged", string.Equals(sourceAfter, sourceHash, StringComparison.OrdinalIgnoreCase).ToString()),
+                ("Installed", installed),
+                ("InstalledSha256", installedHash),
+                ("CatalogSha256", mod?.Sha256 ?? "n/a"),
+                ("LoadOrder", mod?.LoadOrder.ToString() ?? "n/a"),
+                ("ModList", File.Exists(modList) ? File.ReadAllText(modList).Replace("\r\n", " | ").Replace('\n', '|') : "missing"),
+                ("ModsDirectory", DescribeDirectory(modsDir)),
+                ("WorldFilesAfter", string.Join("; ", WorldSnapshot()))),
+            liveFilesChanged: "server Mods + modlist.txt (expected)");
+        return ok ? 0 : 1;
+    }
+
+    public async Task<int> RemoveLocalAsync(string fileName)
+    {
+        if (Program.ServerProcesses().Count > 0)
+        {
+            _log.Write("4E-remove", "precondition: server offline", "FAIL", null, Facts(("Processes", DescribeProcesses())));
+            return 1;
+        }
+
+        var modsDir = Path.Combine(_serverDir, "ConanSandbox", "Mods");
+        var modList = Path.Combine(modsDir, AppConstants.ModListFileName);
+        var mod = _settings.Current.Mods.Mods.FirstOrDefault(m => ModKeys.Matches(m, ModKeys.Local(fileName)));
+        var source = mod?.LocalSourcePath;
+        var sourceHashBefore = source is not null && File.Exists(source) ? Sha256(source) : "missing";
+        var before = DirectoryHashes(modsDir);
+        var clock = Stopwatch.StartNew();
+        string? error = null;
+        try
+        {
+            await _services.GetRequiredService<IModCatalogService>().RemoveAsync(ModKeys.Local(fileName), confirmed: true);
+        }
+        catch (Exception ex)
+        {
+            error = ex.Message;
+        }
+
+        var after = DirectoryHashes(modsDir);
+        var unrelatedUnchanged = before.Where(kv => !kv.Key.Equals(fileName, StringComparison.OrdinalIgnoreCase) && !kv.Key.Equals(AppConstants.ModListFileName, StringComparison.OrdinalIgnoreCase))
+            .All(kv => after.TryGetValue(kv.Key, out var v) && v == kv.Value);
+        var retired = Directory.Exists(Path.Combine(_layout.AppData, "removed-mods"))
+            ? Directory.GetFiles(Path.Combine(_layout.AppData, "removed-mods"), fileName, SearchOption.AllDirectories).OrderByDescending(File.GetCreationTimeUtc).FirstOrDefault()
+            : null;
+        var modListText = File.Exists(modList) ? File.ReadAllText(modList) : string.Empty;
+        var sourceHashAfter = source is not null && File.Exists(source) ? Sha256(source) : "missing";
+        var ok = error is null && !File.Exists(Path.Combine(modsDir, fileName)) &&
+                 !modListText.Contains(fileName, StringComparison.OrdinalIgnoreCase) && unrelatedUnchanged &&
+                 sourceHashAfter == sourceHashBefore && sourceHashAfter != "missing" &&
+                 _settings.Current.Mods.Mods.All(m => !ModKeys.Matches(m, ModKeys.Local(fileName)));
+        _log.Write("4E-remove", "IModCatalogService.RemoveAsync (local)", ok ? "PASS" : "FAIL", clock.Elapsed,
+            Facts(
+                ("Error", error ?? string.Empty),
+                ("PakStillInMods", File.Exists(Path.Combine(modsDir, fileName)).ToString()),
+                ("RetiredTo", retired ?? "none"),
+                ("ModList", string.IsNullOrEmpty(modListText) ? "(empty)" : modListText.Replace("\r\n", " | ").Replace('\n', '|')),
+                ("UnrelatedFilesUnchanged", unrelatedUnchanged.ToString()),
+                ("Source", source ?? "n/a"),
+                ("SourceStillPresentAndUnchanged", (sourceHashAfter == sourceHashBefore && sourceHashAfter != "missing").ToString()),
+                ("ModsDirectoryAfter", DescribeDirectory(modsDir))),
+            liveFilesChanged: "server Mods + modlist.txt (expected)");
+        return ok ? 0 : 1;
+    }
+
+    private string ModEvidence(string log)
+    {
+        var names = _settings.Current.Mods.Mods.Where(m => !string.IsNullOrWhiteSpace(m.LocalFileName))
+            .SelectMany(m => new[] { m.LocalFileName!, Path.GetFileNameWithoutExtension(m.LocalFileName!) }).Distinct().ToArray();
+        var keys = new[] { "modlist", "LogPakFile", "Mounting pak", "Mounted pak", "PakFile", "Mod:", "Mods/", "Mods\\", "Failed to mount", "mount" };
+        var lines = log.Split(Environment.NewLine)
+            .Where(l => names.Any(n => l.Contains(n, StringComparison.OrdinalIgnoreCase)) ||
+                        keys.Any(k => l.Contains(k, StringComparison.OrdinalIgnoreCase)))
+            .Where(l => !l.Contains("Spawning mod controller", StringComparison.Ordinal))
+            .ToArray();
+        var picked = lines.Length > 80 ? lines[..40].Concat(["..."]).Concat(lines[^40..]).ToArray() : lines;
+        return $"Mod evidence filter for: {string.Join(", ", names)}{Environment.NewLine}{string.Join(Environment.NewLine, picked)}";
+    }
+
+    private static string DescribeDirectory(string dir) =>
+        Directory.Exists(dir)
+            ? string.Join("; ", Directory.EnumerateFiles(dir).Select(f => $"{Path.GetFileName(f)} {new FileInfo(f).Length}B"))
+            : "missing";
+
+    private static Dictionary<string, string> DirectoryHashes(string dir) =>
+        Directory.Exists(dir)
+            ? Directory.EnumerateFiles(dir).ToDictionary(f => Path.GetFileName(f), f => Sha256(f), StringComparer.OrdinalIgnoreCase)
+            : new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
     // ------------------------------------------------------------ RCON for the throwaway test server
 

@@ -287,6 +287,40 @@ public sealed class M3StandaloneFirstTests
     }
 
     [Fact]
+    public async Task Removing_a_local_mod_moves_its_installed_pak_out_of_mods_and_keeps_the_source()
+    {
+        var fx = await LocalFixture.CreateAsync();
+        var source = fx.WriteSource("Gone.pak", "gone-bytes");
+        await fx.Updates.ImportLocalModAsync(source);
+        await File.WriteAllTextAsync(Path.Combine(fx.ModsDir, "Unrelated.pak"), "unrelated");
+
+        await fx.Mods.RemoveAsync(ModKeys.Local("Gone.pak"), confirmed: true);
+
+        Assert.False(File.Exists(Path.Combine(fx.ModsDir, "Gone.pak")));
+        Assert.Equal(string.Empty, await File.ReadAllTextAsync(fx.ModListPath));
+        Assert.Empty(fx.Mods.Mods);
+        Assert.Equal("gone-bytes", await File.ReadAllTextAsync(source));
+        Assert.Equal("unrelated", await File.ReadAllTextAsync(Path.Combine(fx.ModsDir, "Unrelated.pak")));
+        var retired = Assert.Single(Directory.GetFiles(Path.Combine(fx.Paths.DataDirectory, "removed-mods"), "Gone.pak", SearchOption.AllDirectories));
+        Assert.Equal("gone-bytes", await File.ReadAllTextAsync(retired));
+        Assert.Contains("pre-mod-removal", fx.Backup.Reasons);
+    }
+
+    [Fact]
+    public async Task Removing_a_local_mod_leaves_a_changed_pak_in_place()
+    {
+        var fx = await LocalFixture.CreateAsync();
+        await fx.Updates.ImportLocalModAsync(fx.WriteSource("Edited.pak", "original"));
+        await File.WriteAllTextAsync(Path.Combine(fx.ModsDir, "Edited.pak"), "replaced-by-someone");
+
+        await fx.Mods.RemoveAsync(ModKeys.Local("Edited.pak"), confirmed: true);
+
+        Assert.Empty(fx.Mods.Mods);
+        Assert.Equal("replaced-by-someone", await File.ReadAllTextAsync(Path.Combine(fx.ModsDir, "Edited.pak")));
+        Assert.DoesNotContain("Edited.pak", await File.ReadAllTextAsync(fx.ModListPath), StringComparison.Ordinal);
+    }
+
+    [Fact]
     public async Task Shareable_list_describes_local_mods_without_a_steam_link()
     {
         var fx = await LocalFixture.CreateAsync();
