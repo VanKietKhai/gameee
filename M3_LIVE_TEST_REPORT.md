@@ -312,6 +312,53 @@ PROJECT DEPLOYMENT TARGET:
 - Exit duration grows with uptime: ~57–65 s after short runs, >125 s and 171.8 s after ~11 minutes.
 - 300 s covers what was observed. Longer uptimes are not yet measured; a future refinement could keep waiting while the log shows the exit sequence progressing.
 
+## Pre-4E validation: graceful stop design and network address selection
+
+Code: `0d54acc`, reviewing `2c56226` (flat 300 s wait) and `982a5c3` (LAN skips VPN adapters). Design details are in HANDOFF "Pre-4E validation".
+
+**Automated.**
+- `982a5c3` alone: build PASS, 293 / 293.
+- `0d54acc`: build PASS (0 warnings, 0 errors), **313 / 313**, 0 skipped, run twice.
+
+The 20 new cases in `M3PreE4StopAndNetworkTests` cover:
+- Radmin is reported separately from the physical LAN (live host adapter set).
+- Unrelated VPN and virtual adapters are never labelled Radmin or LAN, including an adapter renamed "Radmin VPN".
+- No usable Radmin adapter → not detected: absent, Down, APIPA only, or enumeration failure.
+- 26/8 is preferred.
+- An acknowledged shutdown gets the extended window without a kill.
+- Log progress without an RCON reply gets the extended window.
+- No reply, a rejected command, or no RCON → 1 s short window, then kill (never the 300 s window).
+- An acknowledged-but-hung shutdown is killed after the extended window.
+- Offline is not reported until the child exits after the launcher, with a throwing `StateChanged` observer.
+- A child that survives the kill → Error, never Offline.
+- A real `cmd` → `ping` tree: the child is tracked after the launcher dies and killed.
+- RCON to a silent server times out (no hang).
+- The log probe ignores the previous run's exit lines and handles rotation.
+
+**Live diagnostics (this host).**
+- `network.private-vpn` = PASS: `PhysicalLanIPv4` `192.168.0.244`, `RadminVpnIPv4` `26.84.226.21`, `RecommendedRadminDirectConnect` `26.84.226.21:7777`, `SameLanDirectConnect` `192.168.0.244:7777`.
+- The down TAP-Win32 and Bluetooth adapters (APIPA) and Teredo were ignored.
+
+**Live 10-minute stop** (server `D:\conan exiles\depot_443031`, CL-377096; started and stopped through the app via the harness; no client started; local times):
+
+| Item | Result |
+| --- | --- |
+| Start | Online at 33.4 s (launcher PID 27436, `-Shipping` child PID 7172) |
+| Held online | 620.2 s (about 11 minutes of uptime at stop) |
+| RCON `shutdown` sent | 06:07:22.863 |
+| Shutdown acknowledgement | Reply `Successfully executed: shutdown`. Server logged receipt at 06:07:23.354; the app had the reply by 06:07:24.47 |
+| Progress evidence | `LogCore: Engine exit requested` (seen 06:07:24.469) |
+| Window used | **300 s extended** |
+| World unload start (`PreExit Game`) | 06:07:23.365 |
+| `LogExit: Preparing to exit` | 06:09:43.120 (quiet teardown of 139.8 s) |
+| `Game engine shut down` / `Exiting` | 06:09:45.518 / 06:09:56.812 |
+| Process tree exit | 06:09:57.195 (154.3 s after the command) |
+| `StopAsync` | **PASS**, 157.6 s, Status Offline |
+| Exit code | 0 |
+| Forced kill | **NO** |
+| `game_0.db-wal` / `-shm` after stop | **NO / NO** (`game_0.db` only) |
+| Orphan server processes | **NO** |
+
 ## Direction change: standalone-first (corrected 2026-10-02)
 
 After 4B the requirement was recorded as "players use **standalone** Conan clients (no Steam client, library or Workshop sync)". 4F showed that this is wrong for multiplayer. Corrected statement:
@@ -346,6 +393,7 @@ What was implemented and unit-tested (272 / 272 tests):
 4. The real standalone client `D:\conan exiles\Conan Exiles Enhanced` was detected read-only (Task 3 and harness). Nothing in the client folder was written.
 5. Existing dedicated server, version-matched CL-377096: first boot, real readiness, Start/Stop/Restart, graceful RCON `shutdown`, and a verified cold backup (4C/4D, sections above). `ConanSandboxServer.exe` was found at the install root.
 6. 4F classification: the client is blocked at FLS authentication (see "Checkpoint 4F").
+7. Pre-4E: acknowledgement-gated graceful stop after ~11 minutes of uptime (extended window, 154 s, exit 0, no kill, no WAL, no orphans), and Radmin/LAN address diagnostics (see "Pre-4E validation").
 
 ## Not live verified
 

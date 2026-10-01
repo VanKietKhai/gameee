@@ -155,6 +155,8 @@ Scope (corrected 2026-10-02): standalone-first applies to the **server/managemen
 
 `dotnet test -c Release`: **272 / 272** passed, 0 failed, 0 skipped. That is the 203 baseline plus 33 pre-live safety cases plus 36 standalone-first cases. No existing test was deleted, skipped or weakened.
 
+Current (2026-10-02, `0d54acc`): **313 / 313** passed, 0 skipped. That adds 20 pre-4E stop/network cases (`M3PreE4StopAndNetworkTests`) to the 293 at `982a5c3`.
+
 ## Known limitations
 
 - Server boot, readiness, Start/Stop/Restart and cold backup are live verified (4C/4D). Server mod load (4E) is **not live verified** yet, and client items (4F) are **blocked by client authentication**.
@@ -194,7 +196,25 @@ Full table in `M3_LIVE_TEST_REPORT.md`. In short:
 Product fixes from this checkpoint (unit-tested; 290 / 290):
 - `ServerProcessManager` isolates `StateChanged` subscribers.
 - `EndpointServerReadinessProbe`: a current-run Conan log still on frame 0 means not ready.
-- `Rcon.ShutdownCommand` defaults to `shutdown`; the graceful timeout default is 120 s.
+- `Rcon.ShutdownCommand` defaults to `shutdown`; the graceful timeout default was 120 s (superseded below).
+
+## Pre-4E validation (graceful stop and network)
+
+Graceful stop (`0d54acc`, replacing the flat 300 s wait from `2c56226`):
+1. RCON `shutdown` is sent first (the announcement failing does not prevent it).
+2. **Extended window** (`GracefulStopTimeoutSeconds`, 300 s) only when the reply acknowledges it (`Successfully executed`) or `ConanLogShutdownProbe` sees the exit under way in `ConanSandbox.log` (`Engine exit requested`, `PreExit Game`, `LogExit: ...`).
+3. Otherwise a **short window** (`UnacknowledgedStopTimeoutSeconds`, 30 s): RCON unavailable, no reply, rejected command, or no RCON password.
+4. `CloseMainWindow` is waited on only when a window was actually asked to close.
+5. Final fallback: kill the whole process tree. `SystemManagedProcess` tracks the launcher's `-Shipping` child (Toolhelp32), so a child orphaned by an exited launcher is still awaited and killed.
+6. **Offline only when the whole tree is gone.** A child that survives the kill is `Error`, never Offline. A launcher `Exited` event does not finalize a stop in progress.
+7. RCON exchanges are bounded by `Rcon.TimeoutSeconds` (`TimeoutException`, connection dropped), so a hung server cannot stall Stop.
+8. `ServerRuntimeState.LastStop` records ack, progress evidence, window used, forced kill, tree exit time and exit code.
+
+Network (`0d54acc`, reviewing `982a5c3`):
+- `NetworkAddressSelector` reports the physical LAN and Radmin VPN addresses separately.
+- Radmin is identified only by its driver description (`Famatech Radmin VPN`). APIPA addresses are ignored, and 26/8 is preferred.
+- Physical LAN means an Up Ethernet/Wi-Fi adapter with a private IPv4 address. It is never a VPN, tunnel or virtual adapter.
+- Diagnostics `network.private-vpn` facts: `PhysicalLanIPv4`, `RadminVpnIPv4`, `RecommendedRadminDirectConnect`, `SameLanDirectConnect`, or `NOT DETECTED`.
 
 ## Next required input (before 4C first boot), historical
 

@@ -84,16 +84,20 @@ However, multiplayer clients must use a legitimate Conan client session capable 
 
 ## Build Status
 
+Measured 2026-10-02 at `0d54acc` (pre-4E validation):
+
 `dotnet build -c Release --no-incremental`:
 PASS
 0 warnings
 0 errors
 
 `dotnet test -c Release`:
-272 passed
+313 passed
 0 failed
-272 total
+313 total
 0 skipped
+
+(`982a5c3` alone, before the pre-4E fixes: build PASS, 293 / 293.)
 
 ## Current Architecture
 
@@ -105,6 +109,9 @@ Unchanged gate / lease / readiness / cold-backup / `ModBatchTransaction`. Additi
 - `IServerUpdateService.ImportLocalModAsync` / `ReplaceLocalModAsync` (same locked pipeline)
 - `IClientModBundleService` + `ClientModSyncPlanner`
 - `DedicatedServerLocator`
+- `IServerShutdownProbe` / `ConanLogShutdownProbe` (server-log shutdown evidence) and `ServerRuntimeState.LastStop`
+- `ProcessTree` (launcher → `-Shipping` child tracking for Stop)
+- `NetworkAddressSelector` (physical LAN vs Radmin VPN)
 
 ## Current Blockers
 
@@ -131,4 +138,4 @@ M3 Task 4 pre-live fixes, 4A SteamCMD, and the standalone-first pivot (Local mod
 
 ## Current Task
 
-Matched-version server verified. 4F recorded as blocked by client authentication. Waiting for review before 4E (one Local mod). Do not modify the real client, and do not configure a public Internet server.
+Matched-version server verified. 4F recorded as blocked by client authentication. Pre-4E validation done (`0d54acc`): acknowledgement-gated graceful stop with process-tree Offline, Radmin/LAN address split, 313 / 313 tests, live 10-minute stop PASS (154 s, exit 0, no kill, no WAL, no orphans). Waiting for review before 4E (one Local mod). Do not modify the real client, and do not configure a public Internet server.
