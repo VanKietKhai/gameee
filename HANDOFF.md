@@ -127,6 +127,23 @@ Live details are in **`M3_LIVE_TEST_REPORT.md`**. Task 3's handoff is in git his
 - Attach-to-existing-process still matches any `ConanSandboxServer` process system-wide. The harness refuses to start if one exists.
 - The Web Admin has no Local-mod or bundle endpoints (WPF only).
 
+## Official dedicated server target
+
+- `D:\conan exiles\Conan Exiles Dedicated Server`, a **sibling** of the client `D:\conan exiles\Conan Exiles Enhanced`, not a child of it.
+- The harness takes it from `CSC_SERVER_DIR`. `LiveTestGuard.ValidateExternalServerDirectory` checks it: siblings inside the launcher folder are allowed. These are refused:
+  - the client folder, or anything inside or containing it
+  - the launcher folder itself, or anything containing it
+  - a drive root
+  - overlap with the workspace's steamcmd, live-test or app-data folders
+  - a folder containing client files (`Run Me!.bat` / `ConanSandbox.exe`)
+  - a non-empty folder that is not a dedicated server install
+- The app's diagnostics and start gate accept this layout (tested).
+- `install-server` runs a network preflight first, so a blocked network creates nothing.
+- Status: waiting for network access to Valve's Fastly CDN. The install command is ready:
+  - `CSC_LIVE_TESTS=1`, `CSC_LIVE_ROOT=E:\CSC-M3-Live`, `CSC_CLIENT_ROOT=D:\conan exiles\Conan Exiles Enhanced`, `CSC_SERVER_DIR=D:\conan exiles\Conan Exiles Dedicated Server`
+  - then run: `ConanServerControl.LiveHarness install-server`
+  - It stops after verifying `ConanSandboxServer.exe` and the gate; it never boots the server.
+
 ## Next required input (before 4C first boot)
 
 A **valid existing Conan Exiles Dedicated Server installation** containing `ConanSandboxServer.exe`.
