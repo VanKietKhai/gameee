@@ -482,7 +482,7 @@ The one failure is the new QA-016 regression `Partial_live_commit_must_not_resta
 ### QA-016
 
 - **Severity:** P1
-- **Status:** OPEN
+- **Status:** PARTIALLY RESOLVED (final retest of `9bea046`). Verified rollback restores the old paks. If rollback verification throws, a previously online server is still started on the mixed set.
 - **Component:** `WorkshopModService.ApplyUpdatesAsync` + `ServerUpdateService.RunLockedAsync` catch
 - **Description:** Staging is all-or-nothing. The live commit is not. After every target has passed validation, `CommitStagedAsync` replaces mods one by one. If a later `File.Replace` / `File.Move` throws, earlier mods stay replaced. There is no `.bak` rollback. If the server was online, the catch then calls `StartUnderLockAsync` anyway.
 - **Steps:** Two enabled mods. Both downloads write a valid non-empty pak. `Mod1.pak` is a normal file (`MOD1-OLD`). `Mod2.pak` is a directory so the second commit throws. Server status Online. `UpdateEverythingAsync`.
@@ -538,3 +538,85 @@ P1 OPEN: QA-016
 SAFE TO CONTINUE: NO
 LIVE TEST STILL REQUIRED: SteamCMD workshop download path and pak timestamp, Conan process stop/start, restore of an old backup on Windows, browser 401/CSRF
 NEXT ACTION: Fix QA-016. Do not restart a previously online server when a multi-mod live commit is partial, or roll the replaced paks back before that restart. Re-run `Partial_live_commit_must_not_restart_onto_a_mixed_mod_set`.
+
+---
+
+# Final Stabilization Retest
+
+Revision tested: `9bea046fad4978acdedaf61a17e3bde714fff829` (`fix: rollback partial live mod batch on commit failure`), merged into `cursor/qa-gate-workshop-58f9`. QA did not change production code. Historical findings above stay as written.
+
+## Build
+
+`dotnet build -c Release`: **succeeded, 0 warnings, 0 errors**.
+
+## Tests
+
+`dotnet test -c Release`: **discovered 105, passed 104, failed 1, skipped 0**.
+
+Builder’s 104/104 is the suite without `Rollback_verify_throw_leaves_previously_online_server_offline`. That test is the one failure. The other 104, including the original QA-016 regression and builder’s six QA-016 tests, passed.
+
+## Test Integrity
+
+- OLD QA TESTS RETAINED: **YES**. Every QA method from `ea7854d` is still present.
+- QA-016 ORIGINAL REGRESSION RETAINED AND UNWEAKENED: **YES**. `Partial_live_commit_must_not_restart_onto_a_mixed_mod_set` still asserts `UserFacingException`, no “Update everything completed”, and `!(mod1 == MOD1-NEW && restarted)`. It passed on this revision because rollback restores Mod1 to `MOD1-OLD` before the restart.
+- SKIPPED TESTS: **none**. No `[Fact(Skip)]`. Discovery and the run both report 0 skipped.
+- ASSERTIONS WEAKENED: **NO**.
+- NEW QA-016 TESTS (builder, six), all passed:
+  1. `TestA_two_mods_second_replace_fails_restores_both_old_and_fails` — two-mod live replace failure, both end old, operation failed. Same fault as Test C, without the restart asserts.
+  2. `TestB_three_mods_third_replace_fails_restores_all_old_and_fails` — distinct: third replace fails, all three old.
+  3. `TestC_replace_fails_rollback_succeeds_previously_online_server_may_restart_but_operation_failed` — same two-mod fault as A, plus Online restart only after “Previous mod set restored”.
+  4. `TestD_replace_fails_and_rollback_fails_leaves_previously_online_server_offline` — distinct: rollback directory deleted, server stays Offline, title contains “recovery required”.
+  5. `TestE_all_replacements_succeed_live_mods_are_new_and_rollback_is_cleaned` — success path, not a failure path. Both paks NEW, activity records both installs, rollback dir cleaned, Online.
+  6. `TestF_originally_offline_commit_failure_with_successful_rollback_stays_offline` — distinct: same replace failure while Offline, no stop, no start.
+- QA addition, failed: `Rollback_verify_throw_leaves_previously_online_server_offline`. After Mod1 is replaced, the rollback copy is left in place but mode `000`, so reading it throws. This is a different failure from Test D (missing directory returns false; unreadable file throws out of `TryRollback`).
+
+## QA-016
+
+**PARTIALLY RESOLVED.**
+
+What holds:
+
+- Two mods, both stage, Mod1 replace succeeds, Mod2 replace fails, rollback copy readable: Mod1 is `MOD1-OLD`, Mod2 stays the original directory, operation throws, and a previously online server may restart. Not `MOD1-NEW` + online. Original regression and Test A/C passed.
+- Three mods: Test B passed. Mod1 and Mod2 restored to `MOD*-OLD`, Mod3 unchanged, operation failed.
+- Missing rollback directory (Test D): `TryRollback` returns false, `RecoveryRequired` is true, no `start-under-lock`, status Offline, message says recovery required and left offline. Activity does not say “Update everything completed”.
+- Success (Test E): both paks `MOD*-NEW`, installed activity written, rollback storage removed, Online stays Online. Offline success still follows `wasRunning` (QA-003 offline test passed; `RunLockedAsync` starts only when the server was online).
+- Metadata on the verified-rollback path: `PersistSuccessfulBatchAsync` runs only after every `ReplaceLive` succeeds. Settings `InstalledTimestamp`, `modlist.txt`, and “Installed/updated Workshop mod” are not written when a later replace fails and rollback returns. Test E is the only path that asserts the installed activity lines.
+- Rollback directories: `staging/mod-update/<new-guid>/rollback/<workshopId>/<file>`. A new id is created per `Prepare`. Copies are taken from the live pak before the first replace. Cleanup runs after a verified rollback or a full success. `KeepRollbackForRecovery` retains the directory when `TryRollback` returns false.
+- Cancellation: the live loop does not read the cancellation token. `PersistSuccessfulBatchAsync` uses `CancellationToken.None`. `ThrowIfCancellationRequested` runs once, before `Prepare`. A cancel before commit does not replace files. A cancel during the replace/rollback loop is not observed.
+- Server binary: when the failure is a `ModBatchCommitException`, the catch logs “Server binary update may have succeeded, but the Workshop mod live commit failed.” The operation still throws. Binaries are not rolled back. That log line is not written when `TryRollback` throws, because that exception is not a batch result.
+
+What does not hold:
+
+- Rollback copy present but unreadable. `TryRollback` catches the failed restore, then `FilesEqual` throws `UnauthorizedAccessException` from outside that catch. `ApplyUpdatesAsync` does not turn that into `ModBatchCommitException`. `RunLockedAsync` therefore treats it as a generic failure and calls `StartUnderLockAsync`.
+- Observed: `mod1=MOD1-NEW`, calls `[stop-under-lock, start-under-lock]`, status Online, display “Update everything failed / Access to the path …/rollback/1/Mod1.pak is denied.” The guidance is the generic “saves were not deleted” text. It does not say recovery required. The `finally` also deletes the rollback directory because `KeepRollbackForRecovery` was never set.
+
+## Smoke
+
+QA-001, QA-002, QA-003, QA-004, QA-005, QA-006, QA-007, QA-008, QA-009, QA-010, and QA-012 stay **RESOLVED**. Their regression tests passed on this revision. This commit does not reopen them.
+
+## Non-blocking
+
+QA-011 (P2), QA-013, QA-014, QA-015, QA-017 (P3) stay open. `UpdateAllAsync` still re-downloads every enabled mod. The dashboard button still says UPDATE EVERYTHING & RESTART. Severity unchanged.
+
+## Code/Unit Verified
+
+Batch prepare, per-mod rollback copies, verified restore before restart, missing-copy recovery leaving the server offline, success-path metadata, and the unreadable-copy restart. No SteamCMD or Conan process was started.
+
+## Live Windows Verification Still Required
+
+Real SteamCMD workshop download, real `.pak` timestamps, Conan dedicated server stop/start, a player join after a rolled-back mod update, and a Windows `File.Replace` failure while a rollback copy cannot be read.
+
+CONAN QA → STABILIZATION FINAL
+REVISION TESTED: 9bea046fad4978acdedaf61a17e3bde714fff829
+OVERALL: FAIL
+BUILD: PASS
+TESTS: 104 / 105 passed, 0 skipped
+TEST INTEGRITY: PASS
+QA-016: PARTIAL
+P0 OPEN: none
+P1 OPEN: QA-016
+NON-BLOCKING OPEN: QA-011, QA-013, QA-014, QA-015, QA-017, Update All re-downloads every enabled mod, dashboard label still says UPDATE EVERYTHING & RESTART
+CODE/UNIT VERIFIED: verified rollback restores OLD/OLD and may restart; missing rollback copy stays offline with recovery required; unreadable rollback copy restarts onto MOD1-NEW
+LIVE WINDOWS TEST STILL REQUIRED: SteamCMD workshop download, real pak replace, Conan stop/start and join
+SAFE TO CONTINUE: NO
+NEXT ACTION: QA-016 — if rollback throws or cannot be verified, do not call StartUnderLockAsync; leave the server offline and report recovery required. Re-run Rollback_verify_throw_leaves_previously_online_server_offline.

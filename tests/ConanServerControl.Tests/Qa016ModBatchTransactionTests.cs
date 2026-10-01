@@ -120,27 +120,30 @@ public class Qa016ModBatchTransactionTests
             }
 
             rollbackCopy = ctx.RollbackPath;
-            File.SetUnixFileMode(ctx.RollbackPath, UnixFileMode.None);
+            SetUnixMode(ctx.RollbackPath, UnixFileMode.None);
         };
 
         try
         {
             var error = await Record.ExceptionAsync(() => fx.Updates.UpdateEverythingAsync());
+            var mod1 = File.Exists(fx.LivePaths[0]) ? await File.ReadAllTextAsync(fx.LivePaths[0]) : "(missing)";
+            var display = error is UserFacingException ufe ? ufe.FormatForDisplay() : error?.ToString() ?? "(null)";
 
-            Assert.IsType<UserFacingException>(error);
-            Assert.False(fx.ClaimedSuccess);
-            Assert.Equal(ServerStatus.Offline, fx.Server.State.Status);
-            Assert.DoesNotContain("start-under-lock", fx.Server.Calls);
-            var display = ((UserFacingException)error!).FormatForDisplay();
-            Assert.Contains("recovery required", display, StringComparison.OrdinalIgnoreCase);
+            Assert.True(
+                error is UserFacingException
+                && !fx.ClaimedSuccess
+                && fx.Server.State.Status == ServerStatus.Offline
+                && !fx.Server.Calls.Contains("start-under-lock")
+                && display.Contains("recovery required", StringComparison.OrdinalIgnoreCase),
+                $"An unreadable rollback copy means recovery was not verified. The server must stay offline. " +
+                $"error={error?.GetType().Name}; status={fx.Server.State.Status}; calls=[{string.Join(", ", fx.Server.Calls)}]; " +
+                $"mod1={mod1}; display={display}");
         }
         finally
         {
             if (rollbackCopy is not null && File.Exists(rollbackCopy))
             {
-                File.SetUnixFileMode(
-                    rollbackCopy,
-                    UnixFileMode.UserRead | UnixFileMode.UserWrite);
+                SetUnixMode(rollbackCopy, UnixFileMode.UserRead | UnixFileMode.UserWrite);
             }
         }
     }
@@ -178,6 +181,18 @@ public class Qa016ModBatchTransactionTests
         Assert.Equal(ServerStatus.Offline, fx.Server.State.Status);
         Assert.DoesNotContain("start-under-lock", fx.Server.Calls);
         Assert.DoesNotContain("stop-under-lock", fx.Server.Calls);
+    }
+
+    private static void SetUnixMode(string path, UnixFileMode mode)
+    {
+        if (OperatingSystem.IsLinux())
+        {
+            File.SetUnixFileMode(path, mode);
+        }
+        else if (OperatingSystem.IsMacOS())
+        {
+            File.SetUnixFileMode(path, mode);
+        }
     }
 
     private static void AssertBatchFailed(Exception? error)
