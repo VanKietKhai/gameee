@@ -879,12 +879,10 @@ internal sealed class Harness : IAsyncDisposable
             return 1;
         }
 
+        // Before the first boot Conan has not created Saved\Config yet; a Game.ini holding only
+        // [RconPlugin] is merged with Conan's defaults (verified live on the previous server).
         var configDir = Path.Combine(Saved, "Config", "WindowsServer");
-        if (!Directory.Exists(configDir))
-        {
-            _log.Write("4C-rcon", "configure RCON", "FAIL", null, Facts(("ConfigDirectory", configDir)), "Boot the server once so Conan creates its config first.");
-            return 1;
-        }
+        Directory.CreateDirectory(configDir);
 
         var gameIni = Path.Combine(configDir, "Game.ini");
         var existed = File.Exists(gameIni);
