@@ -92,7 +92,7 @@ public class Qa016ModBatchTransactionTests
         Assert.Contains("left offline", display, StringComparison.OrdinalIgnoreCase);
         Assert.Contains(
             fx.Activity.Messages,
-            m => m.Contains("rollback was incomplete", StringComparison.OrdinalIgnoreCase)
+            m => m.Contains("could not be verified", StringComparison.OrdinalIgnoreCase)
                  && m.Contains("left offline", StringComparison.OrdinalIgnoreCase));
         Assert.DoesNotContain(
             fx.Activity.Messages,
@@ -146,6 +146,80 @@ public class Qa016ModBatchTransactionTests
                 SetUnixMode(rollbackCopy, UnixFileMode.UserRead | UnixFileMode.UserWrite);
             }
         }
+    }
+
+    [Fact]
+    [Trait("Issue", "QA-016")]
+    public async Task Test4_rollback_copy_throw_leaves_server_offline_with_recovery_required()
+    {
+        var fx = await BatchFixture.CreateAsync(modCount: 2, lastDestIsDirectory: true, ServerStatus.Online);
+        FileStream? lockStream = null;
+        fx.Mods.AfterLiveReplacementForTests = ctx =>
+        {
+            if (ctx.RollbackPath is null || !File.Exists(ctx.RollbackPath))
+            {
+                return;
+            }
+
+            lockStream = new FileStream(ctx.RollbackPath, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+        };
+
+        try
+        {
+            var error = await Record.ExceptionAsync(() => fx.Updates.UpdateEverythingAsync());
+            var display = error is UserFacingException ufe ? ufe.FormatForDisplay() : error?.ToString() ?? "(null)";
+
+            Assert.True(
+                error is UserFacingException
+                && !fx.ClaimedSuccess
+                && fx.Server.State.Status == ServerStatus.Offline
+                && !fx.Server.Calls.Contains("start-under-lock")
+                && display.Contains("recovery required", StringComparison.OrdinalIgnoreCase),
+                $"A rollback copy I/O failure must stay offline with recovery required. " +
+                $"error={error?.GetType().Name}; status={fx.Server.State.Status}; calls=[{string.Join(", ", fx.Server.Calls)}]; display={display}");
+        }
+        finally
+        {
+            lockStream?.Dispose();
+        }
+    }
+
+    [Fact]
+    [Trait("Issue", "QA-016")]
+    public async Task Test5_verified_rollback_then_restart_failure_still_reports_failed()
+    {
+        var fx = await BatchFixture.CreateAsync(modCount: 2, lastDestIsDirectory: true, ServerStatus.Online);
+        fx.Server.StartUnderLockException = new InvalidOperationException("start exploded");
+
+        var error = await Record.ExceptionAsync(() => fx.Updates.UpdateEverythingAsync());
+
+        Assert.IsType<UserFacingException>(error);
+        Assert.False(fx.ClaimedSuccess);
+        Assert.Equal("MOD1-OLD", await File.ReadAllTextAsync(fx.LivePaths[0]));
+        Assert.True(Directory.Exists(fx.LivePaths[1]));
+        Assert.Contains("start-under-lock", fx.Server.Calls);
+        Assert.NotEqual(ServerStatus.Online, fx.Server.State.Status);
+        var display = ((UserFacingException)error!).FormatForDisplay();
+        Assert.DoesNotContain("completed", display, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    [Trait("Issue", "QA-016")]
+    public async Task Test6_failure_before_live_mutation_may_restart_previously_online_server()
+    {
+        var fx = await BatchFixture.CreateAsync(modCount: 2, lastDestIsDirectory: false, ServerStatus.Online);
+        fx.Steam.WorkshopException = new InvalidOperationException("workshop download failed");
+
+        var error = await Record.ExceptionAsync(() => fx.Updates.UpdateEverythingAsync());
+
+        Assert.IsType<UserFacingException>(error);
+        Assert.False(fx.ClaimedSuccess);
+        Assert.Equal("MOD1-OLD", await File.ReadAllTextAsync(fx.LivePaths[0]));
+        Assert.Equal("MOD2-OLD", await File.ReadAllTextAsync(fx.LivePaths[1]));
+        Assert.Equal(ServerStatus.Online, fx.Server.State.Status);
+        Assert.Contains("start-under-lock", fx.Server.Calls);
+        var display = ((UserFacingException)error!).FormatForDisplay();
+        Assert.DoesNotContain("recovery required", display, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -237,6 +311,8 @@ public class Qa016ModBatchTransactionTests
 
         public required RecordingServer Server { get; init; }
 
+        public required ScriptedSteamCmd Steam { get; init; }
+
         public required RecordingActivityLog Activity { get; init; }
 
         public required WorkshopModService Mods { get; init; }
@@ -326,6 +402,7 @@ public class Qa016ModBatchTransactionTests
                 Paths = paths,
                 LivePaths = livePaths,
                 Server = server,
+                Steam = steam,
                 Activity = activity,
                 Mods = mods,
                 Updates = updates

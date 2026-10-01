@@ -232,6 +232,8 @@ internal sealed class RecordingServer : IServerProcessManager
         await Task.CompletedTask;
     }
 
+    public Exception? StartUnderLockException { get; set; }
+
     public Task StartUnderLockAsync(IServerOperationLease lease, CancellationToken cancellationToken = default)
     {
         if (!_gate.Owns(lease))
@@ -240,6 +242,11 @@ internal sealed class RecordingServer : IServerProcessManager
         }
 
         Calls.Add("start-under-lock");
+        if (StartUnderLockException is not null)
+        {
+            throw StartUnderLockException;
+        }
+
         State.Status = ServerStatus.Online;
         return Task.CompletedTask;
     }

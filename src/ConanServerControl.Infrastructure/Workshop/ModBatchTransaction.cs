@@ -98,64 +98,89 @@ internal sealed class ModBatchTransaction
         record.Replaced = true;
     }
 
-    public bool TryRollback(ILogger logger)
+    public RollbackResult TryRollback(ILogger logger)
     {
         ArgumentNullException.ThrowIfNull(logger);
-        var completed = true;
 
-        foreach (var record in Records)
+        try
         {
-            if (!record.Replaced)
+            var restoreOk = true;
+            foreach (var record in Records)
             {
-                continue;
+                if (!record.Replaced)
+                {
+                    continue;
+                }
+
+                try
+                {
+                    RestoreOne(record, logger);
+                }
+                catch (Exception ex) when (ex is not OutOfMemoryException)
+                {
+                    logger.LogError(
+                        ex,
+                        "Failed to restore Workshop mod {WorkshopId} from rollback copy {RollbackPath} to {LivePath}.",
+                        record.WorkshopId,
+                        record.RollbackPath,
+                        record.LivePath);
+                    restoreOk = false;
+                }
             }
 
+            bool verified;
             try
             {
-                if (record.HadOriginalLiveFile)
-                {
-                    if (string.IsNullOrWhiteSpace(record.RollbackPath) || !File.Exists(record.RollbackPath))
-                    {
-                        logger.LogError(
-                            "Rollback copy for Workshop mod {WorkshopId} is missing. Live path {LivePath} cannot be restored.",
-                            record.WorkshopId,
-                            record.LivePath);
-                        completed = false;
-                        continue;
-                    }
-
-                    ReplaceLiveFile(record.RollbackPath, record.LivePath);
-                }
-                else if (File.Exists(record.LivePath))
-                {
-                    File.Delete(record.LivePath);
-                }
+                verified = VerifyOriginals(logger);
             }
-            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or InvalidOperationException)
+            catch (Exception ex) when (ex is not OutOfMemoryException)
             {
-                logger.LogError(
-                    ex,
-                    "Failed to restore Workshop mod {WorkshopId} from rollback copy {RollbackPath} to {LivePath}.",
-                    record.WorkshopId,
-                    record.RollbackPath,
-                    record.LivePath);
-                completed = false;
+                logger.LogError(ex, "Rollback verification threw. Treating the previous mod set as unverified.");
+                return RollbackResult.Unverified(attempted: true, succeeded: restoreOk, error: ex);
             }
-        }
 
-        if (!VerifyOriginals(logger))
-        {
-            completed = false;
-        }
+            if (!restoreOk || !verified)
+            {
+                return RollbackResult.Failed(attempted: true, succeeded: restoreOk, verified: verified);
+            }
 
-        if (completed)
-        {
             logger.LogWarning(
                 "Rolled back {Count} live Workshop mod replacement(s) to the previous versions.",
                 Records.Count(r => r.Replaced));
+            return RollbackResult.VerifiedSuccess();
+        }
+        catch (Exception ex) when (ex is not OutOfMemoryException)
+        {
+            logger.LogError(
+                ex,
+                "Rollback or rollback verification threw. Treating rollback as unverified.");
+            return RollbackResult.Unverified(attempted: true, succeeded: false, error: ex);
+        }
+    }
+
+    private static void RestoreOne(ModBatchRecord record, ILogger logger)
+    {
+        if (record.HadOriginalLiveFile)
+        {
+            if (string.IsNullOrWhiteSpace(record.RollbackPath) || !File.Exists(record.RollbackPath))
+            {
+                logger.LogError(
+                    "Rollback copy for Workshop mod {WorkshopId} is missing. Live path {LivePath} cannot be restored.",
+                    record.WorkshopId,
+                    record.LivePath);
+                throw new FileNotFoundException(
+                    $"Rollback copy for Workshop mod {record.WorkshopId} is missing.",
+                    record.RollbackPath);
+            }
+
+            ReplaceLiveFile(record.RollbackPath, record.LivePath);
+            return;
         }
 
-        return completed;
+        if (File.Exists(record.LivePath))
+        {
+            File.Delete(record.LivePath);
+        }
     }
 
     public void CleanupRollback()
@@ -208,10 +233,21 @@ internal sealed class ModBatchTransaction
                     continue;
                 }
 
-                if (!FilesEqual(record.LivePath, record.RollbackPath))
+                try
+                {
+                    if (!FilesEqual(record.LivePath, record.RollbackPath))
+                    {
+                        logger.LogError(
+                            "Restored live file for Workshop mod {WorkshopId} does not match the rollback copy.",
+                            record.WorkshopId);
+                        ok = false;
+                    }
+                }
+                catch (Exception ex) when (ex is not OutOfMemoryException)
                 {
                     logger.LogError(
-                        "Restored live file for Workshop mod {WorkshopId} does not match the rollback copy.",
+                        ex,
+                        "Could not compare restored live file for Workshop mod {WorkshopId} with its rollback copy.",
                         record.WorkshopId);
                     ok = false;
                 }
@@ -322,6 +358,26 @@ internal sealed class ModBatchTransaction
             logger?.LogDebug(ex, "Could not delete mod-update directory {Path}.", path);
         }
     }
+}
+
+internal readonly record struct RollbackResult(
+    bool Attempted,
+    bool Succeeded,
+    bool Verified,
+    Exception? Error)
+{
+    public bool RecoveryRequired => !Attempted || !Succeeded || !Verified;
+
+    public bool IsSafeToRestart => Attempted && Succeeded && Verified && !RecoveryRequired;
+
+    public static RollbackResult VerifiedSuccess() =>
+        new(Attempted: true, Succeeded: true, Verified: true, Error: null);
+
+    public static RollbackResult Failed(bool attempted, bool succeeded, bool verified, Exception? error = null) =>
+        new(attempted, succeeded, verified, error);
+
+    public static RollbackResult Unverified(bool attempted, bool succeeded, Exception? error) =>
+        new(attempted, succeeded, Verified: false, error);
 }
 
 internal sealed class ModBatchTarget
