@@ -166,6 +166,49 @@ SteamCMD is optional, and network-blocked for downloads.
 
 **Client:** 0 files modified. SteamCMD was not used on this machine for the download.
 
+## Pre-4E vanilla client connectivity smoke test
+
+- Checkpoint persisted first: `f695638` on `origin/claude/m3-task4-live-windows`.
+
+**Server (`D:\conan exiles\depot_443031`, CL-377096 / 2.2.2).**
+- Started through the app. Bootstrap PID 26028, `-Shipping` child PID 16688.
+- **Online at 30.9 s** ("World is ticking (server log frame 2)").
+- Endpoints owned by PID 16688, all on `0.0.0.0`:
+
+  | Protocol | Port | Role |
+  | --- | --- | --- |
+  | UDP | 7777 | game |
+  | UDP | 7778 | used by this build (the beta build did not bind it) |
+  | UDP | 14001 | role unknown |
+  | UDP | 27015 | query |
+  | TCP | 25575 | RCON |
+
+- LAN IPv4 `192.168.0.244` (Ethernet, Private). Also `26.84.226.21` (Radmin VPN).
+- `ServerPassword` empty, `IsBattlEyeEnabled=False`.
+- Online subsystem on the server: **Fls** (Funcom Live Services) / NULL, not Steam.
+- Direct-connect target for a client on this PC: `127.0.0.1:7777`; from the LAN: `192.168.0.244:7777`.
+
+**Client (manual, by the operator).**
+- The standalone client started in **offline mode**. Its own log says `LogFuncomLiveServices: Error: Login failed: couldn't connect.`, and the UI says online play is unavailable and only single player works.
+- Direct Connect lives under *Play Online*, which is not available in offline mode.
+
+**Server side.** No connection attempt was logged after the baseline: no accept, pre-login, login or join lines.
+
+**Conclusion.**
+- Online play, including Direct Connect, requires the client to log in to Funcom Live Services, which authenticates through the client's platform.
+- This client cannot log in. Getting past this would require bypassing an authentication/licensing mechanism, which this project will not implement or recommend.
+- The legitimate path is a licensed client (e.g. Steam), which logs in to FLS normally.
+- The server's own `Autologin attempt failed, unable to register server!` (server-browser registration) remains open; it should be re-checked with a licensed client.
+- Reachability check: the Funcom telemetry host `live.commontelem.flx.wintercloud.net` answers (HTTP 404), so this is not the same as the Fastly network block.
+
+**New finding: graceful stop after a long uptime.**
+- After an ~11-minute hold, RCON `shutdown` was received and world teardown began immediately.
+- Conan's exit then exceeded the 120 s graceful timeout, and the app force-killed the server (exit code -1).
+- `game_0.db-wal` (395 KB) was left behind. Committed data is recovered by SQLite on the next open, but the stop was not clean.
+- Earlier short runs exited in ~57–63 s.
+- Recommendation: treat "teardown started" as progress and allow a longer timeout (e.g. 300 s), or wait while the process is still in its exit sequence.
+- Conan also writes its own rotating `game_0_backup_N.db` every ~5 minutes while running.
+
 ## Direction change: standalone-first
 
 After 4B, the product requirement was corrected:
