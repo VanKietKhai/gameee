@@ -188,9 +188,43 @@ public sealed class ServerUpdateService : IServerUpdateService
                     wasRunning,
                     _server.State.Status);
 
+                var batchFailure = FindModBatchFailure(ex);
+                var recoveryRequired = batchFailure is { RecoveryRequired: true };
+                var rollbackCompleted = batchFailure is { RollbackCompleted: true };
+                var detail = ex is UserFacingException facing ? facing.Message : ex.Message;
+
+                if (recoveryRequired)
+                {
+                    const string recoveryMessage =
+                        "Mod update failed and rollback was incomplete. Server was left offline to prevent starting with an inconsistent mod set.";
+                    _logger.LogError(recoveryMessage);
+                    await _activityLog.AddAsync("Updates", recoveryMessage, cancellationToken: CancellationToken.None)
+                        .ConfigureAwait(false);
+                    throw new UserFacingException(
+                        "Mod update failed — recovery required",
+                        detail,
+                        recoveryMessage,
+                        ex);
+                }
+
+                if (updateServer && batchFailure is not null)
+                {
+                    _logger.LogWarning(
+                        "Server binary update may have succeeded, but the Workshop mod live commit failed. The operation is FAILED. Previous mod set was restored.");
+                }
+
                 var restoredOnline = false;
                 if (wasRunning)
                 {
+                    if (rollbackCompleted)
+                    {
+                        const string restoredMessage =
+                            "Mod update failed. Previous mod set restored. Restarting server with previous versions.";
+                        _logger.LogWarning(restoredMessage);
+                        await _activityLog.AddAsync("Updates", restoredMessage, cancellationToken: CancellationToken.None)
+                            .ConfigureAwait(false);
+                    }
+
                     try
                     {
                         await _server.StartUnderLockAsync(lease, cancellationToken).ConfigureAwait(false);
@@ -202,19 +236,34 @@ public sealed class ServerUpdateService : IServerUpdateService
                     }
                 }
 
-                var guidance = restoredOnline
-                    ? "The existing dedicated server and world saves were not deleted. A safety backup was kept if backup was enabled. Open the SteamCMD log, fix the error, then retry."
-                    : wasRunning
-                        ? "The server was stopped for this update and was not restarted. A safety backup was kept if backup was enabled. Start the server manually after you inspect the failure."
-                        : "The existing dedicated server and world saves were not deleted. Open the SteamCMD log, fix the error, then retry.";
+                var guidance = rollbackCompleted && restoredOnline
+                    ? "Mod update failed. Previous mod set restored. Restarting server with previous versions."
+                    : restoredOnline
+                        ? "The existing dedicated server and world saves were not deleted. A safety backup was kept if backup was enabled. Open the SteamCMD log, fix the error, then retry."
+                        : wasRunning
+                            ? "The server was stopped for this update and was not restarted. A safety backup was kept if backup was enabled. Start the server manually after you inspect the failure."
+                            : "The existing dedicated server and world saves were not deleted. Open the SteamCMD log, fix the error, then retry.";
 
                 throw new UserFacingException(
                     $"{actionName} failed",
-                    ex is UserFacingException ufe ? ufe.Message : ex.Message,
+                    detail,
                     guidance,
                     ex);
             }
         }
+    }
+
+    private static ModBatchCommitException? FindModBatchFailure(Exception ex)
+    {
+        for (var current = ex; current is not null; current = current.InnerException)
+        {
+            if (current is ModBatchCommitException batch)
+            {
+                return batch;
+            }
+        }
+
+        return null;
     }
 
     private static void Report(IProgress<PipelineProgress>? progress, PipelineProgress snapshot) =>

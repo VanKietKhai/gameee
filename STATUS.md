@@ -1,12 +1,12 @@
 # Conan Server Control — Current Status
 
 ## Last Updated
-2026-10-01 16:30 UTC
+2026-10-01 16:45 UTC
 
 ## Current Milestone
-Stabilization of the existing update / backup / restore pipeline (QA retest of PR #1).
+QA-016 only: transactional live Workshop mod commit + rollback.
 
-Delayed Restart, Wait Until Empty, `app_info_print`, first-run wizard, and new Web Admin features were **not** started.
+Delayed Restart, Wait Until Empty, `app_info_print`, first-run wizard, Update Available vs Verify All, and new Web Admin features were **not** started.
 
 ## Implemented and Verified
 
@@ -21,10 +21,13 @@ Delayed Restart, Wait Until Empty, `app_info_print`, first-run wizard, and new W
 - Restore takes the same action gate as Start/Stop/Update (QA-012)
 - Workshop staging is wiped, validated (single non-empty current `.pak`), then replaced (QA-002)
 - Multi-mod updates stage and validate every target before any live replacement (QA-002 / QA-006)
-- Update Server / Mods / Everything preserve original online/offline state (QA-003)
+- Live multi-mod commit copies every current live pak into an isolated rollback directory, then replaces one at a time. Any replacement failure rolls back every already-changed pak (QA-016)
+- Failed live commit with a verified rollback may restart a previously online server onto the restored old set, and still reports FAILED (QA-016)
+- Failed live commit whose rollback cannot be verified leaves the server OFFLINE (`recovery required`) even if it was online before (QA-016)
+- Update Server / Mods / Everything preserve original online/offline state when a safe set can be restored (QA-003)
 - `Validating → Completed` is a legal offline success transition (QA-004)
 - Mods Update Selected / Update All use the global action gate (QA-005)
-- Failed Update Everything restores a previously online process after an unchanged mod set (QA-006)
+- Failed Update Everything restores a previously online process after an unchanged or rolled-back mod set (QA-006 / QA-016)
 - `StartUnderLockAsync` / `StopUnderLockAsync` require `IServerOperationLease` (QA-008)
 - Steam Workshop `result != 1` is ignored (QA-009)
 - Web Admin `/api` returns 401 instead of a login redirect; mutations require CSRF (QA-010)
@@ -36,6 +39,7 @@ Delayed Restart, Wait Until Empty, `app_info_print`, first-run wizard, and new W
 - Source RCON client — protocol implemented; needs a running server
 - Restore on a real `game.db`
 - Steam `GetPublishedFileDetails` over the real network (client is implemented; tests use a fake)
+- Live Windows File.Replace / locked `.pak` during a real Conan process (covered by unit IO failures, not a running dedicated server)
 
 ## Partially Implemented
 
@@ -44,6 +48,7 @@ Delayed Restart, Wait Until Empty, `app_info_print`, first-run wizard, and new W
 - Delayed restart still ignores `UpdateServer`/`UpdateMods` flags on the request object
 - First-run wizard — Settings page is the substitute
 - Mods UI is a text list + ID field, not drag-and-drop
+- Steam dedicated-server binaries are not rolled back if `app_update` succeeds and a later mod commit fails
 
 ## Placeholder / Mock / Stub
 
@@ -55,24 +60,27 @@ Delayed Restart, Wait Until Empty, `app_info_print`, first-run wizard, and new W
 
 ## Known Bugs
 
-- None remaining from the confirmed P0/P1 QA list (QA-001, 002, 003, 004, 005, 006, 007, 012) or from QA-008/009/010 in this suite.
+- None remaining from the confirmed P0/P1 QA list (QA-001 through QA-010, QA-012, QA-016) in this suite.
 - Residual: no remote Steam build id without `app_info_print`.
-- Residual: Update All vs Update Available naming (QA observation / Architect recommendation). Not a safety blocker.
+- Residual: Update All vs Update Available naming. Not a safety blocker.
 
 ## Build Status
 
 Solution build:
 PASS
+0 warnings
+0 errors
 
 Tests:
-95 passed
+104 passed
 0 failed
+104 total
 
 ## Current Architecture
 
 .NET 8 WPF host + Core + Infrastructure + optional Web Admin.
 
-`IServerActionGate.TryBegin` issues `IServerOperationLease`. Destructive start/stop under lock require that lease. Restore, update pipelines, and Mods Update Selected/All share the same gate. Workshop downloads use a fresh staging directory and fail closed before touching live paks. Backup retention accepts a protected backup set so restore cannot delete its source.
+`IServerActionGate.TryBegin` issues `IServerOperationLease`. Destructive start/stop under lock require that lease. Restore, update pipelines, and Mods Update Selected/All share the same gate. Workshop downloads use a fresh staging directory and fail closed before touching live paks. A multi-mod live commit uses `ModBatchTransaction`: isolated `staging/mod-update/<operation-id>/rollback` copies, then replace one-by-one, then rollback the whole batch if any replacement fails. Backup retention accepts a protected backup set so restore cannot delete its source.
 
 ## Current Blockers
 
@@ -80,14 +88,14 @@ Tests:
 
 ## Next Recommended Work
 
-1. CONAN QA retest of this stabilization branch
+1. CONAN QA retest of QA-016 on this branch
 2. After QA PASS: split UPDATE AVAILABLE MODS vs VERIFY / RE-DOWNLOAD ALL
 3. Then, and only then: Delayed Restart / Wait Until Empty / `app_info_print`
 
 ## Last Completed Task
 
-Stabilized the update / backup / restore pipeline against the QA FAIL report (82/62/20). All confirmed P0/P1 issues addressed. Full suite 95/95.
+QA-016: transactional live mod batch commit with rollback and restart safety. Full suite 104/104.
 
 ## Current Task
 
-Hand off to CONAN QA for stabilization retest (`HANDOFF.md`).
+Hand off to CONAN QA for QA-016 retest (`HANDOFF.md`).
