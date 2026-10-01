@@ -290,6 +290,28 @@ PROJECT DEPLOYMENT TARGET:
 - server log evidence that the mod loaded
 - rollback verification
 
+## Private Radmin deployment and long-run graceful stop (live)
+
+**Deployment model.** Private friends-only over Radmin VPN; see HANDOFF "Deployment model". Live diagnostics:
+- `network.private-vpn` = PASS: Radmin VPN `26.84.226.21`, friends direct-connect `26.84.226.21:7777`. Public registration and port forwarding are not used.
+- `rcon.exposure` = WARNING: Conan listens on `0.0.0.0:25575`, the app connects to `127.0.0.1`. Never port-forward RCON.
+- `GetLanIPv4` now skips VPN adapters and reports `192.168.0.244`; it previously returned the Radmin address.
+
+**Long-run graceful stop with the 300 s default** (server CL-377096):
+
+| Event | Time |
+| --- | --- |
+| Online | 32.9 s |
+| Held online | 660 s |
+| RCON `shutdown` received; `BeginTearingDown` | 22:38:12 UTC |
+| `LogExit: Preparing to exit` | 22:40:44 (152 s later) |
+| `LogExit: Exiting` | 22:41:00 |
+
+- App `StopAsync`: **PASS in 171.8 s, exit code 0**, no processes left.
+- World after stop: `game_0.db` only, no WAL/SHM. The WAL left by the previous forced kill was checkpointed by Conan on startup.
+- Exit duration grows with uptime: ~57–65 s after short runs, >125 s and 171.8 s after ~11 minutes.
+- 300 s covers what was observed. Longer uptimes are not yet measured; a future refinement could keep waiting while the log shows the exit sequence progressing.
+
 ## Direction change: standalone-first (corrected 2026-10-02)
 
 After 4B the requirement was recorded as "players use **standalone** Conan clients (no Steam client, library or Workshop sync)". 4F showed that this is wrong for multiplayer. Corrected statement:
