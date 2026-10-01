@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Opt-in M3 Task 4 live harness. NOT a test project: `dotnet test` never runs it.
+    Every live command requires CSC_LIVE_TESTS=1 AND the .csc-live-test marker.
+  -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>false</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\ConanServerControl.Core\ConanServerControl.Core.csproj" />
+    <ProjectReference Include="..\..\src\ConanServerControl.Infrastructure\ConanServerControl.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>
