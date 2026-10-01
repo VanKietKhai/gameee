@@ -1,25 +1,33 @@
 # Conan Server Control — Current Status
 
 ## Last Updated
-2026-10-01 14:45 UTC
+2026-10-01 16:30 UTC
 
 ## Current Milestone
-Phase 2 — Workshop mod management (update detection + real update pipelines)
+Stabilization of the existing update / backup / restore pipeline (QA retest of PR #1).
+
+Delayed Restart, Wait Until Empty, `app_info_print`, first-run wizard, and new Web Admin features were **not** started.
 
 ## Implemented and Verified
 
 - Solution structure (App / Core / Infrastructure / Web / Tests)
 - Strongly typed settings JSON + DPAPI-protected secrets
-- PBKDF2 Web Admin password hashing (unit tested)
-- Workshop ID and path validation (unit tested)
-- Mod list generation and reorder (unit tested)
-- Backup retention policy (unit tested)
-- Update pipeline state machine transitions (unit tested)
-- ServerProcessManager start/stop/restart against a fake process (unit tested)
-- SQLite activity log DateTime ordering (unit tested)
-- Web Admin login, rate limit, cookie auth, backup API (manual browser test earlier)
-- Action-gate: update pipeline can stop/start under an existing lease (unit tested)
-- Workshop metadata comparison + `CheckForUpdatesAsync` with a fake Steam client (unit tested)
+- PBKDF2 Web Admin password hashing
+- Workshop ID and path validation
+- Mod list generation and reorder
+- Backup retention with a protected-id set (QA-001)
+- Restore refuses to delete its source and fails closed on copy errors (QA-001)
+- Incomplete world backups fail instead of logging success (QA-007)
+- Restore takes the same action gate as Start/Stop/Update (QA-012)
+- Workshop staging is wiped, validated (single non-empty current `.pak`), then replaced (QA-002)
+- Multi-mod updates stage and validate every target before any live replacement (QA-002 / QA-006)
+- Update Server / Mods / Everything preserve original online/offline state (QA-003)
+- `Validating → Completed` is a legal offline success transition (QA-004)
+- Mods Update Selected / Update All use the global action gate (QA-005)
+- Failed Update Everything restores a previously online process after an unchanged mod set (QA-006)
+- `StartUnderLockAsync` / `StopUnderLockAsync` require `IServerOperationLease` (QA-008)
+- Steam Workshop `result != 1` is ignored (QA-009)
+- Web Admin `/api` returns 401 instead of a login redirect; mutations require CSRF (QA-010)
 
 ## Implemented but Not Fully Verified
 
@@ -31,9 +39,9 @@ Phase 2 — Workshop mod management (update detection + real update pipelines)
 
 ## Partially Implemented
 
-- Dedicated-server “latest build” comparison still has no Steam depot query (`UpdateAvailable` for the **server** can be true only from Workshop flags after Check)
-- `UpdateAllAsync` downloads every enabled mod, not only flagged ones
-- Delayed restart still ignores `UpdateServer`/`UpdateMods` flags on the request object (dashboard delayed restart is backup+restart only)
+- Dedicated-server “latest build” comparison still has no Steam depot query (`app_info_print` is deferred)
+- `UpdateAllAsync` still re-downloads every enabled mod (UPDATE AVAILABLE vs VERIFY/RE-DOWNLOAD ALL is not split yet)
+- Delayed restart still ignores `UpdateServer`/`UpdateMods` flags on the request object
 - First-run wizard — Settings page is the substitute
 - Mods UI is a text list + ID field, not drag-and-drop
 
@@ -47,8 +55,9 @@ Phase 2 — Workshop mod management (update detection + real update pipelines)
 
 ## Known Bugs
 
-- None confirmed in automated tests after the gate-deadlock fix.
-- Residual P2: cannot display SERVER UPDATE AVAILABLE vs a remote Steam build id without an API key or `app_info_print` parser.
+- None remaining from the confirmed P0/P1 QA list (QA-001, 002, 003, 004, 005, 006, 007, 012) or from QA-008/009/010 in this suite.
+- Residual: no remote Steam build id without `app_info_print`.
+- Residual: Update All vs Update Available naming (QA observation / Architect recommendation). Not a safety blocker.
 
 ## Build Status
 
@@ -56,28 +65,29 @@ Solution build:
 PASS
 
 Tests:
-29 passed
+95 passed
 0 failed
 
 ## Current Architecture
 
-.NET 8 WPF host + Core + Infrastructure + optional Web Admin. Non-reentrant `IServerActionGate`. Orchestrators that already hold the lease call `StartUnderLockAsync` / `StopUnderLockAsync`. Workshop details via `ISteamWorkshopClient` (Steam published-file API, no key).
+.NET 8 WPF host + Core + Infrastructure + optional Web Admin.
+
+`IServerActionGate.TryBegin` issues `IServerOperationLease`. Destructive start/stop under lock require that lease. Restore, update pipelines, and Mods Update Selected/All share the same gate. Workshop downloads use a fresh staging directory and fail closed before touching live paks. Backup retention accepts a protected backup set so restore cannot delete its source.
 
 ## Current Blockers
 
 - No live Conan dedicated server or SteamCMD on this Linux agent
-- `QA_REPORT.md` / `ARCHITECTURE_REVIEW.md` still absent (see `HANDOFF.md`)
 
 ## Next Recommended Work
 
-1. QA: Windows live SteamCMD + Workshop download + update-while-online
-2. Parse SteamCMD `app_info_print` (or decide to skip remote build compare)
-3. Delayed restart should honor update flags; wait-until-empty
+1. CONAN QA retest of this stabilization branch
+2. After QA PASS: split UPDATE AVAILABLE MODS vs VERIFY / RE-DOWNLOAD ALL
+3. Then, and only then: Delayed Restart / Wait Until Empty / `app_info_print`
 
 ## Last Completed Task
 
-Fixed update-pipeline action-gate deadlock. Implemented Workshop published-file update detection. Wired UPDATE MODS / UPDATE EVERYTHING / Web Update Mods & Update Server to real services. Mods page: Enable/Disable/Move/Check/Update Selected/Update All.
+Stabilized the update / backup / restore pipeline against the QA FAIL report (82/62/20). All confirmed P0/P1 issues addressed. Full suite 95/95.
 
 ## Current Task
 
-Idle — hand off to CONAN QA (`HANDOFF.md`).
+Hand off to CONAN QA for stabilization retest (`HANDOFF.md`).
