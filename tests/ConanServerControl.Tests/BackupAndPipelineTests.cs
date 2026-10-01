@@ -86,6 +86,31 @@ public class UpdatePipelineTests
     }
 
     [Fact]
+    public void Allows_validating_to_completed_when_the_server_stays_offline()
+    {
+        var machine = new UpdatePipelineStateMachine();
+        machine.Begin();
+        machine.TransitionTo(UpdatePipelineState.Checking);
+        machine.TransitionTo(UpdatePipelineState.UpdatingMods);
+        machine.TransitionTo(UpdatePipelineState.Validating);
+        var done = machine.TransitionTo(UpdatePipelineState.Completed);
+        Assert.Equal(UpdatePipelineState.Completed, done.State);
+    }
+
+    [Fact]
+    public void Failed_validation_reaches_failed_from_validating()
+    {
+        var machine = new UpdatePipelineStateMachine();
+        machine.Begin();
+        machine.TransitionTo(UpdatePipelineState.Checking);
+        machine.TransitionTo(UpdatePipelineState.UpdatingServer);
+        machine.TransitionTo(UpdatePipelineState.Validating);
+        var failed = machine.Fail("Validation failed");
+        Assert.Equal(UpdatePipelineState.Failed, failed.State);
+        Assert.Equal("Validation failed", failed.Error);
+    }
+
+    [Fact]
     public void Fail_from_active_state()
     {
         var machine = new UpdatePipelineStateMachine();
