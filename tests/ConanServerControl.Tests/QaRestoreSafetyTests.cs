@@ -151,7 +151,7 @@ public class QaRestoreSafetyTests
         Directory.CreateDirectory(install);
         await settings.UpdateAsync(s => s.ServerPaths.ServerInstallDirectory = install);
         var activity = new RecordingActivityLog();
-        var service = new BackupService(paths, settings, new StatusOnlyServer(), new ServerActionGate(), activity, NullLogger<BackupService>.Instance);
+        var service = new BackupService(paths, settings, new StatusOnlyServer(), new ServerActionGate(), activity, new SqliteBackupVerifier(NullLogger<SqliteBackupVerifier>.Instance), NullLogger<BackupService>.Instance);
 
         var error = await Record.ExceptionAsync(() => service.BackupNowAsync("pre-server-update"));
         var completed = activity.Messages.Any(m => m.Contains("Backup completed", StringComparison.Ordinal));
@@ -168,13 +168,16 @@ public class QaRestoreSafetyTests
         var install = QaTestSupport.InstallRoot(data);
         Directory.CreateDirectory(Path.Combine(install, "ConanSandbox", "Saved"));
         await File.WriteAllTextAsync(Path.Combine(install, "ConanSandbox", "Saved", "marker.txt"), "WORLD");
+        SqliteTestDb.WriteValid(Path.Combine(install, "ConanSandbox", "Saved", "game.db"));
         await settings.UpdateAsync(s => s.ServerPaths.ServerInstallDirectory = install);
         var activity = new RecordingActivityLog();
-        var service = new BackupService(paths, settings, new StatusOnlyServer(), new ServerActionGate(), activity, NullLogger<BackupService>.Instance);
+        var service = new BackupService(paths, settings, new StatusOnlyServer(), new ServerActionGate(), activity, new SqliteBackupVerifier(NullLogger<SqliteBackupVerifier>.Instance), NullLogger<BackupService>.Instance);
 
         var record = await service.BackupNowAsync("manual");
 
         Assert.True(record.IncludesWorld);
+        Assert.True(record.Succeeded);
+        Assert.True(record.SqliteVerified);
         Assert.Contains(activity.Messages, m => m.Contains("Backup completed", StringComparison.Ordinal));
         Assert.True(File.Exists(Path.Combine(record.DirectoryPath, "world", "marker.txt")));
     }
@@ -196,7 +199,7 @@ public class QaRestoreSafetyTests
 
         await settings.UpdateAsync(s => s.ServerPaths.ServerInstallDirectory = install);
         var activity = new RecordingActivityLog();
-        var service = new BackupService(paths, settings, new StatusOnlyServer(), new ServerActionGate(), activity, NullLogger<BackupService>.Instance);
+        var service = new BackupService(paths, settings, new StatusOnlyServer(), new ServerActionGate(), activity, new SqliteBackupVerifier(NullLogger<SqliteBackupVerifier>.Instance), NullLogger<BackupService>.Instance);
 
         var error = await Record.ExceptionAsync(() => service.BackupNowAsync("pre-server-update"));
         var completed = activity.Messages.Any(m => m.Contains("Backup completed", StringComparison.Ordinal));
@@ -222,7 +225,7 @@ public class QaRestoreSafetyTests
         }
 
         var activity = new RecordingActivityLog();
-        var service = new BackupService(paths, settings, new StatusOnlyServer(), new ServerActionGate(), activity, NullLogger<BackupService>.Instance);
+        var service = new BackupService(paths, settings, new StatusOnlyServer(), new ServerActionGate(), activity, new SqliteBackupVerifier(NullLogger<SqliteBackupVerifier>.Instance), NullLogger<BackupService>.Instance);
 
         var error = await Record.ExceptionAsync(() => service.BackupNowAsync("pre-server-update"));
         var completed = activity.Messages.Any(m => m.Contains("Backup completed", StringComparison.Ordinal));
@@ -258,6 +261,7 @@ public class QaRestoreSafetyTests
             var (data, paths, settings) = QaTestSupport.CreateData();
             var install = QaTestSupport.InstallRoot(data);
             Directory.CreateDirectory(Path.Combine(install, "ConanSandbox", "Saved"));
+            SqliteTestDb.WriteValid(Path.Combine(install, "ConanSandbox", "Saved", "game.db"));
             await settings.UpdateAsync(s =>
             {
                 s.ServerPaths.ServerInstallDirectory = install;
@@ -271,7 +275,7 @@ public class QaRestoreSafetyTests
             var gate = new ServerActionGate();
             return new RestoreHarness
             {
-                Service = new BackupService(paths, settings, server, gate, activity, NullLogger<BackupService>.Instance),
+                Service = new BackupService(paths, settings, server, gate, activity, new SqliteBackupVerifier(NullLogger<SqliteBackupVerifier>.Instance), NullLogger<BackupService>.Instance),
                 Server = server,
                 Gate = gate,
                 Activity = activity,

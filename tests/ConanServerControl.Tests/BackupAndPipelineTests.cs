@@ -73,8 +73,8 @@ public class UpdatePipelineTests
         var machine = new UpdatePipelineStateMachine();
         machine.Begin();
         machine.TransitionTo(UpdatePipelineState.Checking);
-        machine.TransitionTo(UpdatePipelineState.Backup);
         machine.TransitionTo(UpdatePipelineState.Stopping);
+        machine.TransitionTo(UpdatePipelineState.Backup);
         machine.TransitionTo(UpdatePipelineState.UpdatingServer);
         Assert.Throws<InvalidOperationException>(() => machine.TransitionTo(UpdatePipelineState.Cancelled));
         machine.TransitionTo(UpdatePipelineState.Validating);
@@ -83,6 +83,8 @@ public class UpdatePipelineTests
         machine.TransitionTo(UpdatePipelineState.Completed);
         Assert.Equal(UpdatePipelineState.Completed, machine.State);
         Assert.False(UpdatePipelineStateMachine.IsAllowedTransition(UpdatePipelineState.Idle, UpdatePipelineState.UpdatingMods));
+        Assert.True(UpdatePipelineStateMachine.IsAllowedTransition(UpdatePipelineState.Stopping, UpdatePipelineState.Backup));
+        Assert.True(UpdatePipelineStateMachine.IsAllowedTransition(UpdatePipelineState.Backup, UpdatePipelineState.UpdatingServer));
     }
 
     [Fact]

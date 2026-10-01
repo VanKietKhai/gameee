@@ -16,6 +16,12 @@ public sealed class AppSettings
 
     public SteamCmdSettings SteamCmd { get; set; } = new();
 
+    /// <summary>
+    /// Optional standalone Conan game client (not the dedicated server). Used only by
+    /// read-only diagnostics and future client compatibility tests.
+    /// </summary>
+    public StandaloneClientSettings Client { get; set; } = new();
+
     public ServerConfigSettings Server { get; set; } = new();
 
     public ModSettings Mods { get; set; } = new();
@@ -66,6 +72,15 @@ public sealed class SteamCmdSettings
     public bool ValidateAfterUpdate { get; set; } = true;
 }
 
+public sealed class StandaloneClientSettings
+{
+    /// <summary>
+    /// Folder that contains the client <c>ConanSandbox.exe</c>, for example a
+    /// non-Steam "Conan Exiles Enhanced" folder. Never used as the dedicated server.
+    /// </summary>
+    public string? RootDirectory { get; set; }
+}
+
 public sealed class ServerConfigSettings
 {
     public string ServerName { get; set; } = "Conan Dedicated Server";
@@ -76,6 +91,11 @@ public sealed class ServerConfigSettings
 
     public int QueryPort { get; set; } = AppConstants.DefaultQueryPort;
 
+    /// <summary>
+    /// Legacy RCON port copied from older settings JSON. Runtime code must use
+    /// <see cref="RconSettings.Port"/>. Kept only so existing files still deserialize.
+    /// </summary>
+    [Obsolete("Use AppSettings.Rcon.Port. Retained for backward-compatible JSON deserialization.")]
     public int RconPort { get; set; } = AppConstants.DefaultRconPort;
 
     public bool HasServerPassword { get; set; }
@@ -167,6 +187,14 @@ public sealed class AdvancedSettings
     public int HealthCheckIntervalSeconds { get; set; } = 5;
 
     public bool QueryEnabled { get; set; }
+
+    /// <summary>
+    /// Maximum time to wait after process launch for the readiness probe.
+    /// Timeout must not report the server Online.
+    /// </summary>
+    public int StartupReadyTimeoutSeconds { get; set; } = AppConstants.DefaultStartupReadyTimeoutSeconds;
+
+    public int ReadinessPollIntervalMilliseconds { get; set; } = AppConstants.DefaultReadinessPollIntervalMilliseconds;
 }
 
 /// <summary>

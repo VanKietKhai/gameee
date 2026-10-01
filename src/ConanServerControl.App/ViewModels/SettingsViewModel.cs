@@ -30,11 +30,14 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty] private string? serverInstallDirectory;
     [ObservableProperty] private string additionalArguments = "-log";
     [ObservableProperty] private string? steamCmdDirectory;
+    [ObservableProperty] private string? standaloneClientRoot;
     [ObservableProperty] private string serverName = "Conan Dedicated Server";
     [ObservableProperty] private int maxPlayers = 10;
     [ObservableProperty] private int gamePort = 7777;
     [ObservableProperty] private int queryPort = 27015;
     [ObservableProperty] private int rconPort = 25575;
+    [ObservableProperty] private string? rconPasswordInput;
+    [ObservableProperty] private bool rconPasswordConfigured;
     [ObservableProperty] private bool webAdminEnabled;
     [ObservableProperty] private int webAdminPort = 8080;
     [ObservableProperty] private string webAdminUsername = "admin";
@@ -86,6 +89,16 @@ public partial class SettingsViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private void BrowseStandaloneClient()
+    {
+        var path = _dialogs.PickFolder("Choose the standalone Conan client folder (contains ConanSandbox.exe)");
+        if (path is not null)
+        {
+            StandaloneClientRoot = path;
+        }
+    }
+
+    [RelayCommand]
     private void Detect()
     {
         var found = _detector.Detect();
@@ -122,11 +135,12 @@ public partial class SettingsViewModel : ObservableObject
             s.ServerPaths.ServerInstallDirectory = ServerInstallDirectory;
             s.ServerPaths.AdditionalArguments = AdditionalArguments;
             s.SteamCmd.InstallDirectory = SteamCmdDirectory;
+            s.Client.RootDirectory = string.IsNullOrWhiteSpace(StandaloneClientRoot) ? null : StandaloneClientRoot.Trim();
             s.Server.ServerName = ServerName;
             s.Server.MaxPlayers = MaxPlayers;
             s.Server.GamePort = GamePort;
             s.Server.QueryPort = QueryPort;
-            s.Server.RconPort = RconPort;
+            s.Rcon.Port = RconPort;
             s.WebAdmin.Enabled = WebAdminEnabled;
             s.WebAdmin.Port = WebAdminPort;
             s.WebAdmin.Username = WebAdminUsername;
@@ -148,7 +162,34 @@ public partial class SettingsViewModel : ObservableObject
             WebAdminPassword = string.Empty;
         }
 
+        if (!string.IsNullOrWhiteSpace(RconPasswordInput))
+        {
+            var password = RconPasswordInput;
+            await _settings.UpdateSecretsAsync(sec => sec.RconPassword = password);
+            RconPasswordInput = string.Empty;
+            RconPasswordConfigured = true;
+        }
+
         _dialogs.Alert("Settings saved", "Settings were written to the application data directory. If you enabled Web Admin, restart Conan Server Control so the HTTP listener binds the new port.");
+    }
+
+    public string RconPasswordStatus => RconPasswordConfigured ? "Password configured" : "Not configured";
+
+    partial void OnRconPasswordConfiguredChanged(bool value) => OnPropertyChanged(nameof(RconPasswordStatus));
+
+    [RelayCommand]
+    private async Task ClearRconPasswordAsync()
+    {
+        if (!_dialogs.Confirm(
+                "Clear RCON password?",
+                "Remove the stored RCON password? Graceful stop and player broadcasts via RCON will be unavailable until a new password is set."))
+        {
+            return;
+        }
+
+        await _settings.UpdateSecretsAsync(sec => sec.RconPassword = null);
+        RconPasswordInput = string.Empty;
+        RconPasswordConfigured = false;
     }
 
     private void LoadFromSettings()
@@ -159,11 +200,14 @@ public partial class SettingsViewModel : ObservableObject
         ServerInstallDirectory = s.ServerPaths.ServerInstallDirectory;
         AdditionalArguments = s.ServerPaths.AdditionalArguments;
         SteamCmdDirectory = s.SteamCmd.InstallDirectory;
+        StandaloneClientRoot = s.Client.RootDirectory;
         ServerName = s.Server.ServerName;
         MaxPlayers = s.Server.MaxPlayers;
         GamePort = s.Server.GamePort;
         QueryPort = s.Server.QueryPort;
-        RconPort = s.Server.RconPort;
+        RconPort = s.Rcon.Port;
+        RconPasswordInput = null;
+        RconPasswordConfigured = !string.IsNullOrEmpty(_settings.Secrets.RconPassword);
         WebAdminEnabled = s.WebAdmin.Enabled;
         WebAdminPort = s.WebAdmin.Port;
         WebAdminUsername = s.WebAdmin.Username;
@@ -186,57 +230,6 @@ public partial class SettingsViewModel : ObservableObject
         }
 
         return Path.GetDirectoryName(executablePath);
-    }
-}
-
-public partial class DiagnosticsViewModel : ObservableObject
-{
-    private readonly DiagnosticsService _diagnostics;
-    private readonly ISteamCmdService _steamCmd;
-    private readonly IUiDialogs _dialogs;
-
-    public DiagnosticsViewModel(DiagnosticsService diagnostics, ISteamCmdService steamCmd, IUiDialogs dialogs)
-    {
-        _diagnostics = diagnostics;
-        _steamCmd = steamCmd;
-        _dialogs = dialogs;
-        Refresh();
-    }
-
-    [ObservableProperty] private string summary = string.Empty;
-
-    [RelayCommand]
-    private void Refresh()
-    {
-        var snap = _diagnostics.Capture();
-        Summary =
-            $"SteamCMD path: {snap.SteamCmdPath}{(snap.SteamCmdExists ? " (found)" : " (missing)")}{Environment.NewLine}" +
-            $"Conan server path: {snap.ConanServerExecutablePath}{(snap.ConanServerExecutableExists ? " (found)" : " (missing)")}{Environment.NewLine}" +
-            $"Working directory: {snap.ConanServerWorkingDirectory}{(snap.ConanServerWorkingDirectoryExists ? " (found)" : " (missing)")}{Environment.NewLine}" +
-            $"Server process: {snap.ServerStatus}  PID: {snap.ProcessId?.ToString() ?? "—"}{Environment.NewLine}" +
-            $"Application data: {snap.ApplicationDataDirectory}{Environment.NewLine}" +
-            $"Logs: {snap.LogsDirectory}{Environment.NewLine}" +
-            $"Backups: {snap.BackupsDirectory}{Environment.NewLine}" +
-            $"Settings: {snap.SettingsFilePath}{Environment.NewLine}" +
-            $"Web Admin URL: {snap.WebAdminUrl}{Environment.NewLine}" +
-            $"Tailscale IPv4: {snap.TailscaleIPv4 ?? "not detected"}{Environment.NewLine}" +
-            $"OS: {snap.OperatingSystem}{Environment.NewLine}" +
-            $"Runtime: {snap.Runtime}";
-    }
-
-    [RelayCommand]
-    private async Task InstallSteamCmdAsync()
-    {
-        try
-        {
-            await _steamCmd.InstallAsync();
-            _dialogs.Alert("SteamCMD", "SteamCMD installed.");
-            Refresh();
-        }
-        catch (Exception ex)
-        {
-            MainViewModel.ShowError(ex);
-        }
     }
 }
 
@@ -694,7 +687,7 @@ public partial class ServerViewModel : ObservableObject
             "Server INI editing (Engine.ini / Game.ini / ServerSettings.ini) is not implemented yet." + Environment.NewLine +
             "Unknown Conan keys will not be overwritten when that editor lands." + Environment.NewLine + Environment.NewLine +
             $"Current name: {settings.Current.Server.ServerName}" + Environment.NewLine +
-            $"Ports: game {settings.Current.Server.GamePort}, query {settings.Current.Server.QueryPort}, RCON {settings.Current.Server.RconPort}" + Environment.NewLine +
+            $"Ports: game {settings.Current.Server.GamePort}, query {settings.Current.Server.QueryPort}, RCON {settings.Current.Rcon.Port}" + Environment.NewLine +
             "Use Settings for name, ports, executable, and working directory in this build.";
     }
 

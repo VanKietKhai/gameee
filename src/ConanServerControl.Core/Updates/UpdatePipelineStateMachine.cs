@@ -8,8 +8,8 @@ public sealed class UpdatePipelineStateMachine
     [
         UpdatePipelineState.Checking,
         UpdatePipelineState.NotifyingPlayers,
-        UpdatePipelineState.Backup,
         UpdatePipelineState.Stopping,
+        UpdatePipelineState.Backup,
         UpdatePipelineState.UpdatingServer,
         UpdatePipelineState.UpdatingMods,
         UpdatePipelineState.Validating,
@@ -142,6 +142,7 @@ public sealed class UpdatePipelineStateMachine
             (UpdatePipelineState.Backup, UpdatePipelineState.Stopping) => true,
             (UpdatePipelineState.Backup, UpdatePipelineState.UpdatingServer) => true,
             (UpdatePipelineState.Backup, UpdatePipelineState.UpdatingMods) => true,
+            (UpdatePipelineState.Stopping, UpdatePipelineState.Backup) => true,
             (UpdatePipelineState.Stopping, UpdatePipelineState.UpdatingServer) => true,
             (UpdatePipelineState.Stopping, UpdatePipelineState.UpdatingMods) => true,
             (UpdatePipelineState.Stopping, UpdatePipelineState.Starting) => true,
