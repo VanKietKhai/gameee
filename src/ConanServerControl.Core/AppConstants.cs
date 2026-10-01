@@ -25,6 +25,11 @@ public static class AppConstants
     public const string ModListFileName = "modlist.txt";
     public const string SavedRelative = @"ConanSandbox\Saved";
     public const string ConfigRelative = @"ConanSandbox\Saved\Config\WindowsServer";
+
+    /// <summary>
+    /// Legacy single-file relative path. Prefer <see cref="Backups.ConanWorldFiles"/>
+    /// which also covers Enhanced <c>game_0.db</c> and WAL/SHM siblings.
+    /// </summary>
     public const string GameDbRelative = @"ConanSandbox\Saved\game.db";
 
     public const string SteamCmdExecutableWindows = "steamcmd.exe";
