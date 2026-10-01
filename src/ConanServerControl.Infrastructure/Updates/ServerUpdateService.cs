@@ -86,6 +86,9 @@ public sealed class ServerUpdateService : IServerUpdateService
     public Task UpdateModsAsync(bool restartAfter, IProgress<PipelineProgress>? progress = null, CancellationToken cancellationToken = default) =>
         RunLockedAsync("Update mods", restartAfter, updateServer: false, updateMods: true, "pre-mod-update", progress, cancellationToken);
 
+    public Task UpdateSelectedModsAsync(long workshopId, IProgress<PipelineProgress>? progress = null, CancellationToken cancellationToken = default) =>
+        RunLockedAsync("Update selected mods", restartAfter: false, updateServer: false, updateMods: true, "pre-mod-update", progress, cancellationToken, new[] { workshopId });
+
     public Task UpdateEverythingAsync(IProgress<PipelineProgress>? progress = null, CancellationToken cancellationToken = default) =>
         RunLockedAsync("Update everything", restartAfter: false, updateServer: true, updateMods: true, "pre-update-everything", progress, cancellationToken);
 
@@ -96,7 +99,8 @@ public sealed class ServerUpdateService : IServerUpdateService
         bool updateMods,
         string backupReason,
         IProgress<PipelineProgress>? progress,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        IReadOnlyList<long>? workshopIds = null)
     {
         if (!_gate.TryBegin(actionName, out var lease) || lease is null)
         {
@@ -156,7 +160,7 @@ public sealed class ServerUpdateService : IServerUpdateService
                 if (updateMods)
                 {
                     Report(progress, _pipeline.TransitionTo(UpdatePipelineState.UpdatingMods, "Updating Steam Workshop mods..."));
-                    await _mods.UpdateAllAsync(cancellationToken).ConfigureAwait(false);
+                    await _mods.ApplyUpdatesAsync(workshopIds, cancellationToken).ConfigureAwait(false);
                 }
 
                 Report(progress, _pipeline.TransitionTo(UpdatePipelineState.Validating, "Validating update..."));

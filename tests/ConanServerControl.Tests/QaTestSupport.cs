@@ -307,6 +307,9 @@ internal sealed class ScriptedWorkshop : IWorkshopModService
         return Task.CompletedTask;
     }
 
+    public Task ApplyUpdatesAsync(IReadOnlyList<long>? workshopIds, CancellationToken cancellationToken = default) =>
+        UpdateAllAsync(cancellationToken);
+
     public Task CheckForUpdatesAsync(CancellationToken cancellationToken = default)
     {
         CheckCount++;

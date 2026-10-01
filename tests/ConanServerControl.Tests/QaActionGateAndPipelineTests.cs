@@ -52,6 +52,44 @@ public class QaActionGateAndPipelineTests
     }
 
     [Fact]
+    [Trait("Issue", "QA-005")]
+    public async Task Update_selected_is_rejected_while_restart_holds_the_gate()
+    {
+        var fx = PipelineFixture.Create(ServerStatus.Online);
+        Assert.True(fx.Gate.TryBegin("Restart server", out var lease));
+        try
+        {
+            var error = await Record.ExceptionAsync(() => fx.Updates.UpdateSelectedModsAsync(1));
+            Assert.IsType<UserFacingException>(error);
+            Assert.Equal(0, fx.Mods.UpdateAllCount);
+        }
+        finally
+        {
+            lease!.Dispose();
+        }
+    }
+
+    [Fact]
+    [Trait("Issue", "QA-005")]
+    public async Task Update_all_is_rejected_while_update_server_holds_the_gate()
+    {
+        var fx = PipelineFixture.Create(ServerStatus.Online);
+        Assert.True(fx.Gate.TryBegin("Update server", out var lease));
+        try
+        {
+            var selected = await Record.ExceptionAsync(() => fx.Updates.UpdateModsAsync(false));
+            Assert.IsType<UserFacingException>(selected);
+        }
+        finally
+        {
+            lease!.Dispose();
+        }
+
+        await fx.Updates.UpdateModsAsync(false);
+        Assert.Equal(1, fx.Mods.UpdateAllCount);
+    }
+
+    [Fact]
     public async Task Real_process_manager_update_while_online_does_not_deadlock_on_the_gate()
     {
         var (data, _, settings) = QaTestSupport.CreateData();
@@ -302,6 +340,7 @@ public class QaActionGateAndPipelineTests
             settings,
             steam,
             backup,
+            gate,
             paths,
             new EmptyWorkshopClient(),
             new RecordingActivityLog(),
@@ -360,7 +399,7 @@ public class QaActionGateAndPipelineTests
             }
         };
         var mods = new WorkshopModService(
-            settings, steam, new CountingBackup(), paths, new EmptyWorkshopClient(), new RecordingActivityLog(), NullLogger<WorkshopModService>.Instance);
+            settings, steam, new CountingBackup(), new ServerActionGate(), paths, new EmptyWorkshopClient(), new RecordingActivityLog(), NullLogger<WorkshopModService>.Instance);
 
         await mods.UpdateAllAsync();
 

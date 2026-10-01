@@ -260,11 +260,10 @@ public class QaWorkshopFileSafetyTests
     public async Task Update_selected_must_hold_the_action_gate_while_it_downloads()
     {
         var fx = await Fixture.CreateAsync();
-        var gate = new ServerActionGate();
         var held = false;
         fx.Steam.OnWorkshop = (_, dir, _) =>
         {
-            held = !gate.TryBegin("probe", out var lease);
+            held = !fx.Gate.TryBegin("probe", out var lease);
             lease?.Dispose();
             Directory.CreateDirectory(dir);
             File.WriteAllText(Path.Combine(dir, "Working.pak"), Fixture.GoodBytes);
@@ -274,6 +273,25 @@ public class QaWorkshopFileSafetyTests
         await fx.Mods.UpdateAsync(111);
 
         Assert.True(held, "Update Selected replaced files without holding IServerActionGate.");
+    }
+
+    [Fact]
+    [Trait("Issue", "QA-005")]
+    public async Task Update_all_holds_the_action_gate()
+    {
+        var fx = await Fixture.CreateAsync();
+        var held = false;
+        fx.Steam.OnWorkshop = (_, dir, _) =>
+        {
+            held = !fx.Gate.TryBegin("probe", out var lease);
+            lease?.Dispose();
+            Directory.CreateDirectory(dir);
+            File.WriteAllText(Path.Combine(dir, "Working.pak"), Fixture.GoodBytes);
+            return Task.CompletedTask;
+        };
+
+        await fx.Mods.UpdateAllAsync();
+        Assert.True(held, "Update All replaced files without holding IServerActionGate.");
     }
 
     [Fact]
@@ -375,6 +393,8 @@ public class QaWorkshopFileSafetyTests
 
         public required WorkshopModService Mods { get; init; }
 
+        public required ServerActionGate Gate { get; init; }
+
         public required string LivePak { get; init; }
 
         public required string ModListPath { get; init; }
@@ -408,10 +428,12 @@ public class QaWorkshopFileSafetyTests
             });
 
             var steam = new ScriptedSteamCmd();
+            var gate = new ServerActionGate();
             var service = new WorkshopModService(
                 settings,
                 steam,
                 new CountingBackup(),
+                gate,
                 paths,
                 new EmptyWorkshopClient(),
                 new RecordingActivityLog(),
@@ -424,6 +446,7 @@ public class QaWorkshopFileSafetyTests
                 Settings = settings,
                 Steam = steam,
                 Mods = service,
+                Gate = gate,
                 LivePak = live,
                 ModListPath = modlist,
                 Staging = Path.Combine(paths.StagingDirectory, "workshop", "111"),
@@ -432,10 +455,10 @@ public class QaWorkshopFileSafetyTests
         }
 
         public WorkshopModService WithSteam(ISteamCmdService steam) =>
-            new(Settings, steam, new CountingBackup(), Paths, new EmptyWorkshopClient(), new RecordingActivityLog(), NullLogger<WorkshopModService>.Instance);
+            new(Settings, steam, new CountingBackup(), Gate, Paths, new EmptyWorkshopClient(), new RecordingActivityLog(), NullLogger<WorkshopModService>.Instance);
 
         public WorkshopModService WithClient(ISteamWorkshopClient client) =>
-            new(Settings, Steam, new CountingBackup(), Paths, client, new RecordingActivityLog(), NullLogger<WorkshopModService>.Instance);
+            new(Settings, Steam, new CountingBackup(), Gate, Paths, client, new RecordingActivityLog(), NullLogger<WorkshopModService>.Instance);
 
         public async Task AssertLiveUntouchedAsync()
         {

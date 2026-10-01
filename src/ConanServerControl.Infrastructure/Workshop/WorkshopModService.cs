@@ -17,6 +17,7 @@ public sealed class WorkshopModService : IWorkshopModService
     private readonly ISettingsService _settings;
     private readonly ISteamCmdService _steamCmd;
     private readonly IBackupService _backups;
+    private readonly IServerActionGate _actionGate;
     private readonly IAppPaths _paths;
     private readonly ISteamWorkshopClient _workshopClient;
     private readonly IActivityLog _activityLog;
@@ -26,6 +27,7 @@ public sealed class WorkshopModService : IWorkshopModService
         ISettingsService settings,
         ISteamCmdService steamCmd,
         IBackupService backups,
+        IServerActionGate actionGate,
         IAppPaths paths,
         ISteamWorkshopClient workshopClient,
         IActivityLog activityLog,
@@ -34,6 +36,7 @@ public sealed class WorkshopModService : IWorkshopModService
         _settings = settings;
         _steamCmd = steamCmd;
         _backups = backups;
+        _actionGate = actionGate;
         _paths = paths;
         _workshopClient = workshopClient;
         _activityLog = activityLog;
@@ -146,17 +149,31 @@ public sealed class WorkshopModService : IWorkshopModService
             .ConfigureAwait(false);
     }
 
-    public Task UpdateAsync(long workshopId, CancellationToken cancellationToken = default)
-    {
-        var mod = _settings.Current.Mods.Mods.FirstOrDefault(m => m.WorkshopId == workshopId)
-                  ?? throw new UserFacingException("Mod not found", $"Workshop ID {workshopId} is not in the list.");
-        return DownloadAndStageAsync(mod, cancellationToken);
-    }
+    public Task UpdateAsync(long workshopId, CancellationToken cancellationToken = default) =>
+        RunGatedAsync("Update selected mods", () => ApplyUpdatesAsync(new[] { workshopId }, cancellationToken));
 
-    public async Task UpdateAllAsync(CancellationToken cancellationToken = default)
+    public Task UpdateAllAsync(CancellationToken cancellationToken = default) =>
+        RunGatedAsync("Update mods", () => ApplyUpdatesAsync(workshopIds: null, cancellationToken));
+
+    public async Task ApplyUpdatesAsync(IReadOnlyList<long>? workshopIds, CancellationToken cancellationToken = default)
     {
-        var targets = _settings.Current.Mods.Mods.Where(m => m.Enabled).ToArray();
-        var staged = new List<(WorkshopMod Mod, StagedWorkshopPak Pak)>(targets.Length);
+        IReadOnlyList<WorkshopMod> targets;
+        if (workshopIds is null)
+        {
+            targets = _settings.Current.Mods.Mods.Where(m => m.Enabled).ToArray();
+        }
+        else
+        {
+            var wanted = workshopIds.ToHashSet();
+            targets = _settings.Current.Mods.Mods.Where(m => wanted.Contains(m.WorkshopId)).ToArray();
+            var missing = wanted.Except(targets.Select(m => m.WorkshopId)).ToArray();
+            if (missing.Length > 0)
+            {
+                throw new UserFacingException("Mod not found", $"Workshop ID {missing[0]} is not in the list.");
+            }
+        }
+
+        var staged = new List<(WorkshopMod Mod, StagedWorkshopPak Pak)>(targets.Count);
         try
         {
             foreach (var mod in targets)
@@ -176,6 +193,26 @@ public sealed class WorkshopModService : IWorkshopModService
             {
                 TryDeleteStaging(item.Pak.StagingDirectory);
             }
+        }
+    }
+
+    private async Task RunGatedAsync(string action, Func<Task> work)
+    {
+        if (!_actionGate.TryBegin(action, out var lease) || lease is null)
+        {
+            throw new UserFacingException(
+                "Another action is already running",
+                $"Current action: {_actionGate.CurrentAction}",
+                "Wait for it to finish before updating mods.");
+        }
+
+        try
+        {
+            await work().ConfigureAwait(false);
+        }
+        finally
+        {
+            lease.Dispose();
         }
     }
 

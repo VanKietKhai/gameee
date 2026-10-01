@@ -109,6 +109,7 @@ file sealed class FakeWorkshop : IWorkshopModService
     public Task MoveAsync(long workshopId, int newIndex, CancellationToken cancellationToken = default) => Task.CompletedTask;
     public Task UpdateAsync(long workshopId, CancellationToken cancellationToken = default) => Task.CompletedTask;
     public Task UpdateAllAsync(CancellationToken cancellationToken = default) => Task.CompletedTask;
+    public Task ApplyUpdatesAsync(IReadOnlyList<long>? workshopIds, CancellationToken cancellationToken = default) => Task.CompletedTask;
     public Task CheckForUpdatesAsync(CancellationToken cancellationToken = default) => Task.CompletedTask;
     public string GetShareableModList() => string.Empty;
 }

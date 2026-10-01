@@ -62,6 +62,8 @@ public interface IServerUpdateService
 
     Task UpdateModsAsync(bool restartAfter, IProgress<PipelineProgress>? progress = null, CancellationToken cancellationToken = default);
 
+    Task UpdateSelectedModsAsync(long workshopId, IProgress<PipelineProgress>? progress = null, CancellationToken cancellationToken = default);
+
     Task UpdateEverythingAsync(IProgress<PipelineProgress>? progress = null, CancellationToken cancellationToken = default);
 }
 
@@ -91,6 +93,14 @@ public interface IWorkshopModService
     Task UpdateAsync(long workshopId, CancellationToken cancellationToken = default);
 
     Task UpdateAllAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Stages and commits workshop downloads. Does not acquire
+    /// <see cref="IServerActionGate"/>; the caller must already hold it
+    /// (the locked update pipeline) or wrap this with a public Update* method.
+    /// Null <paramref name="workshopIds"/> updates every enabled mod.
+    /// </summary>
+    Task ApplyUpdatesAsync(IReadOnlyList<long>? workshopIds, CancellationToken cancellationToken = default);
 
     Task CheckForUpdatesAsync(CancellationToken cancellationToken = default);
 
