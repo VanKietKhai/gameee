@@ -197,6 +197,7 @@ public sealed class ProcessRunner : IProcessRunner
         CancellationToken cancellationToken = default)
     {
         var started = DateTime.UtcNow;
+        cancellationToken.ThrowIfCancellationRequested();
         using var process = _starter.Start(request);
         var stdout = new StringBuilder();
         var stderr = new StringBuilder();
@@ -220,7 +221,14 @@ public sealed class ProcessRunner : IProcessRunner
         {
             timedOut = true;
             _logger.LogWarning("Process {File} timed out after {Timeout} and will be terminated.", request.FileName, timeout);
-            TryKill(process);
+            KillStartedProcess(process, request.FileName, preserveAsTimeout: true);
+        }
+        catch (OperationCanceledException)
+        {
+            _logger.LogInformation("Process {File} was cancelled after start and will be terminated.", request.FileName);
+            KillStartedProcess(process, request.FileName, preserveAsTimeout: false);
+            await Task.WhenAll(Safe(stdoutTask), Safe(stderrTask)).ConfigureAwait(false);
+            throw;
         }
 
         await Task.WhenAll(Safe(stdoutTask), Safe(stderrTask)).ConfigureAwait(false);
@@ -267,15 +275,22 @@ public sealed class ProcessRunner : IProcessRunner
         }
     }
 
-    private static void TryKill(IManagedProcess process)
+    private void KillStartedProcess(IManagedProcess process, string fileName, bool preserveAsTimeout)
     {
         try
         {
-            process.Kill(true);
+            if (!process.HasExited)
+            {
+                process.Kill(entireProcessTree: true);
+            }
         }
-        catch
+        catch (Exception ex)
         {
-            // Best effort on timeout.
+            _logger.LogError(ex, "Failed to terminate process tree for {File}.", fileName);
+            if (!preserveAsTimeout)
+            {
+                throw;
+            }
         }
     }
 }

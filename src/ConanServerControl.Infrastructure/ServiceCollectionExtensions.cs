@@ -40,6 +40,8 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<ISteamCmdService, SteamCmdService>();
         services.AddSingleton<ISteamWorkshopClient, SteamWorkshopClient>();
         services.AddSingleton<IRconService, RconService>();
+        services.AddSingleton<IServerReadinessProbe, EndpointServerReadinessProbe>();
+        services.AddSingleton<IBackupVerifier, SqliteBackupVerifier>();
         services.AddSingleton<IBackupService, BackupService>();
         services.AddSingleton<IWorkshopModService, WorkshopModService>();
         services.AddSingleton<IServerUpdateService, ServerUpdateService>();
@@ -48,6 +50,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IInstallDetector, InstallDetector>();
         services.AddSingleton<INetworkInfoService, NetworkInfoService>();
         services.AddSingleton<DiagnosticsService>();
+        services.AddSingleton<IIntegrationDiagnosticsService, IntegrationDiagnosticsService>();
         services.AddSingleton<IActivityLog, ActivityLogService>();
 
         services.AddHttpClient(SteamCmdService.HttpClientName, client =>

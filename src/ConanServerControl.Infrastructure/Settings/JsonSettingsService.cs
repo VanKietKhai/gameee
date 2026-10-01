@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using ConanServerControl.Core;
 using ConanServerControl.Core.Abstractions;
 using ConanServerControl.Core.Settings;
 using Microsoft.Extensions.Logging;
@@ -60,6 +61,12 @@ public sealed class JsonSettingsService : ISettingsService
             if (string.IsNullOrWhiteSpace(Current.SteamCmd.InstallDirectory))
             {
                 Current.SteamCmd.InstallDirectory = _paths.SteamCmdDefaultDirectory;
+            }
+
+            if (TryMigrateLegacyRconPort(Current))
+            {
+                _logger.LogInformation("Migrated legacy Server.RconPort to Rcon.Port {Port}.", Current.Rcon.Port);
+                await WriteSettingsAsync(cancellationToken).ConfigureAwait(false);
             }
 
             Secrets = await LoadSecretsAsync(cancellationToken).ConfigureAwait(false);
@@ -174,5 +181,25 @@ public sealed class JsonSettingsService : ISettingsService
         await File.WriteAllTextAsync(temp, protectedPayload, cancellationToken).ConfigureAwait(false);
         File.Copy(temp, _paths.SecretsFilePath, overwrite: true);
         File.Delete(temp);
+    }
+
+    internal static bool TryMigrateLegacyRconPort(AppSettings settings)
+    {
+        ArgumentNullException.ThrowIfNull(settings);
+#pragma warning disable CS0618
+        var legacyPort = settings.Server.RconPort;
+#pragma warning restore CS0618
+        if (settings.Rcon.Port != AppConstants.DefaultRconPort)
+        {
+            return false;
+        }
+
+        if (legacyPort == AppConstants.DefaultRconPort)
+        {
+            return false;
+        }
+
+        settings.Rcon.Port = legacyPort;
+        return true;
     }
 }

@@ -17,6 +17,7 @@ public sealed class BackupService : IBackupService
     private readonly IServerProcessManager _server;
     private readonly IServerActionGate _actionGate;
     private readonly IActivityLog _activityLog;
+    private readonly IBackupVerifier _verifier;
     private readonly ILogger<BackupService> _logger;
 
     public BackupService(
@@ -25,6 +26,7 @@ public sealed class BackupService : IBackupService
         IServerProcessManager server,
         IServerActionGate actionGate,
         IActivityLog activityLog,
+        IBackupVerifier verifier,
         ILogger<BackupService> logger)
     {
         _paths = paths;
@@ -32,24 +34,101 @@ public sealed class BackupService : IBackupService
         _server = server;
         _actionGate = actionGate;
         _activityLog = activityLog;
+        _verifier = verifier;
         _logger = logger;
     }
 
-    public Task<BackupRecord> BackupNowAsync(string reason, CancellationToken cancellationToken = default) =>
-        BackupNowCoreAsync(reason, extraProtectedBackupIdsOrPaths: null, cancellationToken);
+    public async Task<BackupRecord> BackupNowAsync(string reason, CancellationToken cancellationToken = default)
+    {
+        var wasRunning = _server.State.Status is not ServerStatus.Offline and not ServerStatus.Error;
+        if (!wasRunning)
+        {
+            return await BackupNowCoreAsync(reason, extraProtectedBackupIdsOrPaths: null, cancellationToken)
+                .ConfigureAwait(false);
+        }
+
+        if (!_actionGate.TryBegin("Backup now", out var lease) || lease is null)
+        {
+            throw new UserFacingException(
+                "Server action already running",
+                $"Cannot create a backup because another action is in progress: {_actionGate.CurrentAction}.",
+                "Wait for the current action to finish, then try again.");
+        }
+
+        using (lease)
+        {
+            await _server.StopUnderLockAsync(lease, force: false, cancellationToken).ConfigureAwait(false);
+            EnsureServerStoppedForColdBackup("backup");
+
+            BackupRecord record;
+            try
+            {
+                record = await BackupNowCoreAsync(reason, extraProtectedBackupIdsOrPaths: null, cancellationToken)
+                    .ConfigureAwait(false);
+            }
+            catch (Exception)
+            {
+                await TryRestartAfterFailedColdBackupAsync(lease, cancellationToken).ConfigureAwait(false);
+                throw;
+            }
+
+            try
+            {
+                await _server.StartUnderLockAsync(lease, cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception startEx)
+            {
+                throw new UserFacingException(
+                    "Backup created, but the server did not return online",
+                    startEx is UserFacingException facing ? facing.Message : startEx.Message,
+                    $"A verified cold backup was created ({record.Id}) after the server was stopped, but the dedicated server did not become ready again.",
+                    startEx);
+            }
+
+            return record;
+        }
+    }
+
+    private async Task TryRestartAfterFailedColdBackupAsync(IServerOperationLease lease, CancellationToken cancellationToken)
+    {
+        if (_server.State.Status is not ServerStatus.Offline and not ServerStatus.Error)
+        {
+            return;
+        }
+
+        try
+        {
+            await _server.StartUnderLockAsync(lease, cancellationToken).ConfigureAwait(false);
+        }
+        catch (Exception startEx)
+        {
+            _logger.LogError(startEx, "Could not restart the previously running server after a cold backup failure.");
+        }
+    }
+
+    private void EnsureServerStoppedForColdBackup(string operation)
+    {
+        if (_server.State.Status is ServerStatus.Offline or ServerStatus.Error)
+        {
+            return;
+        }
+
+        throw new UserFacingException(
+            "Cannot create a cold world backup while the server is running",
+            $"The dedicated server is still {_server.State.Status}. A live SQLite copy is not a valid safety backup.",
+            $"Stop the server, then retry the {operation}. The live world was not copied.");
+    }
 
     private async Task<BackupRecord> BackupNowCoreAsync(
         string reason,
         IReadOnlyCollection<string>? extraProtectedBackupIdsOrPaths,
         CancellationToken cancellationToken)
     {
+        EnsureServerStoppedForColdBackup("backup");
+
         var stamp = DateTime.Now.ToString("yyyy-MM-dd_HHmmss");
         var dest = Path.Combine(_paths.BackupsDirectory, stamp);
-        if (!PathValidator.IsUnderRoot(dest, _paths.BackupsDirectory) &&
-            !string.Equals(Path.GetFullPath(dest), Path.GetFullPath(dest), StringComparison.OrdinalIgnoreCase))
-        {
-            throw new UserFacingException("Invalid backup path", dest, "Backup folders are created under the application backups directory only.");
-        }
+        EnsureDestinationIsUnderBackupRoot(dest, _paths.BackupsDirectory);
 
         var install = _settings.Current.ServerPaths.ServerInstallDirectory
                       ?? _settings.Current.ServerPaths.ServerWorkingDirectory;
@@ -121,6 +200,10 @@ public sealed class BackupService : IBackupService
                 $"Expected world files under:{Environment.NewLine}{saved}");
         }
 
+        var copiedWorldFiles = ConanWorldFiles.Present(worldDir);
+        var mainDb = ConanWorldFiles.MainDatabaseFileName(copiedWorldFiles);
+        var worldType = ConanWorldFiles.DetectWorldType(copiedWorldFiles);
+        var worldFileRecords = new List<BackupWorldFileRecord>();
         var record = new BackupRecord
         {
             Id = stamp,
@@ -129,24 +212,117 @@ public sealed class BackupService : IBackupService
             Reason = reason,
             IncludesWorld = includesWorld,
             IncludesConfig = includesConfig,
-            IncludesModList = includesModList
+            IncludesModList = includesModList,
+            WorldType = worldType,
+            MainDbFileName = mainDb,
+            WorldFiles = worldFileRecords
         };
+
+        if (string.IsNullOrWhiteSpace(mainDb))
+        {
+            record.Succeeded = false;
+            record.VerificationDetail = "Expected main world database (game_0.db or game.db) is missing from the backup copy.";
+            record.VerifiedAt = DateTimeOffset.UtcNow;
+            await TryWriteMetadataAsync(dest, record, cancellationToken).ConfigureAwait(false);
+            throw new UserFacingException(
+                "Backup failed",
+                record.VerificationDetail,
+                "A verified world backup requires the main SQLite database. Unrelated .db files are ignored. The live world was not treated as backed up.");
+        }
+
+        try
+        {
+            foreach (var name in copiedWorldFiles)
+            {
+                var copyPath = Path.Combine(worldDir, name);
+                var hash = BackupFileHasher.Sha256File(copyPath);
+                worldFileRecords.Add(new BackupWorldFileRecord
+                {
+                    LogicalName = name,
+                    FileName = name,
+                    SizeBytes = new FileInfo(copyPath).Length,
+                    Sha256 = hash
+                });
+            }
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            record.Succeeded = false;
+            record.VerificationDetail = $"Could not hash copied world files: {ex.Message}";
+            record.VerifiedAt = DateTimeOffset.UtcNow;
+            await TryWriteMetadataAsync(dest, record, cancellationToken).ConfigureAwait(false);
+            throw new UserFacingException(
+                "Backup failed",
+                record.VerificationDetail,
+                "The backup copy could not be hashed. The backup is not verified and must not be used as a safety backup.",
+                ex);
+        }
+
+        BackupVerificationResult verification;
+        try
+        {
+            verification = await _verifier.VerifyAsync(worldDir, record, cancellationToken).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            record.Succeeded = false;
+            record.HashesVerified = false;
+            record.SqliteVerified = false;
+            record.VerificationDetail = ex.Message;
+            record.VerifiedAt = DateTimeOffset.UtcNow;
+            await TryWriteMetadataAsync(dest, record, cancellationToken).ConfigureAwait(false);
+            throw new UserFacingException(
+                "Backup failed",
+                ex.Message,
+                "Backup verification threw. The backup is not verified and must not be used as a safety backup.",
+                ex);
+        }
+
+        record.HashesVerified = verification.HashesVerified;
+        record.SqliteVerified = verification.SqliteVerified;
+        record.VerificationDetail = verification.Detail;
+        record.VerifiedAt = verification.VerifiedAt;
+        record.Succeeded = verification.Succeeded;
+
+        if (!verification.Succeeded)
+        {
+            await TryWriteMetadataAsync(dest, record, cancellationToken).ConfigureAwait(false);
+            throw new UserFacingException(
+                "Backup failed",
+                verification.Detail,
+                "The copied world failed hash or SQLite verification. The backup is not verified. No update or other mutation should proceed.");
+        }
 
         try
         {
             record.SizeBytes = GetDirectorySize(dest);
+            record.ManifestWritten = true;
             var metadataPath = Path.Combine(dest, "metadata.json");
             await File.WriteAllTextAsync(metadataPath, JsonSerializer.Serialize(record, JsonOptions), cancellationToken)
                 .ConfigureAwait(false);
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
+            record.Succeeded = false;
+            record.ManifestWritten = false;
             TryDeleteBackupFolder(dest);
             throw new UserFacingException(
                 "Backup failed",
                 ex.Message,
                 "The backup metadata could not be written. The incomplete backup folder was discarded.",
                 ex);
+        }
+
+        if (!record.ManifestWritten || !record.HashesVerified || !record.SqliteVerified || !record.Succeeded)
+        {
+            throw new UserFacingException(
+                "Backup failed",
+                record.VerificationDetail ?? "Backup verification did not complete.",
+                "A completed backup requires copied world files, a written manifest, hashes, and SQLite verification.");
         }
 
         await _settings.UpdateAsync(s => { }, cancellationToken).ConfigureAwait(false);
@@ -367,6 +543,25 @@ public sealed class BackupService : IBackupService
         }
     }
 
+    private async Task TryWriteMetadataAsync(string dest, BackupRecord record, CancellationToken cancellationToken)
+    {
+        try
+        {
+            if (!Directory.Exists(dest) || !PathValidator.IsUnderRoot(dest, _paths.BackupsDirectory))
+            {
+                return;
+            }
+
+            var metadataPath = Path.Combine(dest, "metadata.json");
+            await File.WriteAllTextAsync(metadataPath, JsonSerializer.Serialize(record, JsonOptions), cancellationToken)
+                .ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Could not write backup metadata for {Id}", record.Id);
+        }
+    }
+
     private static bool CopyIfExists(string source, string destination)
     {
         if (File.Exists(source))
@@ -435,5 +630,16 @@ public sealed class BackupService : IBackupService
         }
 
         return new DirectoryInfo(path).EnumerateFiles("*", SearchOption.AllDirectories).Sum(f => f.Length);
+    }
+
+    internal static void EnsureDestinationIsUnderBackupRoot(string destination, string backupRoot)
+    {
+        if (!PathValidator.IsUnderRoot(destination, backupRoot))
+        {
+            throw new UserFacingException(
+                "Invalid backup path",
+                destination,
+                "Backup folders are created under the application backups directory only.");
+        }
     }
 }

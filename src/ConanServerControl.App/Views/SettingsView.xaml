@@ -29,6 +29,14 @@
         <TextBox Text="{Binding SteamCmdDirectory}" />
       </DockPanel>
 
+      <TextBlock Text="Standalone Conan client (optional, game client only)" Foreground="{StaticResource MutedBrush}" />
+      <TextBlock Text="Folder that contains the client ConanSandbox.exe. Used only by read-only Diagnostics. Never used as the dedicated server, never launched, and Workshop mods are not synchronized to it automatically."
+                 TextWrapping="Wrap" Margin="0,4,0,4" />
+      <DockPanel LastChildFill="True" Margin="0,4,0,12">
+        <Button DockPanel.Dock="Right" Style="{StaticResource GhostButton}" Content="Browse" Command="{Binding BrowseStandaloneClientCommand}" />
+        <TextBox Text="{Binding StandaloneClientRoot}" />
+      </DockPanel>
+
       <TextBlock Text="Server identity" Foreground="{StaticResource MutedBrush}" />
       <TextBlock Text="Server name" Margin="0,8,0,4" />
       <TextBox Text="{Binding ServerName}" />
@@ -40,6 +48,10 @@
         <TextBox Text="{Binding QueryPort}" Margin="0,0,8,0" />
         <TextBox Text="{Binding RconPort}" />
       </UniformGrid>
+      <TextBlock Text="RCON password (write-only, stored with Windows DPAPI, never shown again)" Margin="0,8,0,4" />
+      <PasswordBox x:Name="RconPasswordBox" Margin="0,0,0,4" PasswordChanged="RconPasswordBox_OnPasswordChanged" />
+      <TextBlock Text="{Binding RconPasswordStatus}" Foreground="{StaticResource MutedBrush}" Margin="0,0,0,8" />
+      <Button Style="{StaticResource GhostButton}" Content="Clear RCON password" Command="{Binding ClearRconPasswordCommand}" HorizontalAlignment="Left" Margin="0,0,0,12" />
 
       <TextBlock Text="Web Admin (localhost by default, no router ports opened)" Foreground="{StaticResource MutedBrush}" />
       <CheckBox Content="Enable Web Admin" IsChecked="{Binding WebAdminEnabled}" />

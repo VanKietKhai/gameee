@@ -114,6 +114,9 @@ public sealed class ServerUpdateService : IServerUpdateService
         {
             _pipeline.Begin();
             var wasRunning = _server.State.Status is not ServerStatus.Offline and not ServerStatus.Error;
+            var mutationStarted = false;
+            var safetyBackupFailed = false;
+            var startedAfterMutation = false;
             try
             {
                 Report(progress, _pipeline.TransitionTo(UpdatePipelineState.Checking, "Preparing update..."));
@@ -130,24 +133,41 @@ public sealed class ServerUpdateService : IServerUpdateService
                     }
                 }
 
-                var shouldBackup = (updateServer && _settings.Current.Backups.BackupBeforeServerUpdate)
-                                   || (updateMods && _settings.Current.Backups.BackupBeforeModUpdate);
-                if (shouldBackup)
-                {
-                    Report(progress, _pipeline.TransitionTo(UpdatePipelineState.Backup, "Creating backup..."));
-                    await _backups.BackupNowAsync(backupReason, cancellationToken).ConfigureAwait(false);
-                }
-
                 if (wasRunning)
                 {
                     Report(progress, _pipeline.TransitionTo(UpdatePipelineState.Stopping, "Stopping server..."));
                     await _server.StopUnderLockAsync(lease, force: false, cancellationToken).ConfigureAwait(false);
+                    if (_server.State.Status is not ServerStatus.Offline and not ServerStatus.Error)
+                    {
+                        throw new UserFacingException(
+                            "Could not stop the dedicated server",
+                            $"The server is still {_server.State.Status}. The update was aborted. No backup or update was performed.",
+                            "Stop the server manually, then retry.");
+                    }
+                }
+
+                var shouldBackup = (updateServer && _settings.Current.Backups.BackupBeforeServerUpdate)
+                                   || (updateMods && _settings.Current.Backups.BackupBeforeModUpdate);
+                if (shouldBackup)
+                {
+                    Report(progress, _pipeline.TransitionTo(UpdatePipelineState.Backup, "Creating verified cold backup..."));
+                    try
+                    {
+                        await _backups.BackupNowAsync(backupReason, cancellationToken).ConfigureAwait(false);
+                    }
+                    catch (Exception ex)
+                    {
+                        safetyBackupFailed = true;
+                        _logger.LogError(ex, "Update aborted because safety backup failed.");
+                        throw;
+                    }
                 }
 
                 if (updateServer)
                 {
                     var install = _settings.Current.ServerPaths.ServerInstallDirectory
                                   ?? _settings.Current.ServerPaths.ServerWorkingDirectory!;
+                    mutationStarted = true;
                     Report(progress, _pipeline.TransitionTo(UpdatePipelineState.UpdatingServer, "Downloading server files..."));
                     await _steamCmd.InstallOrUpdateDedicatedServerAsync(
                             install,
@@ -159,6 +179,7 @@ public sealed class ServerUpdateService : IServerUpdateService
 
                 if (updateMods)
                 {
+                    mutationStarted = true;
                     Report(progress, _pipeline.TransitionTo(UpdatePipelineState.UpdatingMods, "Updating Steam Workshop mods..."));
                     await _mods.ApplyUpdatesAsync(workshopIds, cancellationToken).ConfigureAwait(false);
                 }
@@ -169,8 +190,17 @@ public sealed class ServerUpdateService : IServerUpdateService
                 if (wasRunning)
                 {
                     Report(progress, _pipeline.TransitionTo(UpdatePipelineState.Starting, "Starting server..."));
+                    startedAfterMutation = true;
                     await _server.StartUnderLockAsync(lease, cancellationToken).ConfigureAwait(false);
-                    Report(progress, _pipeline.TransitionTo(UpdatePipelineState.HealthCheck, "Checking process..."));
+                    if (_server.State.Status is not ServerStatus.Online)
+                    {
+                        throw new UserFacingException(
+                            $"{actionName} failed",
+                            "The dedicated server process started but did not become ready.",
+                            "The update may have been applied. The server is not Online. Inspect the dedicated-server log.");
+                    }
+
+                    Report(progress, _pipeline.TransitionTo(UpdatePipelineState.HealthCheck, "Waiting for server readiness..."));
                 }
 
                 Report(progress, _pipeline.TransitionTo(UpdatePipelineState.Completed, "Update completed. Existing saves were not deleted."));
@@ -183,10 +213,21 @@ public sealed class ServerUpdateService : IServerUpdateService
                 progress?.Report(_pipeline.Snapshot());
                 _logger.LogError(
                     ex,
-                    "{Action} failed after wasRunning={WasRunning}. Server files were not deleted. Current status={Status}.",
+                    "{Action} failed after wasRunning={WasRunning} mutationStarted={MutationStarted} safetyBackupFailed={BackupFailed}. Server files were not deleted. Current status={Status}.",
                     actionName,
                     wasRunning,
+                    mutationStarted,
+                    safetyBackupFailed,
                     _server.State.Status);
+
+                if (safetyBackupFailed)
+                {
+                    await _activityLog.AddAsync(
+                            "Updates",
+                            "Update aborted because safety backup failed.",
+                            cancellationToken: CancellationToken.None)
+                        .ConfigureAwait(false);
+                }
 
                 var batchFailure = FindModBatchFailure(ex);
                 var verifiedRestore = batchFailure is { IsSafeToRestart: true };
@@ -218,7 +259,10 @@ public sealed class ServerUpdateService : IServerUpdateService
                 }
 
                 var restoredOnline = false;
-                var mayRestart = wasRunning && (batchFailure is null || verifiedRestore);
+                var mayRestart = wasRunning
+                    && !startedAfterMutation
+                    && (batchFailure is null || verifiedRestore)
+                    && _server.State.Status is ServerStatus.Offline or ServerStatus.Error;
                 if (mayRestart)
                 {
                     if (verifiedRestore)
@@ -241,16 +285,20 @@ public sealed class ServerUpdateService : IServerUpdateService
                     }
                 }
 
-                var guidance = verifiedRestore && restoredOnline
-                    ? "Mod update failed. Previous mod set restored. Restarting server with previous versions."
-                    : restoredOnline
-                        ? "The existing dedicated server and world saves were not deleted. A safety backup was kept if backup was enabled. Open the SteamCMD log, fix the error, then retry."
-                        : wasRunning
-                            ? "The server was stopped for this update and was not restarted. A safety backup was kept if backup was enabled. Start the server manually after you inspect the failure."
-                            : "The existing dedicated server and world saves were not deleted. Open the SteamCMD log, fix the error, then retry.";
+                var guidance = safetyBackupFailed && restoredOnline
+                    ? "Update aborted because safety backup failed. The live world was not mutated. The previously running server was started again."
+                    : safetyBackupFailed && wasRunning && !restoredOnline
+                        ? "Update aborted because safety backup failed. The live world was not mutated. The server was stopped for the backup and was not restarted."
+                    : verifiedRestore && restoredOnline
+                        ? "Mod update failed. Previous mod set restored. Restarting server with previous versions."
+                        : restoredOnline
+                            ? "The existing dedicated server and world saves were not deleted. A safety backup was kept if backup was enabled. Open the SteamCMD log, fix the error, then retry."
+                            : wasRunning
+                                ? "The server was stopped for this update and was not restarted. A safety backup was kept if backup was enabled. Start the server manually after you inspect the failure."
+                                : "The existing dedicated server and world saves were not deleted. Open the SteamCMD log, fix the error, then retry.";
 
                 throw new UserFacingException(
-                    $"{actionName} failed",
+                    safetyBackupFailed ? $"{actionName} aborted" : $"{actionName} failed",
                     detail,
                     guidance,
                     ex);

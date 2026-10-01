@@ -44,6 +44,7 @@ public class ServerUpdatePipelineTests
             gate,
             activity,
             new FakeRcon(),
+            new ImmediateReadyProbe(),
             NullLogger<ServerProcessManager>.Instance);
 
         await manager.StartAsync();

@@ -1,102 +1,97 @@
 # Conan Server Control — Current Status
 
 ## Last Updated
-2026-10-01 16:50 UTC
+2026-10-02
 
 ## Current Milestone
-QA-016 only: fail-closed live Workshop mod rollback when verification throws.
+M3 — Live Windows Integration & Diagnostics, **Task 3 complete** (Integration Diagnostics).
 
-Delayed Restart, Wait Until Empty, `app_info_print`, first-run wizard, Update Available vs Verify All, and new Web Admin features were **not** started.
+Task 4 (guarded LiveWindows integration) has **not** started. Delayed Restart, Wait Until Empty, Web Admin expansion, `app_info_print`, and Update Available / Verify-All are also not started.
 
 ## Implemented and Verified
 
-- Solution structure (App / Core / Infrastructure / Web / Tests)
-- Strongly typed settings JSON + DPAPI-protected secrets
-- PBKDF2 Web Admin password hashing
-- Workshop ID and path validation
-- Mod list generation and reorder
-- Backup retention with a protected-id set (QA-001)
-- Restore refuses to delete its source and fails closed on copy errors (QA-001)
-- Incomplete world backups fail instead of logging success (QA-007)
-- Restore takes the same action gate as Start/Stop/Update (QA-012)
-- Workshop staging is wiped, validated (single non-empty current `.pak`), then replaced (QA-002)
-- Multi-mod updates stage and validate every target before any live replacement (QA-002 / QA-006)
-- Live multi-mod commit copies every current live pak into an isolated rollback directory, then replaces one at a time. Any replacement failure rolls back every already-changed pak (QA-016)
-- Rollback restore, verification, and `FilesEqual` share one fail-closed boundary. Any throw becomes recovery-required (QA-016)
-- Failed live commit with a **verified** rollback may restart a previously online server onto the restored old set, and still reports FAILED (QA-016)
-- Failed live commit whose rollback fails, cannot be verified, or throws leaves the server OFFLINE (`recovery required`) even if it was online before (QA-016)
-- Update Server / Mods / Everything preserve original online/offline state when a safe set can be restored (QA-003)
-- `Validating → Completed` is a legal offline success transition (QA-004)
-- Mods Update Selected / Update All use the global action gate (QA-005)
-- Failed Update Everything restores a previously online process after an unchanged or rolled-back mod set (QA-006 / QA-016)
-- `StartUnderLockAsync` / `StopUnderLockAsync` require `IServerOperationLease` (QA-008)
-- Steam Workshop `result != 1` is ignored (QA-009)
-- Web Admin `/api` returns 401 instead of a login redirect; mutations require CSRF (QA-010)
+- Task 1 foundation: RCON, ProcessRunner cancel, QA-013, ConanWorldFiles.
+- Task 2: readiness probe (QA-011), cold verified backups, abort-before-mutation.
+- **Task 3:** read-only `IIntegrationDiagnosticsService` covers:
+  - System
+  - SteamCMD
+  - Dedicated Server
+  - Standalone Client
+  - Network
+  - RCON
+  - World / Saves
+  - Mods
+  - Backups
+
+  Results are PASS / WARNING / FAIL / NOT CONFIGURED / NOT TESTED, each with an explicit evidence label. Nothing is reported as live verified.
+- The standalone client `ConanSandbox.exe` and the `Run Me!.bat` launcher are rejected (FAIL) as the dedicated-server executable.
+- Optional, configurable standalone client root (`Client.RootDirectory`). It is detected read-only and never required for server readiness.
+- Readiness verdicts: server live test, and client compatibility test.
+- Redacted JSON + Markdown export to `%DATA%\diagnostics`. Tests prove that known secrets and the protected blob never appear.
+- The Diagnostics page shows per-category badges, evidence labels, readiness at the bottom, export, and open folder.
+- Verified on this Windows host:
+  - against the real client root `D:\conan exiles\Conan Exiles Enhanced`, read-only, with 0 file changes
+  - in the running app, using an isolated data directory
 
 ## Implemented but Not Fully Verified
 
-- SteamCMD install / `app_update 443030` / workshop download — real ProcessStartInfo paths; not run against live SteamCMD here (Linux agent)
-- Live ConanSandboxServer.exe start/stop
-- Source RCON client — protocol implemented; needs a running server
-- Restore on a real `game.db`
-- Steam `GetPublishedFileDetails` over the real network (client is implemented; tests use a fake)
-- Live Windows File.Replace / locked `.pak` during a real Conan process (covered by unit IO failures, not a running dedicated server)
+- SteamCMD / live Conan / RCON / Workshop on a real Windows host (M3 Task 4).
+- Production `EndpointServerReadinessProbe` against a real dedicated server.
 
 ## Partially Implemented
 
-- Dedicated-server “latest build” comparison still has no Steam depot query (`app_info_print` is deferred)
-- `UpdateAllAsync` still re-downloads every enabled mod (UPDATE AVAILABLE vs VERIFY/RE-DOWNLOAD ALL is not split yet)
-- Delayed restart still ignores `UpdateServer`/`UpdateMods` flags on the request object
-- First-run wizard — Settings page is the substitute
-- Mods UI is a text list + ID field, not drag-and-drop
-- Steam dedicated-server binaries are not rolled back if `app_update` succeeds and a later mod commit fails
+- Manual BACKUP NOW while Online: stop → verified cold backup → start. Scheduled / delayed-restart backup-first is still deferred.
 
 ## Placeholder / Mock / Stub
 
-- Server INI editor (Server page text only)
-- Tray icon / start with Windows
-- Wait-until-empty automation
-- Scheduled backup/update hosted services
-- First-run 8-step wizard
+- Server INI editor, tray, wait-until-empty, scheduled backup/update, first-run wizard.
+- LiveWindows harness (Task 4).
+- QA-017 `UPDATE EVERYTHING` rename, Dashboard `STARTING` label, Backups Verified badge (architect Task 3 UI items; not in this assignment).
 
 ## Known Bugs
 
-- None remaining from the confirmed P0/P1 QA list (QA-001 through QA-010, QA-012, QA-016) in this suite.
-- Residual: no remote Steam build id without `app_info_print`.
-- Residual: Update All vs Update Available naming. Not a safety blocker.
+- None remaining from the confirmed P0/P1 stabilization list.
+- Attach-to-existing-process still marks Online without the readiness probe (Task 4).
+- Pre-existing: the Settings Web Admin password field is a plain TextBox, so it is visible while typing.
 
 ## Build Status
 
-Solution build:
+Solution build (`dotnet build -c Release`, SDK 8.0.425):
 PASS
 0 warnings
 0 errors
 
-Tests:
-108 passed
+Tests (`dotnet test -c Release`):
+203 passed
 0 failed
-108 total
+203 total
+0 skipped
+
+The 157 earlier tests remain green. On Windows, 2 of them first failed because of host-specific test-harness behaviour; these were fixed without weakening them (see HANDOFF Baseline). Task 3 added 46 test cases.
 
 ## Current Architecture
 
-.NET 8 WPF host + Core + Infrastructure + optional Web Admin.
+Unchanged gate/lease/`ModBatchTransaction`/`RollbackResult`/Web auth/readiness/cold-backup pipeline.
 
-`IServerActionGate.TryBegin` issues `IServerOperationLease`. Destructive start/stop under lock require that lease. Restore, update pipelines, and Mods Update Selected/All share the same gate. Workshop downloads use a fresh staging directory and fail closed before touching live paks. A multi-mod live commit uses `ModBatchTransaction` plus `RollbackResult`: isolated rollback copies, replace one-by-one, and treat any rollback/verification exception as recovery-required. The server restarts after a failed update only when live mods were never mutated or when rollback is positively verified.
+Task 3 is additive:
+
+- `Core/Diagnostics` holds the models, classifier, readiness calculator, redactor, and formatter.
+- `Infrastructure/Diagnostics/IntegrationDiagnosticsService` runs the checks. It never takes the gate, never starts or stops anything, never executes SteamCMD, never opens the live DB, and never writes except on explicit export.
 
 ## Current Blockers
 
-- No live Conan dedicated server or SteamCMD on this Linux agent
+- SteamCMD is not installed on this host. This is the only server-live readiness blocker reported by diagnostics.
+- No dedicated server is installed yet. That is acceptable, because the live test installs into a safe workspace.
+- The host has only a per-user .NET 8 SDK/ASP.NET Core runtime (`%LOCALAPPDATA%\Microsoft\dotnet`). Running the App needs `DOTNET_ROOT` pointing there, or a system-wide runtime.
 
 ## Next Recommended Work
 
-1. CONAN QA final retest of QA-016
-2. After QA PASS: split UPDATE AVAILABLE MODS vs VERIFY / RE-DOWNLOAD ALL
-3. Then, and only then: Delayed Restart / Wait Until Empty / `app_info_print`
+M3 Task 4 — guarded Live Windows integration.
 
 ## Last Completed Task
 
-QA-016: fail-closed rollback when verification throws. Restart only after positively verified rollback. Full suite 108/108.
+M3 Task 3: Integration Diagnostics & standalone-client-aware diagnostics.
 
 ## Current Task
 
-Hand off to CONAN QA for QA-016 final retest (`HANDOFF.md`).
+Hand off Task 3 (`HANDOFF.md`). Do not start Task 4 until accepted.

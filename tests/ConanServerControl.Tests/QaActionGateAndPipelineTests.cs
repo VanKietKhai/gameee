@@ -21,6 +21,7 @@ public class QaActionGateAndPipelineTests
         Assert.Equal(ServerStatus.Online, fx.Server.State.Status);
         Assert.Equal(new[] { "pre-server-update" }, fx.Backup.Reasons);
         Assert.Equal(new[] { "stop-under-lock", "start-under-lock" }, fx.Server.Calls);
+        Assert.Equal(new[] { "stop", "backup", "update", "start" }, fx.Timeline);
         Assert.Equal(new[] { "server-update" }, fx.Steam.Events);
         Assert.Equal(0, fx.Mods.UpdateAllCount);
     }
@@ -105,6 +106,7 @@ public class QaActionGateAndPipelineTests
             gate,
             new MemoryActivityLog(),
             new FakeRcon(),
+            new ImmediateReadyProbe(),
             NullLogger<ServerProcessManager>.Instance);
         var steam = new ScriptedSteamCmd();
         string? statusDuringSteam = null;
@@ -148,6 +150,7 @@ public class QaActionGateAndPipelineTests
             gate,
             new MemoryActivityLog(),
             new FakeRcon(),
+            new ImmediateReadyProbe(),
             NullLogger<ServerProcessManager>.Instance);
         var release = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
         var entered = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -580,6 +583,7 @@ public class QaActionGateAndPipelineTests
             gate,
             new MemoryActivityLog(),
             new FakeRcon(),
+            new ImmediateReadyProbe(),
             NullLogger<ServerProcessManager>.Instance);
         return (manager, gate);
     }
@@ -598,6 +602,8 @@ public class QaActionGateAndPipelineTests
 
         public required ServerUpdateService Updates { get; init; }
 
+        public required List<string> Timeline { get; init; }
+
         public static PipelineFixture Create(ServerStatus status)
         {
             var (data, _, settings) = QaTestSupport.CreateData();
@@ -606,9 +612,11 @@ public class QaActionGateAndPipelineTests
             var gate = new ServerActionGate();
             var server = new RecordingServer(gate);
             server.State.Status = status;
-            var backup = new CountingBackup();
-            var steam = new ScriptedSteamCmd();
-            var mods = new ScriptedWorkshop();
+            var timeline = new List<string>();
+            var backup = new CountingBackup { Timeline = timeline };
+            var steam = new ScriptedSteamCmd { Timeline = timeline };
+            var mods = new ScriptedWorkshop { Timeline = timeline };
+            server.Timeline = timeline;
             var updates = new ServerUpdateService(
                 settings,
                 steam,
@@ -625,7 +633,8 @@ public class QaActionGateAndPipelineTests
                 Backup = backup,
                 Steam = steam,
                 Mods = mods,
-                Updates = updates
+                Updates = updates,
+                Timeline = timeline
             };
         }
     }
