@@ -361,6 +361,68 @@ public sealed class M3LiveSafetyTests
         Assert.Contains(ServerStatus.Stopping, seen);
     }
 
+    // ------------------------------------------------------------ Graceful stop command (live finding)
+
+    [Fact]
+    public async Task Graceful_stop_sends_rcon_shutdown_not_doexit_and_does_not_kill()
+    {
+        var (_, _, settings) = QaTestSupport.CreateData();
+        await QaTestSupport.ConfigureInstallAsync(settings, Path.Combine(Path.GetTempPath(), "csc-m3-shutdown", Guid.NewGuid().ToString("n")));
+        await settings.UpdateAsync(s =>
+        {
+            s.Rcon.Enabled = true;
+            s.Advanced.ReadinessPollIntervalMilliseconds = 20;
+        });
+        await settings.UpdateSecretsAsync(s => s.RconPassword = "test-only-rcon");
+        var starter = new FakeProcessStarter { Settings = settings };
+        var rcon = new ShutdownAwareRcon(() => starter.Last.CloseMainWindow());
+        var manager = new ServerProcessManager(
+            settings, starter, new ServerActionGate(), new MemoryActivityLog(), rcon, new ImmediateReadyProbe(),
+            NullLogger<ServerProcessManager>.Instance);
+        await manager.StartAsync();
+        var clock = System.Diagnostics.Stopwatch.StartNew();
+
+        await manager.StopAsync();
+
+        Assert.Equal(ServerStatus.Offline, manager.State.Status);
+        Assert.Contains("shutdown", rcon.Commands);
+        Assert.DoesNotContain("DoExit", rcon.Commands);
+        Assert.True(clock.Elapsed < TimeSpan.FromSeconds(5), $"Stop took {clock.Elapsed}; it should finish when the server exits on 'shutdown'.");
+        Assert.Equal(120, new Core.Settings.AdvancedSettings().GracefulStopTimeoutSeconds);
+        Assert.Equal("shutdown", new Core.Settings.RconSettings().ShutdownCommand);
+    }
+
+    private sealed class ShutdownAwareRcon(Action onShutdown) : Core.Abstractions.IRconService
+    {
+        public List<string> Commands { get; } = new();
+
+        public bool IsConnected => true;
+
+        public Task ConnectAsync(CancellationToken cancellationToken = default) => Task.CompletedTask;
+
+        public Task DisconnectAsync() => Task.CompletedTask;
+
+        public Task<string> SendCommandAsync(string command, CancellationToken cancellationToken = default)
+        {
+            Commands.Add(command);
+            if (command == "shutdown")
+            {
+                onShutdown();
+            }
+
+            return Task.FromResult("Successfully executed: " + command);
+        }
+
+        public Task AnnounceAsync(string message, CancellationToken cancellationToken = default)
+        {
+            Commands.Add("broadcast " + message);
+            return Task.CompletedTask;
+        }
+
+        public Task<IReadOnlyList<PlayerInfo>> GetPlayersAsync(CancellationToken cancellationToken = default) =>
+            Task.FromResult<IReadOnlyList<PlayerInfo>>(Array.Empty<PlayerInfo>());
+    }
+
     // ------------------------------------------------------------ Readiness: world loaded, not just port bound (live finding)
 
     [Theory]

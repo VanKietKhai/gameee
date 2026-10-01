@@ -170,6 +170,9 @@ public sealed class RconSettings
     public int Port { get; set; } = AppConstants.DefaultRconPort;
 
     public int TimeoutSeconds { get; set; } = 5;
+
+    /// <summary>RCON command used for graceful stop. See <see cref="AppConstants.DefaultRconShutdownCommand"/>.</summary>
+    public string ShutdownCommand { get; set; } = AppConstants.DefaultRconShutdownCommand;
 }
 
 public sealed class AdvancedSettings

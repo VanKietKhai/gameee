@@ -42,7 +42,19 @@ public static class AppConstants
     public const int DefaultWebAdminPort = 8080;
     public const int DefaultMaxPlayers = 10;
 
-    public const int DefaultGracefulStopTimeoutSeconds = 30;
+    /// <summary>
+    /// M3 live: a clean RCON shutdown of the Enhanced dedicated server took ~57 s
+    /// (world teardown, then telemetry/HTTP shutdown). 30 s force-killed it mid-exit.
+    /// </summary>
+    public const int DefaultGracefulStopTimeoutSeconds = 120;
+
+    /// <summary>
+    /// RCON command that shuts the dedicated server down cleanly. Live-verified on
+    /// build ++exiles+release-beta-CL-378132: listed by the server's RCON "help",
+    /// replies "Successfully executed: shutdown", exits with code 0 and leaves no
+    /// game_0.db-wal/-shm. "DoExit" and "exit" are not recognised by that build.
+    /// </summary>
+    public const string DefaultRconShutdownCommand = "shutdown";
     public const int DefaultForceStopTimeoutSeconds = 10;
     public const int CrashRestartMaxAttempts = 3;
     public const int CrashRestartWindowMinutes = 10;

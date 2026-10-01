@@ -302,6 +302,7 @@ internal sealed class Harness : IAsyncDisposable
             s.Server.ServerName = "CSC M3 Live Test";
             s.General.StartServerWhenManagerLaunches = false;
             s.Advanced.RestartAfterCrash = false; // never auto-restart while diagnosing live boots
+            s.Advanced.GracefulStopTimeoutSeconds = AppConstants.DefaultGracefulStopTimeoutSeconds;
             s.WebAdmin.Enabled = false;
         });
 
@@ -866,7 +867,7 @@ internal sealed class Harness : IAsyncDisposable
     // ------------------------------------------------------------ RCON for the throwaway test server
 
     /// <summary>
-    /// Enables RCON on the throwaway test server so graceful stop (RCON DoExit) can be exercised.
+    /// Enables RCON on the throwaway test server so graceful stop (RCON shutdown) can be exercised.
     /// Writes only the server's own Saved\Config\WindowsServer\Game.ini [RconPlugin] section and
     /// the app's DPAPI-protected secret. The password is random and never printed.
     /// </summary>
@@ -1022,7 +1023,7 @@ internal sealed class Harness : IAsyncDisposable
         _log.Write(step, "IServerProcessManager.StopAsync", ok ? "PASS" : "FAIL", clock.Elapsed,
             Facts(("Status", server.State.Status.ToString()), ("Error", error ?? string.Empty), ("LastExitCode", server.State.LastExitCode?.ToString() ?? "n/a"),
                 ("Timeline", string.Join(" -> ", timeline)), ("RemainingServerProcesses", DescribeProcesses()),
-                ("StopPath", string.IsNullOrEmpty(_settings.Secrets.RconPassword) ? "no RCON password -> CloseMainWindow -> kill tree" : "RCON DoExit attempted first")),
+                ("StopPath", string.IsNullOrEmpty(_settings.Secrets.RconPassword) ? "no RCON password -> CloseMainWindow -> kill tree" : $"RCON '{_settings.Current.Rcon.ShutdownCommand}' attempted first")),
             ReadLogFrom(ServerLog, logOffset, 25));
         return ok;
     }

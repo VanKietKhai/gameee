@@ -373,7 +373,11 @@ public sealed class ServerProcessManager : IServerProcessManager, IDisposable
             }
 
             await _rcon.AnnounceAsync("Server is shutting down.", cancellationToken).ConfigureAwait(false);
-            await _rcon.SendCommandAsync("DoExit", cancellationToken).ConfigureAwait(false);
+            var command = string.IsNullOrWhiteSpace(_settings.Current.Rcon.ShutdownCommand)
+                ? AppConstants.DefaultRconShutdownCommand
+                : _settings.Current.Rcon.ShutdownCommand.Trim();
+            var reply = await _rcon.SendCommandAsync(command, cancellationToken).ConfigureAwait(false);
+            _logger.LogInformation("RCON graceful shutdown '{Command}' replied: {Reply}", command, reply);
         }
         catch (Exception ex)
         {
