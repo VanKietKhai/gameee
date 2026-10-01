@@ -101,6 +101,14 @@ public sealed class NetworkInfoService : INetworkInfoService
                     continue;
                 }
 
+                // VPN adapters are reported separately (GetRadminVpnIPv4 / GetTailscaleIPv4).
+                var adapter = ni.Name + " " + ni.Description;
+                if (adapter.Contains("radmin", StringComparison.OrdinalIgnoreCase) ||
+                    adapter.Contains("tailscale", StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
                 foreach (var address in ni.GetIPProperties().UnicastAddresses)
                 {
                     if (address.Address.AddressFamily == AddressFamily.InterNetwork &&
