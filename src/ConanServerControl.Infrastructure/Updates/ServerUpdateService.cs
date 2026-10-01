@@ -87,7 +87,7 @@ public sealed class ServerUpdateService : IServerUpdateService
         RunLockedAsync("Update mods", restartAfter, updateServer: false, updateMods: true, "pre-mod-update", progress, cancellationToken);
 
     public Task UpdateEverythingAsync(IProgress<PipelineProgress>? progress = null, CancellationToken cancellationToken = default) =>
-        RunLockedAsync("Update everything", restartAfter: true, updateServer: true, updateMods: true, "pre-update-everything", progress, cancellationToken);
+        RunLockedAsync("Update everything", restartAfter: false, updateServer: true, updateMods: true, "pre-update-everything", progress, cancellationToken);
 
     private async Task RunLockedAsync(
         string actionName,
@@ -160,7 +160,9 @@ public sealed class ServerUpdateService : IServerUpdateService
                 }
 
                 Report(progress, _pipeline.TransitionTo(UpdatePipelineState.Validating, "Validating update..."));
-                if (restartAfter || wasRunning)
+                // Preserve the original process state. Do not treat the generic
+                // restartAfter flag as an explicit StartAfterwards request.
+                if (wasRunning)
                 {
                     Report(progress, _pipeline.TransitionTo(UpdatePipelineState.Starting, "Starting server..."));
                     await _server.StartUnderLockAsync(cancellationToken).ConfigureAwait(false);

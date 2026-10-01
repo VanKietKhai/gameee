@@ -160,7 +160,10 @@ public class QaActionGateAndPipelineTests
         Assert.False(fx.Gate.IsBusy);
         fx.Steam.ServerException = null;
         await fx.Updates.UpdateAsync(restartAfter: true);
-        Assert.Equal(ServerStatus.Online, fx.Server.State.Status);
+        // The failed update stopped the server. The retry must succeed (gate
+        // released) and must not start an offline server (QA-003).
+        Assert.Equal(ServerStatus.Offline, fx.Server.State.Status);
+        Assert.False(fx.Gate.IsBusy);
     }
 
     [Fact]

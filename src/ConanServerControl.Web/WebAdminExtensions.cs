@@ -229,11 +229,11 @@ public static class WebAdminExtensions
             .RequireAuthorization();
 
         app.MapPost("/api/server/update-server", (HttpContext http, IServerUpdateService updates, IActivityLog activity) =>
-            RunAction(http, activity, "Update Server", () => updates.UpdateAsync(true, cancellationToken: http.RequestAborted)))
+            RunAction(http, activity, "Update Server", () => updates.UpdateAsync(false, cancellationToken: http.RequestAborted)))
             .RequireAuthorization();
 
         app.MapPost("/api/server/update-mods", (HttpContext http, IServerUpdateService updates, IActivityLog activity) =>
-            RunAction(http, activity, "Update Mods", () => updates.UpdateModsAsync(true, cancellationToken: http.RequestAborted)))
+            RunAction(http, activity, "Update Mods", () => updates.UpdateModsAsync(false, cancellationToken: http.RequestAborted)))
             .RequireAuthorization();
 
         app.MapPost("/api/server/delayed-restart", async (

@@ -630,7 +630,7 @@ public partial class UpdatesViewModel : ObservableObject
     {
         try
         {
-            await _updates.UpdateAsync(restartAfter: true);
+            await _updates.UpdateAsync(restartAfter: false);
             Summary = "Update pipeline finished.";
         }
         catch (Exception ex)
