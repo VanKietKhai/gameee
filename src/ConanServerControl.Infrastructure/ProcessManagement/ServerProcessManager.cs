@@ -763,6 +763,23 @@ public sealed class ServerProcessManager : IServerProcessManager, IDisposable
         State.ActionInProgress = _actionGate.IsBusy;
         State.CurrentAction = _actionGate.CurrentAction;
         var snapshot = State.Clone();
-        StateChanged?.Invoke(this, snapshot);
+        var handlers = StateChanged;
+        if (handlers is null)
+        {
+            return;
+        }
+
+        // An observer (UI, Web, harness) must never abort a lifecycle operation such as Stop.
+        foreach (var handler in handlers.GetInvocationList().Cast<EventHandler<ServerRuntimeState>>())
+        {
+            try
+            {
+                handler(this, snapshot);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "A server state subscriber threw; the server operation continues.");
+            }
+        }
     }
 }

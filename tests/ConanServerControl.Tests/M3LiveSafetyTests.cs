@@ -335,6 +335,32 @@ public sealed class M3LiveSafetyTests
         Assert.Equal(DiagnosticStatus.Pass, report.Find(DiagnosticCheckIds.ClientExecutable)!.Status);
     }
 
+    [Fact]
+    public async Task Throwing_state_subscriber_does_not_abort_start_or_stop()
+    {
+        var (_, _, settings) = QaTestSupport.CreateData();
+        await QaTestSupport.ConfigureInstallAsync(settings, Path.Combine(Path.GetTempPath(), "csc-m3-sub", Guid.NewGuid().ToString("n")));
+        await settings.UpdateAsync(s =>
+        {
+            s.Advanced.GracefulStopTimeoutSeconds = 1;
+            s.Advanced.ForceStopTimeoutSeconds = 1;
+            s.Advanced.ReadinessPollIntervalMilliseconds = 20;
+        });
+        var manager = new ServerProcessManager(
+            settings, new FakeProcessStarter { Settings = settings }, new ServerActionGate(), new MemoryActivityLog(),
+            new FakeRcon(), new ImmediateReadyProbe(), NullLogger<ServerProcessManager>.Instance);
+        var seen = new List<ServerStatus>();
+        manager.StateChanged += (_, _) => throw new ArgumentOutOfRangeException("index", "observer bug");
+        manager.StateChanged += (_, state) => seen.Add(state.Status);
+
+        await manager.StartAsync();
+        Assert.Equal(ServerStatus.Online, manager.State.Status);
+
+        await manager.StopAsync();
+        Assert.Equal(ServerStatus.Offline, manager.State.Status);
+        Assert.Contains(ServerStatus.Stopping, seen);
+    }
+
     private sealed class CountingStarter : Core.Abstractions.IProcessStarter
     {
         public int Starts { get; private set; }

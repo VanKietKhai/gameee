@@ -135,7 +135,7 @@ internal static class Program
                 "diag" => await harness.DiagAsync(),
                 "install-steamcmd" => await harness.InstallSteamCmdAsync(),
                 "install-server" => await harness.InstallServerAsync(),
-                "boot" => await harness.BootAsync("boot", HoldSeconds(args), scanMods: false),
+                "boot" => await harness.BootAsync("boot", HoldSeconds(args), scanMods: false, ObserveSeconds(args)),
                 "mod-boot" => await harness.BootAsync("mod-boot", HoldSeconds(args), scanMods: true),
                 "cycle" => await harness.CycleAsync(),
                 "backup" => await harness.BackupAsync(),
@@ -144,6 +144,7 @@ internal static class Program
                 "client-snapshot" => harness.ClientSnapshot(args[1]),
                 "client-compare" => harness.ClientCompare(args[1], args[2]),
                 "configure-rcon" => await harness.ConfigureRconAsync(),
+                "stop" => await harness.StopExistingAsync(),
                 _ => Unknown(command)
             };
         }
@@ -157,6 +158,12 @@ internal static class Program
     {
         Console.Error.WriteLine("Unknown command: " + command);
         return 2;
+    }
+
+    private static int ObserveSeconds(string[] args)
+    {
+        var index = Array.IndexOf(args, "--observe");
+        return index >= 0 && index + 1 < args.Length ? int.Parse(args[index + 1]) : 0;
     }
 
     private static int HoldSeconds(string[] args)
@@ -431,7 +438,7 @@ internal sealed class Harness : IAsyncDisposable
 
     // ------------------------------------------------------------ 4C boot / cycle
 
-    public async Task<int> BootAsync(string step, int holdSeconds, bool scanMods)
+    public async Task<int> BootAsync(string step, int holdSeconds, bool scanMods, int observeSeconds = 0)
     {
         if (!EnsureNoForeignServer(step))
         {
@@ -481,6 +488,11 @@ internal sealed class Harness : IAsyncDisposable
                 ("ServerLog", ServerLog)),
             Interesting(ReadLogFrom(ServerLog, logOffset, int.MaxValue), scanMods), "server Saved folder (Conan creates world/logs)");
 
+        if (observeSeconds > 0)
+        {
+            await ObserveReadinessSignalsAsync(step, observeSeconds, clock, logOffset);
+        }
+
         if (holdSeconds > 0)
         {
             Console.WriteLine($"Holding the server online for {holdSeconds}s (client observation window)...");
@@ -488,6 +500,82 @@ internal sealed class Harness : IAsyncDisposable
         }
 
         return await StopAndRecordAsync(server, step, timeline) ? 0 : 1;
+    }
+
+    /// <summary>
+    /// Samples readiness signals once per second after Start to find which one really means
+    /// "world loaded": game/query UDP bind, RCON TCP listen, RCON reply, log frame counter > 0.
+    /// </summary>
+    private async Task ObserveReadinessSignalsAsync(string step, int seconds, Stopwatch sinceStart, long logOffset)
+    {
+        var first = new Dictionary<string, string>();
+        var frameRegex = new System.Text.RegularExpressions.Regex(@"^\[\d{4}\.\d\d\.\d\d-[\d.:]+\]\[\s*(\d+)\]");
+        var rcon = _services.GetRequiredService<IRconService>();
+        var game = _settings.Current.Server.GamePort;
+        var query = _settings.Current.Server.QueryPort;
+        var rconPort = _settings.Current.Rcon.Port;
+        var rconConfigured = !string.IsNullOrEmpty(_settings.Secrets.RconPassword);
+        string? rconError = null;
+
+        void Mark(string key, bool condition)
+        {
+            if (condition && !first.ContainsKey(key))
+            {
+                first[key] = $"{sinceStart.Elapsed.TotalSeconds:0}s";
+                Console.WriteLine($"    signal {key} at {first[key]}");
+            }
+        }
+
+        for (var i = 0; i < seconds; i++)
+        {
+            Mark($"UdpBound{game}", UdpBound(game));
+            Mark($"UdpBound{query}", UdpBound(query));
+            Mark($"TcpListen{rconPort}", TcpListening(rconPort));
+
+            var lastFrame = 0;
+            foreach (var line in ReadLogFrom(ServerLog, logOffset, 200).Split(Environment.NewLine).Reverse())
+            {
+                var m = frameRegex.Match(line);
+                if (m.Success)
+                {
+                    lastFrame = int.Parse(m.Groups[1].Value);
+                    break;
+                }
+            }
+
+            Mark("LogFrameAdvancing", lastFrame > 0);
+            Mark("LogServerStats", ReadLogFrom(ServerLog, logOffset, int.MaxValue).Contains("LogServerStats: Status report", StringComparison.Ordinal));
+
+            if (rconConfigured && !first.ContainsKey("RconReply") && TcpListening(rconPort))
+            {
+                try
+                {
+                    using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+                    await rcon.SendCommandAsync("listplayers", cts.Token);
+                    Mark("RconReply", true);
+                }
+                catch (Exception ex)
+                {
+                    rconError = ex.Message;
+                }
+            }
+
+            var done = first.ContainsKey("LogFrameAdvancing") && (!rconConfigured || first.ContainsKey("RconReply"));
+            if (done && i >= 5)
+            {
+                break;
+            }
+
+            await Task.Delay(1000);
+        }
+
+        var facts = new Dictionary<string, string>(first)
+        {
+            ["RconConfigured"] = rconConfigured ? "YES" : "NO",
+            ["LastRconError"] = rconError ?? string.Empty,
+            ["Note"] = "Times are seconds since StartAsync began."
+        };
+        _log.Write(step, "readiness signal observation", "INFO", sinceStart.Elapsed, facts);
     }
 
     public async Task<int> CycleAsync()
@@ -672,6 +760,41 @@ internal sealed class Harness : IAsyncDisposable
                 ("ModList", File.Exists(modList) ? File.ReadAllText(modList).Replace("\r\n", " | ").Replace('\n', '|') : "missing")),
             Tail(_steam.Records), "server Mods folder + modlist.txt (expected)");
         return ok ? 0 : 1;
+    }
+
+    /// <summary>
+    /// Stops a server left running by an interrupted harness run, through the application:
+    /// attach (RefreshAsync) then StopAsync. Refuses unless every Conan server process runs
+    /// from the configured server directory.
+    /// </summary>
+    public async Task<int> StopExistingAsync()
+    {
+        var existing = Program.ServerProcesses();
+        if (existing.Count == 0)
+        {
+            _log.Write("stop", "stop existing server", "INFO", null, Facts(("Processes", DescribeProcesses())), "No server process is running.");
+            return 0;
+        }
+
+        var foreign = existing.Where(p => p.Path is null || !PathValidator.IsUnderRoot(p.Path, _serverDir)).ToArray();
+        if (foreign.Length > 0)
+        {
+            _log.Write("stop", "stop existing server", "FAIL", null, Facts(("Processes", DescribeProcesses())),
+                "A Conan server process outside the configured server directory is running. Refusing to attach.");
+            return 1;
+        }
+
+        var server = _services.GetRequiredService<IServerProcessManager>();
+        await server.RefreshAsync();
+        var timeline = TrackStates(server);
+        _log.Write("stop", "IServerProcessManager.RefreshAsync (attach)", server.State.ProcessId is null ? "FAIL" : "PASS", null,
+            Facts(("Status", server.State.Status.ToString()), ("AttachedPid", server.State.ProcessId?.ToString() ?? "n/a"), ("Processes", DescribeProcesses())));
+        if (server.State.ProcessId is null)
+        {
+            return 1;
+        }
+
+        return await StopAndRecordAsync(server, "stop", timeline) ? 0 : 1;
     }
 
     // ------------------------------------------------------------ RCON for the throwaway test server
@@ -874,7 +997,7 @@ internal sealed class Harness : IAsyncDisposable
             var entry = $"{state.Status}@{clock.Elapsed.TotalSeconds:0}s";
             lock (timeline)
             {
-                if (!timeline[^1].StartsWith(state.Status + "@", StringComparison.Ordinal))
+                if (timeline.Count == 0 || !timeline[^1].StartsWith(state.Status + "@", StringComparison.Ordinal))
                 {
                     timeline.Add(entry);
                 }
