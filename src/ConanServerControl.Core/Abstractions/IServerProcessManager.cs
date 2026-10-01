@@ -222,6 +222,12 @@ public interface INetworkInfoService
 
     string? GetTailscaleIPv4();
 
+    /// <summary>
+    /// IPv4 of the Radmin VPN adapter, the intended private friends-only network.
+    /// Null when Radmin VPN is not installed or not connected.
+    /// </summary>
+    string? GetRadminVpnIPv4();
+
     string GetWebAdminUrl(string bindAddress, int port);
 }
 

@@ -96,10 +96,12 @@ public static class DiagnosticCheckIds
 
     public const string NetworkPorts = "network.ports";
     public const string NetworkRuntime = "network.runtime";
+    public const string NetworkPrivateVpn = "network.private-vpn";
 
     public const string RconConfiguration = "rcon.configuration";
     public const string RconPassword = "rcon.password";
     public const string RconRuntime = "rcon.runtime";
+    public const string RconExposure = "rcon.exposure";
 
     public const string WorldFiles = "world.files";
 

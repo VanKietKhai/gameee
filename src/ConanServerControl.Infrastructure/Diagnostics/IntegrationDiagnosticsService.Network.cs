@@ -117,6 +117,72 @@ public sealed partial class IntegrationDiagnosticsService
                 action: "Check that the server is using the configured game port.", facts: facts);
     }
 
+    /// <summary>
+    /// Intended deployment: PRIVATE friends-only multiplayer over Radmin VPN. Public server-browser
+    /// registration, public IP exposure, port forwarding and UPnP are not goals and are never configured.
+    /// </summary>
+    private DiagnosticCheckResult CheckPrivateVpn(CheckContext context)
+    {
+        const string id = DiagnosticCheckIds.NetworkPrivateVpn;
+        const string name = "Private friends-only network (Radmin VPN)";
+        var game = context.Settings.Server.GamePort;
+        var radmin = _network.GetRadminVpnIPv4();
+        var facts = new Dictionary<string, string>
+        {
+            ["DeploymentModel"] = "private friends-only over Radmin VPN",
+            ["RadminVpnIPv4"] = radmin ?? "not detected",
+            ["LanIPv4"] = _network.GetLanIPv4() ?? "not detected",
+            ["PublicServerBrowserRegistration"] = "not required",
+            ["PortForwardingOrUpnp"] = "not configured by this app"
+        };
+
+        if (radmin is null)
+        {
+            return Result(id, DiagnosticCategories.Network, name, DiagnosticStatus.Warning,
+                "Radmin VPN adapter not detected, so friends cannot reach the private server.",
+                DiagnosticEvidence.RuntimeObserved,
+                details: "Public server-browser registration is not needed for this deployment (Conan's 'Autologin attempt failed' is expected).",
+                action: "Start Radmin VPN and join the same Radmin network as your friends. No router port forwarding or public IP is needed.",
+                facts: facts);
+        }
+
+        facts["FriendsDirectConnect"] = $"{radmin}:{game}";
+        return Result(id, DiagnosticCategories.Network, name, DiagnosticStatus.Pass,
+            $"Radmin VPN {radmin}: friends direct-connect to {radmin}:{game}. Public registration and port forwarding are not used.",
+            DiagnosticEvidence.RuntimeObserved,
+            details: "Reachability from friends' PCs is not tested here (firewall/VPN state on both ends).",
+            facts: facts);
+    }
+
+    private static DiagnosticCheckResult CheckRconExposure(CheckContext context)
+    {
+        const string id = DiagnosticCheckIds.RconExposure;
+        const string name = "RCON stays private";
+        var rcon = context.Settings.Rcon;
+        if (!rcon.Enabled)
+        {
+            return Result(id, DiagnosticCategories.Rcon, name, DiagnosticStatus.NotConfigured, "RCON is disabled.");
+        }
+
+        var facts = new Dictionary<string, string>
+        {
+            ["AppConnectsTo"] = $"127.0.0.1:{rcon.Port}",
+            ["ConanListensOn"] = $"0.0.0.0:{rcon.Port} (all interfaces; observed live, not configurable in Conan)"
+        };
+        if (context.ServerOnline)
+        {
+            var listeners = System.Net.NetworkInformation.IPGlobalProperties.GetIPGlobalProperties().GetActiveTcpListeners()
+                .Where(e => e.Port == rcon.Port).Select(e => e.Address.ToString()).Distinct().ToArray();
+            facts["ObservedListeners"] = listeners.Length == 0 ? "none" : string.Join(", ", listeners);
+        }
+
+        return Result(id, DiagnosticCategories.Rcon, name, DiagnosticStatus.Warning,
+            $"Conan's RCON (TCP {rcon.Port}) listens on all interfaces, so LAN and Radmin VPN peers can reach it. The app itself only connects to 127.0.0.1.",
+            context.ServerOnline ? DiagnosticEvidence.RuntimeObserved : DiagnosticEvidence.ConfigurationChecked,
+            action: $"Never port-forward TCP {rcon.Port}. Keep a strong RCON password. Optionally allow inbound TCP {rcon.Port} only from this PC with a Windows Firewall rule (manual; this app never changes the firewall).",
+            facts: facts);
+    }
+
     private static DiagnosticCheckResult CheckRconConfiguration(CheckContext context)
     {
         const string id = DiagnosticCheckIds.RconConfiguration;

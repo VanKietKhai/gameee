@@ -119,6 +119,35 @@ public sealed class NetworkInfoService : INetworkInfoService
         return null;
     }
 
+    public string? GetRadminVpnIPv4()
+    {
+        try
+        {
+            foreach (var ni in NetworkInterface.GetAllNetworkInterfaces())
+            {
+                if (ni.OperationalStatus != OperationalStatus.Up ||
+                    !(ni.Name + " " + ni.Description).Contains("radmin", StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                foreach (var address in ni.GetIPProperties().UnicastAddresses)
+                {
+                    if (address.Address.AddressFamily == AddressFamily.InterNetwork && !IPAddress.IsLoopback(address.Address))
+                    {
+                        return address.Address.ToString();
+                    }
+                }
+            }
+        }
+        catch
+        {
+            // ignored
+        }
+
+        return null;
+    }
+
     public string? GetTailscaleIPv4()
     {
         try

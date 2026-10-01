@@ -767,6 +767,7 @@ internal sealed class DiagnosticsHarness
             steam,
             Server,
             Rcon,
+            Network,
             NullLogger<IntegrationDiagnosticsService>.Instance,
             _ =>
             {
@@ -788,6 +789,8 @@ internal sealed class DiagnosticsHarness
     public CountingServer Server { get; } = new();
 
     public RecordingRcon Rcon { get; } = new();
+
+    public FakeNetworkInfo Network { get; } = new();
 
     public int PortProbeCalls { get; private set; }
 
@@ -939,6 +942,19 @@ internal sealed class CountingServer : IServerProcessManager
     public bool IsConanServerProcess(string processName) => false;
 
     public Task RefreshAsync(CancellationToken cancellationToken = default) => Task.CompletedTask;
+}
+
+internal sealed class FakeNetworkInfo : INetworkInfoService
+{
+    public string? RadminIp { get; set; }
+
+    public string? GetLanIPv4() => "192.168.0.10";
+
+    public string? GetTailscaleIPv4() => null;
+
+    public string? GetRadminVpnIPv4() => RadminIp;
+
+    public string GetWebAdminUrl(string bindAddress, int port) => $"http://{bindAddress}:{port}/";
 }
 
 internal sealed class RecordingRcon : IRconService

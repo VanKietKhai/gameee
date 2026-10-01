@@ -25,6 +25,7 @@ public sealed partial class IntegrationDiagnosticsService : IIntegrationDiagnost
     private readonly ISteamCmdService _steamCmd;
     private readonly IServerProcessManager _server;
     private readonly IRconService _rcon;
+    private readonly INetworkInfoService _network;
     private readonly ILogger<IntegrationDiagnosticsService> _logger;
     private readonly Func<int, bool> _isUdpPortInUse;
 
@@ -34,8 +35,9 @@ public sealed partial class IntegrationDiagnosticsService : IIntegrationDiagnost
         ISteamCmdService steamCmd,
         IServerProcessManager server,
         IRconService rcon,
+        INetworkInfoService network,
         ILogger<IntegrationDiagnosticsService> logger)
-        : this(paths, settings, steamCmd, server, rcon, logger, EndpointServerReadinessProbe.IsUdpPortInUse)
+        : this(paths, settings, steamCmd, server, rcon, network, logger, EndpointServerReadinessProbe.IsUdpPortInUse)
     {
     }
 
@@ -45,9 +47,11 @@ public sealed partial class IntegrationDiagnosticsService : IIntegrationDiagnost
         ISteamCmdService steamCmd,
         IServerProcessManager server,
         IRconService rcon,
+        INetworkInfoService network,
         ILogger<IntegrationDiagnosticsService> logger,
         Func<int, bool> isUdpPortInUse)
     {
+        _network = network;
         _paths = paths;
         _settings = settings;
         _steamCmd = steamCmd;
@@ -152,9 +156,11 @@ public sealed partial class IntegrationDiagnosticsService : IIntegrationDiagnost
 
         Add(DiagnosticCheckIds.NetworkPorts, DiagnosticCategories.Network, "Port configuration", () => CheckPorts(context));
         Add(DiagnosticCheckIds.NetworkRuntime, DiagnosticCategories.Network, "Runtime port binding", () => CheckNetworkRuntime(context));
+        Add(DiagnosticCheckIds.NetworkPrivateVpn, DiagnosticCategories.Network, "Private friends-only network (Radmin VPN)", () => CheckPrivateVpn(context));
 
         Add(DiagnosticCheckIds.RconConfiguration, DiagnosticCategories.Rcon, "RCON configuration", () => CheckRconConfiguration(context));
         Add(DiagnosticCheckIds.RconPassword, DiagnosticCategories.Rcon, "RCON password", () => CheckRconPassword(context));
+        Add(DiagnosticCheckIds.RconExposure, DiagnosticCategories.Rcon, "RCON stays private", () => CheckRconExposure(context));
 
         Add(DiagnosticCheckIds.WorldFiles, DiagnosticCategories.World, "World database files", () => CheckWorldFiles(context));
 

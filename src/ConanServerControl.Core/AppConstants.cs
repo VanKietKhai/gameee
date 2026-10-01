@@ -43,10 +43,12 @@ public static class AppConstants
     public const int DefaultMaxPlayers = 10;
 
     /// <summary>
-    /// M3 live: a clean RCON shutdown of the Enhanced dedicated server took ~57 s
-    /// (world teardown, then telemetry/HTTP shutdown). 30 s force-killed it mid-exit.
+    /// M3 live: a clean RCON shutdown of the Enhanced dedicated server took ~57-65 s after short
+    /// runs, but more than 125 s after ~11 minutes online (teardown started immediately; the exit
+    /// sequence then waits on network/telemetry). 30 s and 120 s both force-killed it mid-exit and
+    /// left game_0.db-wal behind.
     /// </summary>
-    public const int DefaultGracefulStopTimeoutSeconds = 120;
+    public const int DefaultGracefulStopTimeoutSeconds = 300;
 
     /// <summary>
     /// RCON command that shuts the dedicated server down cleanly. Live-verified on

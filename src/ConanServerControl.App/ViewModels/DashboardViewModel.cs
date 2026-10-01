@@ -182,7 +182,8 @@ public partial class DashboardViewModel : ObservableObject
     {
         var server = _settings.Current.Server;
         ServerName = server.ServerName;
-        ServerIp = _network.GetLanIPv4() ?? "127.0.0.1";
+        // Private friends-only deployment: friends connect over Radmin VPN when it is present.
+        ServerIp = _network.GetRadminVpnIPv4() ?? _network.GetLanIPv4() ?? "127.0.0.1";
         StatusText = state.CrashLoopDetected ? "CRASH LOOP" : state.Status.ToString().ToUpperInvariant();
         StatusBrush = state.Status switch
         {

@@ -388,7 +388,7 @@ public sealed class M3LiveSafetyTests
         Assert.Contains("shutdown", rcon.Commands);
         Assert.DoesNotContain("DoExit", rcon.Commands);
         Assert.True(clock.Elapsed < TimeSpan.FromSeconds(5), $"Stop took {clock.Elapsed}; it should finish when the server exits on 'shutdown'.");
-        Assert.Equal(120, new Core.Settings.AdvancedSettings().GracefulStopTimeoutSeconds);
+        Assert.Equal(300, new Core.Settings.AdvancedSettings().GracefulStopTimeoutSeconds);
         Assert.Equal("shutdown", new Core.Settings.RconSettings().ShutdownCommand);
     }
 
@@ -488,6 +488,52 @@ public sealed class M3LiveSafetyTests
 
     private static string Stamp(DateTimeOffset utc) =>
         utc.UtcDateTime.ToString("yyyy.MM.dd-HH.mm.ss:fff", System.Globalization.CultureInfo.InvariantCulture);
+
+    // ------------------------------------------------------------ Private friends-only deployment (Radmin VPN)
+
+    [Fact]
+    public async Task Radmin_vpn_address_is_reported_as_the_friends_direct_connect_target()
+    {
+        var h = await DiagnosticsHarness.CreateAsync();
+        h.Network.RadminIp = "26.84.226.21";
+
+        var report = await h.Service.RunAsync();
+
+        var check = report.Find(DiagnosticCheckIds.NetworkPrivateVpn)!;
+        Assert.Equal(DiagnosticStatus.Pass, check.Status);
+        Assert.Equal("26.84.226.21:7777", check.Facts["FriendsDirectConnect"]);
+        Assert.Equal("not required", check.Facts["PublicServerBrowserRegistration"]);
+    }
+
+    [Fact]
+    public async Task Missing_radmin_vpn_warns_but_never_blocks_server_readiness()
+    {
+        var h = await DiagnosticsHarness.CreateAsync();
+        await h.ConfigureServerAsync();
+        h.Network.RadminIp = null;
+
+        var report = await h.Service.RunAsync();
+
+        Assert.Equal(DiagnosticStatus.Warning, report.Find(DiagnosticCheckIds.NetworkPrivateVpn)!.Status);
+        Assert.True(report.ServerLiveTest.IsReady, string.Join(" | ", report.ServerLiveTest.Blockers));
+        Assert.DoesNotContain(report.ServerLiveTest.Blockers, b => b.Contains("register", StringComparison.OrdinalIgnoreCase));
+    }
+
+    [Fact]
+    public async Task Rcon_exposure_warns_that_conan_listens_on_all_interfaces_and_app_uses_loopback()
+    {
+        var h = await DiagnosticsHarness.CreateAsync();
+
+        var enabled = await h.Service.RunAsync();
+        var check = enabled.Find(DiagnosticCheckIds.RconExposure)!;
+        Assert.Equal(DiagnosticStatus.Warning, check.Status);
+        Assert.Equal("127.0.0.1:25575", check.Facts["AppConnectsTo"]);
+        Assert.Contains("port-forward", check.SuggestedAction, StringComparison.OrdinalIgnoreCase);
+
+        await h.Settings.UpdateAsync(s => s.Rcon.Enabled = false);
+        var disabled = await h.Service.RunAsync();
+        Assert.Equal(DiagnosticStatus.NotConfigured, disabled.Find(DiagnosticCheckIds.RconExposure)!.Status);
+    }
 
     private sealed class CountingStarter : Core.Abstractions.IProcessStarter
     {
