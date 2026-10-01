@@ -48,28 +48,74 @@ public sealed class BackupService : IBackupService
             throw new UserFacingException("Invalid backup path", dest, "Backup folders are created under the application backups directory only.");
         }
 
-        Directory.CreateDirectory(dest);
+        var install = _settings.Current.ServerPaths.ServerInstallDirectory
+                      ?? _settings.Current.ServerPaths.ServerWorkingDirectory;
+        if (string.IsNullOrWhiteSpace(install) || !Directory.Exists(install))
+        {
+            throw new UserFacingException(
+                "Backup failed",
+                "The dedicated server install directory is not configured or does not exist.",
+                "Set the dedicated server folder in Settings before creating a backup.");
+        }
+
+        var saved = Path.Combine(install, "ConanSandbox", "Saved");
+        if (!Directory.Exists(saved))
+        {
+            throw new UserFacingException(
+                "Backup failed",
+                "The world/save folder was not found. No backup was completed.",
+                $"Expected:{Environment.NewLine}{saved}{Environment.NewLine}{Environment.NewLine}The live world was not copied.");
+        }
+
         var worldDir = Path.Combine(dest, "world");
         var configDir = Path.Combine(dest, "config");
         var modlistDir = Path.Combine(dest, "modlist");
-        Directory.CreateDirectory(worldDir);
-        Directory.CreateDirectory(configDir);
-        Directory.CreateDirectory(modlistDir);
-
-        var install = _settings.Current.ServerPaths.ServerInstallDirectory
-                      ?? _settings.Current.ServerPaths.ServerWorkingDirectory;
+        try
+        {
+            Directory.CreateDirectory(dest);
+            Directory.CreateDirectory(worldDir);
+            Directory.CreateDirectory(configDir);
+            Directory.CreateDirectory(modlistDir);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            TryDeleteBackupFolder(dest);
+            throw new UserFacingException(
+                "Backup failed",
+                ex.Message,
+                "The backup destination could not be written. No backup was completed.",
+                ex);
+        }
 
         var includesWorld = false;
         var includesConfig = false;
         var includesModList = false;
 
-        if (!string.IsNullOrWhiteSpace(install) && Directory.Exists(install))
+        try
         {
-            includesWorld = CopyIfExists(Path.Combine(install, "ConanSandbox", "Saved"), worldDir);
+            includesWorld = CopyIfExists(saved, worldDir);
             includesConfig = CopyIfExists(Path.Combine(install, "ConanSandbox", "Saved", "Config"), configDir);
             includesModList = CopyIfExists(
                 Path.Combine(install, "ConanSandbox", "Mods", "modlist.txt"),
                 Path.Combine(modlistDir, "modlist.txt"));
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            TryDeleteBackupFolder(dest);
+            throw new UserFacingException(
+                "Backup failed",
+                ex.Message,
+                "World/save data was not copied. The incomplete backup folder was discarded.",
+                ex);
+        }
+
+        if (!includesWorld)
+        {
+            TryDeleteBackupFolder(dest);
+            throw new UserFacingException(
+                "Backup failed",
+                "World/save data was not copied. The backup is incomplete and was not recorded as successful.",
+                $"Expected world files under:{Environment.NewLine}{saved}");
         }
 
         var record = new BackupRecord
@@ -80,16 +126,25 @@ public sealed class BackupService : IBackupService
             Reason = reason,
             IncludesWorld = includesWorld,
             IncludesConfig = includesConfig,
-            IncludesModList = includesModList,
-            Notes = string.IsNullOrWhiteSpace(install)
-                ? "No dedicated server install directory is configured. An empty backup folder with metadata was created."
-                : null
+            IncludesModList = includesModList
         };
 
-        record.SizeBytes = GetDirectorySize(dest);
-        var metadataPath = Path.Combine(dest, "metadata.json");
-        await File.WriteAllTextAsync(metadataPath, JsonSerializer.Serialize(record, JsonOptions), cancellationToken)
-            .ConfigureAwait(false);
+        try
+        {
+            record.SizeBytes = GetDirectorySize(dest);
+            var metadataPath = Path.Combine(dest, "metadata.json");
+            await File.WriteAllTextAsync(metadataPath, JsonSerializer.Serialize(record, JsonOptions), cancellationToken)
+                .ConfigureAwait(false);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            TryDeleteBackupFolder(dest);
+            throw new UserFacingException(
+                "Backup failed",
+                ex.Message,
+                "The backup metadata could not be written. The incomplete backup folder was discarded.",
+                ex);
+        }
 
         await _settings.UpdateAsync(s => { }, cancellationToken).ConfigureAwait(false);
         await _activityLog.AddAsync("Backup", $"Backup completed ({stamp}).", details: reason, cancellationToken: cancellationToken)
@@ -327,6 +382,21 @@ public sealed class BackupService : IBackupService
             }
 
             File.Copy(file, target, overwrite: true);
+        }
+    }
+
+    private void TryDeleteBackupFolder(string dest)
+    {
+        try
+        {
+            if (Directory.Exists(dest) && PathValidator.IsUnderRoot(dest, _paths.BackupsDirectory))
+            {
+                Directory.Delete(dest, recursive: true);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Failed to discard incomplete backup folder {Path}", dest);
         }
     }
 
