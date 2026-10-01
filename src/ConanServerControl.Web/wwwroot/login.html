@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Conan Server Control — Login</title>
+  <link rel="stylesheet" href="/css/site.css" />
+</head>
+<body class="login-body">
+  <main class="login-card">
+    <h1>Conan Server Control</h1>
+    <p class="muted">Private Web Admin. Do not expose this port on the public internet.</p>
+    <form id="login-form">
+      <label>Username
+        <input id="username" name="username" autocomplete="username" required />
+      </label>
+      <label>Password
+        <input id="password" name="password" type="password" autocomplete="current-password" required />
+      </label>
+      <button type="submit">Sign in</button>
+      <p id="error" class="error" hidden></p>
+    </form>
+  </main>
+  <script>
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const error = document.getElementById('error');
+      error.hidden = true;
+      const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: document.getElementById('username').value,
+          password: document.getElementById('password').value
+        })
+      });
+      if (response.ok) {
+        window.location.href = '/';
+        return;
+      }
+      const payload = await response.json().catch(() => ({ error: 'Login failed.' }));
+      error.textContent = payload.error || 'Login failed.';
+      error.hidden = false;
+    });
+  </script>
+</body>
+</html>

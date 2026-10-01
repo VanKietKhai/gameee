@@ -1,0 +1,64 @@
+<UserControl x:Class="ConanServerControl.App.Views.SettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <ScrollViewer VerticalScrollBarVisibility="Auto">
+    <StackPanel>
+      <TextBlock Text="Settings" FontSize="24" FontWeight="SemiBold" Margin="0,0,0,16" />
+      <TextBlock Text="Server paths" Foreground="{StaticResource MutedBrush}" />
+      <TextBlock Text="Conan server executable" Margin="0,8,0,4" />
+      <DockPanel LastChildFill="True" Margin="0,0,0,8">
+        <Button DockPanel.Dock="Right" Style="{StaticResource GhostButton}" Content="Browse" Command="{Binding BrowseExecutableCommand}" />
+        <TextBox Text="{Binding ServerExecutablePath}" />
+      </DockPanel>
+      <TextBlock Text="Working directory" Margin="0,8,0,4" />
+      <DockPanel LastChildFill="True" Margin="0,0,0,8">
+        <Button DockPanel.Dock="Right" Style="{StaticResource GhostButton}" Content="Browse" Command="{Binding BrowseWorkingDirectoryCommand}" />
+        <TextBox Text="{Binding ServerWorkingDirectory}" />
+      </DockPanel>
+      <TextBlock Text="Install directory (SteamCMD app 443030)" Margin="0,8,0,4" />
+      <DockPanel LastChildFill="True" Margin="0,0,0,8">
+        <Button DockPanel.Dock="Right" Style="{StaticResource GhostButton}" Content="Browse" Command="{Binding BrowseInstallDirectoryCommand}" />
+        <TextBox Text="{Binding ServerInstallDirectory}" />
+      </DockPanel>
+      <TextBlock Text="Launch arguments" Margin="0,8,0,4" />
+      <TextBox Text="{Binding AdditionalArguments}" Margin="0,0,0,12" />
+
+      <TextBlock Text="SteamCMD folder" Foreground="{StaticResource MutedBrush}" />
+      <DockPanel LastChildFill="True" Margin="0,8,0,12">
+        <Button DockPanel.Dock="Right" Style="{StaticResource GhostButton}" Content="Browse" Command="{Binding BrowseSteamCmdCommand}" />
+        <TextBox Text="{Binding SteamCmdDirectory}" />
+      </DockPanel>
+
+      <TextBlock Text="Server identity" Foreground="{StaticResource MutedBrush}" />
+      <TextBlock Text="Server name" Margin="0,8,0,4" />
+      <TextBox Text="{Binding ServerName}" />
+      <TextBlock Text="Max players" Margin="0,8,0,4" />
+      <TextBox Text="{Binding MaxPlayers}" />
+      <TextBlock Text="Game / Query / RCON ports" Margin="0,8,0,4" />
+      <UniformGrid Columns="3" Margin="0,0,0,12">
+        <TextBox Text="{Binding GamePort}" Margin="0,0,8,0" />
+        <TextBox Text="{Binding QueryPort}" Margin="0,0,8,0" />
+        <TextBox Text="{Binding RconPort}" />
+      </UniformGrid>
+
+      <TextBlock Text="Web Admin (localhost by default, no router ports opened)" Foreground="{StaticResource MutedBrush}" />
+      <CheckBox Content="Enable Web Admin" IsChecked="{Binding WebAdminEnabled}" />
+      <TextBlock Text="Port" Margin="0,8,0,4" />
+      <TextBox Text="{Binding WebAdminPort}" />
+      <TextBlock Text="Username" Margin="0,8,0,4" />
+      <TextBox Text="{Binding WebAdminUsername}" />
+      <TextBlock Text="New password (stored as PBKDF2 hash, never plaintext)" Margin="0,8,0,4" />
+      <TextBox Text="{Binding WebAdminPassword}" />
+      <TextBlock Text="Bind mode: LocalhostOnly, LAN, or Custom" Margin="0,8,0,4" />
+      <TextBox Text="{Binding BindMode}" Margin="0,0,0,12" />
+
+      <CheckBox Content="Start Conan server when the manager launches" IsChecked="{Binding StartServerOnLaunch}" />
+      <CheckBox Content="Restart server after crash" IsChecked="{Binding RestartAfterCrash}" />
+
+      <WrapPanel Margin="0,16,0,0">
+        <Button Style="{StaticResource PrimaryButton}" Content="Save settings" Command="{Binding SaveCommand}" />
+        <Button Style="{StaticResource GhostButton}" Content="Detect installs" Command="{Binding DetectCommand}" />
+      </WrapPanel>
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>

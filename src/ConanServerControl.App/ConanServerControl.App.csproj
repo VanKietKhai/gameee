@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>ConanServerControl</AssemblyName>
+    <RootNamespace>ConanServerControl.App</RootNamespace>
+    <ApplicationTitle>Conan Server Control</ApplicationTitle>
+    <Product>Conan Server Control</Product>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ConanServerControl.Core\ConanServerControl.Core.csproj" />
+    <ProjectReference Include="..\ConanServerControl.Infrastructure\ConanServerControl.Infrastructure.csproj" />
+    <ProjectReference Include="..\ConanServerControl.Web\ConanServerControl.Web.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="..\ConanServerControl.Web\wwwroot\**\*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>wwwroot\%(RecursiveDir)%(Filename)%(Extension)</Link>
+    </Content>
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,12 @@
+<UserControl x:Class="ConanServerControl.App.Views.DiagnosticsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <DockPanel>
+    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,12">
+      <Button Style="{StaticResource GhostButton}" Content="Refresh" Command="{Binding RefreshCommand}" />
+      <Button Style="{StaticResource PrimaryButton}" Content="Install SteamCMD" Command="{Binding InstallSteamCmdCommand}" />
+    </StackPanel>
+    <TextBox Text="{Binding Summary}" IsReadOnly="True" TextWrapping="Wrap" AcceptsReturn="True"
+             VerticalScrollBarVisibility="Auto" FontFamily="Consolas" />
+  </DockPanel>
+</UserControl>
