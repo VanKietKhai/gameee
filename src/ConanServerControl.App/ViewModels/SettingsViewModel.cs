@@ -35,6 +35,8 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty] private int gamePort = 7777;
     [ObservableProperty] private int queryPort = 27015;
     [ObservableProperty] private int rconPort = 25575;
+    [ObservableProperty] private string? rconPasswordInput;
+    [ObservableProperty] private bool rconPasswordConfigured;
     [ObservableProperty] private bool webAdminEnabled;
     [ObservableProperty] private int webAdminPort = 8080;
     [ObservableProperty] private string webAdminUsername = "admin";
@@ -126,7 +128,7 @@ public partial class SettingsViewModel : ObservableObject
             s.Server.MaxPlayers = MaxPlayers;
             s.Server.GamePort = GamePort;
             s.Server.QueryPort = QueryPort;
-            s.Server.RconPort = RconPort;
+            s.Rcon.Port = RconPort;
             s.WebAdmin.Enabled = WebAdminEnabled;
             s.WebAdmin.Port = WebAdminPort;
             s.WebAdmin.Username = WebAdminUsername;
@@ -148,7 +150,34 @@ public partial class SettingsViewModel : ObservableObject
             WebAdminPassword = string.Empty;
         }
 
+        if (!string.IsNullOrWhiteSpace(RconPasswordInput))
+        {
+            var password = RconPasswordInput;
+            await _settings.UpdateSecretsAsync(sec => sec.RconPassword = password);
+            RconPasswordInput = string.Empty;
+            RconPasswordConfigured = true;
+        }
+
         _dialogs.Alert("Settings saved", "Settings were written to the application data directory. If you enabled Web Admin, restart Conan Server Control so the HTTP listener binds the new port.");
+    }
+
+    public string RconPasswordStatus => RconPasswordConfigured ? "Password configured" : "Not configured";
+
+    partial void OnRconPasswordConfiguredChanged(bool value) => OnPropertyChanged(nameof(RconPasswordStatus));
+
+    [RelayCommand]
+    private async Task ClearRconPasswordAsync()
+    {
+        if (!_dialogs.Confirm(
+                "Clear RCON password?",
+                "Remove the stored RCON password? Graceful stop and player broadcasts via RCON will be unavailable until a new password is set."))
+        {
+            return;
+        }
+
+        await _settings.UpdateSecretsAsync(sec => sec.RconPassword = null);
+        RconPasswordInput = string.Empty;
+        RconPasswordConfigured = false;
     }
 
     private void LoadFromSettings()
@@ -163,7 +192,9 @@ public partial class SettingsViewModel : ObservableObject
         MaxPlayers = s.Server.MaxPlayers;
         GamePort = s.Server.GamePort;
         QueryPort = s.Server.QueryPort;
-        RconPort = s.Server.RconPort;
+        RconPort = s.Rcon.Port;
+        RconPasswordInput = null;
+        RconPasswordConfigured = !string.IsNullOrEmpty(_settings.Secrets.RconPassword);
         WebAdminEnabled = s.WebAdmin.Enabled;
         WebAdminPort = s.WebAdmin.Port;
         WebAdminUsername = s.WebAdmin.Username;
@@ -694,7 +725,7 @@ public partial class ServerViewModel : ObservableObject
             "Server INI editing (Engine.ini / Game.ini / ServerSettings.ini) is not implemented yet." + Environment.NewLine +
             "Unknown Conan keys will not be overwritten when that editor lands." + Environment.NewLine + Environment.NewLine +
             $"Current name: {settings.Current.Server.ServerName}" + Environment.NewLine +
-            $"Ports: game {settings.Current.Server.GamePort}, query {settings.Current.Server.QueryPort}, RCON {settings.Current.Server.RconPort}" + Environment.NewLine +
+            $"Ports: game {settings.Current.Server.GamePort}, query {settings.Current.Server.QueryPort}, RCON {settings.Current.Rcon.Port}" + Environment.NewLine +
             "Use Settings for name, ports, executable, and working directory in this build.";
     }
 

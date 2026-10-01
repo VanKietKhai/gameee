@@ -48,6 +48,37 @@ public sealed class BackupRecord
     public bool IncludesConfig { get; set; }
 
     public bool IncludesModList { get; set; }
+
+    /// <summary>True only when copy, manifest, hashes, and SQLite verification all succeeded.</summary>
+    public bool Succeeded { get; set; }
+
+    public bool ManifestWritten { get; set; }
+
+    public bool HashesVerified { get; set; }
+
+    public bool SqliteVerified { get; set; }
+
+    /// <summary><c>Enhanced</c> or <c>Legacy</c> when a known main DB was captured.</summary>
+    public string? WorldType { get; set; }
+
+    public string? MainDbFileName { get; set; }
+
+    public List<BackupWorldFileRecord> WorldFiles { get; set; } = new();
+
+    public string? VerificationDetail { get; set; }
+
+    public DateTimeOffset? VerifiedAt { get; set; }
+}
+
+public sealed class BackupWorldFileRecord
+{
+    public string LogicalName { get; set; } = string.Empty;
+
+    public string FileName { get; set; } = string.Empty;
+
+    public long SizeBytes { get; set; }
+
+    public string Sha256 { get; set; } = string.Empty;
 }
 
 public sealed class PipelineProgress

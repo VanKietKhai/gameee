@@ -75,7 +75,7 @@ public class ServerProcessManagerTests
         var gate = new ServerActionGate();
         var activity = new MemoryActivityLog();
         var rcon = new FakeRcon();
-        return new ServerProcessManager(settings, starter, gate, activity, rcon, NullLogger<ServerProcessManager>.Instance);
+        return new ServerProcessManager(settings, starter, gate, activity, rcon, new ImmediateReadyProbe(), NullLogger<ServerProcessManager>.Instance);
     }
 }
 

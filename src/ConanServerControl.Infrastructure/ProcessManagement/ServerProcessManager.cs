@@ -22,6 +22,7 @@ public sealed class ServerProcessManager : IServerProcessManager, IDisposable
     private readonly IActivityLog _activityLog;
     private readonly ILogger<ServerProcessManager> _logger;
     private readonly IRconService _rcon;
+    private readonly IServerReadinessProbe _readiness;
     private readonly object _sync = new();
 
     private IManagedProcess? _process;
@@ -37,6 +38,7 @@ public sealed class ServerProcessManager : IServerProcessManager, IDisposable
         IServerActionGate actionGate,
         IActivityLog activityLog,
         IRconService rcon,
+        IServerReadinessProbe readiness,
         ILogger<ServerProcessManager> logger)
     {
         _settings = settings;
@@ -44,6 +46,7 @@ public sealed class ServerProcessManager : IServerProcessManager, IDisposable
         _actionGate = actionGate;
         _activityLog = activityLog;
         _rcon = rcon;
+        _readiness = readiness;
         _logger = logger;
         State = new ServerRuntimeState();
     }
@@ -269,22 +272,20 @@ public sealed class ServerProcessManager : IServerProcessManager, IDisposable
         _monitorCts = new CancellationTokenSource();
         _outputPump = PumpOutputAsync(process, _monitorCts.Token);
 
-        await _activityLog.AddAsync("Server", $"Server started (PID {process.Id}).", cancellationToken: cancellationToken)
+        await _activityLog.AddAsync("Server", $"Server process launched (PID {process.Id}). Waiting for readiness.", cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
-        // Dedicated servers typically take time to bind ports. Mark Online once the process stays alive briefly.
-        await Task.Delay(TimeSpan.FromSeconds(2), cancellationToken).ConfigureAwait(false);
-        lock (_sync)
+        try
         {
-            if (_process is { HasExited: false })
-            {
-                State.Status = ServerStatus.Online;
-                State.Health = HealthCheckResult.ServerStarting;
-                PublishLocked();
-            }
+            await WaitUntilReadyAsync(process, cancellationToken).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException)
+        {
+            SetStatus(ServerStatus.Error, "Server start was cancelled before the dedicated server became ready.");
+            throw;
         }
 
-        await _activityLog.AddAsync("Server", "Server process is running.", cancellationToken: cancellationToken)
+        await _activityLog.AddAsync("Server", "Server is ready.", cancellationToken: cancellationToken)
             .ConfigureAwait(false);
     }
 
@@ -342,6 +343,15 @@ public sealed class ServerProcessManager : IServerProcessManager, IDisposable
         }
 
         await WaitForExitAsync(process, forceTimeout, cancellationToken).ConfigureAwait(false);
+        if (!process.HasExited)
+        {
+            SetStatus(ServerStatus.Error, "The dedicated server process did not exit after stop was requested.");
+            throw new UserFacingException(
+                "Server did not stop",
+                $"PID {process.Id} is still running after the stop timeout.",
+                "Stop the process manually, then retry. No backup or update was performed.");
+        }
+
         FinalizeStop(process, expected);
     }
 
@@ -597,6 +607,102 @@ public sealed class ServerProcessManager : IServerProcessManager, IDisposable
         return process.HasExited;
     }
 
+    private async Task WaitUntilReadyAsync(IManagedProcess process, CancellationToken cancellationToken)
+    {
+        var timeoutSeconds = Math.Max(1, _settings.Current.Advanced.StartupReadyTimeoutSeconds);
+        var pollMs = Math.Clamp(_settings.Current.Advanced.ReadinessPollIntervalMilliseconds, 20, 30_000);
+        var deadline = DateTimeOffset.UtcNow + TimeSpan.FromSeconds(timeoutSeconds);
+        string? lastError = "The dedicated server has not become ready yet.";
+
+        while (true)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            if (process.HasExited)
+            {
+                FailStartupBecauseProcessExited();
+            }
+
+            ServerReadinessResult result;
+            try
+            {
+                result = await _readiness.ProbeAsync(
+                        new ServerReadinessContext
+                        {
+                            ProcessId = process.Id,
+                            GamePort = _settings.Current.Server.GamePort,
+                            StartedAt = State.StartedAt ?? DateTimeOffset.UtcNow
+                        },
+                        cancellationToken)
+                    .ConfigureAwait(false);
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Readiness probe threw; treating as not ready and retrying.");
+                result = new ServerReadinessResult
+                {
+                    IsReady = false,
+                    Reason = "probe-exception",
+                    LastError = ex.Message,
+                    Health = HealthCheckResult.ServerStarting
+                };
+            }
+
+            if (process.HasExited)
+            {
+                FailStartupBecauseProcessExited();
+            }
+
+            if (result.IsReady)
+            {
+                lock (_sync)
+                {
+                    State.Status = ServerStatus.Online;
+                    State.Health = HealthCheckResult.ServerOnline;
+                    State.LastError = null;
+                    State.LastErrorGuidance = null;
+                    PublishLocked();
+                }
+
+                _logger.LogInformation("Conan dedicated server is ready: {Reason}", result.Reason);
+                return;
+            }
+
+            lastError = result.LastError ?? result.Reason;
+            if (DateTimeOffset.UtcNow >= deadline)
+            {
+                lock (_sync)
+                {
+                    State.Status = ServerStatus.Unresponsive;
+                    State.Health = HealthCheckResult.ServerUnresponsive;
+                    State.LastError = "The dedicated server process started but did not become ready in time.";
+                    State.LastErrorGuidance =
+                        $"Startup readiness timed out after {timeoutSeconds} seconds. The process may still be running, but it is not Online.";
+                    PublishLocked();
+                }
+
+                throw new UserFacingException(
+                    "Server did not become ready",
+                    lastError ?? "The dedicated server did not become ready before the startup timeout.",
+                    $"Waited {timeoutSeconds} seconds after process launch. The server is not Online. Inspect the dedicated-server log, then stop the process if it is stuck.");
+            }
+
+            await Task.Delay(pollMs, cancellationToken).ConfigureAwait(false);
+        }
+    }
+
+    private void FailStartupBecauseProcessExited()
+    {
+        SetStatus(ServerStatus.Error, "The Conan dedicated server process exited before it became ready.");
+        throw new UserFacingException(
+            "Server start failed",
+            "The dedicated server process exited during startup.",
+            "Open the server log, fix the configuration error, then start again.");
+    }
+
     private void SampleResourceUsage(IManagedProcess process)
     {
         try
@@ -634,7 +740,7 @@ public sealed class ServerProcessManager : IServerProcessManager, IDisposable
                 State.LastError = error;
             }
 
-            if (status == ServerStatus.Error)
+            if (status is ServerStatus.Error or ServerStatus.Unresponsive)
             {
                 State.Health = HealthCheckResult.ServerUnresponsive;
             }

@@ -25,6 +25,11 @@ public static class AppConstants
     public const string ModListFileName = "modlist.txt";
     public const string SavedRelative = @"ConanSandbox\Saved";
     public const string ConfigRelative = @"ConanSandbox\Saved\Config\WindowsServer";
+
+    /// <summary>
+    /// Legacy single-file relative path. Prefer <see cref="Backups.ConanWorldFiles"/>
+    /// which also covers Enhanced <c>game_0.db</c> and WAL/SHM siblings.
+    /// </summary>
     public const string GameDbRelative = @"ConanSandbox\Saved\game.db";
 
     public const string SteamCmdExecutableWindows = "steamcmd.exe";
@@ -41,6 +46,9 @@ public static class AppConstants
     public const int DefaultForceStopTimeoutSeconds = 10;
     public const int CrashRestartMaxAttempts = 3;
     public const int CrashRestartWindowMinutes = 10;
+
+    public const int DefaultStartupReadyTimeoutSeconds = 600;
+    public const int DefaultReadinessPollIntervalMilliseconds = 1000;
 
     public const string WebAdminCookieName = "csc_session";
     public const string AuditActorSystem = "System";

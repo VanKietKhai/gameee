@@ -58,6 +58,133 @@ internal sealed class RecordingActivityLog : IActivityLog
         Task.FromResult<IReadOnlyList<ActivityLogEntry>>(Array.Empty<ActivityLogEntry>());
 }
 
+internal sealed class ImmediateReadyProbe : IServerReadinessProbe
+{
+    public int Attempts { get; private set; }
+
+    public Task<ServerReadinessResult> ProbeAsync(
+        ServerReadinessContext context,
+        CancellationToken cancellationToken = default)
+    {
+        Attempts++;
+        return Task.FromResult(new ServerReadinessResult
+        {
+            IsReady = true,
+            Reason = "test-immediate",
+            Health = HealthCheckResult.ServerOnline
+        });
+    }
+}
+
+internal sealed class ScriptedReadinessProbe : IServerReadinessProbe
+{
+    public int Attempts { get; private set; }
+
+    public int ReadyAfterAttempts { get; set; } = 1;
+
+    public int ThrowTimes { get; set; }
+
+    public bool AlwaysThrow { get; set; }
+
+    public bool NeverReady { get; set; }
+
+    public Func<int, CancellationToken, Task<ServerReadinessResult>>? Handler { get; set; }
+
+    public List<bool> ObservedReadyFlags { get; } = new();
+
+    public async Task<ServerReadinessResult> ProbeAsync(
+        ServerReadinessContext context,
+        CancellationToken cancellationToken = default)
+    {
+        Attempts++;
+        if (Handler is not null)
+        {
+            var handled = await Handler(Attempts, cancellationToken).ConfigureAwait(false);
+            ObservedReadyFlags.Add(handled.IsReady);
+            return handled;
+        }
+
+        if (AlwaysThrow || Attempts <= ThrowTimes)
+        {
+            throw new InvalidOperationException("probe boom");
+        }
+
+        var ready = !NeverReady && Attempts >= ReadyAfterAttempts;
+        ObservedReadyFlags.Add(ready);
+        return new ServerReadinessResult
+        {
+            IsReady = ready,
+            Reason = ready ? "scripted-ready" : "scripted-not-ready",
+            LastError = ready ? null : "not-yet",
+            Health = ready ? HealthCheckResult.ServerOnline : HealthCheckResult.ServerStarting
+        };
+    }
+}
+
+internal sealed class PassingBackupVerifier : IBackupVerifier
+{
+    public Task<BackupVerificationResult> VerifyAsync(
+        string backupWorldDirectory,
+        BackupRecord record,
+        CancellationToken cancellationToken = default) =>
+        Task.FromResult(new BackupVerificationResult
+        {
+            Succeeded = true,
+            HashesVerified = true,
+            SqliteVerified = true,
+            Detail = "ok",
+            VerifiedAt = DateTimeOffset.UtcNow
+        });
+}
+
+internal static class SqliteTestDb
+{
+    public static string WriteValid(string path)
+    {
+        var parent = Path.GetDirectoryName(path);
+        if (!string.IsNullOrEmpty(parent))
+        {
+            Directory.CreateDirectory(parent);
+        }
+
+        using var connection = new Microsoft.Data.Sqlite.SqliteConnection(
+            new Microsoft.Data.Sqlite.SqliteConnectionStringBuilder { DataSource = path }.ToString());
+        connection.Open();
+        using var command = connection.CreateCommand();
+        command.CommandText = "CREATE TABLE probe(id INTEGER PRIMARY KEY, v TEXT); INSERT INTO probe(v) VALUES ('ok');";
+        command.ExecuteNonQuery();
+        return path;
+    }
+
+    public static void WriteValidWithWal(string path)
+    {
+        var parent = Path.GetDirectoryName(path);
+        if (!string.IsNullOrEmpty(parent))
+        {
+            Directory.CreateDirectory(parent);
+        }
+
+        using var connection = new Microsoft.Data.Sqlite.SqliteConnection(
+            new Microsoft.Data.Sqlite.SqliteConnectionStringBuilder { DataSource = path }.ToString());
+        connection.Open();
+        using var command = connection.CreateCommand();
+        command.CommandText =
+            "PRAGMA journal_mode=WAL; PRAGMA wal_autocheckpoint=0; CREATE TABLE probe(id INTEGER PRIMARY KEY, v TEXT); INSERT INTO probe(v) VALUES ('wal'); INSERT INTO probe(v) VALUES ('wal2');";
+        command.ExecuteNonQuery();
+    }
+
+    public static void WriteCorrupt(string path)
+    {
+        var parent = Path.GetDirectoryName(path);
+        if (!string.IsNullOrEmpty(parent))
+        {
+            Directory.CreateDirectory(parent);
+        }
+
+        File.WriteAllText(path, "this is not a sqlite database");
+    }
+}
+
 internal sealed class CountingBackup : IBackupService
 {
     public int Count { get; private set; }
@@ -66,13 +193,23 @@ internal sealed class CountingBackup : IBackupService
 
     public Func<string, CancellationToken, Task>? OnBackup { get; set; }
 
+    public Exception? FailWith { get; set; }
+
+    public List<string>? Timeline { get; set; }
+
     public async Task<BackupRecord> BackupNowAsync(string reason, CancellationToken cancellationToken = default)
     {
         Count++;
         Reasons.Add(reason);
+        Timeline?.Add("backup");
         if (OnBackup is not null)
         {
             await OnBackup(reason, cancellationToken).ConfigureAwait(false);
+        }
+
+        if (FailWith is not null)
+        {
+            throw FailWith;
         }
 
         return new BackupRecord
@@ -97,6 +234,8 @@ internal sealed class CountingBackup : IBackupService
 internal sealed class ScriptedSteamCmd : ISteamCmdService
 {
     public List<string> Events { get; } = new();
+
+    public List<string>? Timeline { get; set; }
 
     public List<long> WorkshopIds { get; } = new();
 
@@ -135,6 +274,7 @@ internal sealed class ScriptedSteamCmd : ISteamCmdService
         CancellationToken cancellationToken = default)
     {
         Events.Add("server-update");
+        Timeline?.Add("update");
         if (BlockServer is not null)
         {
             await BlockServer.Task.ConfigureAwait(false);
@@ -196,6 +336,12 @@ internal sealed class RecordingServer : IServerProcessManager
 
     public List<string> Calls { get; } = new();
 
+    public List<string>? Timeline { get; set; }
+
+    public bool StopLeavesRunning { get; set; }
+
+    public Exception? StopUnderLockException { get; set; }
+
     public ServerRuntimeState State { get; } = new();
 
     public event EventHandler<ServerRuntimeState>? StateChanged
@@ -242,6 +388,7 @@ internal sealed class RecordingServer : IServerProcessManager
         }
 
         Calls.Add("start-under-lock");
+        Timeline?.Add("start");
         if (StartUnderLockException is not null)
         {
             throw StartUnderLockException;
@@ -259,7 +406,17 @@ internal sealed class RecordingServer : IServerProcessManager
         }
 
         Calls.Add("stop-under-lock");
-        State.Status = ServerStatus.Offline;
+        Timeline?.Add("stop");
+        if (StopUnderLockException is not null)
+        {
+            throw StopUnderLockException;
+        }
+
+        if (!StopLeavesRunning)
+        {
+            State.Status = ServerStatus.Offline;
+        }
+
         return Task.CompletedTask;
     }
 
@@ -291,6 +448,8 @@ internal sealed class ScriptedWorkshop : IWorkshopModService
 
     public Exception? UpdateAllException { get; set; }
 
+    public List<string>? Timeline { get; set; }
+
     public IReadOnlyList<WorkshopMod> Mods => Array.Empty<WorkshopMod>();
 
     public Task AddAsync(long workshopId, CancellationToken cancellationToken = default) => Task.CompletedTask;
@@ -306,6 +465,7 @@ internal sealed class ScriptedWorkshop : IWorkshopModService
     public Task UpdateAllAsync(CancellationToken cancellationToken = default)
     {
         UpdateAllCount++;
+        Timeline?.Add("mods");
         if (UpdateAllException is not null)
         {
             throw UpdateAllException;
