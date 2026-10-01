@@ -72,6 +72,7 @@ These passed against real types (real gate, real process manager with a fake pro
 ### QA-001
 
 - **Severity:** P0
+- **Retest:** RESOLVED
 - **Component:** `BackupService.RestoreAsync` + `BackupRetentionPolicy`
 - **Description:** Restoring backup A creates a safety backup first. That safety backup runs retention before any bytes are copied from A. With the shipping defaults (keep latest 10 and 14 days), an A that is older than 14 days and outside the newest 10 is deleted. The copy then no-ops because the source directory is gone, and the activity log still says the restore succeeded. The live world is left as it was. The historical backup the admin tried to recover is gone.
 - **Architect item 1:** CONFIRMED
@@ -93,6 +94,7 @@ Related, not separately reproduced: the safety-backup folder name is `DateTime.N
 ### QA-002
 
 - **Severity:** P1
+- **Retest:** RESOLVED
 - **Component:** `WorkshopModService.DownloadAndStageAsync` / `UpdateAllAsync`
 - **Description:** Replacement is stage-then-replace for a **single** chosen `.pak`, and the staging folder is not cleared at the start of the attempt. There is no size or “this download created this file” check. The installed file is not deleted before the download. Failure paths that throw before `File.Replace` leave the installed pak in place. A SteamCMD exit 0 that does not write a new pak still treats any pre-existing `*.pak` in that mod’s staging directory as the download and replaces the live file.
 - **Architect item 2:** CONFIRMED unsafe. The delete-then-download pattern is NOT CONFIRMED.
@@ -115,6 +117,7 @@ Invalid Workshop IDs are `long` values. `WorkshopIdValidator` rejects command an
 ### QA-003
 
 - **Severity:** P1
+- **Retest:** RESOLVED
 - **Component:** Dashboard, Web Admin, `ServerUpdateService.RunLockedAsync`
 - **Description:** Update Server and Update Mods always pass `restartAfter: true`. The pipeline starts the server when `restartAfter || wasRunning`. A server that was Offline is Online after a successful update. The buttons are labeled UPDATE SERVER and UPDATE MODS, not restart.
 - **Architect item 4:** CONFIRMED for Update Server and Update Mods.
@@ -129,6 +132,7 @@ Update Everything is separate: `UpdateEverythingAsync` hardcodes `restartAfter: 
 ### QA-004
 
 - **Severity:** P1
+- **Retest:** RESOLVED
 - **Component:** `UpdatePipelineStateMachine`
 - **Description:** `Validating -> Completed` is not an allowed transition. Any update that does not start the server (offline and `restartAfter: false`) applies the file work, then throws `Illegal update pipeline transition: Validating -> Completed.` The user sees a failure after the mods or server files were already updated. This blocks the correct fix for QA-003.
 - **Architect item 4:** CONFIRMED as the reason the stay-offline API cannot succeed.
@@ -141,6 +145,7 @@ Update Everything is separate: `UpdateEverythingAsync` hardcodes `restartAfter: 
 ### QA-005
 
 - **Severity:** P1
+- **Retest:** RESOLVED
 - **Component:** Mods page `UpdateSelectedAsync` / `UpdateAllAsync`
 - **Description:** The Mods page calls `IWorkshopModService.UpdateAsync` / `UpdateAllAsync` directly. Those methods do not take `IServerActionGate`, do not back up, and do not stop the server. Dashboard Update Mods uses `IServerUpdateService.UpdateModsAsync`, which does. A probe `TryBegin` during Update Selected succeeds, so the download runs with the gate free and can overlap a dashboard or Web update.
 - **Architect item 3 (mods bypass):** CONFIRMED
@@ -153,6 +158,7 @@ Update Everything is separate: `UpdateEverythingAsync` hardcodes `restartAfter: 
 ### QA-006
 
 - **Severity:** P1
+- **Retest:** RESOLVED for the original download-failure steps. Live-commit rollback is QA-016.
 - **Component:** `ServerUpdateService.UpdateEverythingAsync`
 - **Description:** On the success path there is one lock, one backup, one stop, one server update, one mod pass, one start. On failure after the server update and after the first mod replace, there is no rollback. The catch block does not start the server again and the error text does not say the server was left stopped.
 - **Architect item 5:** CONFIRMED for the failure outcome. The success path is one cycle (passing tests). Rollback is absent.
@@ -165,6 +171,7 @@ Update Everything is separate: `UpdateEverythingAsync` hardcodes `restartAfter: 
 ### QA-007
 
 - **Severity:** P1
+- **Retest:** RESOLVED
 - **Component:** `BackupService.BackupNowAsync`
 - **Description:** If the install directory exists but `ConanSandbox/Saved` does not, the backup still creates a folder, writes metadata with `IncludesWorld = false`, and logs `Backup completed`. The update pipeline treats that as a successful pre-update backup and continues. The dashboard alerts “Backup created” whenever the method returns.
 - **Steps to Reproduce:** Set the install directory to an empty temp folder. Call `BackupNowAsync("pre-server-update")`.
@@ -176,6 +183,7 @@ Update Everything is separate: `UpdateEverythingAsync` hardcodes `restartAfter: 
 ### QA-012
 
 - **Severity:** P1
+- **Retest:** RESOLVED
 - **Component:** `BackupService.RestoreAsync`
 - **Description:** Restore does not take `IServerActionGate`. A restore runs to completion while another lease named “Update server” is held. Online status is refused (`Restore_refuses_while_status_is_online` passes). The gate itself is ignored, so a concurrent start that flips status after the initial check can copy world files under a live process.
 - **Steps to Reproduce:** Status Offline, one recent backup. `TryBegin("Update server")`, then `RestoreAsync`.
@@ -189,6 +197,7 @@ Update Everything is separate: `UpdateEverythingAsync` hardcodes `restartAfter: 
 ### QA-008
 
 - **Severity:** P2
+- **Retest:** RESOLVED
 - **Component:** `ServerProcessManager.EnsureLockHeld`
 - **Description:** `StartUnderLockAsync` / `StopUnderLockAsync` treat “any lease is busy” as “the caller owns it.” With no lease, start throws (passing test). With a different caller’s lease held, `StartUnderLockAsync` starts the fake server and returns Online.
 - **Architect item 3 (wrong owner):** PARTIALLY CONFIRMED. Web and desktop buttons use `StartAsync` / `StopAsync` / `RestartAsync` / `UpdateAsync`, which `TryBegin` their own lease. Those concurrent calls are rejected (passing test). The under-lock methods are public on `IServerProcessManager` and are not ownership-checked.
@@ -201,6 +210,7 @@ Update Everything is separate: `UpdateEverythingAsync` hardcodes `restartAfter: 
 ### QA-009
 
 - **Severity:** P2
+- **Retest:** RESOLVED
 - **Component:** `SteamWorkshopClient` + `WorkshopModService.CheckForUpdatesAsync`
 - **Description:** Check Updates does not stop, start, download, or replace pak files. A Steam `publishedfiledetails` row with `result: 9` and no title is still parsed as a real file. The mod name becomes `Workshop 111`, `Error` is cleared, and `UpdateAvailable` is false.
 - **Architect item 8:** PARTIALLY CONFIRMED. Read-only for process and files (passing tests). Metadata is wrong for a not-found id.
@@ -213,6 +223,7 @@ Update Everything is separate: `UpdateEverythingAsync` hardcodes `restartAfter: 
 ### QA-010
 
 - **Severity:** P2
+- **Retest:** RESOLVED
 - **Component:** Web Admin auth, CSRF, `wwwroot/js/site.js`
 - **Description:** Action POSTs require an auth cookie. They do not validate the antiforgery token that login and `GET /api/csrf` issue. Unauthenticated API calls get a 302 to `/login.html` rather than 401, so `site.js` (which only special-cases status 401) follows the redirect with `fetch`. `GET /api/me` is anonymous. Player names, activity lines, and log lines are inserted with `innerHTML`. Rate limiting is on login only (5 per minute per IP). `SameSite=Strict` on the auth cookie is the control that limits classic cross-site POSTs.
 - **Steps to Reproduce:**
@@ -231,6 +242,7 @@ Update Everything is separate: `UpdateEverythingAsync` hardcodes `restartAfter: 
 ### QA-011
 
 - **Severity:** P2
+- **Retest:** OPEN (not part of this stabilization pass; start still marks Online after two seconds)
 - **Component:** `ServerProcessManager.StartCoreAsync` status
 - **Description:** After two seconds, if the process has not exited, status becomes Online and health stays `ServerStarting`. No game-port or query check is required. The dashboard binds `StatusText` to that enum, so the UI can read ONLINE while the dedicated server is still starting.
 - **Steps to Reproduce:** Code path: `StartCoreAsync` delay then `State.Status = ServerStatus.Online` (`ServerProcessManager.cs:275-284`). The under-lock test reached status Online for a fake exe that never bound a port.
@@ -244,6 +256,7 @@ Update Everything is separate: `UpdateEverythingAsync` hardcodes `restartAfter: 
 ### QA-013
 
 - **Severity:** P3
+- **Retest:** OPEN (the path check still compares `Path.GetFullPath(dest)` to itself)
 - **Component:** `BackupService.BackupNowAsync` path check
 - **Description:** The escape check compares `Path.GetFullPath(dest)` to itself, so the branch never throws. Backup folder names are timestamp strings today, so this is dead code rather than a reached escape.
 - **Steps to Reproduce:** Read `BackupService.cs:39-43`.
@@ -255,6 +268,7 @@ Update Everything is separate: `UpdateEverythingAsync` hardcodes `restartAfter: 
 ### QA-014
 
 - **Severity:** P3
+- **Retest:** OPEN (not part of this stabilization pass)
 - **Component:** Settings flags that are not read
 - **Description:** `BackupBeforeLoadOrderChange` defaults to true and has no readers. Move Up / Move Down confirm in the UI and do not back up. `DelayedRestartService.FinishAsync` backs up when `BackupFirst` is set and then calls `RestartAsync`. It does not read `DelayedRestartRequest.UpdateServer` or `UpdateMods`.
 - **Steps to Reproduce:** Search for `BackupBeforeLoadOrderChange` (definition only, `AppSettings.cs:124`). Read `DelayedRestartService.FinishAsync` (`ServerUpdateService.cs:329-337`).
@@ -266,6 +280,7 @@ Update Everything is separate: `UpdateEverythingAsync` hardcodes `restartAfter: 
 ### QA-015
 
 - **Severity:** P3
+- **Retest:** OPEN (not part of this stabilization pass)
 - **Component:** Secrets and session
 - **Description:** Web Admin passwords are PBKDF2 hashes. RCON, server, admin, and Steam passwords sit in `secrets.bin` via `ISecretProtector`. On Windows that protector uses DPAPI. On any other OS it stores `dev-base64:` plus base64 and logs that this is not protected (`DpapiSecretProtector.cs:29-31`). SteamCMD is invoked as anonymous; the argument log does not include a Steam password. RCON password is not written into the log lines reviewed. Cookie options use a 30-minute sliding expiration (`WebAdminExtensions.cs:36`) while sign-in also sets `ExpiresUtc` from `SessionMinutes` (lines 191-195).
 - **Steps to Reproduce:** Code review of `ProtectedSecrets`, `DpapiSecretProtector`, `SteamCmdService.RunSteamCmdAsync`, `WebAdminExtensions` cookie setup. No production secrets file from an operator install was opened.
@@ -414,3 +429,112 @@ P0: QA-001 RestoreAsync safety-backup retention can delete the source backup, th
 P1: QA-002 unverified pak replace (stale staging, 0-byte, multi-pak, partial Update All). QA-003 Update Server/Update Mods start a server that was offline. QA-004 offline update with restartAfter false throws Validating→Completed after the file work. QA-005 Mods page Update Selected/Update All bypass the action gate. QA-006 Update Everything failure leaves the server offline, mod 1 replaced, mod 2 unchanged, no rollback message. QA-007 empty backup logged as completed. QA-012 restore ignores the action gate.
 SAFE TO CONTINUE: NO
 NEXT REQUIRED FIX: QA-001 — exclude the selected backup from the pre-restore retention pass, and fail the restore if that source is gone or nothing was copied.
+
+---
+
+# Stabilization Retest
+
+Independent retest of `origin/cursor/conan-server-control-a853` at `71afd24`, merged into `cursor/qa-gate-workshop-58f9`. Production code was not changed by QA. Historical findings above are unchanged. This section is the current verdict.
+
+## Build
+
+`dotnet build -c Release` on this agent: **succeeded, 0 warnings, 0 errors**.
+
+## Tests
+
+`dotnet test -c Release`: **97 passed, 1 failed, 0 skipped, 98 total**.
+
+The one failure is the new QA-016 regression `Partial_live_commit_must_not_restart_onto_a_mixed_mod_set`. Builder’s claimed 95/95 is the suite before these three QA additions (98 − 3 = 95). Those 95 are included and passed.
+
+## Test Integrity
+
+- Old QA tests retained: **YES**. Every `[Fact]` / `[Theory]` method from the previous QA commit `ea7854d` is still present. Name check against that commit found none missing.
+- Assertions materially weakened: **NO**. Safety asserts (source backup survives, live pak bytes, offline stays offline, 401, antiforgery body, lease ownership) are intact. Two adaptations are stronger or equivalent: restore/mod-update gate tests now use the same `ServerActionGate` the service uses, and `Missing_staging_directory_does_not_change_the_installed_pak` expects `UserFacingException` (message contains “pak”) instead of `DirectoryNotFoundException` because staging is created empty before SteamCMD. It still requires the live pak to stay unchanged.
+- Tests skipped/disabled: **NO**. No `[Fact(Skip)]`, no `Skip =`, no trait filter. `dotnet test --list-tests` discovered 98. The run reported Skipped: 0. `Category=QA-KnownFailure` tests were executed.
+- New tests, builder (13), all passing: protected retention ids; `Validating → Completed`; fail-from-validating; Update Selected rejected while Restart holds the gate; Update All rejected while Update Server holds the gate; owning lease can start; restore copy failure does not log success; failed restore releases the gate; valid world backup succeeds; world copy exception fails the backup; unwritable destination fails the backup; a valid single pak replaces the live mod; Update All holds the gate.
+- New tests, this retest (3):
+  - `Update_server_failure_while_offline_stays_offline` — QA-003 failure path. Passed.
+  - `Disposed_lease_and_a_lease_from_another_gate_cannot_start_under_lock` — QA-008 disposed lease and a lease from a different gate. Passed.
+  - `Partial_live_commit_must_not_restart_onto_a_mixed_mod_set` — QA-016. **Failed** (see New Issues).
+
+## Issue Status (QA-001..QA-010, QA-012, plus the rest of this report)
+
+| ID | Severity | Status | Evidence |
+| --- | --- | --- | --- |
+| QA-001 | P0 | RESOLVED | Success: `Restore_must_not_delete_the_source_backup_or_report_success_when_it_is_gone` passed. `BackupNowCoreAsync` passes the source id, source path, and full path into retention, and also protects the new safety backup id and directory. Copy then requires `world/` and `CopyDirectory`. “Restored backup” is logged only after that copy and a second existence check. Failure: `Restore_must_fail_and_not_log_success_when_copy_fails` passed (live marker replaced with a directory so the copy throws). No “Restored” activity. `Failed_restore_releases_the_action_gate` passed. Unexpected exceptions still leave the `finally` that disposes the lease. |
+| QA-002 | P1 | RESOLVED | A exit 0 + no pak, B zero-byte, C stale staging, D two paks, F download exception: live `WORKING-MOD` unchanged (those tests passed). E valid single non-empty pak: `Valid_pak_replaces_the_installed_mod` passed and replacement is after validation. `PrepareFreshStaging` deletes `staging/workshop/{id}` and recreates it. Validation requires exactly one `.pak`, length > 0, and `LastWriteTimeUtc` not older than 5 seconds before the attempt. Exit code alone is not accepted. |
+| QA-003 | P1 | RESOLVED | Six success cases passed: Update Server, Update Mods, and Update Everything, each from Online (stop then start, ends Online) and from Offline (no `start-under-lock`, stays Offline), including the shipped `restartAfter: true` calls. Offline failure (`Update_server_failure_while_offline_stays_offline`) stays Offline and does not stop or start. Online failure before any mod replace restarts (`Exception_while_the_gate_is_held_releases_it_for_a_later_action`). The unsafe restart is QA-016, not a random status flip. |
+| QA-004 | P1 | RESOLVED | Offline success reaches Completed with no illegal transition (the stay-offline tests would throw on `Validating → Completed`). State machine allows `Validating → Completed` and `Validating → Starting`. Online path is Checking → (Backup) → Stopping → Updating → Validating → Starting → HealthCheck → Completed, observed as stop-under-lock then start-under-lock and status Online. `Failed_validation_reaches_failed_from_validating` passed. The service calls `_pipeline.Fail` in the catch and does not transition to Completed after an exception. |
+| QA-005 | P1 | RESOLVED | Mods page `UpdateSelectedAsync` / `UpdateAllAsync` call `IServerUpdateService.UpdateSelectedModsAsync` / `UpdateModsAsync`, which take the shared singleton gate, back up, and stop when the server was running. `WorkshopModService.UpdateAsync` / `UpdateAllAsync` also `TryBegin` and the download-time probe tests passed. Restart, Stop, Update Server, and a later Update All are rejected or serialized (`Concurrent_restart_and_stop_are_rejected_while_an_update_holds_the_gate`, `Update_selected_is_rejected_while_restart_holds_the_gate`, `Update_all_is_rejected_while_update_server_holds_the_gate`). The pipeline calls `ApplyUpdatesAsync` so it does not take the gate twice. No deadlock. |
+| QA-006 | P1 | RESOLVED | Original steps (server update succeeds, mod 2 throws during download): `Server_update_success_plus_mod_update_failure_must_not_leave_a_running_server_down_or_a_partial_mod_set` passed. Both live paks stay `MOD*-OLD`, one backup, one stop, server returns Online, the call throws `UserFacingException`, and the activity log does not record “Update everything completed”. Server binaries are not rolled back. The harder live-commit case is QA-016. |
+| QA-007 | P1 | RESOLVED | Missing `ConanSandbox/Saved` throws and does not log “Backup completed”. A present world logs success and sets `IncludesWorld`. A copy that throws (`game.db` mode `000` on this agent) and an unwritable backups directory throw and do not log success. Config and modlist remain optional. A required world copy that fails discards the incomplete folder. |
+| QA-008 | P2 | RESOLVED | `EnsureOwns` requires `IServerActionGate.Owns(lease)` (same lease id, not disposed, gate busy). Null lease, a fake `IServerOperationLease`, a disposed owning lease, and a lease from a different gate all throw `InvalidOperationException` and leave the process Offline. The owning lease starts. This is an accidental-misuse check, not a cryptographic one. |
+| QA-009 | P2 | RESOLVED | `SteamWorkshopClient` skips `result != 1`. `Check_must_not_overwrite_a_working_mod_when_steam_returns_no_file_details` passed: name stays `Working Mod`, error text is set, pak and modlist unchanged. Check still does not stop, start, or download. |
+| QA-010 | P2 | RESOLVED | Anonymous `POST /api/server/update-server` is 401, not 302. `GET /api/me` is 401. Authenticated `POST /api/server/update-mods` without `X-CSRF-TOKEN` is rejected and the body contains “antiforgery”; the update delegate is not entered (`RunAction` validates before `work()`). The same check is on start/stop/restart/backup/check/update and on delayed-restart/cancel. `site.js` sends `X-CSRF-TOKEN` and renders player, log, and activity text with `textContent`. |
+| QA-011 | P2 | OPEN | Unchanged. Status becomes Online after two seconds while health stays Starting. |
+| QA-012 | P1 | RESOLVED | `RestoreAsync` takes “Restore backup” for the safety backup and the copy, and disposes the lease in `finally`. A held “Update server” lease rejects restore. After a copy failure the gate accepts a new lease. Online status is still refused before the copy. |
+| QA-013 | P3 | OPEN | Destination check still compares a full path to itself, so the branch cannot throw. |
+| QA-014 | P3 | OPEN | Unchanged. Load-order backup flag and delayed-restart update flags are still unwired. |
+| QA-015 | P3 | OPEN | Unchanged. Non-Windows secret storage is still reversible base64. Two session lifetimes remain. |
+
+## New Issues
+
+### QA-016
+
+- **Severity:** P1
+- **Status:** OPEN
+- **Component:** `WorkshopModService.ApplyUpdatesAsync` + `ServerUpdateService.RunLockedAsync` catch
+- **Description:** Staging is all-or-nothing. The live commit is not. After every target has passed validation, `CommitStagedAsync` replaces mods one by one. If a later `File.Replace` / `File.Move` throws, earlier mods stay replaced. There is no `.bak` rollback. If the server was online, the catch then calls `StartUnderLockAsync` anyway.
+- **Steps:** Two enabled mods. Both downloads write a valid non-empty pak. `Mod1.pak` is a normal file (`MOD1-OLD`). `Mod2.pak` is a directory so the second commit throws. Server status Online. `UpdateEverythingAsync`.
+- **Expected:** Failure, and either both live files restored to the previous bytes before any start, or the server left stopped. Do not start a previously online server on a mixed set.
+- **Actual:** `UserFacingException: Is a directory`. `mod1=MOD1-NEW`. `Mod2.pak` still a directory. Calls `[stop-under-lock, start-under-lock]`. Status Online. Activity: `Installed/updated Workshop mod 1.` No “Update everything completed”. Guidance on the restored-online path does not say the mod set is mixed.
+- **Evidence:** `Partial_live_commit_must_not_restart_onto_a_mixed_mod_set` failed. Code: commit loop at `WorkshopModService.cs` (stage all, then `CommitStagedAsync` with no rollback). Restart at `ServerUpdateService.cs` catch when `wasRunning` is true, with no check that every live replace finished.
+- **Fix direction:** On a commit failure, restore already-replaced paks from the `.bak` created by `File.Replace` (or stage the whole live swap and commit it in one pass). Restart a previously online server only when no live pak from this attempt was left changed. Say so in the error when the server was left stopped or the set was restored.
+
+### QA-017
+
+- **Severity:** P3
+- **Status:** OPEN
+- **Component:** `DashboardView.xaml` button label vs `UpdateEverythingAsync`
+- **Description:** The button still says `UPDATE EVERYTHING & RESTART`. An offline server is not started. `restartAfter` is accepted by `UpdateAsync` / `UpdateModsAsync` and ignored; only the pre-update online/offline state decides the start. This matches the QA-003 contract and disagrees with the label.
+- **Not a stabilization blocker.** Rename the button, or add a real “start afterwards” control. Do not reintroduce an unconditional start.
+
+## Code/Unit Verified
+
+Restore retention exclusion and failed-copy reporting. Fresh Workshop staging and pak validation. Online/offline preservation for Update Server, Update Mods, and Update Everything, including the offline failure path. `Validating → Completed`. Shared action gate for mod updates and restore, including release after failure. Update Everything download-phase failure leaves both paks old and brings a previously online server back. Incomplete world backups fail. Lease ownership, including disposed and cross-gate leases. Steam `result != 1` skipped. Web 401, CSRF, and `/api/me` authorization.
+
+## Live Windows Verification Still Required
+
+No Windows host, SteamCMD, Workshop, or Conan dedicated server was available.
+
+- Restore a backup older than 14 days with at least 10 newer backups. Confirm that folder and the new safety backup both remain, and the live world matches the selected backup.
+- SteamCMD `workshop_download_item` with `+force_install_dir` set to `staging/workshop/<id>`. Confirm the `.pak` actually appears under that tree. If SteamCMD writes only under its own `steamapps/workshop/content`, validation fails closed and the live mod is not updated.
+- Confirm a real downloaded `.pak` is not rejected by the “mtime within 5 seconds of start” check. Unit tests write files with `File.WriteAllText`, which stamps “now”. A cache copy with an older timestamp is rejected and the live pak is left unchanged.
+- Update Server / Update Mods / Update Everything with the game online, then offline. Confirm the process actually stops and starts only when it was online.
+- Update Everything while online; fail the second mod during download. Confirm both paks unchanged and the process is back up.
+- Reproduce QA-016 on Windows if a second pak replace can fail (locked file or full volume) and confirm whether the dedicated server is started on the mixed set.
+- Browser: anonymous API call is 401; logged-in POST without `X-CSRF-TOKEN` does not run the action.
+
+## Remaining Risks
+
+- **QA-016 (P1).** Auto-restart after a partial live commit. This is the stabilization blocker.
+- **Known UX/semantic debt, not a blocker:** `UpdateAllAsync` / Update Mods still re-downloads every enabled mod. `UpdateAvailable` is not a filter. Disabled mods are skipped. Test `Update_all_downloads_every_enabled_mod_including_ones_without_update_available` passed.
+- **QA-017 (P3).** Dashboard label still says restart.
+- Restore copy is not transactional. A throw in the middle of `CopyDirectory` leaves a mixed live world, does not log “Restored”, and keeps the source. Not the original QA-001 failure (source deletion plus a success log).
+- `ApplyUpdatesAsync` does not take the gate. Production UI and the update pipeline call it only while the gate is already held. A direct caller would mutate mods without the gate.
+- QA-011, QA-013, QA-014, QA-015 remain open and are outside this pass.
+- `app_info_print`, Delayed Restart, Wait Until Empty, and First Run Wizard were not implemented. `CheckAsync` still reports the installed ACF build only.
+
+## GO / NO-GO
+
+QA-001 is resolved. The previous P1 list QA-002, QA-003, QA-004, QA-005, QA-006, QA-007, and QA-012 is resolved against the original findings. Build is clean. One new test fails. QA-016 is a new P1: a previously online server is started after a live mod commit has already changed an earlier pak. That is not safe to treat as done.
+
+CONAN QA → CONAN BUILDER
+OVERALL: FAIL
+BUILD: PASS (0 warnings, 0 errors)
+TESTS: 97 / 98 passed (1 failed, 0 skipped)
+P0 OPEN: none
+P1 OPEN: QA-016
+SAFE TO CONTINUE: NO
+LIVE TEST STILL REQUIRED: SteamCMD workshop download path and pak timestamp, Conan process stop/start, restore of an old backup on Windows, browser 401/CSRF
+NEXT ACTION: Fix QA-016. Do not restart a previously online server when a multi-mod live commit is partial, or roll the replaced paks back before that restart. Re-run `Partial_live_commit_must_not_restart_onto_a_mixed_mod_set`.
