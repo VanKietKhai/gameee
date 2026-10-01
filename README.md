@@ -4,6 +4,8 @@ Local Windows manager for a **Conan Exiles Dedicated Server**. It installs and u
 
 Conan Server Control does **not** bypass Steam DRM, does not distribute Conan client files, and does not give anyone the game without a valid license. Players join with the official Steam client. After you change server mods, they restart Conan Exiles and Steam Workshop updates their local copies.
 
+Written layout, architecture, and safety rules (including paths this repo must never touch) live in [docs/](docs/).
+
 ---
 
 ## What currently works (Phase 1)
@@ -224,6 +226,15 @@ Keep Web Admin off the public internet.
 ```
 
 Never commit live `data/`, `logs/`, or `backups/` from a running install.
+
+---
+
+## Documentation
+
+- [docs/README.md](docs/README.md) — index
+- [docs/repository-layout.md](docs/repository-layout.md) — folders in git vs live server/backup paths
+- [docs/architecture.md](docs/architecture.md) — projects
+- [docs/safety.md](docs/safety.md) — do not touch operator server/backup directories; no admin installs during repo setup
 
 ---
 

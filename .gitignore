@@ -38,6 +38,11 @@ logs/*
 backups/*
 !backups/.gitkeep
 
+## Dedicated server / backup trees are outside this repo
+## Do not add operator installs (examples: D:\ConanServer, D:\ConanBackups)
+ConanServer/
+ConanBackups/
+
 ## Secrets / local overrides
 **/appsettings.*.local.json
 *.pfx
