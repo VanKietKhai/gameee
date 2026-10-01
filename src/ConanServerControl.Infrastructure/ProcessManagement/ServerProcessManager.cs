@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using ConanServerControl.Core;
 using ConanServerControl.Core.Abstractions;
+using ConanServerControl.Core.Diagnostics;
 using ConanServerControl.Core.Exceptions;
 using ConanServerControl.Core.Models;
 using ConanServerControl.Core.Validation;
@@ -176,7 +177,20 @@ public sealed class ServerProcessManager : IServerProcessManager, IDisposable
     {
         var paths = _settings.Current.ServerPaths;
         var exe = paths.ServerExecutablePath;
-        if (string.IsNullOrWhiteSpace(exe) || !File.Exists(exe))
+
+        // Hard safety gate (M3 Task 4): only ConanSandboxServer.exe outside the standalone
+        // client folder may be launched. Blocks before any status change or process start.
+        var gate = ServerExecutableGate.Evaluate(exe, _settings.Current.Client.RootDirectory);
+        if (!gate.Allowed)
+        {
+            _logger.LogError("Server start blocked: {Reason} ({Exe})", gate.Reason, exe);
+            throw new UserFacingException(
+                "Server start blocked",
+                $"{gate.Reason}{Environment.NewLine}Configured path:{Environment.NewLine}{exe ?? "(not set)"}",
+                $"Choose {AppConstants.DedicatedServerExecutable} from the dedicated server install (SteamCMD app {AppConstants.ConanDedicatedServerAppId}) in Settings.");
+        }
+
+        if (!File.Exists(exe))
         {
             throw new UserFacingException(
                 "Conan server executable was not found",
@@ -190,12 +204,6 @@ public sealed class ServerProcessManager : IServerProcessManager, IDisposable
                 "Invalid server path",
                 $"The configured Conan server path is not a safe absolute path:{Environment.NewLine}{exe}",
                 "Choose the executable again from Settings.");
-        }
-
-        var fileName = Path.GetFileName(exe);
-        if (!IsConanServerProcess(fileName))
-        {
-            _logger.LogWarning("Starting {Exe} which does not match the expected Conan dedicated server process names.", exe);
         }
 
         lock (_sync)

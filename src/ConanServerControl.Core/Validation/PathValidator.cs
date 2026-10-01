@@ -68,16 +68,41 @@ public static class PathValidator
             return false;
         }
 
-        var fullPath = Path.GetFullPath(path!);
-        var fullRoot = Path.GetFullPath(root!);
-        if (!fullRoot.EndsWith(Path.DirectorySeparatorChar))
+        // QA-018: compare normalized full paths so "X" and "X\" are the same directory.
+        var fullPath = NormalizeFullPath(path!);
+        var fullRoot = NormalizeFullPath(root!);
+        if (string.Equals(fullPath, fullRoot, StringComparison.OrdinalIgnoreCase))
         {
-            fullRoot += Path.DirectorySeparatorChar;
+            return true;
         }
 
-        return fullPath.StartsWith(fullRoot, StringComparison.OrdinalIgnoreCase)
-               || string.Equals(Path.GetFullPath(fullPath), Path.GetFullPath(root!), StringComparison.OrdinalIgnoreCase);
+        var rootWithSeparator = Path.EndsInDirectorySeparator(fullRoot)
+            ? fullRoot
+            : fullRoot + Path.DirectorySeparatorChar;
+        return fullPath.StartsWith(rootWithSeparator, StringComparison.OrdinalIgnoreCase);
     }
+
+    /// <summary>
+    /// Full path with separators normalized and any trailing separator removed
+    /// (a drive root such as <c>C:\</c> keeps its separator). Windows 8.3 short
+    /// names are not expanded.
+    /// </summary>
+    public static string NormalizeFullPath(string path)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(path);
+        var full = Path.GetFullPath(path.Trim().Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar));
+        return Path.TrimEndingDirectorySeparator(full);
+    }
+
+    /// <summary>True when both are safe absolute paths naming the same location after normalization.</summary>
+    public static bool PathsEqual(string? a, string? b) =>
+        IsSafeAbsolutePath(a) &&
+        IsSafeAbsolutePath(b) &&
+        string.Equals(NormalizeFullPath(a!), NormalizeFullPath(b!), StringComparison.OrdinalIgnoreCase);
+
+    /// <summary>True when either path is the same as, or contains, the other.</summary>
+    public static bool Overlaps(string? a, string? b) =>
+        IsUnderRoot(a, b) || IsUnderRoot(b, a);
 
     public static string CombineUnderRoot(string root, string relative)
     {

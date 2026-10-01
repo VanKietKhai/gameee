@@ -43,57 +43,15 @@ public sealed partial class IntegrationDiagnosticsService
                 facts: facts);
         }
 
-        if (kind == ConanExecutableKind.ClientLauncherBatch)
+        // Same hard gate the process manager applies before every launch.
+        var gate = ServerExecutableGate.Evaluate(exe, context.ClientRoot);
+        facts["StartAllowed"] = gate.Allowed ? Yes : No;
+        if (!gate.Allowed)
         {
             return Result(id, DiagnosticCategories.DedicatedServer, name, DiagnosticStatus.Fail,
-                "Run Me!.bat is the standalone CLIENT launcher, not the dedicated server.",
-                details: exe,
-                action: "Select ConanSandboxServer.exe from the dedicated server install (SteamCMD app 443030).",
-                facts: facts);
-        }
-
-        if (kind == ConanExecutableKind.StandaloneClient)
-        {
-            return Result(id, DiagnosticCategories.DedicatedServer, name, DiagnosticStatus.Fail,
-                "ConanSandbox.exe is the Conan game CLIENT, not the dedicated server.",
-                details: exe,
-                action: "Select ConanSandboxServer.exe from the dedicated server install (SteamCMD app 443030).",
-                facts: facts);
-        }
-
-        if (kind == ConanExecutableKind.BatchOrScript)
-        {
-            return Result(id, DiagnosticCategories.DedicatedServer, name, DiagnosticStatus.Fail,
-                "A script/shortcut is configured as the dedicated server executable.",
-                details: exe,
-                action: "Select ConanSandboxServer.exe directly; scripts cannot be tracked or stopped safely.",
-                facts: facts);
-        }
-
-        if (!PathValidator.IsSafeAbsolutePath(exe))
-        {
-            return Result(id, DiagnosticCategories.DedicatedServer, name, DiagnosticStatus.Fail,
-                "Dedicated server executable path is not a safe absolute path.",
-                details: exe, action: "Choose the executable with Browse in Settings.", facts: facts);
-        }
-
-        if (context.ClientRoot is not null && IsSameOrUnder(exe, context.ClientRoot))
-        {
-            return Result(id, DiagnosticCategories.DedicatedServer, name, DiagnosticStatus.Fail,
-                "Dedicated server executable is inside the standalone client folder.",
-                details: $"Executable: {exe}{Environment.NewLine}Client root: {context.ClientRoot}",
-                action: "Keep the dedicated server install separate from the standalone client.",
-                facts: facts);
-        }
-
-        if (!ConanExecutableClassifier.IsDedicatedServer(kind))
-        {
-            facts["Exists"] = File.Exists(exe) ? Yes : No;
-            return Result(id, DiagnosticCategories.DedicatedServer, name, DiagnosticStatus.Warning,
-                $"Unexpected executable name '{Path.GetFileName(exe)}'. Expected {AppConstants.DedicatedServerExecutable}.",
-                DiagnosticEvidence.FilesystemInspected,
-                details: exe,
-                action: "Confirm this is the Conan dedicated server executable.",
+                gate.Reason + " Start is blocked.",
+                details: context.ClientRoot is null ? exe : $"Executable: {exe}{Environment.NewLine}Client root: {context.ClientRoot}",
+                action: $"Select {AppConstants.DedicatedServerExecutable} from the dedicated server install (SteamCMD app {AppConstants.ConanDedicatedServerAppId}).",
                 facts: facts);
         }
 
