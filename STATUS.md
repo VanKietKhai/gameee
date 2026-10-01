@@ -1,75 +1,97 @@
 # Conan Server Control — Current Status
 
 ## Last Updated
-2026-10-01 18:30 UTC
+2026-10-02
 
 ## Current Milestone
-M3 — Live Windows Integration & Diagnostics, **Task 2 complete** (core behaviour).
+M3 — Live Windows Integration & Diagnostics, **Task 3 complete** (Integration Diagnostics).
 
-Task 3 (Integration Diagnostics UI), Task 4 (LiveWindows harness), Delayed Restart, Wait Until Empty, Web Admin expansion, `app_info_print`, and Update Available / Verify-All were **not** started.
+Task 4 (guarded LiveWindows integration) has **not** started. Delayed Restart, Wait Until Empty, Web Admin expansion, `app_info_print`, and Update Available / Verify-All are also not started.
 
 ## Implemented and Verified
 
-- Task 1 foundation (RCON, ProcessRunner cancel, QA-013, ConanWorldFiles)
-- **QA-011:** `IServerReadinessProbe` + `StartCoreAsync` wait. Online requires a successful probe. A 2-second delay is not readiness.
-- Configurable `Advanced.StartupReadyTimeoutSeconds` (default 600) and poll interval. Timeout → `Unresponsive`, **not** Online.
-- Update / mod / everything pipeline: capture `wasRunning` → stop if required → confirm stopped → **cold verified backup** → mutate → start only if originally online → same readiness probe.
-- Backup of known Conan world files records SHA-256 of the **backup copies**, writes a manifest, and runs read-only `PRAGMA quick_check` on the copied main DB.
-- Safety backup failure aborts before SteamCMD / mod commit. Previously-online servers may be started again; originally-offline servers stay offline.
+- Task 1 foundation: RCON, ProcessRunner cancel, QA-013, ConanWorldFiles.
+- Task 2: readiness probe (QA-011), cold verified backups, abort-before-mutation.
+- **Task 3:** read-only `IIntegrationDiagnosticsService` covers:
+  - System
+  - SteamCMD
+  - Dedicated Server
+  - Standalone Client
+  - Network
+  - RCON
+  - World / Saves
+  - Mods
+  - Backups
+
+  Results are PASS / WARNING / FAIL / NOT CONFIGURED / NOT TESTED, each with an explicit evidence label. Nothing is reported as live verified.
+- The standalone client `ConanSandbox.exe` and the `Run Me!.bat` launcher are rejected (FAIL) as the dedicated-server executable.
+- Optional, configurable standalone client root (`Client.RootDirectory`). It is detected read-only and never required for server readiness.
+- Readiness verdicts: server live test, and client compatibility test.
+- Redacted JSON + Markdown export to `%DATA%\diagnostics`. Tests prove that known secrets and the protected blob never appear.
+- The Diagnostics page shows per-category badges, evidence labels, readiness at the bottom, export, and open folder.
+- Verified on this Windows host:
+  - against the real client root `D:\conan exiles\Conan Exiles Enhanced`, read-only, with 0 file changes
+  - in the running app, using an isolated data directory
 
 ## Implemented but Not Fully Verified
 
-- SteamCMD / live Conan / RCON on a real Windows host (M3 Task 4)
-- Production `EndpointServerReadinessProbe` against a real dedicated-server port/RCON (unit-tested with a bound UDP port and fakes)
+- SteamCMD / live Conan / RCON / Workshop on a real Windows host (M3 Task 4).
+- Production `EndpointServerReadinessProbe` against a real dedicated server.
 
 ## Partially Implemented
 
-- Manual BACKUP NOW while Online now stops, verifies a cold backup, then starts (same readiness path). Scheduled / delayed-restart backup-first is unchanged and still deferred with Delayed Restart.
+- Manual BACKUP NOW while Online: stop → verified cold backup → start. Scheduled / delayed-restart backup-first is still deferred.
 
 ## Placeholder / Mock / Stub
 
-- Server INI editor, tray, wait-until-empty, scheduled backup/update, first-run wizard
-- Integration Diagnostics UI (Task 3)
-- LiveWindows harness (Task 4)
+- Server INI editor, tray, wait-until-empty, scheduled backup/update, first-run wizard.
+- LiveWindows harness (Task 4).
+- QA-017 `UPDATE EVERYTHING` rename, Dashboard `STARTING` label, Backups Verified badge (architect Task 3 UI items; not in this assignment).
 
 ## Known Bugs
 
-- None remaining from the confirmed P0/P1 stabilization list
-- QA-011 (Online after 2 s) is **fixed** in this task
-- Attach-to-existing-process still marks Online without the readiness probe (live attach is Task 4)
+- None remaining from the confirmed P0/P1 stabilization list.
+- Attach-to-existing-process still marks Online without the readiness probe (Task 4).
+- Pre-existing: the Settings Web Admin password field is a plain TextBox, so it is visible while typing.
 
 ## Build Status
 
-Solution build:
+Solution build (`dotnet build -c Release`, SDK 8.0.425):
 PASS
 0 warnings
 0 errors
 
-Tests:
-157 passed
+Tests (`dotnet test -c Release`):
+203 passed
 0 failed
-157 total
+203 total
 0 skipped
 
-(Pre-existing 130 remain green. Task 2 added readiness, cold-order, and backup-verification tests.)
+The 157 earlier tests remain green. On Windows, 2 of them first failed because of host-specific test-harness behaviour; these were fixed without weakening them (see HANDOFF Baseline). Task 3 added 46 test cases.
 
 ## Current Architecture
 
-Unchanged gate/lease/`ModBatchTransaction`/`RollbackResult`/Web auth. Task 2 added mockable `IServerReadinessProbe` / `IBackupVerifier`, cold Stop→Backup pipeline order, and verified backup metadata.
+Unchanged gate/lease/`ModBatchTransaction`/`RollbackResult`/Web auth/readiness/cold-backup pipeline.
+
+Task 3 is additive:
+
+- `Core/Diagnostics` holds the models, classifier, readiness calculator, redactor, and formatter.
+- `Infrastructure/Diagnostics/IntegrationDiagnosticsService` runs the checks. It never takes the gate, never starts or stops anything, never executes SteamCMD, never opens the live DB, and never writes except on explicit export.
 
 ## Current Blockers
 
-- No live Conan dedicated server or SteamCMD on this Linux agent
-- Standalone client at `D:\conan exiles\` is client-only and is not used by server management
+- SteamCMD is not installed on this host. This is the only server-live readiness blocker reported by diagnostics.
+- No dedicated server is installed yet. That is acceptable, because the live test installs into a safe workspace.
+- The host has only a per-user .NET 8 SDK/ASP.NET Core runtime (`%LOCALAPPDATA%\Microsoft\dotnet`). Running the App needs `DOTNET_ROOT` pointing there, or a system-wide runtime.
 
 ## Next Recommended Work
 
-M3 Task 3 — Integration Diagnostics & standalone-client-aware diagnostics
+M3 Task 4 — guarded Live Windows integration.
 
 ## Last Completed Task
 
-M3 Task 2 core behaviour: readiness (QA-011), cold verified safety backups, pipeline abort-before-mutation.
+M3 Task 3: Integration Diagnostics & standalone-client-aware diagnostics.
 
 ## Current Task
 
-Hand off Task 2 (`HANDOFF.md`). Do not start Task 3 until accepted.
+Hand off Task 3 (`HANDOFF.md`). Do not start Task 4 until accepted.
