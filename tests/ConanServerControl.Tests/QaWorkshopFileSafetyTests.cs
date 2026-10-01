@@ -112,21 +112,41 @@ public class QaWorkshopFileSafetyTests
         Directory.CreateDirectory(steamDir);
         await File.WriteAllTextAsync(Path.Combine(steamDir, "steamcmd.exe"), "not-real");
         await fx.Settings.UpdateAsync(s => s.SteamCmd.InstallDirectory = steamDir);
-        var runner = new ExplodingProcessRunner();
-        var real = new SteamCmdService(
+
+        if (!OperatingSystem.IsWindows())
+        {
+            // Non-Windows host: the real service refuses before any process launch.
+            var runner = new ExplodingProcessRunner();
+            var mods = fx.WithSteam(CreateRealSteamCmd(fx, runner));
+
+            var error = await Record.ExceptionAsync(() => mods.UpdateAsync(111));
+
+            Assert.IsType<UserFacingException>(error);
+            Assert.Equal(0, runner.Calls);
+            await fx.AssertLiveUntouchedAsync();
+        }
+        else
+        {
+            // Windows host: the OS guard passes, so the runner is reached once. It never
+            // launches anything and reports a failed exit; the live pak must be untouched.
+            var runner = new FailingExitProcessRunner();
+            var mods = fx.WithSteam(CreateRealSteamCmd(fx, runner));
+
+            var error = await Record.ExceptionAsync(() => mods.UpdateAsync(111));
+
+            Assert.IsType<UserFacingException>(error);
+            Assert.Equal(1, runner.Calls);
+            await fx.AssertLiveUntouchedAsync();
+        }
+    }
+
+    private static SteamCmdService CreateRealSteamCmd(Fixture fx, IProcessRunner runner) =>
+        new(
             fx.Settings,
             fx.Paths,
             runner,
             new StubHttpClientFactory(new StubHttpHandler()),
             NullLogger<SteamCmdService>.Instance);
-        var mods = fx.WithSteam(real);
-
-        var error = await Record.ExceptionAsync(() => mods.UpdateAsync(111));
-
-        Assert.IsType<UserFacingException>(error);
-        Assert.Equal(0, runner.Calls);
-        await fx.AssertLiveUntouchedAsync();
-    }
 
     [Fact]
     [Trait("Category", "QA-KnownFailure")]

@@ -147,8 +147,10 @@ internal static class SqliteTestDb
             Directory.CreateDirectory(parent);
         }
 
+        // Pooling=false so the handle is released on dispose; a pooled handle keeps
+        // the file locked on Windows and breaks tests that rewrite the fixture bytes.
         using var connection = new Microsoft.Data.Sqlite.SqliteConnection(
-            new Microsoft.Data.Sqlite.SqliteConnectionStringBuilder { DataSource = path }.ToString());
+            new Microsoft.Data.Sqlite.SqliteConnectionStringBuilder { DataSource = path, Pooling = false }.ToString());
         connection.Open();
         using var command = connection.CreateCommand();
         command.CommandText = "CREATE TABLE probe(id INTEGER PRIMARY KEY, v TEXT); INSERT INTO probe(v) VALUES ('ok');";
@@ -528,6 +530,25 @@ internal sealed class ExplodingProcessRunner : IProcessRunner
     {
         Calls++;
         throw new InvalidOperationException("SteamCMD process must not start in this test.");
+    }
+}
+
+/// <summary>
+/// Never launches anything; reports a failed SteamCMD exit so the real service
+/// raises its user-facing failure. Used on Windows, where the OS guard passes.
+/// </summary>
+internal sealed class FailingExitProcessRunner : IProcessRunner
+{
+    public int Calls { get; private set; }
+
+    public Task<ProcessExecutionResult> RunAsync(
+        ProcessStartRequest request,
+        TimeSpan? timeout = null,
+        IProgress<string>? output = null,
+        CancellationToken cancellationToken = default)
+    {
+        Calls++;
+        return Task.FromResult(new ProcessExecutionResult { ExitCode = 1 });
     }
 }
 
