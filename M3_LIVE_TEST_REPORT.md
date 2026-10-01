@@ -359,6 +359,41 @@ The 20 new cases in `M3PreE4StopAndNetworkTests` cover:
 | `game_0.db-wal` / `-shm` after stop | **NO / NO** (`game_0.db` only) |
 | Orphan server processes | **NO** |
 
+## M3 Task 4E: one real Local .pak mod (live, PASS)
+
+- Remote head before mutation: `581615d`. Working tree clean; no other session or process was active; server Offline.
+- **Test mod:** `C:\Users\vkkha\Downloads\mod conan\WickProbe.pak`, 4,492,459 B, valid Unreal pak (footer magic, pak version 12), single file. SHA-256 `D7FE0EC099BC501AFB9F5A2BF18B9312FF100F37591F2ACF39AB08F5B465D79C`. Outside the server Mods folder.
+- **Baseline:**
+  - Diagnostics: READY, Dedicated Server PASS, Enhanced world present, no Mods folder / modlist, Radmin unchanged.
+  - World: `game_0.db` 655,360 B, SHA-256 `ee5bed07…`, no WAL/SHM.
+  - Client snapshot `pre-4E` (20 entries).
+- **Backup before mutation:** `2026-10-02_063005`, manifest + SHA-256 + `quick_check` = ok. The import pipeline also made its own `pre-local-mod-import` cold backup.
+- **Local import (PASS, 0.6 s, no SteamCMD, no Workshop):**
+  - Installed `D:\conan exiles\depot_443031\ConanSandbox\Mods\WickProbe.pak`, SHA-256 identical to the source.
+  - `modlist.txt` = `WickProbe.pak`, load order 1.
+  - The source file is still present and unchanged.
+- **Boot with mod (PASS):** Online at 31.3 s ("World is ticking"). Launcher PID 9708, `-Shipping` PID 2108. **Positive server-side load evidence**:
+  - `LogModManager: Mounting mod pak file: …/Mods/WickProbe.pak`
+  - Conan extracts `WickProbe-WindowsServer.pak/.utoc/.ucas` into `Saved\ExtractedMods`. The Enhanced mod `.pak` is a container of platform sub-paks.
+  - `Mounted Pak file '…/ExtractedMods/WickProbe-WindowsServer.pak', mount point: '…/Content/Mods/WickProbe/'`
+  - `Mod 'WickProbe' contributes 5 package(s)`, `AddActiveModControllerClass: /Game/Mods/WickProbe/BP_WickProbeController`, `Persistence: Spawning mod controller: BP_WickProbeController_C`
+  - No warnings or errors mention the mod.
+- **Stop with mod (PASS):**
+  - RCON reply `Successfully executed: shutdown`; progress evidence `Engine exit requested`; extended 300 s window.
+  - Total 65.4 s, exit code 0, no forced kill, launcher + child gone, no orphans, no WAL/SHM.
+  - The world DB changed (SHA-256 `be018702…`), as expected for a mod controller.
+- **World integrity after the mod (PASS):** cold backup `2026-10-02_063232`, `quick_check` = ok.
+- **Removal (PASS):**
+  - `pre-mod-removal` backup `2026-10-02_063246`.
+  - `WickProbe.pak` was moved out of Mods to `app-data\removed-mods\20261002-063246-420\` (recoverable).
+  - `modlist.txt` is now empty, unrelated files are unchanged, and the source is unchanged.
+- **Boot after removal (PASS):**
+  - Online at 31.3 s. No `Wick` lines, no missing-mod errors, no stale controller references.
+  - Graceful stop 64.7 s, exit code 0, no forced kill, no WAL/SHM.
+- **Client:** snapshot `post-4E` compared to `pre-4E`: 0 added / 0 removed / 0 changed.
+- **Finding:** Conan does not delete its extraction cache `Saved\ExtractedMods\WickProbe-WindowsServer.*` (~1.5 MB) after the mod is removed. It is not mounted (not in the modlist). A future removal step could retire matching `ExtractedMods` files as well.
+- **Product change made for this checkpoint** (`581615d`): removing a Local mod now retires its installed pak (SHA-256-gated move, never a delete).
+
 ## Direction change: standalone-first (corrected 2026-10-02)
 
 After 4B the requirement was recorded as "players use **standalone** Conan clients (no Steam client, library or Workshop sync)". 4F showed that this is wrong for multiplayer. Corrected statement:
