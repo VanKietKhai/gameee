@@ -1,10 +1,10 @@
 # Conan Server Control — Current Status
 
 ## Last Updated
-2026-10-01 16:45 UTC
+2026-10-01 16:50 UTC
 
 ## Current Milestone
-QA-016 only: transactional live Workshop mod commit + rollback.
+QA-016 only: fail-closed live Workshop mod rollback when verification throws.
 
 Delayed Restart, Wait Until Empty, `app_info_print`, first-run wizard, Update Available vs Verify All, and new Web Admin features were **not** started.
 
@@ -22,8 +22,9 @@ Delayed Restart, Wait Until Empty, `app_info_print`, first-run wizard, Update Av
 - Workshop staging is wiped, validated (single non-empty current `.pak`), then replaced (QA-002)
 - Multi-mod updates stage and validate every target before any live replacement (QA-002 / QA-006)
 - Live multi-mod commit copies every current live pak into an isolated rollback directory, then replaces one at a time. Any replacement failure rolls back every already-changed pak (QA-016)
-- Failed live commit with a verified rollback may restart a previously online server onto the restored old set, and still reports FAILED (QA-016)
-- Failed live commit whose rollback cannot be verified leaves the server OFFLINE (`recovery required`) even if it was online before (QA-016)
+- Rollback restore, verification, and `FilesEqual` share one fail-closed boundary. Any throw becomes recovery-required (QA-016)
+- Failed live commit with a **verified** rollback may restart a previously online server onto the restored old set, and still reports FAILED (QA-016)
+- Failed live commit whose rollback fails, cannot be verified, or throws leaves the server OFFLINE (`recovery required`) even if it was online before (QA-016)
 - Update Server / Mods / Everything preserve original online/offline state when a safe set can be restored (QA-003)
 - `Validating → Completed` is a legal offline success transition (QA-004)
 - Mods Update Selected / Update All use the global action gate (QA-005)
@@ -72,15 +73,15 @@ PASS
 0 errors
 
 Tests:
-104 passed
+108 passed
 0 failed
-104 total
+108 total
 
 ## Current Architecture
 
 .NET 8 WPF host + Core + Infrastructure + optional Web Admin.
 
-`IServerActionGate.TryBegin` issues `IServerOperationLease`. Destructive start/stop under lock require that lease. Restore, update pipelines, and Mods Update Selected/All share the same gate. Workshop downloads use a fresh staging directory and fail closed before touching live paks. A multi-mod live commit uses `ModBatchTransaction`: isolated `staging/mod-update/<operation-id>/rollback` copies, then replace one-by-one, then rollback the whole batch if any replacement fails. Backup retention accepts a protected backup set so restore cannot delete its source.
+`IServerActionGate.TryBegin` issues `IServerOperationLease`. Destructive start/stop under lock require that lease. Restore, update pipelines, and Mods Update Selected/All share the same gate. Workshop downloads use a fresh staging directory and fail closed before touching live paks. A multi-mod live commit uses `ModBatchTransaction` plus `RollbackResult`: isolated rollback copies, replace one-by-one, and treat any rollback/verification exception as recovery-required. The server restarts after a failed update only when live mods were never mutated or when rollback is positively verified.
 
 ## Current Blockers
 
@@ -88,14 +89,14 @@ Tests:
 
 ## Next Recommended Work
 
-1. CONAN QA retest of QA-016 on this branch
+1. CONAN QA final retest of QA-016
 2. After QA PASS: split UPDATE AVAILABLE MODS vs VERIFY / RE-DOWNLOAD ALL
 3. Then, and only then: Delayed Restart / Wait Until Empty / `app_info_print`
 
 ## Last Completed Task
 
-QA-016: transactional live mod batch commit with rollback and restart safety. Full suite 104/104.
+QA-016: fail-closed rollback when verification throws. Restart only after positively verified rollback. Full suite 108/108.
 
 ## Current Task
 
-Hand off to CONAN QA for QA-016 retest (`HANDOFF.md`).
+Hand off to CONAN QA for QA-016 final retest (`HANDOFF.md`).

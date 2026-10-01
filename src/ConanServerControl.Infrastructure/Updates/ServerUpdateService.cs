@@ -189,21 +189,25 @@ public sealed class ServerUpdateService : IServerUpdateService
                     _server.State.Status);
 
                 var batchFailure = FindModBatchFailure(ex);
-                var recoveryRequired = batchFailure is { RecoveryRequired: true };
-                var rollbackCompleted = batchFailure is { RollbackCompleted: true };
+                var verifiedRestore = batchFailure is { IsSafeToRestart: true };
+                var recoveryRequired = batchFailure is not null && !verifiedRestore;
                 var detail = ex is UserFacingException facing ? facing.Message : ex.Message;
 
                 if (recoveryRequired)
                 {
-                    const string recoveryMessage =
-                        "Mod update failed and rollback was incomplete. Server was left offline to prevent starting with an inconsistent mod set.";
-                    _logger.LogError(recoveryMessage);
-                    await _activityLog.AddAsync("Updates", recoveryMessage, cancellationToken: CancellationToken.None)
+                    _logger.LogError(
+                        ex,
+                        "{Message}",
+                        ModBatchCommitException.UnverifiedRollbackGuidance);
+                    await _activityLog.AddAsync(
+                            "Updates",
+                            ModBatchCommitException.UnverifiedRollbackGuidance,
+                            cancellationToken: CancellationToken.None)
                         .ConfigureAwait(false);
                     throw new UserFacingException(
-                        "Mod update failed — recovery required",
+                        ModBatchCommitException.RecoveryRequiredTitle,
                         detail,
-                        recoveryMessage,
+                        ModBatchCommitException.UnverifiedRollbackGuidance,
                         ex);
                 }
 
@@ -214,9 +218,10 @@ public sealed class ServerUpdateService : IServerUpdateService
                 }
 
                 var restoredOnline = false;
-                if (wasRunning)
+                var mayRestart = wasRunning && (batchFailure is null || verifiedRestore);
+                if (mayRestart)
                 {
-                    if (rollbackCompleted)
+                    if (verifiedRestore)
                     {
                         const string restoredMessage =
                             "Mod update failed. Previous mod set restored. Restarting server with previous versions.";
@@ -236,7 +241,7 @@ public sealed class ServerUpdateService : IServerUpdateService
                     }
                 }
 
-                var guidance = rollbackCompleted && restoredOnline
+                var guidance = verifiedRestore && restoredOnline
                     ? "Mod update failed. Previous mod set restored. Restarting server with previous versions."
                     : restoredOnline
                         ? "The existing dedicated server and world saves were not deleted. A safety backup was kept if backup was enabled. Open the SteamCMD log, fix the error, then retry."

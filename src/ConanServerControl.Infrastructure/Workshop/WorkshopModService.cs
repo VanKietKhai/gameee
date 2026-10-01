@@ -243,20 +243,14 @@ public sealed class WorkshopModService : IWorkshopModService
 
             if (commitFailure is not null)
             {
-                var rollbackCompleted = batch.TryRollback(_logger);
-                batch.KeepRollbackForRecovery = !rollbackCompleted;
-                if (rollbackCompleted)
+                var rollback = SafeRollback(batch, _logger);
+                batch.KeepRollbackForRecovery = rollback.RecoveryRequired;
+                if (!rollback.RecoveryRequired)
                 {
                     batch.CleanupRollback();
                 }
 
-                throw new ModBatchCommitException(
-                    rollbackCompleted
-                        ? $"Live Workshop mod replacement failed: {commitFailure.Message} Previous mod set was restored."
-                        : $"Live Workshop mod replacement failed: {commitFailure.Message} Rollback was incomplete.",
-                    rollbackCompleted,
-                    recoveryRequired: !rollbackCompleted,
-                    commitFailure);
+                throw ToBatchCommitException(commitFailure, rollback);
             }
 
             batch.CleanupRollback();
@@ -264,13 +258,17 @@ public sealed class WorkshopModService : IWorkshopModService
         }
         catch (ModBatchCommitException batchEx)
         {
-            throw new UserFacingException(
-                batchEx.RecoveryRequired ? "Mod update failed — recovery required" : "Workshop mod update failed",
-                batchEx.Message,
-                batchEx.RecoveryRequired
-                    ? "Mod update failed and rollback was incomplete. Server was left offline to prevent starting with an inconsistent mod set."
-                    : "Previous live mods were restored. The update did not succeed.",
-                batchEx);
+            throw ToUserFacing(batchEx);
+        }
+        catch (Exception ex) when (ex is not OutOfMemoryException && LiveMutationOccurred(batch))
+        {
+            var rollback = batch is null ? RollbackResult.Unverified(true, false, ex) : SafeRollback(batch, _logger);
+            if (batch is not null)
+            {
+                batch.KeepRollbackForRecovery = rollback.RecoveryRequired;
+            }
+
+            throw ToUserFacing(ToBatchCommitException(ex, rollback));
         }
         finally
         {
@@ -285,6 +283,49 @@ public sealed class WorkshopModService : IWorkshopModService
             }
         }
     }
+
+    private static bool LiveMutationOccurred(ModBatchTransaction? batch) =>
+        batch is not null && batch.Records.Any(r => r.Replaced);
+
+    private static RollbackResult SafeRollback(ModBatchTransaction batch, ILogger logger)
+    {
+        try
+        {
+            return batch.TryRollback(logger);
+        }
+        catch (Exception ex) when (ex is not OutOfMemoryException)
+        {
+            logger.LogError(ex, "TryRollback threw after live Workshop mod mutation. Treating rollback as unverified.");
+            return RollbackResult.Unverified(attempted: true, succeeded: false, error: ex);
+        }
+    }
+
+    private static ModBatchCommitException ToBatchCommitException(Exception commitFailure, RollbackResult rollback)
+    {
+        var verified = rollback.IsSafeToRestart;
+        var message = verified
+            ? $"Live Workshop mod replacement failed: {commitFailure.Message} Previous mod set was restored."
+            : rollback.Error is not null
+                ? $"Live Workshop mod replacement failed: {commitFailure.Message} Rollback could not be verified."
+                : $"Live Workshop mod replacement failed: {commitFailure.Message} Rollback was incomplete.";
+
+        return new ModBatchCommitException(
+            message,
+            rollbackAttempted: rollback.Attempted,
+            rollbackCompleted: verified,
+            rollbackVerified: rollback.Verified,
+            recoveryRequired: rollback.RecoveryRequired,
+            inner: rollback.Error ?? commitFailure);
+    }
+
+    private static UserFacingException ToUserFacing(ModBatchCommitException batchEx) =>
+        new(
+            batchEx.RecoveryRequired ? ModBatchCommitException.RecoveryRequiredTitle : "Workshop mod update failed",
+            batchEx.Message,
+            batchEx.RecoveryRequired
+                ? ModBatchCommitException.UnverifiedRollbackGuidance
+                : "Previous live mods were restored. The update did not succeed.",
+            batchEx);
 
     private async Task RunGatedAsync(string action, Func<Task> work)
     {
