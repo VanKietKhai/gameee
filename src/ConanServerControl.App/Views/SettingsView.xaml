@@ -40,6 +40,10 @@
         <TextBox Text="{Binding QueryPort}" Margin="0,0,8,0" />
         <TextBox Text="{Binding RconPort}" />
       </UniformGrid>
+      <TextBlock Text="RCON password (write-only, stored with Windows DPAPI, never shown again)" Margin="0,8,0,4" />
+      <PasswordBox x:Name="RconPasswordBox" Margin="0,0,0,4" PasswordChanged="RconPasswordBox_OnPasswordChanged" />
+      <TextBlock Text="{Binding RconPasswordStatus}" Foreground="{StaticResource MutedBrush}" Margin="0,0,0,8" />
+      <Button Style="{StaticResource GhostButton}" Content="Clear RCON password" Command="{Binding ClearRconPasswordCommand}" HorizontalAlignment="Left" Margin="0,0,0,12" />
 
       <TextBlock Text="Web Admin (localhost by default, no router ports opened)" Foreground="{StaticResource MutedBrush}" />
       <CheckBox Content="Enable Web Admin" IsChecked="{Binding WebAdminEnabled}" />

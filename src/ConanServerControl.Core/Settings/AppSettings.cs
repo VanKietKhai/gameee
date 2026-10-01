@@ -76,6 +76,11 @@ public sealed class ServerConfigSettings
 
     public int QueryPort { get; set; } = AppConstants.DefaultQueryPort;
 
+    /// <summary>
+    /// Legacy RCON port copied from older settings JSON. Runtime code must use
+    /// <see cref="RconSettings.Port"/>. Kept only so existing files still deserialize.
+    /// </summary>
+    [Obsolete("Use AppSettings.Rcon.Port. Retained for backward-compatible JSON deserialization.")]
     public int RconPort { get; set; } = AppConstants.DefaultRconPort;
 
     public bool HasServerPassword { get; set; }

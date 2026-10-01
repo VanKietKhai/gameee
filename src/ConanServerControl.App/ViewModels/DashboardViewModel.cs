@@ -192,7 +192,7 @@ public partial class DashboardViewModel : ObservableObject
         };
         GamePort = server.GamePort.ToString();
         QueryPort = server.QueryPort.ToString();
-        RconPort = server.RconPort.ToString();
+        RconPort = _settings.Current.Rcon.Port.ToString();
         PlayerSummary = $"{state.PlayerCount} / {server.MaxPlayers}";
         PlayersList = state.Players.Count == 0
             ? "No players reported."
