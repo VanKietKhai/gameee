@@ -136,7 +136,9 @@ internal static class Program
                 "install-steamcmd" => await harness.InstallSteamCmdAsync(),
                 "install-server" => await harness.InstallServerAsync(),
                 "boot" => await harness.BootAsync("boot", HoldSeconds(args), scanMods: false, ObserveSeconds(args)),
-                "mod-boot" => await harness.BootAsync("mod-boot", HoldSeconds(args), scanMods: true),
+                "mod-boot" => await harness.BootAsync("mod-boot", HoldSeconds(args), scanMods: true, expectAbsent: ExpectAbsent(args)),
+                "reorder-local" => await harness.ReorderLocalAsync(args[1]),
+                "extracted" => harness.ObserveExtractedMods("extracted"),
                 "cycle" => await harness.CycleAsync(),
                 "backup" => await harness.BackupAsync(),
                 "add-mod" => await harness.AddModAsync(long.Parse(args[1])),
@@ -168,6 +170,15 @@ internal static class Program
     {
         var index = Array.IndexOf(args, "--observe");
         return index >= 0 && index + 1 < args.Length ? int.Parse(args[index + 1]) : 0;
+    }
+
+    /// <summary>"--expect-absent A.pak,B.pak": mods that must NOT be mounted in this boot (e.g. just removed).</summary>
+    private static string[] ExpectAbsent(string[] args)
+    {
+        var index = Array.IndexOf(args, "--expect-absent");
+        return index >= 0 && index + 1 < args.Length
+            ? args[index + 1].Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            : [];
     }
 
     private static int HoldSeconds(string[] args)
@@ -448,7 +459,7 @@ internal sealed class Harness : IAsyncDisposable
 
     // ------------------------------------------------------------ 4C boot / cycle
 
-    public async Task<int> BootAsync(string step, int holdSeconds, bool scanMods, int observeSeconds = 0)
+    public async Task<int> BootAsync(string step, int holdSeconds, bool scanMods, int observeSeconds = 0, string[]? expectAbsent = null)
     {
         if (!EnsureNoForeignServer(step))
         {
@@ -499,6 +510,15 @@ internal sealed class Harness : IAsyncDisposable
             scanMods ? ModEvidence(ReadLogFrom(ServerLog, logOffset, int.MaxValue)) : Interesting(ReadLogFrom(ServerLog, logOffset, int.MaxValue), scanMods),
             "server Saved folder (Conan creates world/logs)");
 
+        var modLoadOk = true;
+        if (scanMods)
+        {
+            var analysis = AnalyzeModLoad(ReadLogFrom(ServerLog, logOffset, int.MaxValue), expectAbsent ?? []);
+            modLoadOk = analysis.Ok && server.State.Status == ServerStatus.Online;
+            _log.Write(step, "mod load analysis (current-boot server log)", modLoadOk ? "PASS" : "FAIL", null, analysis.Facts,
+                analysis.Evidence, liveFilesChanged: "no");
+        }
+
         if (observeSeconds > 0)
         {
             await ObserveReadinessSignalsAsync(step, observeSeconds, clock, logOffset);
@@ -525,7 +545,13 @@ internal sealed class Harness : IAsyncDisposable
                 Facts(("Status", server.State.Status.ToString()), ("Processes", DescribeProcesses())));
         }
 
-        return await StopAndRecordAsync(server, step, timeline) ? 0 : 1;
+        var stopped = await StopAndRecordAsync(server, step, timeline);
+        if (scanMods)
+        {
+            ObserveExtractedMods(step);
+        }
+
+        return stopped && modLoadOk ? 0 : 1;
     }
 
     /// <summary>
@@ -972,6 +998,7 @@ internal sealed class Harness : IAsyncDisposable
         var source = mod?.LocalSourcePath;
         var sourceHashBefore = source is not null && File.Exists(source) ? Sha256(source) : "missing";
         var before = DirectoryHashes(modsDir);
+        var backupsBefore = (await _services.GetRequiredService<IBackupService>().ListAsync()).Select(b => b.Id).ToHashSet();
         var clock = Stopwatch.StartNew();
         string? error = null;
         try
@@ -991,15 +1018,27 @@ internal sealed class Harness : IAsyncDisposable
             : null;
         var modListText = File.Exists(modList) ? File.ReadAllText(modList) : string.Empty;
         var sourceHashAfter = source is not null && File.Exists(source) ? Sha256(source) : "missing";
+        // The production removal takes its own verified cold backup ("pre-mod-removal") first.
+        var removalBackup = (await _services.GetRequiredService<IBackupService>().ListAsync())
+            .Where(b => !backupsBefore.Contains(b.Id)).OrderByDescending(b => b.CreatedAt).FirstOrDefault();
+        var backupVerified = removalBackup is { Succeeded: true, HashesVerified: true, SqliteVerified: true };
+        var retiredHashMatches = retired is not null && before.TryGetValue(fileName, out var removedHash) && Sha256(retired) == removedHash;
         var ok = error is null && !File.Exists(Path.Combine(modsDir, fileName)) &&
                  !modListText.Contains(fileName, StringComparison.OrdinalIgnoreCase) && unrelatedUnchanged &&
                  sourceHashAfter == sourceHashBefore && sourceHashAfter != "missing" &&
+                 backupVerified && retiredHashMatches &&
                  _settings.Current.Mods.Mods.All(m => !ModKeys.Matches(m, ModKeys.Local(fileName)));
         _log.Write("4E-remove", "IModCatalogService.RemoveAsync (local)", ok ? "PASS" : "FAIL", clock.Elapsed,
             Facts(
                 ("Error", error ?? string.Empty),
+                ("RemovalBackup", removalBackup is null ? "none" : $"{removalBackup.Id} reason={removalBackup.Reason}"),
+                ("RemovalBackupVerified(hashes+sqlite)", backupVerified.ToString()),
+                ("RemovalBackupDetail", removalBackup?.VerificationDetail ?? "n/a"),
                 ("PakStillInMods", File.Exists(Path.Combine(modsDir, fileName)).ToString()),
                 ("RetiredTo", retired ?? "none"),
+                ("RetiredPakHashMatchesInstalled", retiredHashMatches.ToString()),
+                ("RemainingPaksBefore", string.Join("; ", before.Where(kv => kv.Key.EndsWith(".pak", StringComparison.OrdinalIgnoreCase) && !kv.Key.Equals(fileName, StringComparison.OrdinalIgnoreCase)).Select(kv => $"{kv.Key} {kv.Value}"))),
+                ("RemainingPaksAfter", string.Join("; ", after.Where(kv => kv.Key.EndsWith(".pak", StringComparison.OrdinalIgnoreCase) && !kv.Key.Equals(fileName, StringComparison.OrdinalIgnoreCase)).Select(kv => $"{kv.Key} {kv.Value}"))),
                 ("ModList", string.IsNullOrEmpty(modListText) ? "(empty)" : modListText.Replace("\r\n", " | ").Replace('\n', '|')),
                 ("UnrelatedFilesUnchanged", unrelatedUnchanged.ToString()),
                 ("Source", source ?? "n/a"),
@@ -1008,6 +1047,196 @@ internal sealed class Harness : IAsyncDisposable
             liveFilesChanged: "server Mods + modlist.txt (expected)");
         return ok ? 0 : 1;
     }
+
+    // ------------------------------------------------------------ 4E.2 multi-mod load order
+
+    /// <summary>
+    /// Applies an explicit Local mod order through the production catalog (IModCatalogService.MoveAsync),
+    /// then checks modlist.txt and that no .pak was rewritten (hash, size, creation and write times).
+    /// </summary>
+    public async Task<int> ReorderLocalAsync(string csv)
+    {
+        if (Program.ServerProcesses().Count > 0)
+        {
+            _log.Write("4E2-reorder", "precondition: server offline", "FAIL", null, Facts(("Processes", DescribeProcesses())));
+            return 1;
+        }
+
+        var wanted = csv.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        var modsDir = Path.Combine(_serverDir, "ConanSandbox", "Mods");
+        var before = PakFacts(modsDir);
+        var listBefore = ReadModList(modsDir);
+        var clock = Stopwatch.StartNew();
+        string? error = null;
+        try
+        {
+            var catalog = _services.GetRequiredService<IModCatalogService>();
+            for (var i = 0; i < wanted.Length; i++)
+            {
+                await catalog.MoveAsync(ModKeys.Local(wanted[i]), i);
+            }
+        }
+        catch (Exception ex)
+        {
+            error = ex.Message;
+        }
+
+        var after = PakFacts(modsDir);
+        var listAfter = ReadModList(modsDir);
+        var catalogOrder = _settings.Current.Mods.Mods.Where(m => m.Enabled).OrderBy(m => m.LoadOrder)
+            .Select(m => m.LocalFileName ?? ModKeys.Describe(m)).ToArray();
+        var listMatches = listAfter.SequenceEqual(wanted, StringComparer.OrdinalIgnoreCase);
+        var catalogMatches = catalogOrder.SequenceEqual(wanted, StringComparer.OrdinalIgnoreCase);
+        var paksUntouched = before.Count == after.Count &&
+                            before.All(kv => after.TryGetValue(kv.Key, out var v) && v == kv.Value);
+        var ok = error is null && listMatches && catalogMatches && paksUntouched;
+        _log.Write("4E2-reorder", "IModCatalogService.MoveAsync (explicit order)", ok ? "PASS" : "FAIL", clock.Elapsed,
+            Facts(
+                ("Error", error ?? string.Empty),
+                ("RequestedOrder", string.Join(" | ", wanted)),
+                ("ModListBefore", string.Join(" | ", listBefore)),
+                ("ModListAfter", string.Join(" | ", listAfter)),
+                ("ModListMatchesRequest", listMatches.ToString()),
+                ("CatalogOrder", string.Join(" | ", catalogOrder)),
+                ("CatalogMatchesRequest", catalogMatches.ToString()),
+                ("PaksUntouched(hash,size,created,written)", paksUntouched.ToString()),
+                ("PaksBefore", string.Join("; ", before.Select(kv => $"{kv.Key} {kv.Value}"))),
+                ("PaksAfter", string.Join("; ", after.Select(kv => $"{kv.Key} {kv.Value}")))),
+            liveFilesChanged: "server modlist.txt only (expected)");
+        return ok ? 0 : 1;
+    }
+
+    /// <summary>Read-only listing of Conan's mod extraction cache (Saved\ExtractedMods). Never deletes.</summary>
+    public int ObserveExtractedMods(string step)
+    {
+        var dir = Path.Combine(Saved, "ExtractedMods");
+        var catalogStems = _settings.Current.Mods.Mods.Where(m => !string.IsNullOrWhiteSpace(m.LocalFileName))
+            .Select(m => Path.GetFileNameWithoutExtension(m.LocalFileName!)).ToArray();
+        var entries = Directory.Exists(dir)
+            ? Directory.EnumerateFiles(dir).Select(f => new FileInfo(f)).OrderBy(f => f.Name, StringComparer.OrdinalIgnoreCase).ToArray()
+            : [];
+        string Owner(string name) =>
+            catalogStems.FirstOrDefault(s => name.StartsWith(s + "-", StringComparison.OrdinalIgnoreCase)) is { } stem
+                ? $"catalog:{stem}"
+                : "not in catalog";
+        _log.Write(step, "observe Saved\\ExtractedMods (read-only)", "INFO", null,
+            Facts(
+                ("Directory", Directory.Exists(dir) ? dir : "missing"),
+                ("Files", entries.Length == 0 ? "none" : string.Join("; ", entries.Select(f => $"{f.Name} {f.Length}B mtime={f.LastWriteTime:HH:mm:ss} [{Owner(f.Name)}]"))),
+                ("TotalBytes", entries.Sum(f => f.Length).ToString()),
+                ("CatalogLocalMods", string.Join(", ", catalogStems))),
+            liveFilesChanged: "no");
+        return 0;
+    }
+
+    /// <summary>
+    /// Structured evidence from the current boot's server log: the order of "Mounting mod pak file",
+    /// the IoStore container Order of each extracted mod, "contributes N package(s)", duplicate mounts,
+    /// mod-related warnings/errors, and that expected-absent mods are not mentioned at all.
+    /// </summary>
+    private (bool Ok, Dictionary<string, string> Facts, string Evidence) AnalyzeModLoad(string log, string[] expectAbsent)
+    {
+        var modsDir = Path.Combine(_serverDir, "ConanSandbox", "Mods");
+        var modList = ReadModList(modsDir);
+        var expected = _settings.Current.Mods.Mods.Where(m => m.Enabled && !string.IsNullOrWhiteSpace(m.LocalFileName))
+            .OrderBy(m => m.LoadOrder).Select(m => m.LocalFileName!).ToArray();
+        var lines = log.Split(Environment.NewLine);
+        var mountRegex = new System.Text.RegularExpressions.Regex(@"LogModManager: Mounting mod pak file: (?<path>.+?)\s*$");
+        var containerRegex = new System.Text.RegularExpressions.Regex(@"Mounted container '[^']*/ExtractedMods/(?<stem>[^/']+)-WindowsServer\.utoc'.*?Order=(?<order>\d+)");
+        var pakRegex = new System.Text.RegularExpressions.Regex(@"Mounted Pak file '[^']*/ExtractedMods/(?<stem>[^/']+)-WindowsServer\.pak'");
+        var contributesRegex = new System.Text.RegularExpressions.Regex(@"Mod '(?<name>[^']+)' contributes (?<n>\d+) package");
+
+        var mountSequence = lines.Select(l => mountRegex.Match(l)).Where(m => m.Success)
+            .Select(m => Path.GetFileName(m.Groups["path"].Value.Trim())).ToList();
+        var containerOrders = lines.Select(l => containerRegex.Match(l)).Where(m => m.Success)
+            .Select(m => (Stem: m.Groups["stem"].Value, Order: m.Groups["order"].Value)).ToList();
+        var mountedPaks = lines.Select(l => pakRegex.Match(l)).Where(m => m.Success).Select(m => m.Groups["stem"].Value).ToList();
+        var contributes = lines.Select(l => contributesRegex.Match(l)).Where(m => m.Success)
+            .Select(m => $"{m.Groups["name"].Value}={m.Groups["n"].Value}").Distinct().ToList();
+
+        var stems = expected.Concat(expectAbsent).Select(Path.GetFileNameWithoutExtension).Where(s => !string.IsNullOrEmpty(s)).ToArray();
+        var problemMarkers = new[] { "Error", "Warning", "Fatal", "Failed", "missing", "not found", "Could not", "Unable" };
+        var modProblems = lines
+            .Where(l => problemMarkers.Any(p => l.Contains(p, StringComparison.OrdinalIgnoreCase)))
+            .Where(l => stems.Any(s => l.Contains(s!, StringComparison.OrdinalIgnoreCase)) ||
+                        l.Contains("modlist", StringComparison.OrdinalIgnoreCase) ||
+                        l.Contains("LogModManager", StringComparison.Ordinal) ||
+                        l.Contains("Failed to mount", StringComparison.OrdinalIgnoreCase))
+            .ToList();
+
+        var perMod = new List<string>();
+        var allLoaded = true;
+        foreach (var pak in expected)
+        {
+            var stem = Path.GetFileNameWithoutExtension(pak);
+            var mounts = mountSequence.Count(m => m.Equals(pak, StringComparison.OrdinalIgnoreCase));
+            var container = containerOrders.Where(c => c.Stem.Equals(stem, StringComparison.OrdinalIgnoreCase)).Select(c => c.Order).ToArray();
+            var pakMounted = mountedPaks.Count(p => p.Equals(stem, StringComparison.OrdinalIgnoreCase));
+            var loaded = mounts == 1 && (container.Length == 1 || pakMounted == 1);
+            allLoaded &= loaded;
+            perMod.Add($"{pak}: mountLines={mounts} containerOrder={(container.Length == 0 ? "none" : string.Join("/", container))} extractedPakMounted={pakMounted} -> {(loaded ? "LOADED" : "NOT PROVEN LOADED")}");
+        }
+
+        var absentProblems = new List<string>();
+        foreach (var pak in expectAbsent)
+        {
+            var stem = Path.GetFileNameWithoutExtension(pak);
+            var mentions = lines.Where(l => l.Contains(stem, StringComparison.OrdinalIgnoreCase)).ToList();
+            if (mentions.Count > 0)
+            {
+                absentProblems.Add($"{pak}: {mentions.Count} log line(s) mention it");
+            }
+        }
+
+        var expectedMounted = mountSequence.Where(m => expected.Contains(m, StringComparer.OrdinalIgnoreCase)).ToArray();
+        var sequenceMatches = expectedMounted.SequenceEqual(expected, StringComparer.OrdinalIgnoreCase);
+        var modListMatchesCatalog = modList.SequenceEqual(expected, StringComparer.OrdinalIgnoreCase);
+        var duplicates = mountSequence.GroupBy(m => m, StringComparer.OrdinalIgnoreCase).Where(g => g.Count() > 1)
+            .Select(g => $"{g.Key} x{g.Count()}").ToArray();
+        var ok = allLoaded && modProblems.Count == 0 && absentProblems.Count == 0 && duplicates.Length == 0 && modListMatchesCatalog;
+
+        var facts = Facts(
+            ("ModListAtBoot", string.Join(" | ", modList)),
+            ("CatalogOrder", string.Join(" | ", expected)),
+            ("ModListMatchesCatalog", modListMatchesCatalog.ToString()),
+            ("RuntimeMountSequence", mountSequence.Count == 0 ? "none" : string.Join(" -> ", mountSequence)),
+            ("MountSequenceMatchesModList", sequenceMatches.ToString()),
+            ("ContainerOrders", containerOrders.Count == 0 ? "none" : string.Join("; ", containerOrders.Select(c => $"{c.Stem}=Order {c.Order}"))),
+            ("ExtractedPaksMountedInSequence", mountedPaks.Count == 0 ? "none" : string.Join(" -> ", mountedPaks)),
+            ("Contributes", contributes.Count == 0 ? "none" : string.Join("; ", contributes)),
+            ("PerMod", string.Join(" || ", perMod)),
+            ("DuplicateMounts", duplicates.Length == 0 ? "none" : string.Join(", ", duplicates)),
+            ("ModRelatedProblems", modProblems.Count == 0 ? "none" : modProblems.Count.ToString()),
+            ("ExpectAbsent", expectAbsent.Length == 0 ? "none" : string.Join(", ", expectAbsent)),
+            ("ExpectAbsentViolations", absentProblems.Count == 0 ? "none" : string.Join("; ", absentProblems)));
+        var evidenceLines = lines.Where(l =>
+                mountRegex.IsMatch(l) || containerRegex.IsMatch(l) || pakRegex.IsMatch(l) || contributesRegex.IsMatch(l) ||
+                stems.Any(s => l.Contains(s!, StringComparison.OrdinalIgnoreCase)))
+            .Concat(modProblems.Select(p => "PROBLEM: " + p))
+            .Take(120);
+        return (ok, facts, string.Join(Environment.NewLine, evidenceLines));
+    }
+
+    private static string[] ReadModList(string modsDir)
+    {
+        var path = Path.Combine(modsDir, AppConstants.ModListFileName);
+        return File.Exists(path)
+            ? File.ReadAllLines(path).Select(l => l.Trim()).Where(l => l.Length > 0).ToArray()
+            : [];
+    }
+
+    /// <summary>Per .pak: SHA-256, size, creation and last-write time. A re-copy changes the creation time.</summary>
+    private static Dictionary<string, string> PakFacts(string modsDir) =>
+        Directory.Exists(modsDir)
+            ? Directory.EnumerateFiles(modsDir, "*.pak").ToDictionary(
+                f => Path.GetFileName(f),
+                f =>
+                {
+                    var info = new FileInfo(f);
+                    return $"sha256={Sha256(f)} size={info.Length} created={info.CreationTimeUtc:o} written={info.LastWriteTimeUtc:o}";
+                },
+                StringComparer.OrdinalIgnoreCase)
+            : new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
     private string ModEvidence(string log)
     {
