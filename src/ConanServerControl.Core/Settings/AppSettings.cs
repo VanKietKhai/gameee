@@ -16,6 +16,12 @@ public sealed class AppSettings
 
     public SteamCmdSettings SteamCmd { get; set; } = new();
 
+    /// <summary>
+    /// Optional standalone Conan game client (not the dedicated server). Used only by
+    /// read-only diagnostics and future client compatibility tests.
+    /// </summary>
+    public StandaloneClientSettings Client { get; set; } = new();
+
     public ServerConfigSettings Server { get; set; } = new();
 
     public ModSettings Mods { get; set; } = new();
@@ -64,6 +70,15 @@ public sealed class SteamCmdSettings
     public string? SteamUsername { get; set; }
 
     public bool ValidateAfterUpdate { get; set; } = true;
+}
+
+public sealed class StandaloneClientSettings
+{
+    /// <summary>
+    /// Folder that contains the client <c>ConanSandbox.exe</c>, for example a
+    /// non-Steam "Conan Exiles Enhanced" folder. Never used as the dedicated server.
+    /// </summary>
+    public string? RootDirectory { get; set; }
 }
 
 public sealed class ServerConfigSettings

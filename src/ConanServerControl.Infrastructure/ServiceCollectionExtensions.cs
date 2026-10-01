@@ -50,6 +50,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IInstallDetector, InstallDetector>();
         services.AddSingleton<INetworkInfoService, NetworkInfoService>();
         services.AddSingleton<DiagnosticsService>();
+        services.AddSingleton<IIntegrationDiagnosticsService, IntegrationDiagnosticsService>();
         services.AddSingleton<IActivityLog, ActivityLogService>();
 
         services.AddHttpClient(SteamCmdService.HttpClientName, client =>
