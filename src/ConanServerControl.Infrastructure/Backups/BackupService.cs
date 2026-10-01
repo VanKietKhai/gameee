@@ -45,11 +45,7 @@ public sealed class BackupService : IBackupService
     {
         var stamp = DateTime.Now.ToString("yyyy-MM-dd_HHmmss");
         var dest = Path.Combine(_paths.BackupsDirectory, stamp);
-        if (!PathValidator.IsUnderRoot(dest, _paths.BackupsDirectory) &&
-            !string.Equals(Path.GetFullPath(dest), Path.GetFullPath(dest), StringComparison.OrdinalIgnoreCase))
-        {
-            throw new UserFacingException("Invalid backup path", dest, "Backup folders are created under the application backups directory only.");
-        }
+        EnsureDestinationIsUnderBackupRoot(dest, _paths.BackupsDirectory);
 
         var install = _settings.Current.ServerPaths.ServerInstallDirectory
                       ?? _settings.Current.ServerPaths.ServerWorkingDirectory;
@@ -435,5 +431,16 @@ public sealed class BackupService : IBackupService
         }
 
         return new DirectoryInfo(path).EnumerateFiles("*", SearchOption.AllDirectories).Sum(f => f.Length);
+    }
+
+    internal static void EnsureDestinationIsUnderBackupRoot(string destination, string backupRoot)
+    {
+        if (!PathValidator.IsUnderRoot(destination, backupRoot))
+        {
+            throw new UserFacingException(
+                "Invalid backup path",
+                destination,
+                "Backup folders are created under the application backups directory only.");
+        }
     }
 }
