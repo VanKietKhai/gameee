@@ -124,6 +124,16 @@ public interface IBackupService
     Task<IReadOnlyList<BackupRecord>> ListAsync(CancellationToken cancellationToken = default);
 
     Task ApplyRetentionAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Deletes expired backups except those whose id or directory path is in
+    /// <paramref name="protectedBackupIdsOrPaths"/>. Use this during restore so the
+    /// selected source and the in-progress safety backup cannot be removed.
+    /// </summary>
+    Task ApplyRetentionAsync(
+        IReadOnlyCollection<string>? protectedBackupIdsOrPaths,
+        CancellationToken cancellationToken = default)
+        => ApplyRetentionAsync(cancellationToken);
 }
 
 public interface IRconService

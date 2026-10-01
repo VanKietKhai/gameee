@@ -33,6 +33,36 @@ public class BackupRetentionTests
         Assert.DoesNotContain("b4", doomedIds);
         Assert.Contains("b10", doomedIds);
     }
+
+    [Fact]
+    public void Never_selects_a_protected_backup_id_or_path()
+    {
+        var now = new DateTimeOffset(2026, 10, 1, 12, 0, 0, TimeSpan.Zero);
+        var backups = Enumerable.Range(0, 15).Select(i => new BackupRecord
+        {
+            Id = $"b{i}",
+            CreatedAt = now.AddDays(-40 - i),
+            DirectoryPath = $"/tmp/backups/b{i}"
+        }).ToList();
+
+        var settings = new BackupSettings
+        {
+            KeepLatest = BackupKeepLatest.Ten,
+            KeepDays = 14
+        };
+
+        var doomed = BackupRetentionPolicy.SelectForDeletion(
+            backups,
+            settings,
+            now,
+            new[] { "b14", "/tmp/backups/b13" });
+        var doomedIds = doomed.Select(d => d.Id).ToHashSet();
+
+        Assert.DoesNotContain("b13", doomedIds);
+        Assert.DoesNotContain("b14", doomedIds);
+        Assert.Contains("b10", doomedIds);
+        Assert.Contains("b12", doomedIds);
+    }
 }
 
 public class UpdatePipelineTests

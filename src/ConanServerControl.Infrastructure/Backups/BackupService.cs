@@ -32,7 +32,13 @@ public sealed class BackupService : IBackupService
         _logger = logger;
     }
 
-    public async Task<BackupRecord> BackupNowAsync(string reason, CancellationToken cancellationToken = default)
+    public Task<BackupRecord> BackupNowAsync(string reason, CancellationToken cancellationToken = default) =>
+        BackupNowCoreAsync(reason, extraProtectedBackupIdsOrPaths: null, cancellationToken);
+
+    private async Task<BackupRecord> BackupNowCoreAsync(
+        string reason,
+        IReadOnlyCollection<string>? extraProtectedBackupIdsOrPaths,
+        CancellationToken cancellationToken)
     {
         var stamp = DateTime.Now.ToString("yyyy-MM-dd_HHmmss");
         var dest = Path.Combine(_paths.BackupsDirectory, stamp);
@@ -90,7 +96,13 @@ public sealed class BackupService : IBackupService
             .ConfigureAwait(false);
         _logger.LogInformation("Backup {Id} created at {Path}", stamp, dest);
 
-        await ApplyRetentionAsync(cancellationToken).ConfigureAwait(false);
+        var protectedSet = new List<string> { stamp, dest };
+        if (extraProtectedBackupIdsOrPaths is not null)
+        {
+            protectedSet.AddRange(extraProtectedBackupIdsOrPaths);
+        }
+
+        await ApplyRetentionAsync(protectedSet, cancellationToken).ConfigureAwait(false);
         return record;
     }
 
@@ -121,7 +133,20 @@ public sealed class BackupService : IBackupService
                 "Refresh the Backups list and choose an existing backup.");
         }
 
-        await BackupNowAsync("pre-restore", cancellationToken).ConfigureAwait(false);
+        var sourceFullPath = Path.GetFullPath(source);
+        await BackupNowCoreAsync(
+                "pre-restore",
+                new[] { backupId, source, sourceFullPath },
+                cancellationToken)
+            .ConfigureAwait(false);
+
+        if (!Directory.Exists(source))
+        {
+            throw new UserFacingException(
+                "Restore source was deleted during the operation",
+                source,
+                "The selected backup is no longer on disk. Restore did not change the live world.");
+        }
 
         var install = _settings.Current.ServerPaths.ServerInstallDirectory
                       ?? _settings.Current.ServerPaths.ServerWorkingDirectory;
@@ -133,14 +158,53 @@ public sealed class BackupService : IBackupService
                 "Set the dedicated server folder in Settings before restoring.");
         }
 
-        CopyDirectoryIfExists(Path.Combine(source, "world"), Path.Combine(install, "ConanSandbox", "Saved"));
-        CopyDirectoryIfExists(Path.Combine(source, "config"), Path.Combine(install, "ConanSandbox", "Saved", "Config"));
-        var modlistSource = Path.Combine(source, "modlist", "modlist.txt");
-        if (File.Exists(modlistSource))
+        try
         {
-            var dest = Path.Combine(install, "ConanSandbox", "Mods", "modlist.txt");
-            Directory.CreateDirectory(Path.GetDirectoryName(dest)!);
-            File.Copy(modlistSource, dest, overwrite: true);
+            var worldSource = Path.Combine(source, "world");
+            var worldDest = Path.Combine(install, "ConanSandbox", "Saved");
+            if (!Directory.Exists(worldSource))
+            {
+                throw new UserFacingException(
+                    "Restore failed",
+                    "The selected backup does not contain world/save data.",
+                    "Choose a backup that includes the world folder, or copy the files manually.");
+            }
+
+            CopyDirectory(worldSource, worldDest);
+
+            var configSource = Path.Combine(source, "config");
+            if (Directory.Exists(configSource))
+            {
+                CopyDirectory(configSource, Path.Combine(install, "ConanSandbox", "Saved", "Config"));
+            }
+
+            var modlistSource = Path.Combine(source, "modlist", "modlist.txt");
+            if (File.Exists(modlistSource))
+            {
+                var dest = Path.Combine(install, "ConanSandbox", "Mods", "modlist.txt");
+                Directory.CreateDirectory(Path.GetDirectoryName(dest)!);
+                File.Copy(modlistSource, dest, overwrite: true);
+            }
+        }
+        catch (UserFacingException)
+        {
+            throw;
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or DirectoryNotFoundException)
+        {
+            throw new UserFacingException(
+                "Restore failed",
+                ex.Message,
+                "The live world was not fully restored. Check disk space and file permissions, then retry.",
+                ex);
+        }
+
+        if (!Directory.Exists(source))
+        {
+            throw new UserFacingException(
+                "Restore source was deleted during the operation",
+                source,
+                "The selected backup is no longer on disk. Do not treat this restore as successful.");
         }
 
         await _activityLog.AddAsync("Backup", $"Restored backup {backupId}.", cancellationToken: cancellationToken)
@@ -190,10 +254,19 @@ public sealed class BackupService : IBackupService
         return Task.FromResult<IReadOnlyList<BackupRecord>>(records.OrderByDescending(r => r.CreatedAt).ToArray());
     }
 
-    public async Task ApplyRetentionAsync(CancellationToken cancellationToken = default)
+    public Task ApplyRetentionAsync(CancellationToken cancellationToken = default) =>
+        ApplyRetentionAsync(protectedBackupIdsOrPaths: null, cancellationToken);
+
+    public async Task ApplyRetentionAsync(
+        IReadOnlyCollection<string>? protectedBackupIdsOrPaths,
+        CancellationToken cancellationToken = default)
     {
         var backups = await ListAsync(cancellationToken).ConfigureAwait(false);
-        var doomed = BackupRetentionPolicy.SelectForDeletion(backups, _settings.Current.Backups, DateTimeOffset.Now);
+        var doomed = BackupRetentionPolicy.SelectForDeletion(
+            backups,
+            _settings.Current.Backups,
+            DateTimeOffset.Now,
+            protectedBackupIdsOrPaths);
         foreach (var backup in doomed)
         {
             try
@@ -223,31 +296,36 @@ public sealed class BackupService : IBackupService
 
         if (Directory.Exists(source))
         {
-            CopyDirectoryIfExists(source, destination);
+            CopyDirectory(source, destination);
             return true;
         }
 
         return false;
     }
 
-    private static void CopyDirectoryIfExists(string source, string destination)
+    private static void CopyDirectory(string source, string destination)
     {
         if (!Directory.Exists(source))
         {
-            return;
-        }
-
-        foreach (var dir in Directory.GetDirectories(source, "*", SearchOption.AllDirectories))
-        {
-            var target = dir.Replace(source, destination);
-            Directory.CreateDirectory(target);
+            throw new DirectoryNotFoundException(source);
         }
 
         Directory.CreateDirectory(destination);
+        foreach (var dir in Directory.GetDirectories(source, "*", SearchOption.AllDirectories))
+        {
+            var target = Path.Combine(destination, Path.GetRelativePath(source, dir));
+            Directory.CreateDirectory(target);
+        }
+
         foreach (var file in Directory.GetFiles(source, "*", SearchOption.AllDirectories))
         {
-            var target = file.Replace(source, destination);
-            Directory.CreateDirectory(Path.GetDirectoryName(target)!);
+            var target = Path.Combine(destination, Path.GetRelativePath(source, file));
+            var parent = Path.GetDirectoryName(target);
+            if (!string.IsNullOrEmpty(parent))
+            {
+                Directory.CreateDirectory(parent);
+            }
+
             File.Copy(file, target, overwrite: true);
         }
     }

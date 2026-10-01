@@ -60,6 +60,29 @@ public class QaRestoreSafetyTests
     }
 
     [Fact]
+    [Trait("Issue", "QA-001")]
+    public async Task Restore_must_fail_and_not_log_success_when_copy_fails()
+    {
+        var harness = await RestoreHarness.CreateAsync(keepDays: 14);
+        harness.WriteBackup("2026-09-15_120000", DateTimeOffset.Now.AddDays(-1), "FROM-A");
+        if (File.Exists(harness.LiveMarker))
+        {
+            File.Delete(harness.LiveMarker);
+        }
+
+        Directory.CreateDirectory(harness.LiveMarker);
+
+        var error = await Record.ExceptionAsync(() => harness.Service.RestoreAsync("2026-09-15_120000", startAfter: false));
+        var saidRestored = harness.Activity.Messages.Any(m => m.Contains("Restored backup", StringComparison.Ordinal));
+
+        Assert.True(
+            error is ConanServerControl.Core.Exceptions.UserFacingException && !saidRestored,
+            $"A copy failure must return an explicit error and must not log restore success. " +
+            $"error={error?.GetType().Name}: {error?.Message}; saidRestored={saidRestored}; " +
+            $"activity=[{string.Join(" | ", harness.Activity.Messages)}]");
+    }
+
+    [Fact]
     [Trait("Category", "QA-KnownFailure")]
     [Trait("Issue", "QA-012")]
     public async Task Restore_must_not_run_while_another_action_holds_the_gate()
