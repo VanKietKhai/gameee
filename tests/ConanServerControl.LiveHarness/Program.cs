@@ -501,8 +501,23 @@ internal sealed class Harness : IAsyncDisposable
 
         if (holdSeconds > 0)
         {
-            Console.WriteLine($"Holding the server online for {holdSeconds}s (client observation window)...");
-            await Task.Delay(TimeSpan.FromSeconds(holdSeconds));
+            // Hold for a manual client test. Creating live-testelease-hold ends the hold early;
+            // the server is then stopped through the application as usual.
+            var release = Path.Combine(_layout.LiveTest, "release-hold");
+            Console.WriteLine($"Holding the server online for up to {holdSeconds}s (client observation window). Create {release} to end early.");
+            var held = Stopwatch.StartNew();
+            while (held.Elapsed < TimeSpan.FromSeconds(holdSeconds) && !File.Exists(release) && server.State.Status == ServerStatus.Online)
+            {
+                await Task.Delay(2000);
+            }
+
+            if (File.Exists(release))
+            {
+                File.Delete(release);
+            }
+
+            _log.Write(step, "hold for manual client test ended", "INFO", held.Elapsed,
+                Facts(("Status", server.State.Status.ToString()), ("Processes", DescribeProcesses())));
         }
 
         return await StopAndRecordAsync(server, step, timeline) ? 0 : 1;
