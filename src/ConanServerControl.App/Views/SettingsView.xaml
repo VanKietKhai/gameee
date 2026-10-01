@@ -29,6 +29,14 @@
         <TextBox Text="{Binding SteamCmdDirectory}" />
       </DockPanel>
 
+      <TextBlock Text="Standalone Conan client (optional, game client only)" Foreground="{StaticResource MutedBrush}" />
+      <TextBlock Text="Folder that contains the client ConanSandbox.exe. Used only by read-only Diagnostics. Never used as the dedicated server, never launched, and Workshop mods are not synchronized to it automatically."
+                 TextWrapping="Wrap" Margin="0,4,0,4" />
+      <DockPanel LastChildFill="True" Margin="0,4,0,12">
+        <Button DockPanel.Dock="Right" Style="{StaticResource GhostButton}" Content="Browse" Command="{Binding BrowseStandaloneClientCommand}" />
+        <TextBox Text="{Binding StandaloneClientRoot}" />
+      </DockPanel>
+
       <TextBlock Text="Server identity" Foreground="{StaticResource MutedBrush}" />
       <TextBlock Text="Server name" Margin="0,8,0,4" />
       <TextBox Text="{Binding ServerName}" />

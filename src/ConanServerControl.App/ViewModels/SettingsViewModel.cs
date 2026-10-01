@@ -30,6 +30,7 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty] private string? serverInstallDirectory;
     [ObservableProperty] private string additionalArguments = "-log";
     [ObservableProperty] private string? steamCmdDirectory;
+    [ObservableProperty] private string? standaloneClientRoot;
     [ObservableProperty] private string serverName = "Conan Dedicated Server";
     [ObservableProperty] private int maxPlayers = 10;
     [ObservableProperty] private int gamePort = 7777;
@@ -88,6 +89,16 @@ public partial class SettingsViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private void BrowseStandaloneClient()
+    {
+        var path = _dialogs.PickFolder("Choose the standalone Conan client folder (contains ConanSandbox.exe)");
+        if (path is not null)
+        {
+            StandaloneClientRoot = path;
+        }
+    }
+
+    [RelayCommand]
     private void Detect()
     {
         var found = _detector.Detect();
@@ -124,6 +135,7 @@ public partial class SettingsViewModel : ObservableObject
             s.ServerPaths.ServerInstallDirectory = ServerInstallDirectory;
             s.ServerPaths.AdditionalArguments = AdditionalArguments;
             s.SteamCmd.InstallDirectory = SteamCmdDirectory;
+            s.Client.RootDirectory = string.IsNullOrWhiteSpace(StandaloneClientRoot) ? null : StandaloneClientRoot.Trim();
             s.Server.ServerName = ServerName;
             s.Server.MaxPlayers = MaxPlayers;
             s.Server.GamePort = GamePort;
@@ -188,6 +200,7 @@ public partial class SettingsViewModel : ObservableObject
         ServerInstallDirectory = s.ServerPaths.ServerInstallDirectory;
         AdditionalArguments = s.ServerPaths.AdditionalArguments;
         SteamCmdDirectory = s.SteamCmd.InstallDirectory;
+        StandaloneClientRoot = s.Client.RootDirectory;
         ServerName = s.Server.ServerName;
         MaxPlayers = s.Server.MaxPlayers;
         GamePort = s.Server.GamePort;
@@ -217,57 +230,6 @@ public partial class SettingsViewModel : ObservableObject
         }
 
         return Path.GetDirectoryName(executablePath);
-    }
-}
-
-public partial class DiagnosticsViewModel : ObservableObject
-{
-    private readonly DiagnosticsService _diagnostics;
-    private readonly ISteamCmdService _steamCmd;
-    private readonly IUiDialogs _dialogs;
-
-    public DiagnosticsViewModel(DiagnosticsService diagnostics, ISteamCmdService steamCmd, IUiDialogs dialogs)
-    {
-        _diagnostics = diagnostics;
-        _steamCmd = steamCmd;
-        _dialogs = dialogs;
-        Refresh();
-    }
-
-    [ObservableProperty] private string summary = string.Empty;
-
-    [RelayCommand]
-    private void Refresh()
-    {
-        var snap = _diagnostics.Capture();
-        Summary =
-            $"SteamCMD path: {snap.SteamCmdPath}{(snap.SteamCmdExists ? " (found)" : " (missing)")}{Environment.NewLine}" +
-            $"Conan server path: {snap.ConanServerExecutablePath}{(snap.ConanServerExecutableExists ? " (found)" : " (missing)")}{Environment.NewLine}" +
-            $"Working directory: {snap.ConanServerWorkingDirectory}{(snap.ConanServerWorkingDirectoryExists ? " (found)" : " (missing)")}{Environment.NewLine}" +
-            $"Server process: {snap.ServerStatus}  PID: {snap.ProcessId?.ToString() ?? "—"}{Environment.NewLine}" +
-            $"Application data: {snap.ApplicationDataDirectory}{Environment.NewLine}" +
-            $"Logs: {snap.LogsDirectory}{Environment.NewLine}" +
-            $"Backups: {snap.BackupsDirectory}{Environment.NewLine}" +
-            $"Settings: {snap.SettingsFilePath}{Environment.NewLine}" +
-            $"Web Admin URL: {snap.WebAdminUrl}{Environment.NewLine}" +
-            $"Tailscale IPv4: {snap.TailscaleIPv4 ?? "not detected"}{Environment.NewLine}" +
-            $"OS: {snap.OperatingSystem}{Environment.NewLine}" +
-            $"Runtime: {snap.Runtime}";
-    }
-
-    [RelayCommand]
-    private async Task InstallSteamCmdAsync()
-    {
-        try
-        {
-            await _steamCmd.InstallAsync();
-            _dialogs.Alert("SteamCMD", "SteamCMD installed.");
-            Refresh();
-        }
-        catch (Exception ex)
-        {
-            MainViewModel.ShowError(ex);
-        }
     }
 }
 
