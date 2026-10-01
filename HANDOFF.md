@@ -1,53 +1,70 @@
-# Handoff to CONAN QA — QA-016 Final Retest
+# M3 — Task 1 Foundation Handoff
 
-## Root Cause
+## Base Revision
 
-`FilesEqual` / rollback verification exceptions escaped the rollback safety boundary.
+`b422e1fbaf11dc0f9dfd3e977e24298a9307da64` on `cursor/conan-server-control-a853` (stabilization CLOSED, 108/108).
 
-`TryRollback` only caught `IOException`, `UnauthorizedAccessException`, and `InvalidOperationException` around **restore** copies. `VerifyOriginals` then called `FilesEqual`, which can throw (`UnauthorizedAccessException` on an unreadable rollback copy, `IOException`, missing file during compare, etc.). That exception left `TryRollback`, never became `ModBatchCommitException` with recovery-required, and landed in `ServerUpdateService`'s generic catch.
+New branch: `cursor/m3-live-windows-integration-a853`
 
-That generic catch treated “no batch failure object” as CASE 1 (safe previous set) and restarted a previously online server. Live state could remain mixed (Mod1 NEW / Mod2 OLD) with no recovery-required reporting.
+`architect/review-2`, QA branches, and unrelated `main` changes were **not** merged.
 
-## Fix
+## RCON Settings
 
-Rollback restore, verification, and file comparison now share one fail-closed boundary:
+The Settings UI and dashboard now read/write `Rcon.Port`. `Server.RconPort` is `[Obsolete]` and used only for JSON deserialization.
 
-- `TryRollback` returns `RollbackResult` (`Attempted`, `Succeeded`, `Verified`, `Error`) and does not throw.
-- Any exception during restore, `VerifyOriginals`, or `FilesEqual` becomes an unverified/failed rollback.
-- `ApplyUpdatesAsync` also wraps `TryRollback` and any unexpected exception after live mutation into `ModBatchCommitException` with `RecoveryRequired`.
-- `ServerUpdateService` restarts only when there was **no** live-mod mutation, or when rollback was **positively** attempted, completed, and verified.
+`JsonSettingsService.LoadAsync` migrates once: if `Rcon.Port` is still the default (25575) and legacy `Server.RconPort` differs, copy it and persist. An explicit `Rcon.Port` is never overwritten. Repeated loads are stable.
 
-## Restart Safety Rule
+`RconService` already used `Rcon.Port`; no dual-field runtime consumers remain.
 
-Restart is permitted only when:
+## Secret Storage
 
-- the failure happened **before** live mod mutation (previous live set untouched), or
-- `rollbackAttempted && rollbackCompleted && rollbackVerified` (previous live set proven restored).
+Settings has a write-only RCON PasswordBox, a "Password configured" / "Not configured" indicator, and an explicit **Clear RCON password** action (blank save does not erase).
 
-It is **not** permitted merely because rollback did not return `false`.
+The password is stored only through `ISecretProtector` (`DpapiSecretProtector` on Windows). It is not serialized into `settings.json`, not loaded into the PasswordBox, and not logged.
 
-## Recovery Required Rule
+## Process Cancellation
 
-Any rollback failure, verification failure, or rollback/verification exception leaves the server **OFFLINE**.
+Once `ProcessRunner` has started a child:
 
-Title: `Mod update failed — recovery required`
+- normal exit → no Kill
+- timeout → `Kill(entireProcessTree: true)`, result is TimedOut (not success)
+- caller `CancellationToken` cancelled after start → kill tree, then rethrow cancellation
+- cancellation before start → no Start, no Kill
+- Kill throwing is logged; the operation is not converted to success
 
-Log: `Mod update failed and rollback could not be verified. Server was left offline to prevent starting with an inconsistent mod set.`
+Only the process instance started by that invocation is killed.
 
-The underlying exception is written to structured logs. The operation reports FAILED. It never reports update completed or rollback completed unless verification succeeded.
+## QA-013
 
-## Tests
+`BackupNowCoreAsync` used a tautological `dest == dest` check. Destinations now must satisfy `PathValidator.IsUnderRoot(dest, BackupsDirectory)` or the backup fails closed. Traversal, absolute paths outside the root, and prefix-confusion (`Backup` vs `Backup-Evil`) are rejected. No naive `StartsWith`.
 
-QA regression kept unchanged: `Rollback_verify_throw_leaves_previously_online_server_offline`.
+## Conan World Files
 
-Also covering:
+`ConanWorldFiles` (Core) lists Enhanced `game_0.db` / `-wal` / `-shm` and legacy `game.db` / `-wal` / `-shm`. `Present(savedDir)` returns only those names that exist as files in that directory. Unrelated `.db` files and nested copies are ignored. No world files are deleted or opened. `GameDbRelative` remains as a documented legacy constant.
 
-- TEST 1 / A / C — rollback succeeds and verifies; originally ONLINE server may restart; operation FAILED
-- TEST 2 / D — rollback returns/verifies false; server OFFLINE; recovery required
-- TEST 3 — rollback verification throws (QA chmod / unreadable copy); server OFFLINE; recovery required; no restart
-- TEST 4 — rollback copy I/O throws (exclusive lock); server OFFLINE; recovery required
-- TEST 5 — verified rollback then restart itself fails; operation remains FAILED
-- TEST 6 — failure before live mutation; originally ONLINE server may restart; not recovery-required
+## Files Changed
+
+- `src/ConanServerControl.Core/Settings/AppSettings.cs`
+- `src/ConanServerControl.Core/AppConstants.cs`
+- `src/ConanServerControl.Core/Backups/ConanWorldFiles.cs`
+- `src/ConanServerControl.Infrastructure/Settings/JsonSettingsService.cs`
+- `src/ConanServerControl.Infrastructure/ProcessManagement/ProcessRunner.cs`
+- `src/ConanServerControl.Infrastructure/Backups/BackupService.cs`
+- `src/ConanServerControl.App/ViewModels/SettingsViewModel.cs`
+- `src/ConanServerControl.App/ViewModels/DashboardViewModel.cs`
+- `src/ConanServerControl.App/Views/SettingsView.xaml`
+- `src/ConanServerControl.App/Views/SettingsView.xaml.cs`
+- `tests/ConanServerControl.Tests/M3RconSettingsTests.cs`
+- `tests/ConanServerControl.Tests/M3ProcessRunnerTests.cs`
+- `tests/ConanServerControl.Tests/M3BackupPathTests.cs`
+- `tests/ConanServerControl.Tests/M3ConanWorldFilesTests.cs`
+- `STATUS.md`, `HANDOFF.md`
+
+## Tests Added
+
+RCON migration (legacy copies, explicit wins, stable reload). RCON secret (not in settings JSON, goes through `ISecretProtector`, not logged). ProcessRunner (cancel-after-start kills tree within 2 s, timeout kills, normal exit does not, pre-start cancel does not start, kill-throw is not success). QA-013 (child allowed; traversal / absolute / prefix-confusion rejected). ConanWorldFiles (Enhanced only; Enhanced+wal+shm; legacy; empty; unrelated ignored).
+
+No existing tests were deleted, skipped, or weakened.
 
 ## Build
 
@@ -57,14 +74,25 @@ PASS
 
 ## Tests
 
-108 passed
+130 passed
 0 failed
-108 total
+130 total
 
-(Baseline was 105 total / 104 passed / 1 failed. The failing QA verification-throw case now passes. Additional TEST 4–6 were added. No tests were deleted, skipped, or weakened.)
+## Architect Acceptance Criteria Covered
 
-## Remaining Live Tests
+- **AC3-1** (Task 1 portion): 0 warnings; all 108 pre-existing tests pass; new unit tests added
+- **AC3-5**: caller cancel after start observes `Kill(true)` within 2 s
+- **AC3-6**: `Server.RconPort=25580` + default `Rcon.Port` loads as `Rcon.Port=25580`; password stored only via `ISecretProtector` and is absent from settings JSON (integration-report redaction is Task 3)
+- **AC3-7** (QA-013): destination outside `BackupsDirectory` throws
+- World-file support (Task 1 portion of AC3-4): `ConanWorldFiles.Present` only; hashes / `quick_check` are Task 2
 
-Windows host, real `steamcmd.exe`, locked or ACL-denied `.pak` during live commit. Confirm a verification/IO throw leaves ConanSandboxServer stopped and surfaces recovery required. Confirm a fully verified rollback may restart onto the old set and still reports FAILED.
+## Deferred To Task 2
 
-Do **not** start Delayed Restart, Wait Until Empty, `app_info_print`, wizard, new Web Admin work, or the Update Available split until this retest PASSes.
+- `IServerReadinessProbe`
+- QA-011 (Starting until ready)
+- Stop → Backup pipeline reorder
+- `BackupRecord` world hashes
+- SQLite `PRAGMA quick_check`
+- `IBackupVerifier`
+
+Also still deferred: Integration Diagnostics UI, LiveWindows harness, Delayed Restart, Wait Until Empty, Web Admin expansion, `app_info_print`, Update Available / Verify-All split.
