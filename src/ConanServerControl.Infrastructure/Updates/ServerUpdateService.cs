@@ -181,11 +181,37 @@ public sealed class ServerUpdateService : IServerUpdateService
             {
                 _pipeline.Fail(ex.Message);
                 progress?.Report(_pipeline.Snapshot());
-                _logger.LogError(ex, "{Action} failed. Existing server files were not deleted.", actionName);
+                _logger.LogError(
+                    ex,
+                    "{Action} failed after wasRunning={WasRunning}. Server files were not deleted. Current status={Status}.",
+                    actionName,
+                    wasRunning,
+                    _server.State.Status);
+
+                var restoredOnline = false;
+                if (wasRunning)
+                {
+                    try
+                    {
+                        await _server.StartUnderLockAsync(cancellationToken).ConfigureAwait(false);
+                        restoredOnline = _server.State.Status is ServerStatus.Online;
+                    }
+                    catch (Exception startEx)
+                    {
+                        _logger.LogError(startEx, "Could not restore the previously running server after {Action} failed.", actionName);
+                    }
+                }
+
+                var guidance = restoredOnline
+                    ? "The existing dedicated server and world saves were not deleted. A safety backup was kept if backup was enabled. Open the SteamCMD log, fix the error, then retry."
+                    : wasRunning
+                        ? "The server was stopped for this update and was not restarted. A safety backup was kept if backup was enabled. Start the server manually after you inspect the failure."
+                        : "The existing dedicated server and world saves were not deleted. Open the SteamCMD log, fix the error, then retry.";
+
                 throw new UserFacingException(
                     $"{actionName} failed",
                     ex is UserFacingException ufe ? ufe.Message : ex.Message,
-                    "The existing dedicated server and world saves were not deleted. Open the SteamCMD log, fix the error, then retry.",
+                    guidance,
                     ex);
             }
         }
