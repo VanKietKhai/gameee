@@ -1,0 +1,176 @@
+namespace ConanServerControl.Core.Models;
+
+public sealed class ServerRuntimeState
+{
+    public ServerStatus Status { get; set; } = ServerStatus.Offline;
+
+    public HealthCheckResult Health { get; set; } = HealthCheckResult.ServerOffline;
+
+    public int? ProcessId { get; set; }
+
+    public DateTimeOffset? StartedAt { get; set; }
+
+    public DateTimeOffset? StoppedAt { get; set; }
+
+    public int? LastExitCode { get; set; }
+
+    public bool LastExitWasCrash { get; set; }
+
+    public string? LastError { get; set; }
+
+    public string? LastErrorGuidance { get; set; }
+
+    public TimeSpan? Uptime =>
+        StartedAt is null || Status is ServerStatus.Offline or ServerStatus.Error
+            ? null
+            : DateTimeOffset.UtcNow - StartedAt.Value;
+
+    public int PlayerCount { get; set; }
+
+    public int MaxPlayers { get; set; } = AppConstants.DefaultMaxPlayers;
+
+    public IReadOnlyList<PlayerInfo> Players { get; set; } = Array.Empty<PlayerInfo>();
+
+    public double? CpuUsagePercent { get; set; }
+
+    public long? WorkingSetBytes { get; set; }
+
+    public string? InstalledBuild { get; set; }
+
+    public string? AvailableBuild { get; set; }
+
+    public bool ServerUpdateAvailable { get; set; }
+
+    public int InstalledModCount { get; set; }
+
+    public int ModsRequiringUpdate { get; set; }
+
+    public DateTimeOffset? LastBackupAt { get; set; }
+
+    public DateTimeOffset? LastUpdateCheckAt { get; set; }
+
+    public string? CurrentAction { get; set; }
+
+    public bool ActionInProgress { get; set; }
+
+    public int ConsecutiveCrashRestarts { get; set; }
+
+    public bool CrashLoopDetected { get; set; }
+
+    public ServerRuntimeState Clone()
+    {
+        return new ServerRuntimeState
+        {
+            Status = Status,
+            Health = Health,
+            ProcessId = ProcessId,
+            StartedAt = StartedAt,
+            StoppedAt = StoppedAt,
+            LastExitCode = LastExitCode,
+            LastExitWasCrash = LastExitWasCrash,
+            LastError = LastError,
+            LastErrorGuidance = LastErrorGuidance,
+            PlayerCount = PlayerCount,
+            MaxPlayers = MaxPlayers,
+            Players = Players.ToArray(),
+            CpuUsagePercent = CpuUsagePercent,
+            WorkingSetBytes = WorkingSetBytes,
+            InstalledBuild = InstalledBuild,
+            AvailableBuild = AvailableBuild,
+            ServerUpdateAvailable = ServerUpdateAvailable,
+            InstalledModCount = InstalledModCount,
+            ModsRequiringUpdate = ModsRequiringUpdate,
+            LastBackupAt = LastBackupAt,
+            LastUpdateCheckAt = LastUpdateCheckAt,
+            CurrentAction = CurrentAction,
+            ActionInProgress = ActionInProgress,
+            ConsecutiveCrashRestarts = ConsecutiveCrashRestarts,
+            CrashLoopDetected = CrashLoopDetected
+        };
+    }
+}
+
+public sealed class PlayerInfo
+{
+    public string Name { get; set; } = string.Empty;
+
+    public string? SteamId { get; set; }
+
+    public TimeSpan? SessionDuration { get; set; }
+}
+
+public sealed class DiagnosticsSnapshot
+{
+    public string ApplicationDataDirectory { get; set; } = string.Empty;
+
+    public string LogsDirectory { get; set; } = string.Empty;
+
+    public string BackupsDirectory { get; set; } = string.Empty;
+
+    public string SettingsFilePath { get; set; } = string.Empty;
+
+    public string SteamCmdPath { get; set; } = string.Empty;
+
+    public bool SteamCmdExists { get; set; }
+
+    public string ConanServerExecutablePath { get; set; } = string.Empty;
+
+    public bool ConanServerExecutableExists { get; set; }
+
+    public string ConanServerWorkingDirectory { get; set; } = string.Empty;
+
+    public bool ConanServerWorkingDirectoryExists { get; set; }
+
+    public ServerStatus ServerStatus { get; set; }
+
+    public int? ProcessId { get; set; }
+
+    public string OperatingSystem { get; set; } = string.Empty;
+
+    public string Runtime { get; set; } = string.Empty;
+
+    public string? TailscaleIPv4 { get; set; }
+
+    public string WebAdminUrl { get; set; } = string.Empty;
+}
+
+public sealed class LogEntry
+{
+    public DateTimeOffset Timestamp { get; init; }
+
+    public string Level { get; init; } = "Information";
+
+    public string Source { get; init; } = "App";
+
+    public string Message { get; init; } = string.Empty;
+}
+
+public sealed class ActivityLogEntry
+{
+    public int Id { get; set; }
+
+    public DateTimeOffset Timestamp { get; set; }
+
+    public string Category { get; set; } = "General";
+
+    public string Message { get; set; } = string.Empty;
+
+    public string? Actor { get; set; }
+
+    public string? Details { get; set; }
+}
+
+public sealed class ProcessExecutionResult
+{
+    public int ExitCode { get; init; }
+
+    public string StandardOutput { get; init; } = string.Empty;
+
+    public string StandardError { get; init; } = string.Empty;
+
+    public TimeSpan Duration { get; init; }
+
+    public bool TimedOut { get; init; }
+
+    public bool Succeeded => !TimedOut && ExitCode == 0;
+}

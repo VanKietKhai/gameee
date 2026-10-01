@@ -1,0 +1,9 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>ConanServerControl.Core</RootNamespace>
+    <Description>Domain models, interfaces, and shared logic for Conan Server Control.</Description>
+  </PropertyGroup>
+
+</Project>

@@ -1,0 +1,27 @@
+<UserControl x:Class="ConanServerControl.App.Views.ModsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <DockPanel>
+    <StackPanel DockPanel.Dock="Top">
+      <TextBlock Text="Mods" FontSize="24" FontWeight="SemiBold" />
+      <TextBlock Margin="0,8,0,12" TextWrapping="Wrap" Foreground="{StaticResource MutedBrush}"
+                 Text="The manager controls the SERVER mod list only. Players need a licensed Conan Exiles client; Steam Workshop updates their local mods. This application does not distribute game files or bypass Steam DRM." />
+      <DockPanel Margin="0,0,0,8">
+        <Button DockPanel.Dock="Right" Style="{StaticResource PrimaryButton}" Content="ADD MOD" Command="{Binding AddCommand}" />
+        <TextBox Text="{Binding WorkshopId}" />
+      </DockPanel>
+      <WrapPanel>
+        <Button Style="{StaticResource DangerButton}" Content="REMOVE MOD" Command="{Binding RemoveCommand}" />
+        <Button Style="{StaticResource GhostButton}" Content="COPY MOD LIST" Command="{Binding CopyListCommand}" />
+      </WrapPanel>
+    </StackPanel>
+    <Grid Margin="0,12,0,0">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="2*" />
+        <RowDefinition Height="*" />
+      </Grid.RowDefinitions>
+      <TextBox Grid.Row="0" Text="{Binding Listing}" IsReadOnly="True" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" />
+      <TextBox Grid.Row="1" Margin="0,8,0,0" Text="{Binding Shareable}" IsReadOnly="True" TextWrapping="Wrap" AcceptsReturn="True" />
+    </Grid>
+  </DockPanel>
+</UserControl>
