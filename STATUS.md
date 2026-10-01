@@ -123,14 +123,12 @@ Unchanged gate / lease / readiness / cold-backup / `ModBatchTransaction`. Additi
 
 ## Next Recommended Work
 
-After review: M3 Task 4E, one Local `.pak` mod on the real server. It is verified server-side only, with no client connection:
-- backup before mutation (verified cold backup)
-- transactional install
-- `modlist.txt`
-- server startup
-- real readiness
-- server log evidence that the mod loaded
-- rollback verification
+M3 Task 4E (one Local mod) is accepted as PASS.
+
+Next: **Target Modpack V1** (`MODPACK_V1.md`). Ten mods are planned, and the metadata and conflict/test matrix are recorded. Nothing is installed yet.
+- Cumulative batches: A (WickStacks, Savage Paragon, Grit & Grease) → B → C → D1 / D2 / D3, then a review of all ten.
+- Batch A waits for the local `.pak` paths.
+- The final load order is not declared until all ten have been tested together with runtime evidence.
 
 ## Last Completed Task
 
@@ -138,4 +136,4 @@ M3 Task 4 pre-live fixes, 4A SteamCMD, and the standalone-first pivot (Local mod
 
 ## Current Task
 
-Matched-version server verified. 4F recorded as blocked by client authentication. Pre-4E validation done (`0d54acc`): acknowledgement-gated graceful stop with process-tree Offline, Radmin/LAN address split, 313 / 313 tests, live 10-minute stop PASS (154 s, exit 0, no kill, no WAL, no orphans). Waiting for review before 4E (one Local mod). Do not modify the real client, and do not configure a public Internet server.
+Matched-version server verified. 4F recorded as blocked by client authentication. Pre-4E validation done (`0d54acc`): acknowledgement-gated graceful stop with process-tree Offline, Radmin/LAN address split, 313 / 313 tests, live 10-minute stop PASS (154 s, exit 0, no kill, no WAL, no orphans). 4E PASS (accepted). Target Modpack V1 planned (`MODPACK_V1.md`); waiting for the local `.pak` paths before Batch A. Do not modify the real client, and do not configure a public Internet server.
