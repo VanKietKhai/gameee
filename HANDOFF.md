@@ -17,6 +17,41 @@ Live details are in **`M3_LIVE_TEST_REPORT.md`**. Task 3's handoff is in git his
 | `84c5bd8` | Standalone-first: Local `.pak` mods, Client Mod Bundle, optional SteamCMD, existing-server support |
 | (docs) | `M3_LIVE_TEST_REPORT.md`, `STATUS.md`, `HANDOFF.md` |
 
+## Deployment model (product requirement)
+
+**PRIVATE friends-only multiplayer over Radmin VPN**, approximately 5 players.
+
+```
+Host PC:  Conan Dedicated Server + Conan Server Control + Radmin VPN
+Friends:  legitimate, FLS-authenticated Conan client + Radmin VPN
+          (direct connect over the private Radmin virtual LAN)
+```
+
+The following are **not** goals and are never configured by the app (port forwarding only if explicitly requested later):
+- public server-browser registration. Public FLS registration is not a release criterion, so Conan's `Autologin attempt failed, unable to register server!` is **not a blocker**, provided authenticated clients can direct-connect.
+- public IP exposure
+- router port forwarding
+- UPnP
+- exposing game or RCON ports to the Internet
+
+RCON stays local/private:
+- The app connects only to `127.0.0.1`.
+- Conan's RCON plugin listens on `0.0.0.0` (observed live; no bind option), so diagnostics warn: never port-forward, keep a strong password, and optionally add a firewall rule (manual only).
+
+App support:
+- `INetworkInfoService.GetRadminVpnIPv4()`. The Dashboard shows the Radmin address. `GetLanIPv4()` skips VPN adapters.
+- Diagnostics `network.private-vpn`: friends' direct-connect target `<RadminIP>:<GamePort>`. A missing Radmin VPN is a warning, never a readiness blocker.
+- Diagnostics `rcon.exposure`.
+
+**Authentication.** Radmin VPN provides the private network path only. It does **not** replace FLS/platform authentication: every friend needs a legitimate Conan client session that can obtain the platform token FLS requires.
+
+**4F CLIENT JOIN = BLOCKED BY CLIENT AUTHENTICATION.**
+- The observed client `D:\conan exiles\Conan Exiles Enhanced` logs `Steam auth token not available`, its FLS login fails, and it falls back to offline/single-player mode.
+- Its installation contains Steam-emulation artifacts. They were not modified.
+- Not a network failure, a server failure or a version mismatch. Details: `M3_LIVE_TEST_REPORT.md` "Checkpoint 4F".
+- No authentication or licensing bypass will be attempted, and client bypass investigation is closed.
+- Server management continues independently of it. **4E is not blocked**: it is verified server-side only, with no client connection.
+
 ## Hard executable gate (QA-018 / wrong-path risk)
 
 - `Core/Diagnostics/ServerExecutableGate`: Start is allowed **only** for `ConanSandboxServer.exe` that is not inside the standalone client folder.
@@ -52,6 +87,8 @@ Live details are in **`M3_LIVE_TEST_REPORT.md`**. Task 3's handoff is in git his
 
 ## Standalone-first architecture (new)
 
+Scope (corrected 2026-10-02): standalone-first applies to the **server/management side**. SteamCMD and the Steam client are not required for normal server-management operations once a valid Dedicated Server installation exists, and Local `.pak` mods and Client Mod Bundles may be managed independently of Workshop. Multiplayer clients still need a legitimate Conan client session that can obtain the FLS platform authentication token.
+
 **Mod source model.**
 - `ModSourceType { Workshop = 0, Local = 1 }` on `WorkshopMod`. A missing value means Workshop, so old settings are backwards compatible (tested).
 - Local mods have `WorkshopId = 0`, `LocalSourcePath` (metadata only) and `Sha256`.
@@ -83,6 +120,7 @@ Live details are in **`M3_LIVE_TEST_REPORT.md`**. Task 3's handoff is in git his
 - Every copy is verified by SHA-256. The bundle is assembled in a hidden `.partial` folder and renamed at the end. On failure only that partial folder is removed.
 - Export refuses any folder overlapping the standalone client, its launcher folder, or the dedicated server install, including trailing-separator variants. No game files are included.
 - `ClientModSyncPlanner` (via `PlanClientSync`) is **read-only**. Per mod it reports Copy / Replace / UpToDate, plus extra client paks and whether `modlist.txt` matches. It rejects unsafe manifest names.
+- The bundle distributes **only** `.pak` mod files, the modlist, manifest/hash metadata, and permitted configuration material. It does **not** distribute the game client, provide authentication, replace a platform license, bypass FLS, or modify Steam authentication.
 - **Nothing was written to the real client.**
 
 **Existing dedicated server and optional SteamCMD.**
@@ -119,9 +157,9 @@ Live details are in **`M3_LIVE_TEST_REPORT.md`**. Task 3's handoff is in git his
 
 ## Known limitations
 
-- No dedicated server boot yet. Every server, world, backup, mod-load and client item is **not live verified**.
-- The client `modlist.txt` format (one file name per line, like the server) is an assumption until 4F.
-- The real `ConanSandboxServer.exe` location in a dedicated server install has not been seen live. The locator supports both candidate locations.
+- Server boot, readiness, Start/Stop/Restart and cold backup are live verified (4C/4D). Server mod load (4E) is **not live verified** yet, and client items (4F) are **blocked by client authentication**.
+- The client `modlist.txt` format (one file name per line, like the server) is an assumption until 4F resumes with a legitimate client (4F is blocked by client authentication).
+- `ConanSandboxServer.exe` was found live at the install root (4C). The locator also supports `ConanSandbox\Binaries\Win64`.
 - The cold safety backup requires an existing `ConanSandbox\Saved` folder, so importing a mod into a never-booted server aborts at the backup step (Task 2 policy, unchanged).
 - Workshop mod download and automatic server install/update need SteamCMD and Valve's Fastly CDN, which this network blocks.
 - Attach-to-existing-process still matches any `ConanSandboxServer` process system-wide. The harness refuses to start if one exists.
@@ -171,4 +209,4 @@ Constraints:
 - Place the install outside `D:\conan exiles\`, for example `E:\CSC-M3-Live\server`. Then use **Use existing server installation**, or tell me the path so the harness can validate it with the gate.
 - The standalone game client (`ConanSandbox.exe` / `Run Me!.bat`) is **not** a dedicated server and will be refused.
 
-Then 4C runs as planned: first boot on a throwaway world, readiness, Start/Stop/Restart, cold backup (4D), one Local mod (4E). 4F client observation is subject to the authentication risk in the live report.
+Then 4C runs as planned: first boot on a throwaway world, readiness, Start/Stop/Restart, cold backup (4D), one Local mod (4E). 4F was later found **blocked by client authentication** (see "Deployment model").

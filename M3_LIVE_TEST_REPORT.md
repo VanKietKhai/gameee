@@ -2,8 +2,10 @@
 
 Status: **IN PROGRESS: checkpoint 4C/4D PASSED** on an existing dedicated server installation. Waiting for review before 4E (one Local mod).
 
-- The product direction changed to **standalone-first** (see "Direction change").
-- No dedicated server has been booted yet.
+- **4F CLIENT JOIN = BLOCKED BY CLIENT AUTHENTICATION** (see "Checkpoint 4F"). This is not a network failure, a server failure or a version mismatch.
+- **4E is not blocked** by the client problem. It is verified server-side only.
+- Deployment target: **private friends-only dedicated server over Radmin VPN** (see "Deployment target").
+- "Standalone-first" applies to the **server/management side** only (see "Direction change", corrected 2026-10-02).
 - Nothing in this report claims live verification beyond what is listed under "Live verified".
 
 - Branch: `claude/m3-task4-live-windows` (base `0352f40`, QA-verified)
@@ -131,11 +133,11 @@ SteamCMD is optional, and network-blocked for downloads.
 
 ### Findings (not blocking)
 
-1. The Conan server log reports `Autologin attempt failed, unable to register server!` (server-list registration).
+1. The Conan server log reports `Autologin attempt failed, unable to register server!` (server-list registration). Not a blocker for the private Radmin target (see "Deployment target").
 2. Readiness fix: `ConanSandbox.log` current-run frame 0 means not ready. Live Online times are now 30–32 s.
 3. The backup copy's folder gains `game_0.db-shm` (32 KB) and `game_0.db-wal` (0 B) after verification. SQLite creates them when `quick_check` opens the **copy**. The copied `game_0.db` hash still matches the manifest, and the live world is untouched. A follow-up could open with `immutable=1` or verify a temporary copy.
 4. The backup copies the whole `Saved` tree into `world\` (including `Config` and `Logs`) and also into `config\`, so the configuration is stored twice. This is pre-existing design.
-5. Client/server build mismatch (beta vs live). This is relevant for 4F.
+5. Client/server build mismatch (beta vs live). Resolved by the version-matched server below; it is not the 4F blocker.
 6. `configure-rcon` wrote `[RconPlugin]` into the throwaway server's `Saved\Config\WindowsServer\Game.ini`. Conan requires the RCON password in plaintext there. It is random, and the app stores it only with DPAPI.
 
 ### Safety
@@ -162,7 +164,7 @@ SteamCMD is optional, and network-blocked for downloads.
 | Boot before backup | **PASS** | Online at 29.9 s; graceful stop 63.0 s, exit code 0. |
 | Cold backup | **PASS** | `2026-10-02_044344`: Enhanced, `game_0.db` 643,072 B, SHA-256 `6F8A467C2DC5A41299EDFCEEA906288761B7CDC2757B9636730526484692C8D7`. Manifest written, hashes verified, `quick_check` = `ok`, live world unchanged by the backup. |
 
-**Still observed:** `Autologin attempt failed, unable to register server!`, so the server does not appear in the server list. Whether direct connect works is part of 4F.
+**Still observed:** `Autologin attempt failed, unable to register server!`, so the server does not appear in the public server list. This is **not a blocker** for the private Radmin target, provided authenticated clients can direct-connect (see "Deployment target"). Direct connect is part of 4F.
 
 **Client:** 0 files modified. SteamCMD was not used on this machine for the download.
 
@@ -198,7 +200,8 @@ SteamCMD is optional, and network-blocked for downloads.
 - Online play, including Direct Connect, requires the client to log in to Funcom Live Services, which authenticates through the client's platform.
 - This client cannot log in. Getting past this would require bypassing an authentication/licensing mechanism, which this project will not implement or recommend.
 - The legitimate path is a licensed client (e.g. Steam), which logs in to FLS normally.
-- The server's own `Autologin attempt failed, unable to register server!` (server-browser registration) remains open; it should be re-checked with a licensed client.
+- The server's own `Autologin attempt failed, unable to register server!` (server-browser registration) is not a blocker for the private Radmin target. Public registration is not a release criterion.
+- Root cause and classification: see "Checkpoint 4F".
 - Reachability check: the Funcom telemetry host `live.commontelem.flx.wintercloud.net` answers (HTTP 404), so this is not the same as the Fastly network block.
 
 **New finding: graceful stop after a long uptime.**
@@ -209,11 +212,95 @@ SteamCMD is optional, and network-blocked for downloads.
 - Recommendation: treat "teardown started" as progress and allow a longer timeout (e.g. 300 s), or wait while the process is still in its exit sequence.
 - Conan also writes its own rotating `game_0_backup_N.db` every ~5 minutes while running.
 
-## Direction change: standalone-first
+## Checkpoint 4F: client join — BLOCKED BY CLIENT AUTHENTICATION
 
-After 4B, the product requirement was corrected:
-- Players use **standalone** Conan clients (no Steam client, library or Workshop sync).
-- SteamCMD is **optional** infrastructure.
+**4F CLIENT JOIN = BLOCKED BY CLIENT AUTHENTICATION.**
+
+Observed client: `D:\conan exiles\Conan Exiles Enhanced`, build `++exiles+release-CL-377096` (ProjectVersion 2.2.2). The session analysed is the operator's manual launch on 2026-10-02 at 05:01 local (`launcher.log`), 22:01 UTC in the client log.
+
+**Observed behaviour.**
+- The client enters FLS offline mode.
+- Play Online, and Direct Connect under it, is unavailable. Only single player works.
+- The server receives no player connection attempt (no accept, pre-login, login or join lines).
+- Client/server version match is **not** the blocker: both are CL-377096 / 2.2.2.
+
+**Evidence** (client log `ConanSandbox\Saved\Logs\ConanSandbox.log`, read-only):
+
+| Line | Log text | Meaning |
+| --- | --- | --- |
+| 499–502 | `STEAM: Steam User is subscribed 1`, `Client API initialized 1`, `Created online subsystem instance for: STEAM` | The Steam API layer reports success. |
+| 511–512 | `Created online subsystem instance for: Fls`, `Loaded subsystem for type [Fls]` | Online play goes through Funcom Live Services. |
+| 533, 539 | `Build: ++exiles+release-CL-377096`, `Net CL: 377096` | Same build as the server. |
+| 1713 | `Requested Message FlsOfflineMode` | The client falls back to offline mode. |
+| 1801, 2652 | `LogFuncomLiveServices: Error: Error in Login: Steam auth token not available.` | **Root cause:** no platform authentication token. |
+| 2904–2905 | `Error in Login: couldn't connect`, `Login failed: couldn't connect.` | FLS login fails; the client stays offline/single-player. |
+
+**Steam-emulation artifacts in the client installation.**
+- `Engine\Binaries\ThirdParty\Steamworks\Steamv164\Win64\` contains `steam_emu.ini` and `steam_api64.rne` next to `steam_api64.dll`. These are Steam-emulation artifacts, not part of the Steamworks runtime.
+- The emulated layer reports a subscribed user, but it cannot produce the platform authentication token that FLS requires. That matches the log above.
+- The launcher folder also holds a third-party distributor's shortcut and readme (`AnkerGames - Free Pre-installed PC Games.url`, `Read Me.txt`).
+- The artifacts were listed by name only. Their contents were not opened, and they were **not modified**.
+
+**Classification.**
+
+| Candidate | Verdict | Why |
+| --- | --- | --- |
+| Network failure | **No** | The first login error is the missing Steam auth token, and network reachability cannot supply a token. A read-only probe on 2026-10-02 reached `services.live.exiles.wintercloud.net` (HTTP 404 at `/`, TLS in ~0.7 s). The telemetry host answers too. The same client session also logged FLS API timeouts (`GetBuildOverrides`, `GetActiveEvents`, PlayFab retries). They are secondary. |
+| Server failure | **No** | The server was Online with the world ticking, and UDP 7777 / 27015 were bound on `0.0.0.0` by the server process. No join reached it because the client never got past FLS login. |
+| Version mismatch | **No** | Client and server are both CL-377096 / 2.2.2. |
+| Client authentication | **Yes** | `Steam auth token not available` → FLS login failed → `FlsOfflineMode`. |
+
+**Policy.**
+- No authentication or licensing bypass was attempted, and none will be: the emulation artifacts are untouched, there is no forced join from offline mode, and nothing patches Steam or FLS.
+- Client bypass investigation is **closed**.
+- Client files modified: **none**.
+
+**Unblock condition.**
+- 4F resumes only with a **legitimate Conan client session** that can obtain the platform authentication token FLS requires (for example a licensed Steam copy with Steam signed in).
+- Radmin VPN provides the private network path. It does **not** replace FLS/platform authentication.
+- When 4F resumes:
+  - direct connect over Radmin to `<host Radmin IP>:7777` (this host's Radmin address was `26.84.226.21`)
+  - apply a Client Mod Bundle
+  - confirm the client `modlist.txt` format
+
+## Deployment target: private friends-only over Radmin VPN
+
+PROJECT DEPLOYMENT TARGET:
+- private friends-only server
+- approximately 5 players
+- Radmin VPN virtual LAN
+- direct connection over the Radmin/private IP, when the client is authenticated
+- no public server browser requirement
+- no public IP exposure requirement
+- no router port forwarding requirement, unless explicitly requested later
+- no UPnP requirement
+- RCON must remain private/local
+- public FLS server registration is **not** a release criterion
+
+`Autologin attempt failed, unable to register server!` is therefore **NOT A BLOCKER** for the intended private deployment, provided authenticated clients can direct-connect. No project time is spent making the server public.
+
+## Checkpoint 4E: not blocked by the client problem
+
+4E (one Local `.pak` mod) is **NOT blocked** by the 4F client problem. It is verified server-side, and no client connection is required:
+- backup before mutation (verified cold backup)
+- transactional install
+- `modlist.txt`
+- server startup
+- real readiness
+- server log evidence that the mod loaded
+- rollback verification
+
+## Direction change: standalone-first (corrected 2026-10-02)
+
+After 4B the requirement was recorded as "players use **standalone** Conan clients (no Steam client, library or Workshop sync)". 4F showed that this is wrong for multiplayer. Corrected statement:
+
+> Conan Server Control is standalone-first on the **SERVER/MANAGEMENT** side. SteamCMD and the Steam client are not required for normal server-management operations once a valid Dedicated Server installation exists.
+>
+> Local `.pak` mods and Client Mod Bundles may be managed independently of Workshop.
+>
+> However, multiplayer clients must use a legitimate Conan client session capable of obtaining the platform authentication token required by Funcom Live Services. Radmin VPN does not replace FLS/platform authentication.
+
+SteamCMD remains **optional** infrastructure.
 
 What was implemented and unit-tested (272 / 272 tests):
 - **Local mod source.** Flow: `.pak` → validate → COPY to isolated staging → SHA-256 → locked pipeline (stop if running → verified cold backup → transactional commit with rollback → restart only if it was running) → `modlist.txt`.
@@ -225,6 +312,8 @@ What was implemented and unit-tested (272 / 272 tests):
   - Export refuses client and server locations.
   - The bundle is assembled atomically.
   - A read-only client sync planner compares a bundle with a client folder. It never writes.
+  - It distributes **only** `.pak` mod files, the modlist, manifest/hash metadata, and permitted configuration material.
+  - It does **not** distribute the game client, provide authentication, replace a platform license, bypass FLS, or modify Steam authentication.
 - **Existing dedicated server** is a first-class path (Settings → Use existing server installation). Readiness no longer requires SteamCMD when a valid existing `ConanSandboxServer.exe` is configured.
 
 ## Live verified so far
@@ -232,23 +321,23 @@ What was implemented and unit-tested (272 / 272 tests):
 1. SteamCMD bootstrap install and self-update through the app's real `SteamCmdService` (4A).
 2. The app's failure handling when SteamCMD cannot reach Valve's update CDN (4B: correct failure, no partial install).
 3. Workspace guard, marker guard and layout rejection against real paths.
-4. The real standalone client `D:\conan exiles\Conan Exiles Enhanced` was detected read-only (Task 3 and harness). Nothing under `D:\conan exiles` was written.
+4. The real standalone client `D:\conan exiles\Conan Exiles Enhanced` was detected read-only (Task 3 and harness). Nothing in the client folder was written.
+5. Existing dedicated server, version-matched CL-377096: first boot, real readiness, Start/Stop/Restart, graceful RCON `shutdown`, and a verified cold backup (4C/4D, sections above). `ConanSandboxServer.exe` was found at the install root.
+6. 4F classification: the client is blocked at FLS authentication (see "Checkpoint 4F").
 
 ## Not live verified
 
-- Dedicated server install (4B), first boot and readiness (4C), Start/Stop/Restart (4C)
-- Real world files and cold backup (4D)
-- Local or Workshop mod on a real server, and server mod load evidence (4E)
-- Client Mod Bundle applied to a real client, and standalone client join/compatibility (4F)
+- Dedicated server install through SteamCMD (4B): blocked by network. An existing installation is used instead.
+- Local or Workshop mod on a real server, and server mod load evidence (4E). Not blocked by the client.
+- Client Mod Bundle applied to a real client, and client join (4F): **BLOCKED BY CLIENT AUTHENTICATION**.
 - Workshop update (4G): **NOT EXERCISED**
-- Client `modlist.txt` format for standalone clients. The bundle writes one file name per line, the same as the server. This must be confirmed in 4F.
-- The real location of `ConanSandboxServer.exe` in a dedicated server install. The locator accepts the install root and `ConanSandbox\Binaries\Win64`.
+- Client `modlist.txt` format. The bundle writes one file name per line, the same as the server. This must be confirmed when 4F resumes with a legitimate client.
 
 ## Risks / findings for the next checkpoint
 
-1. **Dedicated server source.** To my knowledge, the official dedicated server is distributed as Steam app 443030 (free, anonymous SteamCMD). That download is blocked from this network. A valid installation must come from another legitimate source (see HANDOFF: next required input).
-2. **Standalone client authentication.** Conan Exiles dedicated servers normally authenticate joining players through Steam. Whether this standalone client can join a dedicated server is unknown.
-   - The client folder's provenance cannot be determined by this tool. It contains a third-party shortcut (`AnkerGames - Free Pre-installed PC Games.url`).
-   - If joining would require bypassing Steam/Funcom authentication, the project will not implement that, and 4F will stop and report.
+1. **Dedicated server source.** The official dedicated server is Steam app 443030 (free, anonymous SteamCMD), and that download is blocked from this network. Resolved for testing: a version-matched depot was downloaded on another machine (see "Version-matched dedicated server").
+2. **Client authentication.** Confirmed: 4F is **blocked by client authentication** (see "Checkpoint 4F").
+   - The observed client cannot obtain the platform token FLS requires, and its installation contains Steam-emulation artifacts.
+   - The project will not bypass Steam/Funcom authentication. 4F stopped and reported.
 3. **Mod redistribution.** Bundles redistribute mod files to players. Administrators are responsible for respecting mod authors' terms.
 4. **Fresh-server backups.** The cold safety backup requires `ConanSandbox\Saved` to exist. On a server that has never booted, a mod import aborts at the backup step. This is the existing Task 2 policy and has not changed.
