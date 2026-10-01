@@ -303,6 +303,7 @@ internal sealed class Harness : IAsyncDisposable
             s.General.StartServerWhenManagerLaunches = false;
             s.Advanced.RestartAfterCrash = false; // never auto-restart while diagnosing live boots
             s.Advanced.GracefulStopTimeoutSeconds = AppConstants.DefaultGracefulStopTimeoutSeconds;
+            s.Advanced.UnacknowledgedStopTimeoutSeconds = AppConstants.DefaultUnacknowledgedStopTimeoutSeconds;
             s.WebAdmin.Enabled = false;
         });
 
@@ -1033,12 +1034,62 @@ internal sealed class Harness : IAsyncDisposable
         await Task.Delay(2000);
         var leftovers = Program.ServerProcesses();
         var ok = error is null && server.State.Status == ServerStatus.Offline && leftovers.Count == 0;
+        var stop = server.State.LastStop;
+        var milestones = ShutdownMilestones(ReadLogFrom(ServerLog, logOffset, int.MaxValue));
+        var walLeft = File.Exists(Path.Combine(Saved, "game_0.db-wal"));
+        var shmLeft = File.Exists(Path.Combine(Saved, "game_0.db-shm"));
         _log.Write(step, "IServerProcessManager.StopAsync", ok ? "PASS" : "FAIL", clock.Elapsed,
             Facts(("Status", server.State.Status.ToString()), ("Error", error ?? string.Empty), ("LastExitCode", server.State.LastExitCode?.ToString() ?? "n/a"),
                 ("Timeline", string.Join(" -> ", timeline)), ("RemainingServerProcesses", DescribeProcesses()),
-                ("StopPath", string.IsNullOrEmpty(_settings.Secrets.RconPassword) ? "no RCON password -> CloseMainWindow -> kill tree" : $"RCON '{_settings.Current.Rcon.ShutdownCommand}' attempted first")),
+                ("OrphanServerProcesses", leftovers.Count == 0 ? "NO" : $"YES ({leftovers.Count})"),
+                ("StopPath", string.IsNullOrEmpty(_settings.Secrets.RconPassword) ? "no RCON password -> short window -> kill tree" : $"RCON '{_settings.Current.Rcon.ShutdownCommand}' attempted first"),
+                ("ShutdownSentAt", Local(stop?.ShutdownSentAt)),
+                ("ShutdownAcknowledged", stop?.ShutdownAcknowledged.ToString() ?? "n/a"),
+                ("ShutdownReply", Truncate(stop?.ShutdownReply, 120)),
+                ("ShutdownProgressAt", Local(stop?.ShutdownProgressAt)),
+                ("ShutdownProgressEvidence", Truncate(stop?.ShutdownProgressEvidence, 160)),
+                ("GracefulWindow", stop is null ? "n/a" : $"{stop.GracefulWindowSeconds}s ({(stop.ExtendedWindowUsed ? "extended" : "short")})"),
+                ("ForcedKill", stop is null ? "n/a" : stop.ForcedKill ? "YES" : "NO"),
+                ("ProcessTreeExitedAt", Local(stop?.ProcessTreeExitedAt)),
+                ("ServerLogMilestones", milestones),
+                ("WalLeftAfterStop", walLeft ? "YES" : "NO"),
+                ("ShmLeftAfterStop", shmLeft ? "YES" : "NO"),
+                ("WorldFiles", string.Join("; ", WorldSnapshot()))),
             ReadLogFrom(ServerLog, logOffset, 25));
         return ok;
+    }
+
+    private static string Local(DateTimeOffset? utc) => utc?.ToLocalTime().ToString("HH:mm:ss.fff") ?? "n/a";
+
+    /// <summary>
+    /// Local times of the Conan shutdown milestones in a server-log excerpt (log timestamps are UTC):
+    /// RCON shutdown received, exit requested, PreExit (world teardown starts), Preparing to exit,
+    /// engine shut down, Exiting.
+    /// </summary>
+    private static string ShutdownMilestones(string log)
+    {
+        var markers = new (string Label, string Text)[]
+        {
+            ("rcon-shutdown-received", "Received Rcon: shutdown"),
+            ("exit-requested", "Engine exit requested"),
+            ("world-teardown-start(PreExit)", "PreExit Game"),
+            ("preparing-to-exit", "LogExit: Preparing to exit"),
+            ("engine-shut-down", "LogExit: Game engine shut down"),
+            ("exiting", "LogExit: Exiting")
+        };
+        var stamp = new System.Text.RegularExpressions.Regex(@"^\[(\d{4}\.\d{2}\.\d{2}-\d{2}\.\d{2}\.\d{2}:\d{3})\]");
+        var lines = log.Split(Environment.NewLine);
+        var found = new List<string>();
+        foreach (var (label, text) in markers)
+        {
+            var line = lines.FirstOrDefault(l => l.Contains(text, StringComparison.Ordinal));
+            var m = line is null ? null : stamp.Match(line);
+            found.Add(m is { Success: true }
+                ? $"{label} {DateTime.SpecifyKind(DateTime.ParseExact(m.Groups[1].Value, "yyyy.MM.dd-HH.mm.ss:fff", System.Globalization.CultureInfo.InvariantCulture), DateTimeKind.Utc).ToLocalTime():HH:mm:ss.fff}"
+                : $"{label} not-seen");
+        }
+
+        return string.Join("; ", found);
     }
 
     private static async Task TryStopAsync(IServerProcessManager server)

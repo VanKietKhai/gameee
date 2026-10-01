@@ -266,7 +266,8 @@ public sealed partial class IntegrationDiagnosticsService : IIntegrationDiagnost
             problems.Add("Readiness poll interval must be greater than 0 ms.");
         }
 
-        if (s.Advanced.GracefulStopTimeoutSeconds <= 0 || s.Advanced.ForceStopTimeoutSeconds <= 0)
+        if (s.Advanced.GracefulStopTimeoutSeconds <= 0 || s.Advanced.UnacknowledgedStopTimeoutSeconds <= 0 ||
+            s.Advanced.ForceStopTimeoutSeconds <= 0)
         {
             problems.Add("Stop timeouts must be greater than 0 seconds.");
         }

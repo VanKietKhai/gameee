@@ -501,7 +501,10 @@ public sealed class M3LiveSafetyTests
 
         var check = report.Find(DiagnosticCheckIds.NetworkPrivateVpn)!;
         Assert.Equal(DiagnosticStatus.Pass, check.Status);
-        Assert.Equal("26.84.226.21:7777", check.Facts["FriendsDirectConnect"]);
+        Assert.Equal("26.84.226.21", check.Facts["RadminVpnIPv4"]);
+        Assert.Equal("26.84.226.21:7777", check.Facts["RecommendedRadminDirectConnect"]);
+        Assert.Equal("192.168.0.10", check.Facts["PhysicalLanIPv4"]);
+        Assert.Equal("192.168.0.10:7777", check.Facts["SameLanDirectConnect"]);
         Assert.Equal("not required", check.Facts["PublicServerBrowserRegistration"]);
     }
 
@@ -514,7 +517,12 @@ public sealed class M3LiveSafetyTests
 
         var report = await h.Service.RunAsync();
 
-        Assert.Equal(DiagnosticStatus.Warning, report.Find(DiagnosticCheckIds.NetworkPrivateVpn)!.Status);
+        var check = report.Find(DiagnosticCheckIds.NetworkPrivateVpn)!;
+        Assert.Equal(DiagnosticStatus.Warning, check.Status);
+        Assert.Equal("NOT DETECTED", check.Facts["RadminVpnIPv4"]);
+        Assert.Equal("NOT DETECTED", check.Facts["RecommendedRadminDirectConnect"]);
+        Assert.Equal("192.168.0.10", check.Facts["PhysicalLanIPv4"]);
+        Assert.Contains("NOT DETECTED", check.Summary);
         Assert.True(report.ServerLiveTest.IsReady, string.Join(" | ", report.ServerLiveTest.Blockers));
         Assert.DoesNotContain(report.ServerLiveTest.Blockers, b => b.Contains("register", StringComparison.OrdinalIgnoreCase));
     }

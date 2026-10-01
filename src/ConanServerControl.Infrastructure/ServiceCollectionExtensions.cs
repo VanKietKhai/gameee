@@ -42,6 +42,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<ISteamWorkshopClient, SteamWorkshopClient>();
         services.AddSingleton<IRconService, RconService>();
         services.AddSingleton<IServerReadinessProbe, EndpointServerReadinessProbe>();
+        services.AddSingleton<IServerShutdownProbe, ConanLogShutdownProbe>();
         services.AddSingleton<IBackupVerifier, SqliteBackupVerifier>();
         services.AddSingleton<IBackupService, BackupService>();
         services.AddSingleton<IWorkshopModService, WorkshopModService>();

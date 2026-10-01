@@ -177,7 +177,11 @@ public sealed class RconSettings
 
 public sealed class AdvancedSettings
 {
+    /// <summary>Extended stop window after an acknowledged shutdown or observed shutdown progress.</summary>
     public int GracefulStopTimeoutSeconds { get; set; } = AppConstants.DefaultGracefulStopTimeoutSeconds;
+
+    /// <summary>Stop window when the shutdown is neither acknowledged nor visibly progressing.</summary>
+    public int UnacknowledgedStopTimeoutSeconds { get; set; } = AppConstants.DefaultUnacknowledgedStopTimeoutSeconds;
 
     public int ForceStopTimeoutSeconds { get; set; } = AppConstants.DefaultForceStopTimeoutSeconds;
 

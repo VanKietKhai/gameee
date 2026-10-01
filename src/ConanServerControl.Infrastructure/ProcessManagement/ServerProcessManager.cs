@@ -24,9 +24,11 @@ public sealed class ServerProcessManager : IServerProcessManager, IDisposable
     private readonly ILogger<ServerProcessManager> _logger;
     private readonly IRconService _rcon;
     private readonly IServerReadinessProbe _readiness;
+    private readonly IServerShutdownProbe? _shutdownProbe;
     private readonly object _sync = new();
 
     private IManagedProcess? _process;
+    private bool _stopInProgress;
     private CancellationTokenSource? _monitorCts;
     private Task? _outputPump;
     private DateTimeOffset _cpuSampleAt = DateTimeOffset.MinValue;
@@ -40,7 +42,8 @@ public sealed class ServerProcessManager : IServerProcessManager, IDisposable
         IActivityLog activityLog,
         IRconService rcon,
         IServerReadinessProbe readiness,
-        ILogger<ServerProcessManager> logger)
+        ILogger<ServerProcessManager> logger,
+        IServerShutdownProbe? shutdownProbe = null)
     {
         _settings = settings;
         _processStarter = processStarter;
@@ -49,6 +52,7 @@ public sealed class ServerProcessManager : IServerProcessManager, IDisposable
         _rcon = rcon;
         _readiness = readiness;
         _logger = logger;
+        _shutdownProbe = shutdownProbe;
         State = new ServerRuntimeState();
     }
 
@@ -303,7 +307,7 @@ public sealed class ServerProcessManager : IServerProcessManager, IDisposable
         lock (_sync)
         {
             process = _process;
-            if (process is null || process.HasExited)
+            if (process is null || process.TreeHasExited)
             {
                 State.Status = ServerStatus.Offline;
                 State.Health = HealthCheckResult.ServerOffline;
@@ -312,35 +316,68 @@ public sealed class ServerProcessManager : IServerProcessManager, IDisposable
                 return;
             }
 
+            _stopInProgress = true;
             State.Status = ServerStatus.Stopping;
             PublishLocked();
         }
 
+        try
+        {
+            await StopTreeAsync(process, force, expected, cancellationToken).ConfigureAwait(false);
+        }
+        finally
+        {
+            lock (_sync)
+            {
+                _stopInProgress = false;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Graceful first, force-kill last. The extended window applies only after the server
+    /// acknowledged the shutdown or its log shows the shutdown under way; otherwise a short window
+    /// keeps an unresponsive server from delaying the kill. Offline is reported only once the whole
+    /// process tree (launcher and the -Shipping server child) is gone.
+    /// </summary>
+    private async Task StopTreeAsync(IManagedProcess process, bool force, bool expected, CancellationToken cancellationToken)
+    {
+        var report = new ServerStopReport { RequestedAt = DateTimeOffset.UtcNow, ForceRequested = force };
         await _activityLog.AddAsync("Server", force ? "Force stop requested." : "Graceful stop requested.", cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
-        var gracefulTimeout = TimeSpan.FromSeconds(Math.Max(5, _settings.Current.Advanced.GracefulStopTimeoutSeconds));
-        var forceTimeout = TimeSpan.FromSeconds(Math.Max(3, _settings.Current.Advanced.ForceStopTimeoutSeconds));
+        process.TrackDescendants();
+        var advanced = _settings.Current.Advanced;
+        var extendedWindow = TimeSpan.FromSeconds(Math.Max(5, advanced.GracefulStopTimeoutSeconds));
+        var shortWindow = TimeSpan.FromSeconds(Math.Clamp(advanced.UnacknowledgedStopTimeoutSeconds, 1, extendedWindow.TotalSeconds));
+        var forceTimeout = TimeSpan.FromSeconds(Math.Max(3, advanced.ForceStopTimeoutSeconds));
 
         if (!force)
         {
-            await TryGracefulShutdownAsync(cancellationToken).ConfigureAwait(false);
-            if (await WaitForExitAsync(process, gracefulTimeout, cancellationToken).ConfigureAwait(false))
+            var mark = _shutdownProbe?.Mark() ?? 0;
+            report = await TryGracefulShutdownAsync(report, cancellationToken).ConfigureAwait(false);
+            report = await WaitForGracefulExitAsync(process, report, mark, shortWindow, extendedWindow, cancellationToken)
+                .ConfigureAwait(false);
+            if (process.TreeHasExited)
             {
-                FinalizeStop(process, expected);
+                FinalizeStop(process, expected, report);
                 return;
             }
 
-            _logger.LogWarning("Graceful stop timed out after {Timeout}. Attempting CloseMainWindow.", gracefulTimeout);
-            process.CloseMainWindow();
-            if (await WaitForExitAsync(process, TimeSpan.FromSeconds(5), cancellationToken).ConfigureAwait(false))
+            _logger.LogWarning(
+                "Graceful stop did not finish within {Window} (acknowledged: {Acknowledged}, progress: {Progress}). Attempting CloseMainWindow.",
+                TimeSpan.FromSeconds(report.GracefulWindowSeconds), report.ShutdownAcknowledged, report.ShutdownProgressEvidence ?? "none");
+            // A console server started without a window has no main window; only wait when one was asked to close.
+            if (process.CloseMainWindow() &&
+                await WaitForTreeExitAsync(process, TimeSpan.FromSeconds(5), cancellationToken).ConfigureAwait(false))
             {
-                FinalizeStop(process, expected);
+                FinalizeStop(process, expected, report);
                 return;
             }
         }
 
-        _logger.LogWarning("Forcing Conan dedicated server process {Pid} to terminate.", process.Id);
+        _logger.LogWarning("Forcing Conan dedicated server process tree {Pid} to terminate.", process.Id);
+        report = report with { ForcedKill = true };
         try
         {
             process.Kill(entireProcessTree: true);
@@ -350,42 +387,110 @@ public sealed class ServerProcessManager : IServerProcessManager, IDisposable
             _logger.LogError(ex, "Force terminate failed for PID {Pid}.", process.Id);
         }
 
-        await WaitForExitAsync(process, forceTimeout, cancellationToken).ConfigureAwait(false);
-        if (!process.HasExited)
+        await WaitForTreeExitAsync(process, forceTimeout, cancellationToken).ConfigureAwait(false);
+        if (!process.TreeHasExited)
         {
-            SetStatus(ServerStatus.Error, "The dedicated server process did not exit after stop was requested.");
+            lock (_sync)
+            {
+                State.LastStop = report;
+            }
+
+            SetStatus(ServerStatus.Error, "The dedicated server process tree did not exit after stop was requested.");
             throw new UserFacingException(
                 "Server did not stop",
-                $"PID {process.Id} is still running after the stop timeout.",
+                $"PID {process.Id} or one of its child processes is still running after the stop timeout.",
                 "Stop the process manually, then retry. No backup or update was performed.");
         }
 
-        FinalizeStop(process, expected);
+        FinalizeStop(process, expected, report);
     }
 
-    private async Task TryGracefulShutdownAsync(CancellationToken cancellationToken)
+    private async Task<ServerStopReport> TryGracefulShutdownAsync(ServerStopReport report, CancellationToken cancellationToken)
     {
+        if (!_settings.Current.Rcon.Enabled || string.IsNullOrWhiteSpace(_settings.Secrets.RconPassword))
+        {
+            _logger.LogInformation("RCON is not configured; no graceful shutdown command can be sent.");
+            return report;
+        }
+
         try
         {
-            if (!_settings.Current.Rcon.Enabled || string.IsNullOrWhiteSpace(_settings.Secrets.RconPassword))
-            {
-                return;
-            }
-
             await _rcon.AnnounceAsync("Server is shutting down.", cancellationToken).ConfigureAwait(false);
-            var command = string.IsNullOrWhiteSpace(_settings.Current.Rcon.ShutdownCommand)
-                ? AppConstants.DefaultRconShutdownCommand
-                : _settings.Current.Rcon.ShutdownCommand.Trim();
-            var reply = await _rcon.SendCommandAsync(command, cancellationToken).ConfigureAwait(false);
-            _logger.LogInformation("RCON graceful shutdown '{Command}' replied: {Reply}", command, reply);
         }
-        catch (Exception ex)
+        catch (Exception ex) when (!cancellationToken.IsCancellationRequested)
         {
-            _logger.LogInformation(ex, "RCON graceful shutdown is unavailable; falling back to process stop.");
+            _logger.LogInformation(ex, "RCON shutdown announcement failed; sending the shutdown command anyway.");
+        }
+
+        var command = string.IsNullOrWhiteSpace(_settings.Current.Rcon.ShutdownCommand)
+            ? AppConstants.DefaultRconShutdownCommand
+            : _settings.Current.Rcon.ShutdownCommand.Trim();
+        report = report with { ShutdownCommand = command, ShutdownSentAt = DateTimeOffset.UtcNow };
+        try
+        {
+            var reply = await _rcon.SendCommandAsync(command, cancellationToken).ConfigureAwait(false);
+            var acknowledged = IsShutdownAcknowledged(reply);
+            _logger.LogInformation("RCON graceful shutdown '{Command}' replied: {Reply} (acknowledged: {Acknowledged})",
+                command, reply, acknowledged);
+            return report with { ShutdownAcknowledged = acknowledged, ShutdownReply = reply };
+        }
+        catch (Exception ex) when (!cancellationToken.IsCancellationRequested)
+        {
+            _logger.LogInformation(ex, "RCON graceful shutdown got no reply; watching the server log for shutdown progress.");
+            return report with { ShutdownReply = "no reply: " + ex.Message };
         }
     }
 
-    private void FinalizeStop(IManagedProcess process, bool expected)
+    /// <summary>Conan replies "Successfully executed: shutdown"; unknown commands get "Couldn't find the command".</summary>
+    internal static bool IsShutdownAcknowledged(string? reply) =>
+        reply is not null && reply.Contains("Successfully executed", StringComparison.OrdinalIgnoreCase);
+
+    private async Task<ServerStopReport> WaitForGracefulExitAsync(
+        IManagedProcess process,
+        ServerStopReport report,
+        long mark,
+        TimeSpan shortWindow,
+        TimeSpan extendedWindow,
+        CancellationToken cancellationToken)
+    {
+        var started = DateTime.UtcNow;
+        var nextProbe = DateTime.MinValue;
+        while (true)
+        {
+            if (process.TreeHasExited)
+            {
+                break;
+            }
+
+            var now = DateTime.UtcNow;
+            if (report.ShutdownProgressEvidence is null && _shutdownProbe is not null && now >= nextProbe)
+            {
+                nextProbe = now.AddSeconds(1);
+                if (_shutdownProbe.FindShutdownEvidence(mark) is { } evidence)
+                {
+                    _logger.LogInformation("Server shutdown in progress: {Evidence}", evidence);
+                    report = report with { ShutdownProgressAt = DateTimeOffset.UtcNow, ShutdownProgressEvidence = evidence };
+                }
+            }
+
+            var extended = report.ShutdownAcknowledged || report.ShutdownProgressEvidence is not null;
+            if (now - started >= (extended ? extendedWindow : shortWindow))
+            {
+                break;
+            }
+
+            await Task.Delay(100, cancellationToken).ConfigureAwait(false);
+        }
+
+        var used = report.ShutdownAcknowledged || report.ShutdownProgressEvidence is not null;
+        return report with
+        {
+            ExtendedWindowUsed = used,
+            GracefulWindowSeconds = (int)(used ? extendedWindow : shortWindow).TotalSeconds
+        };
+    }
+
+    private void FinalizeStop(IManagedProcess process, bool expected, ServerStopReport? report = null)
     {
         lock (_sync)
         {
@@ -411,6 +516,11 @@ public sealed class ServerProcessManager : IServerProcessManager, IDisposable
                 State.LastExitWasCrash = true;
             }
 
+            if (report is not null)
+            {
+                State.LastStop = report with { ProcessTreeExitedAt = State.StoppedAt, ExitCode = exitCode };
+            }
+
             if (ReferenceEquals(_process, process))
             {
                 _process = null;
@@ -424,17 +534,33 @@ public sealed class ServerProcessManager : IServerProcessManager, IDisposable
 
     private void OnProcessExited(object? sender, EventArgs e)
     {
-        var expected = State.Status is ServerStatus.Stopping or ServerStatus.Restarting or ServerStatus.Updating;
         IManagedProcess? process;
         lock (_sync)
         {
+            // A requested stop is finalized by StopCoreAsync once the whole process tree is gone.
+            if (_stopInProgress)
+            {
+                return;
+            }
+
             process = _process;
         }
 
-        if (process is not null)
+        // Already finalized, or the event belongs to a process from an earlier run.
+        if (process is null || (sender is IManagedProcess source && !ReferenceEquals(source, process)))
         {
-            FinalizeStop(process, expected);
+            return;
         }
+
+        var expected = State.Status is ServerStatus.Stopping or ServerStatus.Restarting or ServerStatus.Updating;
+        if (!process.TreeHasExited)
+        {
+            _logger.LogWarning("Server launcher PID {Pid} exited while its dedicated server child process is still running.", process.Id);
+            SetStatus(ServerStatus.Error, "The server launcher exited while the dedicated server child process is still running.");
+            return;
+        }
+
+        FinalizeStop(process, expected);
 
         if (expected || !_settings.Current.Advanced.RestartAfterCrash)
         {
@@ -603,12 +729,12 @@ public sealed class ServerProcessManager : IServerProcessManager, IDisposable
         }
     }
 
-    private static async Task<bool> WaitForExitAsync(IManagedProcess process, TimeSpan timeout, CancellationToken cancellationToken)
+    private static async Task<bool> WaitForTreeExitAsync(IManagedProcess process, TimeSpan timeout, CancellationToken cancellationToken)
     {
         var deadline = DateTime.UtcNow + timeout;
         while (DateTime.UtcNow < deadline)
         {
-            if (process.HasExited)
+            if (process.TreeHasExited)
             {
                 return true;
             }
@@ -616,7 +742,7 @@ public sealed class ServerProcessManager : IServerProcessManager, IDisposable
             await Task.Delay(100, cancellationToken).ConfigureAwait(false);
         }
 
-        return process.HasExited;
+        return process.TreeHasExited;
     }
 
     private async Task WaitUntilReadyAsync(IManagedProcess process, CancellationToken cancellationToken)
@@ -668,6 +794,8 @@ public sealed class ServerProcessManager : IServerProcessManager, IDisposable
                 FailStartupBecauseProcessExited();
             }
 
+            // Remember the -Shipping child while the launcher is alive; stop waits for (and kills) it too.
+            process.TrackDescendants();
             if (result.IsReady)
             {
                 lock (_sync)

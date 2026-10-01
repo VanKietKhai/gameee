@@ -85,75 +85,63 @@ public sealed class ServerHealthService : IServerHealthService
 
 public sealed class NetworkInfoService : INetworkInfoService
 {
-    public string? GetLanIPv4()
+    private readonly Func<IReadOnlyList<NetworkAdapterSnapshot>> _adapters;
+
+    public NetworkInfoService()
+        : this(ReadAdapters)
     {
-        try
-        {
-            foreach (var ni in NetworkInterface.GetAllNetworkInterfaces())
-            {
-                if (ni.OperationalStatus != OperationalStatus.Up)
-                {
-                    continue;
-                }
-
-                if (ni.NetworkInterfaceType is NetworkInterfaceType.Loopback)
-                {
-                    continue;
-                }
-
-                // VPN adapters are reported separately (GetRadminVpnIPv4 / GetTailscaleIPv4).
-                var adapter = ni.Name + " " + ni.Description;
-                if (adapter.Contains("radmin", StringComparison.OrdinalIgnoreCase) ||
-                    adapter.Contains("tailscale", StringComparison.OrdinalIgnoreCase))
-                {
-                    continue;
-                }
-
-                foreach (var address in ni.GetIPProperties().UnicastAddresses)
-                {
-                    if (address.Address.AddressFamily == AddressFamily.InterNetwork &&
-                        !IPAddress.IsLoopback(address.Address))
-                    {
-                        return address.Address.ToString();
-                    }
-                }
-            }
-        }
-        catch
-        {
-            // ignored
-        }
-
-        return null;
     }
 
-    public string? GetRadminVpnIPv4()
+    internal NetworkInfoService(Func<IReadOnlyList<NetworkAdapterSnapshot>> adapters)
+    {
+        _adapters = adapters;
+    }
+
+    /// <summary>Physical Ethernet/Wi-Fi private address, for players on the same real LAN.</summary>
+    public string? GetLanIPv4() => NetworkAddressSelector.SelectPhysicalLanIPv4(SafeAdapters());
+
+    /// <summary>Radmin VPN address (the private friends-only target), or null when not identified.</summary>
+    public string? GetRadminVpnIPv4() => NetworkAddressSelector.SelectRadminIPv4(SafeAdapters());
+
+    private IReadOnlyList<NetworkAdapterSnapshot> SafeAdapters()
     {
         try
         {
-            foreach (var ni in NetworkInterface.GetAllNetworkInterfaces())
-            {
-                if (ni.OperationalStatus != OperationalStatus.Up ||
-                    !(ni.Name + " " + ni.Description).Contains("radmin", StringComparison.OrdinalIgnoreCase))
-                {
-                    continue;
-                }
-
-                foreach (var address in ni.GetIPProperties().UnicastAddresses)
-                {
-                    if (address.Address.AddressFamily == AddressFamily.InterNetwork && !IPAddress.IsLoopback(address.Address))
-                    {
-                        return address.Address.ToString();
-                    }
-                }
-            }
+            return _adapters();
         }
         catch
         {
-            // ignored
+            return Array.Empty<NetworkAdapterSnapshot>();
+        }
+    }
+
+    private static IReadOnlyList<NetworkAdapterSnapshot> ReadAdapters()
+    {
+        var list = new List<NetworkAdapterSnapshot>();
+        foreach (var ni in NetworkInterface.GetAllNetworkInterfaces())
+        {
+            try
+            {
+                var properties = ni.GetIPProperties();
+                list.Add(new NetworkAdapterSnapshot(
+                    ni.Name,
+                    ni.Description,
+                    ni.NetworkInterfaceType,
+                    ni.OperationalStatus,
+                    properties.UnicastAddresses
+                        .Select(u => u.Address)
+                        .Where(a => a.AddressFamily == AddressFamily.InterNetwork)
+                        .ToArray(),
+                    properties.GatewayAddresses.Any(g => g.Address.AddressFamily == AddressFamily.InterNetwork &&
+                                                         !g.Address.Equals(IPAddress.Any))));
+            }
+            catch
+            {
+                // adapter vanished while reading
+            }
         }
 
-        return null;
+        return list;
     }
 
     public string? GetTailscaleIPv4()

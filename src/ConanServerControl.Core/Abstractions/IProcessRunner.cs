@@ -23,6 +23,18 @@ public interface IManagedProcess : IDisposable
 
     bool HasExited { get; }
 
+    /// <summary>
+    /// True when this process and every descendant it started have exited. The dedicated server
+    /// launcher (ConanSandboxServer.exe) runs the real server as a child process, so the launcher
+    /// exiting alone does not mean the server is gone.
+    /// </summary>
+    bool TreeHasExited => HasExited;
+
+    /// <summary>Records current descendants so they can be awaited and killed even after this process exits.</summary>
+    void TrackDescendants()
+    {
+    }
+
     int ExitCode { get; }
 
     DateTime StartTime { get; }

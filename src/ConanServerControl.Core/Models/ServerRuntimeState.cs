@@ -57,6 +57,9 @@ public sealed class ServerRuntimeState
 
     public bool CrashLoopDetected { get; set; }
 
+    /// <summary>What the last stop actually did (null until a stop finishes or fails).</summary>
+    public ServerStopReport? LastStop { get; set; }
+
     public ServerRuntimeState Clone()
     {
         return new ServerRuntimeState
@@ -85,9 +88,44 @@ public sealed class ServerRuntimeState
             CurrentAction = CurrentAction,
             ActionInProgress = ActionInProgress,
             ConsecutiveCrashRestarts = ConsecutiveCrashRestarts,
-            CrashLoopDetected = CrashLoopDetected
+            CrashLoopDetected = CrashLoopDetected,
+            LastStop = LastStop
         };
     }
+}
+
+/// <summary>Immutable record of one stop: what was sent, what was observed, and how it ended.</summary>
+public sealed record ServerStopReport
+{
+    public DateTimeOffset RequestedAt { get; init; }
+
+    public bool ForceRequested { get; init; }
+
+    public string? ShutdownCommand { get; init; }
+
+    public DateTimeOffset? ShutdownSentAt { get; init; }
+
+    /// <summary>The server replied that the shutdown command executed.</summary>
+    public bool ShutdownAcknowledged { get; init; }
+
+    public string? ShutdownReply { get; init; }
+
+    public DateTimeOffset? ShutdownProgressAt { get; init; }
+
+    /// <summary>First server-log line showing the shutdown in progress, if any was seen.</summary>
+    public string? ShutdownProgressEvidence { get; init; }
+
+    /// <summary>True when the extended window applied (acknowledged or progress observed).</summary>
+    public bool ExtendedWindowUsed { get; init; }
+
+    public int GracefulWindowSeconds { get; init; }
+
+    public bool ForcedKill { get; init; }
+
+    /// <summary>When the whole managed process tree was gone. Null if it was still running.</summary>
+    public DateTimeOffset? ProcessTreeExitedAt { get; init; }
+
+    public int? ExitCode { get; init; }
 }
 
 public sealed class PlayerInfo

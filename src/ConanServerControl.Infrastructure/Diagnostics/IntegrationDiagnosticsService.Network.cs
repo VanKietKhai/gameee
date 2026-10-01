@@ -121,36 +121,44 @@ public sealed partial class IntegrationDiagnosticsService
     /// Intended deployment: PRIVATE friends-only multiplayer over Radmin VPN. Public server-browser
     /// registration, public IP exposure, port forwarding and UPnP are not goals and are never configured.
     /// </summary>
+    private const string NotDetected = "NOT DETECTED";
+
     private DiagnosticCheckResult CheckPrivateVpn(CheckContext context)
     {
         const string id = DiagnosticCheckIds.NetworkPrivateVpn;
         const string name = "Private friends-only network (Radmin VPN)";
         var game = context.Settings.Server.GamePort;
         var radmin = _network.GetRadminVpnIPv4();
+        var lan = _network.GetLanIPv4();
         var facts = new Dictionary<string, string>
         {
             ["DeploymentModel"] = "private friends-only over Radmin VPN",
-            ["RadminVpnIPv4"] = radmin ?? "not detected",
-            ["LanIPv4"] = _network.GetLanIPv4() ?? "not detected",
+            ["PhysicalLanIPv4"] = lan ?? NotDetected,
+            ["RadminVpnIPv4"] = radmin ?? NotDetected,
+            ["RecommendedRadminDirectConnect"] = radmin is null ? NotDetected : $"{radmin}:{game}",
+            ["SameLanDirectConnect"] = lan is null ? NotDetected : $"{lan}:{game}",
             ["PublicServerBrowserRegistration"] = "not required",
             ["PortForwardingOrUpnp"] = "not configured by this app"
         };
+        const string clientNote =
+            "Friends still need a legitimate Conan client session that can log in to Funcom Live Services; Radmin VPN does not replace that authentication.";
 
         if (radmin is null)
         {
             return Result(id, DiagnosticCategories.Network, name, DiagnosticStatus.Warning,
-                "Radmin VPN adapter not detected, so friends cannot reach the private server.",
+                "Radmin VPN: NOT DETECTED, so friends cannot reach the private server over Radmin.",
                 DiagnosticEvidence.RuntimeObserved,
-                details: "Public server-browser registration is not needed for this deployment (Conan's 'Autologin attempt failed' is expected).",
+                details: "No adapter identified as Radmin VPN (driver description 'Famatech Radmin VPN') with a usable IPv4 address. " +
+                         "Other VPN or virtual adapters are never used as the Radmin address. " +
+                         "Public server-browser registration is not needed for this deployment (Conan's 'Autologin attempt failed' is expected). " + clientNote,
                 action: "Start Radmin VPN and join the same Radmin network as your friends. No router port forwarding or public IP is needed.",
                 facts: facts);
         }
 
-        facts["FriendsDirectConnect"] = $"{radmin}:{game}";
         return Result(id, DiagnosticCategories.Network, name, DiagnosticStatus.Pass,
             $"Radmin VPN {radmin}: friends direct-connect to {radmin}:{game}. Public registration and port forwarding are not used.",
             DiagnosticEvidence.RuntimeObserved,
-            details: "Reachability from friends' PCs is not tested here (firewall/VPN state on both ends).",
+            details: "Reachability from friends' PCs is not tested here (firewall/VPN state on both ends). " + clientNote,
             facts: facts);
     }
 

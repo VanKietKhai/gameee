@@ -85,17 +85,41 @@ public sealed class RconService : IRconService, IDisposable
             throw new ArgumentOutOfRangeException(nameof(command), "RCON command is too long.");
         }
 
-        await _gate.WaitAsync(cancellationToken).ConfigureAwait(false);
+        // A hung server can accept the TCP connection and never answer; every exchange is bounded so
+        // callers such as graceful stop fall through to their own fallback instead of waiting forever.
+        var timeout = TimeSpan.FromSeconds(Math.Max(1, _settings.Current.Rcon.TimeoutSeconds));
+        using var timeoutCts = new CancellationTokenSource(timeout);
+        using var linked = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutCts.Token);
+        try
+        {
+            await _gate.WaitAsync(linked.Token).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+        {
+            throw new TimeoutException($"RCON is busy; no answer within {timeout.TotalSeconds:0} s.");
+        }
+
         try
         {
             if (!IsConnected)
             {
-                await ConnectAsync(cancellationToken).ConfigureAwait(false);
+                await ConnectAsync(linked.Token).ConfigureAwait(false);
             }
 
-            await SendPacketAsync(ServerDataExecCommand, command, cancellationToken).ConfigureAwait(false);
-            var response = await ReadPacketAsync(cancellationToken).ConfigureAwait(false);
+            await SendPacketAsync(ServerDataExecCommand, command, linked.Token).ConfigureAwait(false);
+            var response = await ReadPacketAsync(linked.Token).ConfigureAwait(false);
             return response.Body;
+        }
+        catch (OperationCanceledException)
+        {
+            // A half-read reply would be misread by the next command: drop the connection.
+            await DisconnectAsync().ConfigureAwait(false);
+            if (cancellationToken.IsCancellationRequested)
+            {
+                throw;
+            }
+
+            throw new TimeoutException($"RCON did not answer within {timeout.TotalSeconds:0} s.");
         }
         finally
         {

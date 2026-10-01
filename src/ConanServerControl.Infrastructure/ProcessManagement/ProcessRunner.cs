@@ -67,6 +67,8 @@ public sealed class SystemProcessStarter : IProcessStarter
 public sealed class SystemManagedProcess : IManagedProcess
 {
     private readonly Process _process;
+    private readonly Dictionary<int, Process> _descendants = new();
+    private readonly object _treeSync = new();
     private bool _disposed;
 
     public SystemManagedProcess(Process process)
@@ -77,17 +79,74 @@ public sealed class SystemManagedProcess : IManagedProcess
 
     public int Id => _process.Id;
 
-    public bool HasExited
+    public bool HasExited => HasProcessExited(_process);
+
+    public bool TreeHasExited
     {
         get
         {
+            if (!HasExited)
+            {
+                return false;
+            }
+
+            // Children keep the launcher's PID as their parent, so late-started ones are still found.
+            TrackDescendants();
+            lock (_treeSync)
+            {
+                return _descendants.Values.All(HasProcessExited);
+            }
+        }
+    }
+
+    public void TrackDescendants()
+    {
+        if (_disposed)
+        {
+            return;
+        }
+
+        DateTime rootStart;
+        try
+        {
+            rootStart = _process.StartTime;
+        }
+        catch
+        {
+            return;
+        }
+
+        foreach (var pid in ProcessTree.GetDescendantIds(_process.Id))
+        {
+            lock (_treeSync)
+            {
+                if (_descendants.ContainsKey(pid))
+                {
+                    continue;
+                }
+            }
+
             try
             {
-                return _process.HasExited;
+                var child = Process.GetProcessById(pid);
+                // A recycled PID can point at a stale parent; real descendants start after the root.
+                if (child.StartTime < rootStart)
+                {
+                    child.Dispose();
+                    continue;
+                }
+
+                lock (_treeSync)
+                {
+                    if (!_descendants.TryAdd(pid, child))
+                    {
+                        child.Dispose();
+                    }
+                }
             }
-            catch (InvalidOperationException)
+            catch
             {
-                return true;
+                // already exited or not accessible
             }
         }
     }
@@ -159,12 +218,57 @@ public sealed class SystemManagedProcess : IManagedProcess
 
     public void Kill(bool entireProcessTree)
     {
-        if (HasExited)
+        if (!entireProcessTree)
         {
+            if (!HasExited)
+            {
+                _process.Kill(entireProcessTree: false);
+            }
+
             return;
         }
 
-        _process.Kill(entireProcessTree);
+        TrackDescendants();
+        Exception? rootFailure = null;
+        try
+        {
+            if (!HasExited)
+            {
+                _process.Kill(entireProcessTree: true);
+            }
+        }
+        catch (Exception ex)
+        {
+            rootFailure = ex;
+        }
+
+        // Process.Kill(true) only reaches children that are still linked to a live root; a child
+        // orphaned by an exited launcher is killed through the tracked handle.
+        Process[] tracked;
+        lock (_treeSync)
+        {
+            tracked = _descendants.Values.ToArray();
+        }
+
+        foreach (var child in tracked)
+        {
+            try
+            {
+                if (!HasProcessExited(child))
+                {
+                    child.Kill(entireProcessTree: true);
+                }
+            }
+            catch
+            {
+                // exited meanwhile
+            }
+        }
+
+        if (rootFailure is not null && !HasExited)
+        {
+            throw rootFailure;
+        }
     }
 
     public void Dispose()
@@ -175,7 +279,34 @@ public sealed class SystemManagedProcess : IManagedProcess
         }
 
         _disposed = true;
+        lock (_treeSync)
+        {
+            foreach (var child in _descendants.Values)
+            {
+                child.Dispose();
+            }
+
+            _descendants.Clear();
+        }
+
         _process.Dispose();
+    }
+
+    private static bool HasProcessExited(Process process)
+    {
+        try
+        {
+            return process.HasExited;
+        }
+        catch (InvalidOperationException)
+        {
+            return true;
+        }
+        catch
+        {
+            // Unknown (e.g. access denied): never claim it is gone.
+            return false;
+        }
     }
 }
 
