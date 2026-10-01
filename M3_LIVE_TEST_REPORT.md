@@ -144,6 +144,28 @@ SteamCMD is optional, and network-blocked for downloads.
 - Nothing was written to the `D:\conan exiles` top level.
 - SteamCMD was not used. Router and firewall were not modified.
 
+## Version-matched dedicated server (CL-377096 / 2.2.2)
+
+**Why a different server was needed.** The first test server was `++exiles+release-beta-CL-378132` (ProjectVersion **2.2.3**). That turned out to be the **current Steam public branch** (app manifest: no BetaKey, buildid `25639945`). "release-beta" is only Funcom's internal stream name. The standalone client is `++exiles+release-CL-377096` (ProjectVersion **2.2.2**), i.e. one patch older.
+
+**The matched server.**
+- Downloaded on another machine with `download_depot 443030 443031 236179869812429142` and placed at `D:\conan exiles\depot_443031`, a sibling of the client.
+- Both server binaries report `++exiles+release-CL-377096` and are signed **Funcom Oslo AS** (valid). The server log reports `Build: ++exiles+release-CL-377096` and `ProjectVersion 2.2.2`, the same as the client log.
+- `download_depot` fetched only depot 443031, so the Steamworks runtime from depot 1004 was missing. Six **Valve Corp.-signed** DLLs were copied, hash-verified, from the app's own SteamCMD folder: `steamclient(64).dll`, `tier0_s(64).dll`, `vstdlib_s(64).dll`. `steamwebrtc*.dll` (client voice) was not available and is not needed by the server. **No client file was used.**
+
+**Gate and diagnostics.** Gate: allowed. External-directory validation: PASS. Diagnostics: `READY FOR SERVER LIVE TEST`, no FAIL. RCON was configured with `configure-rcon`, which now writes `Game.ini [RconPlugin]` before the first boot.
+
+| Step | Result | Detail |
+| --- | --- | --- |
+| First boot | **PASS** | Online at 32.0 s ("World is ticking (server log frame 2)"). Bootstrap and `-Shipping` processes both under `depot_443031`. No client process. |
+| Graceful stop | **PASS** | 64.9 s via RCON `shutdown`, exit code 0, no processes left. |
+| Boot before backup | **PASS** | Online at 29.9 s; graceful stop 63.0 s, exit code 0. |
+| Cold backup | **PASS** | `2026-10-02_044344`: Enhanced, `game_0.db` 643,072 B, SHA-256 `6F8A467C2DC5A41299EDFCEEA906288761B7CDC2757B9636730526484692C8D7`. Manifest written, hashes verified, `quick_check` = `ok`, live world unchanged by the backup. |
+
+**Still observed:** `Autologin attempt failed, unable to register server!`, so the server does not appear in the server list. Whether direct connect works is part of 4F.
+
+**Client:** 0 files modified. SteamCMD was not used on this machine for the download.
+
 ## Direction change: standalone-first
 
 After 4B, the product requirement was corrected:

@@ -66,7 +66,8 @@ Unchanged gate / lease / readiness / cold-backup / `ModBatchTransaction`. Additi
 
 - None for 4E (one Local mod). Waiting for checkpoint review.
 - SteamCMD download (optional) is still blocked by network (Valve Fastly CDN).
-- 4F risk: the server is on the beta build (CL-378132) and the client on the live build (CL-377096). Joining may require matching builds. No authentication bypass will be implemented.
+- Version mismatch resolved: the server at `D:\conan exiles\depot_443031` is CL-377096 (2.2.2), the same as the client. Boot, graceful stop and cold backup PASS.
+- 4F risk: the server reports `Autologin attempt failed, unable to register server!`. The client's provenance is unofficial, and joining may fail at Steam authentication. No authentication bypass will be implemented.
 
 ## Next Recommended Work
 
@@ -78,4 +79,4 @@ M3 Task 4 pre-live fixes, 4A SteamCMD, and the standalone-first pivot (Local mod
 
 ## Current Task
 
-Waiting for a dedicated server installation. Do not modify the real client.
+Matched-version server verified. Waiting for review before 4E (one Local mod). Do not modify the real client.
