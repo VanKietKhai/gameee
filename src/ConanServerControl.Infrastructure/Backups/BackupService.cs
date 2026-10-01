@@ -176,7 +176,7 @@ public sealed class BackupService : IBackupService
 
         try
         {
-            await RestoreCoreAsync(backupId, startAfter, cancellationToken).ConfigureAwait(false);
+            await RestoreCoreAsync(lease, backupId, startAfter, cancellationToken).ConfigureAwait(false);
         }
         finally
         {
@@ -184,7 +184,11 @@ public sealed class BackupService : IBackupService
         }
     }
 
-    private async Task RestoreCoreAsync(string backupId, bool startAfter, CancellationToken cancellationToken)
+    private async Task RestoreCoreAsync(
+        IServerOperationLease lease,
+        string backupId,
+        bool startAfter,
+        CancellationToken cancellationToken)
     {
         if (!PathValidator.IsSafeRelativeName(backupId))
         {
@@ -290,7 +294,7 @@ public sealed class BackupService : IBackupService
 
         if (startAfter)
         {
-            await _server.StartUnderLockAsync(cancellationToken).ConfigureAwait(false);
+            await _server.StartUnderLockAsync(lease, cancellationToken).ConfigureAwait(false);
         }
     }
 

@@ -15,14 +15,14 @@ public interface IServerProcessManager
     Task RestartAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Starts the process when the caller already holds <see cref="IServerActionGate"/>.
+    /// Starts the process when the caller owns <paramref name="lease"/>.
     /// </summary>
-    Task StartUnderLockAsync(CancellationToken cancellationToken = default);
+    Task StartUnderLockAsync(IServerOperationLease lease, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Stops the process when the caller already holds <see cref="IServerActionGate"/>.
+    /// Stops the process when the caller owns <paramref name="lease"/>.
     /// </summary>
-    Task StopUnderLockAsync(bool force = false, CancellationToken cancellationToken = default);
+    Task StopUnderLockAsync(IServerOperationLease lease, bool force = false, CancellationToken cancellationToken = default);
 
     bool IsConanServerProcess(string processName);
 

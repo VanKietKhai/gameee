@@ -1,3 +1,4 @@
+using ConanServerControl.Core.Abstractions;
 using ConanServerControl.Core.Exceptions;
 using ConanServerControl.Core.Models;
 using ConanServerControl.Core.Updates;
@@ -206,8 +207,9 @@ public class QaActionGateAndPipelineTests
     public async Task StartUnderLock_without_any_lease_is_rejected()
     {
         var manager = await CreateRealManagerAsync();
-        var error = await Record.ExceptionAsync(() => manager.StartUnderLockAsync());
+        var error = await Record.ExceptionAsync(() => manager.StartUnderLockAsync(null!));
         Assert.IsType<InvalidOperationException>(error);
+        Assert.Equal(ServerStatus.Offline, manager.State.Status);
     }
 
     [Fact]
@@ -219,14 +221,45 @@ public class QaActionGateAndPipelineTests
         Assert.True(gate.TryBegin("Update server", out var lease));
         try
         {
-            var error = await Record.ExceptionAsync(() => manager.StartUnderLockAsync());
+            var error = await Record.ExceptionAsync(() => manager.StartUnderLockAsync(new ForeignLease()));
             Assert.True(
                 error is InvalidOperationException,
                 $"A caller that does not own the lease must not start the server. error={error?.GetType().Name}: {error?.Message}; status={manager.State.Status}");
+            Assert.Equal(ServerStatus.Offline, manager.State.Status);
         }
         finally
         {
             lease!.Dispose();
+        }
+    }
+
+    [Fact]
+    [Trait("Issue", "QA-008")]
+    public async Task UnderLock_start_with_the_owning_lease_starts_the_server()
+    {
+        var (manager, gate) = await CreateRealManagerWithGateAsync();
+        Assert.True(gate.TryBegin("Update server", out var lease));
+        try
+        {
+            await manager.StartUnderLockAsync(lease!);
+            Assert.Equal(ServerStatus.Online, manager.State.Status);
+        }
+        finally
+        {
+            lease!.Dispose();
+        }
+    }
+
+    private sealed class ForeignLease : IServerOperationLease
+    {
+        public Guid Id { get; } = Guid.NewGuid();
+
+        public string Action => "foreign";
+
+        public bool IsDisposed => false;
+
+        public void Dispose()
+        {
         }
     }
 

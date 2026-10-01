@@ -141,7 +141,7 @@ public sealed class ServerUpdateService : IServerUpdateService
                 if (wasRunning)
                 {
                     Report(progress, _pipeline.TransitionTo(UpdatePipelineState.Stopping, "Stopping server..."));
-                    await _server.StopUnderLockAsync(force: false, cancellationToken).ConfigureAwait(false);
+                    await _server.StopUnderLockAsync(lease, force: false, cancellationToken).ConfigureAwait(false);
                 }
 
                 if (updateServer)
@@ -169,7 +169,7 @@ public sealed class ServerUpdateService : IServerUpdateService
                 if (wasRunning)
                 {
                     Report(progress, _pipeline.TransitionTo(UpdatePipelineState.Starting, "Starting server..."));
-                    await _server.StartUnderLockAsync(cancellationToken).ConfigureAwait(false);
+                    await _server.StartUnderLockAsync(lease, cancellationToken).ConfigureAwait(false);
                     Report(progress, _pipeline.TransitionTo(UpdatePipelineState.HealthCheck, "Checking process..."));
                 }
 
@@ -193,7 +193,7 @@ public sealed class ServerUpdateService : IServerUpdateService
                 {
                     try
                     {
-                        await _server.StartUnderLockAsync(cancellationToken).ConfigureAwait(false);
+                        await _server.StartUnderLockAsync(lease, cancellationToken).ConfigureAwait(false);
                         restoredOnline = _server.State.Status is ServerStatus.Online;
                     }
                     catch (Exception startEx)

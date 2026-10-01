@@ -6,17 +6,29 @@ public sealed class ServerActionGate : IServerActionGate
 {
     private readonly SemaphoreSlim _semaphore = new(1, 1);
     private string? _current;
+    private Guid? _currentLeaseId;
 
     public bool IsBusy => _semaphore.CurrentCount == 0;
 
     public string? CurrentAction => _current;
 
-    public bool TryBegin(string action, out IDisposable? lease)
+    public Guid? CurrentLeaseId => _currentLeaseId;
+
+    public bool Owns(IServerOperationLease? lease) =>
+        lease is not null
+        && !lease.IsDisposed
+        && _currentLeaseId is { } id
+        && id == lease.Id
+        && IsBusy;
+
+    public bool TryBegin(string action, out IServerOperationLease? lease)
     {
         if (_semaphore.Wait(0))
         {
+            var created = new Lease(this, action);
             _current = action;
-            lease = new Lease(this, action);
+            _currentLeaseId = created.Id;
+            lease = created;
             return true;
         }
 
@@ -24,34 +36,44 @@ public sealed class ServerActionGate : IServerActionGate
         return false;
     }
 
-    public async Task<IDisposable> WaitAsync(string action, CancellationToken cancellationToken = default)
+    public async Task<IServerOperationLease> WaitAsync(string action, CancellationToken cancellationToken = default)
     {
         await _semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
+        var created = new Lease(this, action);
         _current = action;
-        return new Lease(this, action);
+        _currentLeaseId = created.Id;
+        return created;
     }
 
-    private void Release(string action)
+    private void Release(Guid id)
     {
-        if (string.Equals(_current, action, StringComparison.Ordinal))
+        if (_currentLeaseId != id)
         {
-            _current = null;
+            return;
         }
 
+        _current = null;
+        _currentLeaseId = null;
         _semaphore.Release();
     }
 
-    private sealed class Lease : IDisposable
+    private sealed class Lease : IServerOperationLease
     {
         private readonly ServerActionGate _gate;
-        private readonly string _action;
         private bool _disposed;
 
         public Lease(ServerActionGate gate, string action)
         {
             _gate = gate;
-            _action = action;
+            Action = action;
+            Id = Guid.NewGuid();
         }
+
+        public Guid Id { get; }
+
+        public string Action { get; }
+
+        public bool IsDisposed => _disposed;
 
         public void Dispose()
         {
@@ -61,7 +83,7 @@ public sealed class ServerActionGate : IServerActionGate
             }
 
             _disposed = true;
-            _gate.Release(_action);
+            _gate.Release(Id);
         }
     }
 }
