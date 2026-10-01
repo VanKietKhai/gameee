@@ -86,8 +86,11 @@ public sealed class ServerUpdateService : IServerUpdateService
     public Task UpdateModsAsync(bool restartAfter, IProgress<PipelineProgress>? progress = null, CancellationToken cancellationToken = default) =>
         RunLockedAsync("Update mods", restartAfter, updateServer: false, updateMods: true, "pre-mod-update", progress, cancellationToken);
 
+    public Task UpdateSelectedModsAsync(long workshopId, IProgress<PipelineProgress>? progress = null, CancellationToken cancellationToken = default) =>
+        RunLockedAsync("Update selected mods", restartAfter: false, updateServer: false, updateMods: true, "pre-mod-update", progress, cancellationToken, new[] { workshopId });
+
     public Task UpdateEverythingAsync(IProgress<PipelineProgress>? progress = null, CancellationToken cancellationToken = default) =>
-        RunLockedAsync("Update everything", restartAfter: true, updateServer: true, updateMods: true, "pre-update-everything", progress, cancellationToken);
+        RunLockedAsync("Update everything", restartAfter: false, updateServer: true, updateMods: true, "pre-update-everything", progress, cancellationToken);
 
     private async Task RunLockedAsync(
         string actionName,
@@ -96,7 +99,8 @@ public sealed class ServerUpdateService : IServerUpdateService
         bool updateMods,
         string backupReason,
         IProgress<PipelineProgress>? progress,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        IReadOnlyList<long>? workshopIds = null)
     {
         if (!_gate.TryBegin(actionName, out var lease) || lease is null)
         {
@@ -137,7 +141,7 @@ public sealed class ServerUpdateService : IServerUpdateService
                 if (wasRunning)
                 {
                     Report(progress, _pipeline.TransitionTo(UpdatePipelineState.Stopping, "Stopping server..."));
-                    await _server.StopUnderLockAsync(force: false, cancellationToken).ConfigureAwait(false);
+                    await _server.StopUnderLockAsync(lease, force: false, cancellationToken).ConfigureAwait(false);
                 }
 
                 if (updateServer)
@@ -156,14 +160,16 @@ public sealed class ServerUpdateService : IServerUpdateService
                 if (updateMods)
                 {
                     Report(progress, _pipeline.TransitionTo(UpdatePipelineState.UpdatingMods, "Updating Steam Workshop mods..."));
-                    await _mods.UpdateAllAsync(cancellationToken).ConfigureAwait(false);
+                    await _mods.ApplyUpdatesAsync(workshopIds, cancellationToken).ConfigureAwait(false);
                 }
 
                 Report(progress, _pipeline.TransitionTo(UpdatePipelineState.Validating, "Validating update..."));
-                if (restartAfter || wasRunning)
+                // Preserve the original process state. Do not treat the generic
+                // restartAfter flag as an explicit StartAfterwards request.
+                if (wasRunning)
                 {
                     Report(progress, _pipeline.TransitionTo(UpdatePipelineState.Starting, "Starting server..."));
-                    await _server.StartUnderLockAsync(cancellationToken).ConfigureAwait(false);
+                    await _server.StartUnderLockAsync(lease, cancellationToken).ConfigureAwait(false);
                     Report(progress, _pipeline.TransitionTo(UpdatePipelineState.HealthCheck, "Checking process..."));
                 }
 
@@ -175,11 +181,37 @@ public sealed class ServerUpdateService : IServerUpdateService
             {
                 _pipeline.Fail(ex.Message);
                 progress?.Report(_pipeline.Snapshot());
-                _logger.LogError(ex, "{Action} failed. Existing server files were not deleted.", actionName);
+                _logger.LogError(
+                    ex,
+                    "{Action} failed after wasRunning={WasRunning}. Server files were not deleted. Current status={Status}.",
+                    actionName,
+                    wasRunning,
+                    _server.State.Status);
+
+                var restoredOnline = false;
+                if (wasRunning)
+                {
+                    try
+                    {
+                        await _server.StartUnderLockAsync(lease, cancellationToken).ConfigureAwait(false);
+                        restoredOnline = _server.State.Status is ServerStatus.Online;
+                    }
+                    catch (Exception startEx)
+                    {
+                        _logger.LogError(startEx, "Could not restore the previously running server after {Action} failed.", actionName);
+                    }
+                }
+
+                var guidance = restoredOnline
+                    ? "The existing dedicated server and world saves were not deleted. A safety backup was kept if backup was enabled. Open the SteamCMD log, fix the error, then retry."
+                    : wasRunning
+                        ? "The server was stopped for this update and was not restarted. A safety backup was kept if backup was enabled. Start the server manually after you inspect the failure."
+                        : "The existing dedicated server and world saves were not deleted. Open the SteamCMD log, fix the error, then retry.";
+
                 throw new UserFacingException(
                     $"{actionName} failed",
                     ex is UserFacingException ufe ? ufe.Message : ex.Message,
-                    "The existing dedicated server and world saves were not deleted. Open the SteamCMD log, fix the error, then retry.",
+                    guidance,
                     ex);
             }
         }

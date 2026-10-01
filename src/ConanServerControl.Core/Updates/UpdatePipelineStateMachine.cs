@@ -150,6 +150,7 @@ public sealed class UpdatePipelineStateMachine
             (UpdatePipelineState.UpdatingMods, UpdatePipelineState.Validating) => true,
             (UpdatePipelineState.UpdatingMods, UpdatePipelineState.Starting) => true,
             (UpdatePipelineState.Validating, UpdatePipelineState.Starting) => true,
+            (UpdatePipelineState.Validating, UpdatePipelineState.Completed) => true,
             (UpdatePipelineState.Starting, UpdatePipelineState.HealthCheck) => true,
             (UpdatePipelineState.HealthCheck, UpdatePipelineState.Completed) => true,
             (UpdatePipelineState.Completed, UpdatePipelineState.Idle) => true,

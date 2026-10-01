@@ -63,6 +63,7 @@ public class WorkshopModServiceCheckTests
             settings,
             new NoOpSteamCmd(),
             new NoOpBackup(),
+            new ConanServerControl.Infrastructure.Concurrency.ServerActionGate(),
             paths,
             client,
             new MemoryActivityLog(),

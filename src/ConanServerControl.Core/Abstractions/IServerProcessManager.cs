@@ -15,14 +15,14 @@ public interface IServerProcessManager
     Task RestartAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Starts the process when the caller already holds <see cref="IServerActionGate"/>.
+    /// Starts the process when the caller owns <paramref name="lease"/>.
     /// </summary>
-    Task StartUnderLockAsync(CancellationToken cancellationToken = default);
+    Task StartUnderLockAsync(IServerOperationLease lease, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Stops the process when the caller already holds <see cref="IServerActionGate"/>.
+    /// Stops the process when the caller owns <paramref name="lease"/>.
     /// </summary>
-    Task StopUnderLockAsync(bool force = false, CancellationToken cancellationToken = default);
+    Task StopUnderLockAsync(IServerOperationLease lease, bool force = false, CancellationToken cancellationToken = default);
 
     bool IsConanServerProcess(string processName);
 
@@ -62,6 +62,8 @@ public interface IServerUpdateService
 
     Task UpdateModsAsync(bool restartAfter, IProgress<PipelineProgress>? progress = null, CancellationToken cancellationToken = default);
 
+    Task UpdateSelectedModsAsync(long workshopId, IProgress<PipelineProgress>? progress = null, CancellationToken cancellationToken = default);
+
     Task UpdateEverythingAsync(IProgress<PipelineProgress>? progress = null, CancellationToken cancellationToken = default);
 }
 
@@ -91,6 +93,14 @@ public interface IWorkshopModService
     Task UpdateAsync(long workshopId, CancellationToken cancellationToken = default);
 
     Task UpdateAllAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Stages and commits workshop downloads. Does not acquire
+    /// <see cref="IServerActionGate"/>; the caller must already hold it
+    /// (the locked update pipeline) or wrap this with a public Update* method.
+    /// Null <paramref name="workshopIds"/> updates every enabled mod.
+    /// </summary>
+    Task ApplyUpdatesAsync(IReadOnlyList<long>? workshopIds, CancellationToken cancellationToken = default);
 
     Task CheckForUpdatesAsync(CancellationToken cancellationToken = default);
 
@@ -124,6 +134,16 @@ public interface IBackupService
     Task<IReadOnlyList<BackupRecord>> ListAsync(CancellationToken cancellationToken = default);
 
     Task ApplyRetentionAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Deletes expired backups except those whose id or directory path is in
+    /// <paramref name="protectedBackupIdsOrPaths"/>. Use this during restore so the
+    /// selected source and the in-progress safety backup cannot be removed.
+    /// </summary>
+    Task ApplyRetentionAsync(
+        IReadOnlyCollection<string>? protectedBackupIdsOrPaths,
+        CancellationToken cancellationToken = default)
+        => ApplyRetentionAsync(cancellationToken);
 }
 
 public interface IRconService

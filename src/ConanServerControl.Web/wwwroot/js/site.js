@@ -1,8 +1,27 @@
 const statusPill = document.getElementById('status-pill');
 const banner = document.getElementById('banner');
+let csrfToken = '';
+
+async function loadCsrf() {
+  const response = await fetch('/api/csrf', { credentials: 'same-origin' });
+  if (response.status === 401) {
+    window.location.href = '/login.html';
+    throw new Error('auth');
+  }
+  const payload = await response.json().catch(() => ({}));
+  csrfToken = payload.token || '';
+}
 
 async function api(path, options) {
-  const response = await fetch(path, Object.assign({ credentials: 'same-origin' }, options));
+  options = options || {};
+  if (!csrfToken && (options.method || 'GET').toUpperCase() !== 'GET') {
+    await loadCsrf();
+  }
+  const headers = Object.assign({}, options.headers || {});
+  if (csrfToken) {
+    headers['X-CSRF-TOKEN'] = csrfToken;
+  }
+  const response = await fetch(path, Object.assign({ credentials: 'same-origin' }, options, { headers }));
   if (response.status === 401) {
     window.location.href = '/login.html';
     throw new Error('auth');
@@ -21,13 +40,34 @@ function showBanner(text, isError) {
   banner.style.color = isError ? '#e85d5d' : '#f5c542';
 }
 
+function renderTextList(element, items, emptyText, toText) {
+  element.replaceChildren();
+  if (!items || items.length === 0) {
+    const li = document.createElement('li');
+    li.textContent = emptyText;
+    element.appendChild(li);
+    return;
+  }
+  for (const item of items) {
+    const li = document.createElement('li');
+    li.textContent = toText(item);
+    element.appendChild(li);
+  }
+}
+
 async function refresh() {
   try {
-    const me = await fetch('/api/me', { credentials: 'same-origin' }).then(r => r.json());
+    const meResponse = await fetch('/api/me', { credentials: 'same-origin' });
+    if (meResponse.status === 401) {
+      window.location.href = '/login.html';
+      return;
+    }
+    const me = await meResponse.json();
     if (!me.authenticated) {
       window.location.href = '/login.html';
       return;
     }
+    await loadCsrf();
     const status = await api('/api/status');
     document.getElementById('server-name').textContent = status.server || 'Dedicated server';
     statusPill.textContent = status.status || 'OFFLINE';
@@ -47,10 +87,11 @@ async function refresh() {
 
     const activity = await api('/api/activity');
     const list = document.getElementById('activity');
-    list.innerHTML = (activity || []).slice().reverse().slice(0, 12).map(item => {
+    const items = (activity || []).slice().reverse().slice(0, 12);
+    renderTextList(list, items, 'No activity yet.', item => {
       const time = new Date(item.timestamp).toLocaleTimeString();
-      return `<li>${time} ${item.message}</li>`;
-    }).join('') || '<li>No activity yet.</li>';
+      return `${time} ${item.message}`;
+    });
   } catch (err) {
     if (err.message !== 'auth') {
       showBanner(err.message, true);
@@ -96,8 +137,11 @@ document.getElementById('view-players').addEventListener('click', async () => {
     return;
   }
   const players = await api('/api/players');
-  document.getElementById('player-list').innerHTML =
-    (players || []).map(p => `<li>${p.name}</li>`).join('') || '<li>No players online (or RCON is not connected).</li>';
+  renderTextList(
+    document.getElementById('player-list'),
+    players,
+    'No players online (or RCON is not connected).',
+    p => p.name);
 });
 
 document.getElementById('view-logs').addEventListener('click', async () => {
@@ -107,12 +151,22 @@ document.getElementById('view-logs').addEventListener('click', async () => {
     return;
   }
   const logs = await api('/api/logs');
-  document.getElementById('log-list').innerHTML =
-    (logs || []).slice(-40).reverse().map(l => `<li>${l.level}: ${l.message}</li>`).join('') || '<li>No log lines yet.</li>';
+  renderTextList(
+    document.getElementById('log-list'),
+    (logs || []).slice(-40).reverse(),
+    'No log lines yet.',
+    l => `${l.level}: ${l.message}`);
 });
 
 document.getElementById('logout').addEventListener('click', async () => {
-  await fetch('/api/logout', { method: 'POST', credentials: 'same-origin' });
+  try {
+    await api('/api/logout', { method: 'POST' });
+  } catch (err) {
+    if (err.message !== 'auth') {
+      showBanner(err.message, true);
+      return;
+    }
+  }
   window.location.href = '/login.html';
 });
 

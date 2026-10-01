@@ -68,11 +68,14 @@ public class QaWorkshopFileSafetyTests
     [Fact]
     public async Task Missing_staging_directory_does_not_change_the_installed_pak()
     {
+        // Staging is created empty before SteamCMD. A previously missing folder is
+        // now an empty validated result, not DirectoryNotFoundException.
         var fx = await Fixture.CreateAsync();
 
         var error = await Record.ExceptionAsync(() => fx.Mods.UpdateAsync(111));
 
-        Assert.IsType<DirectoryNotFoundException>(error);
+        Assert.IsType<UserFacingException>(error);
+        Assert.Contains("pak", error!.Message, StringComparison.OrdinalIgnoreCase);
         await fx.AssertLiveUntouchedAsync();
     }
 
@@ -234,16 +237,33 @@ public class QaWorkshopFileSafetyTests
     }
 
     [Fact]
+    [Trait("Issue", "QA-002")]
+    public async Task Valid_pak_replaces_the_installed_mod()
+    {
+        var fx = await Fixture.CreateAsync();
+        fx.Steam.OnWorkshop = (_, dir, _) =>
+        {
+            Directory.CreateDirectory(dir);
+            File.WriteAllText(Path.Combine(dir, "Working.pak"), "MOD1-NEW");
+            return Task.CompletedTask;
+        };
+
+        await fx.Mods.UpdateAsync(111);
+
+        Assert.Equal("MOD1-NEW", await File.ReadAllTextAsync(fx.LivePak));
+        Assert.Contains("Working.pak", await File.ReadAllTextAsync(fx.ModListPath), StringComparison.Ordinal);
+    }
+
+    [Fact]
     [Trait("Category", "QA-KnownFailure")]
     [Trait("Issue", "QA-005")]
     public async Task Update_selected_must_hold_the_action_gate_while_it_downloads()
     {
         var fx = await Fixture.CreateAsync();
-        var gate = new ServerActionGate();
         var held = false;
         fx.Steam.OnWorkshop = (_, dir, _) =>
         {
-            held = !gate.TryBegin("probe", out var lease);
+            held = !fx.Gate.TryBegin("probe", out var lease);
             lease?.Dispose();
             Directory.CreateDirectory(dir);
             File.WriteAllText(Path.Combine(dir, "Working.pak"), Fixture.GoodBytes);
@@ -253,6 +273,25 @@ public class QaWorkshopFileSafetyTests
         await fx.Mods.UpdateAsync(111);
 
         Assert.True(held, "Update Selected replaced files without holding IServerActionGate.");
+    }
+
+    [Fact]
+    [Trait("Issue", "QA-005")]
+    public async Task Update_all_holds_the_action_gate()
+    {
+        var fx = await Fixture.CreateAsync();
+        var held = false;
+        fx.Steam.OnWorkshop = (_, dir, _) =>
+        {
+            held = !fx.Gate.TryBegin("probe", out var lease);
+            lease?.Dispose();
+            Directory.CreateDirectory(dir);
+            File.WriteAllText(Path.Combine(dir, "Working.pak"), Fixture.GoodBytes);
+            return Task.CompletedTask;
+        };
+
+        await fx.Mods.UpdateAllAsync();
+        Assert.True(held, "Update All replaced files without holding IServerActionGate.");
     }
 
     [Fact]
@@ -354,6 +393,8 @@ public class QaWorkshopFileSafetyTests
 
         public required WorkshopModService Mods { get; init; }
 
+        public required ServerActionGate Gate { get; init; }
+
         public required string LivePak { get; init; }
 
         public required string ModListPath { get; init; }
@@ -387,10 +428,12 @@ public class QaWorkshopFileSafetyTests
             });
 
             var steam = new ScriptedSteamCmd();
+            var gate = new ServerActionGate();
             var service = new WorkshopModService(
                 settings,
                 steam,
                 new CountingBackup(),
+                gate,
                 paths,
                 new EmptyWorkshopClient(),
                 new RecordingActivityLog(),
@@ -403,6 +446,7 @@ public class QaWorkshopFileSafetyTests
                 Settings = settings,
                 Steam = steam,
                 Mods = service,
+                Gate = gate,
                 LivePak = live,
                 ModListPath = modlist,
                 Staging = Path.Combine(paths.StagingDirectory, "workshop", "111"),
@@ -411,10 +455,10 @@ public class QaWorkshopFileSafetyTests
         }
 
         public WorkshopModService WithSteam(ISteamCmdService steam) =>
-            new(Settings, steam, new CountingBackup(), Paths, new EmptyWorkshopClient(), new RecordingActivityLog(), NullLogger<WorkshopModService>.Instance);
+            new(Settings, steam, new CountingBackup(), Gate, Paths, new EmptyWorkshopClient(), new RecordingActivityLog(), NullLogger<WorkshopModService>.Instance);
 
         public WorkshopModService WithClient(ISteamWorkshopClient client) =>
-            new(Settings, Steam, new CountingBackup(), Paths, client, new RecordingActivityLog(), NullLogger<WorkshopModService>.Instance);
+            new(Settings, Steam, new CountingBackup(), Gate, Paths, client, new RecordingActivityLog(), NullLogger<WorkshopModService>.Instance);
 
         public async Task AssertLiveUntouchedAsync()
         {

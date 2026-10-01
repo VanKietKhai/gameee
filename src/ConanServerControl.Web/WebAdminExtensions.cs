@@ -9,6 +9,7 @@ using ConanServerControl.Core.Security;
 using ConanServerControl.Infrastructure;
 using ConanServerControl.Infrastructure.Diagnostics;
 using ConanServerControl.Infrastructure.Paths;
+using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.RateLimiting;
@@ -36,6 +37,31 @@ public static class WebAdminExtensions
                 options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
                 options.LoginPath = "/login.html";
                 options.AccessDeniedPath = "/login.html";
+                options.Events = new CookieAuthenticationEvents
+                {
+                    OnRedirectToLogin = context =>
+                    {
+                        if (context.Request.Path.StartsWithSegments("/api"))
+                        {
+                            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                            return Task.CompletedTask;
+                        }
+
+                        context.Response.Redirect(context.RedirectUri);
+                        return Task.CompletedTask;
+                    },
+                    OnRedirectToAccessDenied = context =>
+                    {
+                        if (context.Request.Path.StartsWithSegments("/api"))
+                        {
+                            context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                            return Task.CompletedTask;
+                        }
+
+                        context.Response.Redirect(context.RedirectUri);
+                        return Task.CompletedTask;
+                    }
+                };
             });
 
         services.AddAuthorization();
@@ -202,6 +228,12 @@ public static class WebAdminExtensions
 
         app.MapPost("/api/logout", async (HttpContext http, IActivityLog activity) =>
         {
+            var antiforgeryError = await ValidateAntiforgeryAsync(http);
+            if (antiforgeryError is not null)
+            {
+                return antiforgeryError;
+            }
+
             var name = http.User.Identity?.Name;
             await http.SignOutAsync(CookieScheme);
             await activity.AddAsync("Security", $"{name} signed out of Web Admin.", name);
@@ -229,11 +261,11 @@ public static class WebAdminExtensions
             .RequireAuthorization();
 
         app.MapPost("/api/server/update-server", (HttpContext http, IServerUpdateService updates, IActivityLog activity) =>
-            RunAction(http, activity, "Update Server", () => updates.UpdateAsync(true, cancellationToken: http.RequestAborted)))
+            RunAction(http, activity, "Update Server", () => updates.UpdateAsync(false, cancellationToken: http.RequestAborted)))
             .RequireAuthorization();
 
         app.MapPost("/api/server/update-mods", (HttpContext http, IServerUpdateService updates, IActivityLog activity) =>
-            RunAction(http, activity, "Update Mods", () => updates.UpdateModsAsync(true, cancellationToken: http.RequestAborted)))
+            RunAction(http, activity, "Update Mods", () => updates.UpdateModsAsync(false, cancellationToken: http.RequestAborted)))
             .RequireAuthorization();
 
         app.MapPost("/api/server/delayed-restart", async (
@@ -242,6 +274,12 @@ public static class WebAdminExtensions
             IDelayedRestartService delayed,
             IActivityLog activity) =>
         {
+            var antiforgeryError = await ValidateAntiforgeryAsync(http);
+            if (antiforgeryError is not null)
+            {
+                return antiforgeryError;
+            }
+
             var minutes = dto.Minutes is 5 or 10 or 15 or 30 or 60 ? dto.Minutes : 10;
             var actor = http.User.Identity?.Name ?? "web";
             await delayed.StartAsync(new DelayedRestartRequest
@@ -256,6 +294,12 @@ public static class WebAdminExtensions
 
         app.MapPost("/api/server/cancel-restart", async (HttpContext http, IDelayedRestartService delayed, IActivityLog activity) =>
         {
+            var antiforgeryError = await ValidateAntiforgeryAsync(http);
+            if (antiforgeryError is not null)
+            {
+                return antiforgeryError;
+            }
+
             await delayed.CancelAsync();
             var actor = http.User.Identity?.Name ?? "web";
             await activity.AddAsync("Server", $"{actor} cancelled delayed restart.", actor);
@@ -265,13 +309,33 @@ public static class WebAdminExtensions
         app.MapGet("/api/me", (HttpContext http) =>
         {
             return Results.Json(new { name = http.User.Identity?.Name, authenticated = http.User.Identity?.IsAuthenticated == true });
-        });
+        }).RequireAuthorization();
 
         return app;
     }
 
+    private static async Task<IResult?> ValidateAntiforgeryAsync(HttpContext http)
+    {
+        var antiforgery = http.RequestServices.GetRequiredService<IAntiforgery>();
+        try
+        {
+            await antiforgery.ValidateRequestAsync(http);
+            return null;
+        }
+        catch (AntiforgeryValidationException)
+        {
+            return Results.Json(new { error = "Antiforgery token missing or invalid." }, statusCode: StatusCodes.Status400BadRequest);
+        }
+    }
+
     private static async Task<IResult> RunAction(HttpContext http, IActivityLog activity, string action, Func<Task> work)
     {
+        var antiforgeryError = await ValidateAntiforgeryAsync(http);
+        if (antiforgeryError is not null)
+        {
+            return antiforgeryError;
+        }
+
         var actor = http.User.Identity?.Name ?? "web";
         try
         {

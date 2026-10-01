@@ -139,15 +139,15 @@ public sealed class ServerProcessManager : IServerProcessManager, IDisposable
         }
     }
 
-    public Task StartUnderLockAsync(CancellationToken cancellationToken = default)
+    public Task StartUnderLockAsync(IServerOperationLease lease, CancellationToken cancellationToken = default)
     {
-        EnsureLockHeld("start");
+        EnsureOwns(lease, "start");
         return StartCoreAsync(cancellationToken);
     }
 
-    public Task StopUnderLockAsync(bool force = false, CancellationToken cancellationToken = default)
+    public Task StopUnderLockAsync(IServerOperationLease lease, bool force = false, CancellationToken cancellationToken = default)
     {
-        EnsureLockHeld("stop");
+        EnsureOwns(lease, "stop");
         return StopCoreAsync(force, expected: true, cancellationToken);
     }
 
@@ -158,15 +158,15 @@ public sealed class ServerProcessManager : IServerProcessManager, IDisposable
         _monitorCts?.Dispose();
     }
 
-    private void EnsureLockHeld(string operation)
+    private void EnsureOwns(IServerOperationLease lease, string operation)
     {
-        if (_actionGate.IsBusy)
+        if (_actionGate.Owns(lease))
         {
             return;
         }
 
         throw new InvalidOperationException(
-            $"Cannot {operation} under lock because no server action lease is held. Use the public Start/Stop methods instead.");
+            $"Cannot {operation} under lock because the caller does not own the current server action lease.");
     }
 
     private async Task StartCoreAsync(CancellationToken cancellationToken)

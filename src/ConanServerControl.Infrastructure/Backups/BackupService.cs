@@ -15,6 +15,7 @@ public sealed class BackupService : IBackupService
     private readonly IAppPaths _paths;
     private readonly ISettingsService _settings;
     private readonly IServerProcessManager _server;
+    private readonly IServerActionGate _actionGate;
     private readonly IActivityLog _activityLog;
     private readonly ILogger<BackupService> _logger;
 
@@ -22,17 +23,25 @@ public sealed class BackupService : IBackupService
         IAppPaths paths,
         ISettingsService settings,
         IServerProcessManager server,
+        IServerActionGate actionGate,
         IActivityLog activityLog,
         ILogger<BackupService> logger)
     {
         _paths = paths;
         _settings = settings;
         _server = server;
+        _actionGate = actionGate;
         _activityLog = activityLog;
         _logger = logger;
     }
 
-    public async Task<BackupRecord> BackupNowAsync(string reason, CancellationToken cancellationToken = default)
+    public Task<BackupRecord> BackupNowAsync(string reason, CancellationToken cancellationToken = default) =>
+        BackupNowCoreAsync(reason, extraProtectedBackupIdsOrPaths: null, cancellationToken);
+
+    private async Task<BackupRecord> BackupNowCoreAsync(
+        string reason,
+        IReadOnlyCollection<string>? extraProtectedBackupIdsOrPaths,
+        CancellationToken cancellationToken)
     {
         var stamp = DateTime.Now.ToString("yyyy-MM-dd_HHmmss");
         var dest = Path.Combine(_paths.BackupsDirectory, stamp);
@@ -42,28 +51,74 @@ public sealed class BackupService : IBackupService
             throw new UserFacingException("Invalid backup path", dest, "Backup folders are created under the application backups directory only.");
         }
 
-        Directory.CreateDirectory(dest);
+        var install = _settings.Current.ServerPaths.ServerInstallDirectory
+                      ?? _settings.Current.ServerPaths.ServerWorkingDirectory;
+        if (string.IsNullOrWhiteSpace(install) || !Directory.Exists(install))
+        {
+            throw new UserFacingException(
+                "Backup failed",
+                "The dedicated server install directory is not configured or does not exist.",
+                "Set the dedicated server folder in Settings before creating a backup.");
+        }
+
+        var saved = Path.Combine(install, "ConanSandbox", "Saved");
+        if (!Directory.Exists(saved))
+        {
+            throw new UserFacingException(
+                "Backup failed",
+                "The world/save folder was not found. No backup was completed.",
+                $"Expected:{Environment.NewLine}{saved}{Environment.NewLine}{Environment.NewLine}The live world was not copied.");
+        }
+
         var worldDir = Path.Combine(dest, "world");
         var configDir = Path.Combine(dest, "config");
         var modlistDir = Path.Combine(dest, "modlist");
-        Directory.CreateDirectory(worldDir);
-        Directory.CreateDirectory(configDir);
-        Directory.CreateDirectory(modlistDir);
-
-        var install = _settings.Current.ServerPaths.ServerInstallDirectory
-                      ?? _settings.Current.ServerPaths.ServerWorkingDirectory;
+        try
+        {
+            Directory.CreateDirectory(dest);
+            Directory.CreateDirectory(worldDir);
+            Directory.CreateDirectory(configDir);
+            Directory.CreateDirectory(modlistDir);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            TryDeleteBackupFolder(dest);
+            throw new UserFacingException(
+                "Backup failed",
+                ex.Message,
+                "The backup destination could not be written. No backup was completed.",
+                ex);
+        }
 
         var includesWorld = false;
         var includesConfig = false;
         var includesModList = false;
 
-        if (!string.IsNullOrWhiteSpace(install) && Directory.Exists(install))
+        try
         {
-            includesWorld = CopyIfExists(Path.Combine(install, "ConanSandbox", "Saved"), worldDir);
+            includesWorld = CopyIfExists(saved, worldDir);
             includesConfig = CopyIfExists(Path.Combine(install, "ConanSandbox", "Saved", "Config"), configDir);
             includesModList = CopyIfExists(
                 Path.Combine(install, "ConanSandbox", "Mods", "modlist.txt"),
                 Path.Combine(modlistDir, "modlist.txt"));
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            TryDeleteBackupFolder(dest);
+            throw new UserFacingException(
+                "Backup failed",
+                ex.Message,
+                "World/save data was not copied. The incomplete backup folder was discarded.",
+                ex);
+        }
+
+        if (!includesWorld)
+        {
+            TryDeleteBackupFolder(dest);
+            throw new UserFacingException(
+                "Backup failed",
+                "World/save data was not copied. The backup is incomplete and was not recorded as successful.",
+                $"Expected world files under:{Environment.NewLine}{saved}");
         }
 
         var record = new BackupRecord
@@ -74,27 +129,66 @@ public sealed class BackupService : IBackupService
             Reason = reason,
             IncludesWorld = includesWorld,
             IncludesConfig = includesConfig,
-            IncludesModList = includesModList,
-            Notes = string.IsNullOrWhiteSpace(install)
-                ? "No dedicated server install directory is configured. An empty backup folder with metadata was created."
-                : null
+            IncludesModList = includesModList
         };
 
-        record.SizeBytes = GetDirectorySize(dest);
-        var metadataPath = Path.Combine(dest, "metadata.json");
-        await File.WriteAllTextAsync(metadataPath, JsonSerializer.Serialize(record, JsonOptions), cancellationToken)
-            .ConfigureAwait(false);
+        try
+        {
+            record.SizeBytes = GetDirectorySize(dest);
+            var metadataPath = Path.Combine(dest, "metadata.json");
+            await File.WriteAllTextAsync(metadataPath, JsonSerializer.Serialize(record, JsonOptions), cancellationToken)
+                .ConfigureAwait(false);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            TryDeleteBackupFolder(dest);
+            throw new UserFacingException(
+                "Backup failed",
+                ex.Message,
+                "The backup metadata could not be written. The incomplete backup folder was discarded.",
+                ex);
+        }
 
         await _settings.UpdateAsync(s => { }, cancellationToken).ConfigureAwait(false);
         await _activityLog.AddAsync("Backup", $"Backup completed ({stamp}).", details: reason, cancellationToken: cancellationToken)
             .ConfigureAwait(false);
         _logger.LogInformation("Backup {Id} created at {Path}", stamp, dest);
 
-        await ApplyRetentionAsync(cancellationToken).ConfigureAwait(false);
+        var protectedSet = new List<string> { stamp, dest };
+        if (extraProtectedBackupIdsOrPaths is not null)
+        {
+            protectedSet.AddRange(extraProtectedBackupIdsOrPaths);
+        }
+
+        await ApplyRetentionAsync(protectedSet, cancellationToken).ConfigureAwait(false);
         return record;
     }
 
     public async Task RestoreAsync(string backupId, bool startAfter, CancellationToken cancellationToken = default)
+    {
+        if (!_actionGate.TryBegin("Restore backup", out var lease) || lease is null)
+        {
+            throw new UserFacingException(
+                "Server action already running",
+                $"Cannot restore because another action is in progress: {_actionGate.CurrentAction}.",
+                "Wait for the current action to finish, then try again.");
+        }
+
+        try
+        {
+            await RestoreCoreAsync(lease, backupId, startAfter, cancellationToken).ConfigureAwait(false);
+        }
+        finally
+        {
+            lease.Dispose();
+        }
+    }
+
+    private async Task RestoreCoreAsync(
+        IServerOperationLease lease,
+        string backupId,
+        bool startAfter,
+        CancellationToken cancellationToken)
     {
         if (!PathValidator.IsSafeRelativeName(backupId))
         {
@@ -121,7 +215,20 @@ public sealed class BackupService : IBackupService
                 "Refresh the Backups list and choose an existing backup.");
         }
 
-        await BackupNowAsync("pre-restore", cancellationToken).ConfigureAwait(false);
+        var sourceFullPath = Path.GetFullPath(source);
+        await BackupNowCoreAsync(
+                "pre-restore",
+                new[] { backupId, source, sourceFullPath },
+                cancellationToken)
+            .ConfigureAwait(false);
+
+        if (!Directory.Exists(source))
+        {
+            throw new UserFacingException(
+                "Restore source was deleted during the operation",
+                source,
+                "The selected backup is no longer on disk. Restore did not change the live world.");
+        }
 
         var install = _settings.Current.ServerPaths.ServerInstallDirectory
                       ?? _settings.Current.ServerPaths.ServerWorkingDirectory;
@@ -133,14 +240,53 @@ public sealed class BackupService : IBackupService
                 "Set the dedicated server folder in Settings before restoring.");
         }
 
-        CopyDirectoryIfExists(Path.Combine(source, "world"), Path.Combine(install, "ConanSandbox", "Saved"));
-        CopyDirectoryIfExists(Path.Combine(source, "config"), Path.Combine(install, "ConanSandbox", "Saved", "Config"));
-        var modlistSource = Path.Combine(source, "modlist", "modlist.txt");
-        if (File.Exists(modlistSource))
+        try
         {
-            var dest = Path.Combine(install, "ConanSandbox", "Mods", "modlist.txt");
-            Directory.CreateDirectory(Path.GetDirectoryName(dest)!);
-            File.Copy(modlistSource, dest, overwrite: true);
+            var worldSource = Path.Combine(source, "world");
+            var worldDest = Path.Combine(install, "ConanSandbox", "Saved");
+            if (!Directory.Exists(worldSource))
+            {
+                throw new UserFacingException(
+                    "Restore failed",
+                    "The selected backup does not contain world/save data.",
+                    "Choose a backup that includes the world folder, or copy the files manually.");
+            }
+
+            CopyDirectory(worldSource, worldDest);
+
+            var configSource = Path.Combine(source, "config");
+            if (Directory.Exists(configSource))
+            {
+                CopyDirectory(configSource, Path.Combine(install, "ConanSandbox", "Saved", "Config"));
+            }
+
+            var modlistSource = Path.Combine(source, "modlist", "modlist.txt");
+            if (File.Exists(modlistSource))
+            {
+                var dest = Path.Combine(install, "ConanSandbox", "Mods", "modlist.txt");
+                Directory.CreateDirectory(Path.GetDirectoryName(dest)!);
+                File.Copy(modlistSource, dest, overwrite: true);
+            }
+        }
+        catch (UserFacingException)
+        {
+            throw;
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or DirectoryNotFoundException)
+        {
+            throw new UserFacingException(
+                "Restore failed",
+                ex.Message,
+                "The live world was not fully restored. Check disk space and file permissions, then retry.",
+                ex);
+        }
+
+        if (!Directory.Exists(source))
+        {
+            throw new UserFacingException(
+                "Restore source was deleted during the operation",
+                source,
+                "The selected backup is no longer on disk. Do not treat this restore as successful.");
         }
 
         await _activityLog.AddAsync("Backup", $"Restored backup {backupId}.", cancellationToken: cancellationToken)
@@ -148,7 +294,7 @@ public sealed class BackupService : IBackupService
 
         if (startAfter)
         {
-            await _server.StartAsync(cancellationToken).ConfigureAwait(false);
+            await _server.StartUnderLockAsync(lease, cancellationToken).ConfigureAwait(false);
         }
     }
 
@@ -190,10 +336,19 @@ public sealed class BackupService : IBackupService
         return Task.FromResult<IReadOnlyList<BackupRecord>>(records.OrderByDescending(r => r.CreatedAt).ToArray());
     }
 
-    public async Task ApplyRetentionAsync(CancellationToken cancellationToken = default)
+    public Task ApplyRetentionAsync(CancellationToken cancellationToken = default) =>
+        ApplyRetentionAsync(protectedBackupIdsOrPaths: null, cancellationToken);
+
+    public async Task ApplyRetentionAsync(
+        IReadOnlyCollection<string>? protectedBackupIdsOrPaths,
+        CancellationToken cancellationToken = default)
     {
         var backups = await ListAsync(cancellationToken).ConfigureAwait(false);
-        var doomed = BackupRetentionPolicy.SelectForDeletion(backups, _settings.Current.Backups, DateTimeOffset.Now);
+        var doomed = BackupRetentionPolicy.SelectForDeletion(
+            backups,
+            _settings.Current.Backups,
+            DateTimeOffset.Now,
+            protectedBackupIdsOrPaths);
         foreach (var backup in doomed)
         {
             try
@@ -223,32 +378,52 @@ public sealed class BackupService : IBackupService
 
         if (Directory.Exists(source))
         {
-            CopyDirectoryIfExists(source, destination);
+            CopyDirectory(source, destination);
             return true;
         }
 
         return false;
     }
 
-    private static void CopyDirectoryIfExists(string source, string destination)
+    private static void CopyDirectory(string source, string destination)
     {
         if (!Directory.Exists(source))
         {
-            return;
-        }
-
-        foreach (var dir in Directory.GetDirectories(source, "*", SearchOption.AllDirectories))
-        {
-            var target = dir.Replace(source, destination);
-            Directory.CreateDirectory(target);
+            throw new DirectoryNotFoundException(source);
         }
 
         Directory.CreateDirectory(destination);
+        foreach (var dir in Directory.GetDirectories(source, "*", SearchOption.AllDirectories))
+        {
+            var target = Path.Combine(destination, Path.GetRelativePath(source, dir));
+            Directory.CreateDirectory(target);
+        }
+
         foreach (var file in Directory.GetFiles(source, "*", SearchOption.AllDirectories))
         {
-            var target = file.Replace(source, destination);
-            Directory.CreateDirectory(Path.GetDirectoryName(target)!);
+            var target = Path.Combine(destination, Path.GetRelativePath(source, file));
+            var parent = Path.GetDirectoryName(target);
+            if (!string.IsNullOrEmpty(parent))
+            {
+                Directory.CreateDirectory(parent);
+            }
+
             File.Copy(file, target, overwrite: true);
+        }
+    }
+
+    private void TryDeleteBackupFolder(string dest)
+    {
+        try
+        {
+            if (Directory.Exists(dest) && PathValidator.IsUnderRoot(dest, _paths.BackupsDirectory))
+            {
+                Directory.Delete(dest, recursive: true);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Failed to discard incomplete backup folder {Path}", dest);
         }
     }
 

@@ -232,9 +232,9 @@ internal sealed class RecordingServer : IServerProcessManager
         await Task.CompletedTask;
     }
 
-    public Task StartUnderLockAsync(CancellationToken cancellationToken = default)
+    public Task StartUnderLockAsync(IServerOperationLease lease, CancellationToken cancellationToken = default)
     {
-        if (!_gate.IsBusy)
+        if (!_gate.Owns(lease))
         {
             throw new InvalidOperationException("no lease");
         }
@@ -244,9 +244,9 @@ internal sealed class RecordingServer : IServerProcessManager
         return Task.CompletedTask;
     }
 
-    public Task StopUnderLockAsync(bool force = false, CancellationToken cancellationToken = default)
+    public Task StopUnderLockAsync(IServerOperationLease lease, bool force = false, CancellationToken cancellationToken = default)
     {
-        if (!_gate.IsBusy)
+        if (!_gate.Owns(lease))
         {
             throw new InvalidOperationException("no lease");
         }
@@ -306,6 +306,9 @@ internal sealed class ScriptedWorkshop : IWorkshopModService
 
         return Task.CompletedTask;
     }
+
+    public Task ApplyUpdatesAsync(IReadOnlyList<long>? workshopIds, CancellationToken cancellationToken = default) =>
+        UpdateAllAsync(cancellationToken);
 
     public Task CheckForUpdatesAsync(CancellationToken cancellationToken = default)
     {
@@ -377,9 +380,9 @@ internal sealed class StatusOnlyServer : IServerProcessManager
 
     public Task RestartAsync(CancellationToken cancellationToken = default) => Task.CompletedTask;
 
-    public Task StartUnderLockAsync(CancellationToken cancellationToken = default) => Task.CompletedTask;
+    public Task StartUnderLockAsync(IServerOperationLease lease, CancellationToken cancellationToken = default) => Task.CompletedTask;
 
-    public Task StopUnderLockAsync(bool force = false, CancellationToken cancellationToken = default) => Task.CompletedTask;
+    public Task StopUnderLockAsync(IServerOperationLease lease, bool force = false, CancellationToken cancellationToken = default) => Task.CompletedTask;
 
     public bool IsConanServerProcess(string processName) => false;
 

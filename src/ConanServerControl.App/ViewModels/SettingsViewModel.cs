@@ -266,11 +266,13 @@ public partial class LogsViewModel : ObservableObject
 public partial class ModsViewModel : ObservableObject
 {
     private readonly IWorkshopModService _mods;
+    private readonly IServerUpdateService _updates;
     private readonly IUiDialogs _dialogs;
 
-    public ModsViewModel(IWorkshopModService mods, IUiDialogs dialogs)
+    public ModsViewModel(IWorkshopModService mods, IServerUpdateService updates, IUiDialogs dialogs)
     {
         _mods = mods;
+        _updates = updates;
         _dialogs = dialogs;
         Reload();
     }
@@ -469,7 +471,7 @@ public partial class ModsViewModel : ObservableObject
 
         try
         {
-            await _mods.UpdateAsync(id);
+            await _updates.UpdateSelectedModsAsync(id);
             Reload();
         }
         catch (Exception ex)
@@ -484,7 +486,7 @@ public partial class ModsViewModel : ObservableObject
     {
         try
         {
-            await _mods.UpdateAllAsync();
+            await _updates.UpdateModsAsync(restartAfter: false);
             Reload();
         }
         catch (Exception ex)
@@ -630,7 +632,7 @@ public partial class UpdatesViewModel : ObservableObject
     {
         try
         {
-            await _updates.UpdateAsync(restartAfter: true);
+            await _updates.UpdateAsync(restartAfter: false);
             Summary = "Update pipeline finished.";
         }
         catch (Exception ex)

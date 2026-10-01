@@ -1,6 +1,7 @@
 using ConanServerControl.Core.Exceptions;
 using ConanServerControl.Core.Models;
 using ConanServerControl.Core.Mods;
+using ConanServerControl.Infrastructure.Concurrency;
 using ConanServerControl.Infrastructure.Workshop;
 using Microsoft.Extensions.Logging.Abstractions;
 
@@ -106,6 +107,7 @@ public class QaModManagementTests
                 settings,
                 steam,
                 new CountingBackup(),
+                new ServerActionGate(),
                 paths,
                 new EmptyWorkshopClient(),
                 new RecordingActivityLog(),

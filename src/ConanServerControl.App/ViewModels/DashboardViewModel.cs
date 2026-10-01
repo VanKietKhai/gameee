@@ -113,10 +113,10 @@ public partial class DashboardViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private Task UpdateServerAsync() => Run(() => _updates.UpdateAsync(restartAfter: true));
+    private Task UpdateServerAsync() => Run(() => _updates.UpdateAsync(restartAfter: false));
 
     [RelayCommand]
-    private Task UpdateModsAsync() => Run(() => _updates.UpdateModsAsync(restartAfter: true));
+    private Task UpdateModsAsync() => Run(() => _updates.UpdateModsAsync(restartAfter: false));
 
     [RelayCommand]
     private Task UpdateEverythingAsync() => Run(() => _updates.UpdateEverythingAsync());

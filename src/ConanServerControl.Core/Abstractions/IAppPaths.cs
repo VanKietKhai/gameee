@@ -68,13 +68,26 @@ public interface IActivityLog
     Task<IReadOnlyList<Core.Models.ActivityLogEntry>> GetRecentAsync(int count = 50, CancellationToken cancellationToken = default);
 }
 
+public interface IServerOperationLease : IDisposable
+{
+    Guid Id { get; }
+
+    string Action { get; }
+
+    bool IsDisposed { get; }
+}
+
 public interface IServerActionGate
 {
     bool IsBusy { get; }
 
     string? CurrentAction { get; }
 
-    bool TryBegin(string action, out IDisposable? lease);
+    Guid? CurrentLeaseId { get; }
 
-    Task<IDisposable> WaitAsync(string action, CancellationToken cancellationToken = default);
+    bool TryBegin(string action, out IServerOperationLease? lease);
+
+    Task<IServerOperationLease> WaitAsync(string action, CancellationToken cancellationToken = default);
+
+    bool Owns(IServerOperationLease? lease);
 }

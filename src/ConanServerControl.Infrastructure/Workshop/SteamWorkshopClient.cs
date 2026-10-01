@@ -87,6 +87,17 @@ public sealed class SteamWorkshopClient : ISteamWorkshopClient
                 continue;
             }
 
+            if (item.TryGetProperty("result", out var resultEl))
+            {
+                var result = resultEl.ValueKind == JsonValueKind.Number
+                    ? resultEl.GetInt32()
+                    : int.TryParse(resultEl.GetString(), out var parsedResult) ? parsedResult : 0;
+                if (result != 1)
+                {
+                    continue;
+                }
+            }
+
             var title = item.TryGetProperty("title", out var titleEl) ? titleEl.GetString() : null;
             var fileName = item.TryGetProperty("filename", out var fileEl) ? fileEl.GetString() : null;
             long unix = 0;
