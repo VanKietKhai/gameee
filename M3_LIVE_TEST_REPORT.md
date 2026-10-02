@@ -489,7 +489,7 @@ No verified dependency required changing it. Savage Paragon's "load after any XP
 | Boot | Result | Evidence |
 | --- | --- | --- |
 | B1 (5-minute hold) | **PASS** | Online 41.5 s. Mount sequence = modlist; container `Order` 1000–1005. Contributes 5 / 91 / 382 / 18 / 942 / 57 packages. New controllers spawned: `ReputationModController_C`, `MC_ImprovedThrallsAndQoL_C`, `WO_BP_RT_ModController_C`. No crash or crash loop over 5 minutes. Memory at readiness: 4.81 GB working set, 5.49 GB private. |
-| B1 errors | none from the mods | Every Error/Warning category is also in the vanilla log with the same messages (AIDataTable `WarTest*` rows, `ItemInventory`, `building` stability, `LogBaseSpawner`, `LevelStreaming` `/Game/Developers/...`, `BinkMoviePlayer`). Two `LogActor` warnings attach the ITQoL `Lamplighter_Sphere` component to NPCs. |
+| B1 errors | **CORRECTED: 23 LoadErrors from ITQoL** (originally recorded as "none from the mods") | Every `Error:` / `Warning:` category is also in the vanilla log with the same messages (AIDataTable `WarTest*` rows, `ItemInventory`, `building` stability, `LogBaseSpawner`, `LevelStreaming` `/Game/Developers/...`, `BinkMoviePlayer`). Two `LogActor` warnings attach the ITQoL `Lamplighter_Sphere` component to NPCs. **Missed at the time:** see the correction note below. |
 | B1 stop | PASS | Acknowledged `shutdown`, extended window. **191.4 s**: quiet teardown of 171 s, then exit at 189 s. Exit code 0, no forced kill, no WAL/SHM, no orphans. |
 | B2 (restart) | Load PASS, **1 known issue** | Online 39.6 s, same sequence and Order. All three new controllers `Loading` from the save (no re-spawn, no duplicates). **Known issue:** `Persistence: Error: UConanBuildingPersistenceComponent::CreateHealthPool - DefaultObject not loaded: /Game/Mods/ImprovedThrallsAndQoL/Mailbox/BP_PL_ServerMailContainer`. |
 | B2 stop | PASS | 70.0 s, exit code 0, no kill, no WAL, no orphans. |
@@ -529,6 +529,24 @@ Read-only checks on copies of the verified backups `141009` → `142111` → `14
 - Stop time grew to 191 s with six mods after about 6 minutes of uptime. The 300 s extended window still held, but larger mods (Ancient Realms 497 MB, Shemite 2.1 GB) and longer uptimes may exceed it; re-measure in Batch C.
 - `ThrallDamageToNPCsMultiplier` is 0.5 vs the stated 0.3 philosophy.
 - The 4E WickProbe controller rows remain in the save.
+
+**Correction (2026-10-02, after the Batch C review): Batch B boot logs contain 23 `LoadErrors` per boot.**
+
+What was missed:
+- Every Batch B boot (B1, B2 and the three restart cycles) logs 23 lines of `LoadErrors: While trying to load package None, a dependent package None (<id>) was not available`, each followed by `FPackageName: Unable to identify a valid mount point associated with skipped package None`.
+- They reference 16 unique package IDs.
+- Batch A boots: 0 such lines.
+- The original scan searched for `Error:`. These lines read `LoadErrors:`, so they were missed and "none from the mods" was recorded.
+
+Attribution to **Improved Thralls & QoL** (read-only byte search, confirmed independently by both sessions):
+- All 16 IDs appear, as 8-byte little-endian values, only in `ImprovedThrallsAndQoL.pak` and its extracted `ImprovedThrallsAndQoL-WindowsServer.ucas`. They do not appear in the other five installed mods or in Ancient Realms.
+- According to the "Twelve Legends" session's container check, none of the IDs is a real package in any mod or vanilla container. They are **dangling references**, not a missing dependency.
+- Caveat: the log names no referencing asset ("package None"), so the attribution rests on the byte search.
+
+Impact:
+- The server still boots, all six mods mount, and the ITQoL controller loads.
+- The in-game effect (some ITQoL feature or asset not loading) is **not verified**; it needs a client.
+- The harness at that time did not flag `LoadErrors` lines. That is a harness gap, not a mod-boot PASS criterion that was met.
 
 ## Modpack V1 Batch B — restart stability (3 cycles) and acceptance
 
