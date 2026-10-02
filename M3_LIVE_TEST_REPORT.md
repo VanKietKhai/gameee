@@ -879,7 +879,7 @@ Earlier data points under host load: 301.7 / 301.8 s, force-killed by the then-3
 
 No-ack / no-progress shutdowns keep the short (30 s) unresponsive fallback. The stop behaviour is already in the product (`26091fa`).
 
-The harness gate (`ModBootGates.EvaluateShutdownDuration`) still uses the earlier single 240 s HIGH-RISK threshold. Aligning it with this table is **pending**: it overlaps the unmerged branch `wip/mod-warning-classification` (`23007b7`), which edits the same file.
+The harness gate (`ModBootGates.EvaluateShutdownDuration`) follows this table on branch `claude/m3-task4-integration` (`29c74e5`); see "Integration branch" below.
 
 **Batch A + Thrall Reputation startup hang: TRANSIENT / NOT REPRODUCED**
 - Study run 2 (02:35:52) hung right after launch. The log stopped 2 s in, at `Loading asset registry state for mod 'SavageParagon'`, and readiness timed out after 600 s ("World still loading").
@@ -893,3 +893,26 @@ The harness gate (`ModBootGates.EvaluateShutdownDuration`) still uses the earlie
 - 7 mods in the original order; `ThrallDamageToNPCsMultiplier=0.300000`.
 - The orphaned `findstr` PID 28280 was **not** terminated: its CommandLine is unreadable and it predates the study, so it could not be confirmed as part of it.
 - Batch D: not started.
+
+## Integration branch `claude/m3-task4-integration` (2026-10-03)
+
+- **Base:** `claude/m3-task4-live-windows` @ `7455e7d`.
+- **Frozen sources, not modified:** `wip/mod-warning-classification` (`23007b7`) and `wip/shutdown-timing` (`d952d6d`). Both were committed unverified during a hand-off.
+
+| Commit | Content |
+| --- | --- |
+| `61d6b50` | Exact validated mod warning gates (ported from `23007b7`, then built, tested and checked on real data). ITQoL (SHA-256 `F35D9D92…`): exact mailbox line, exact 23 LoadErrors, exactly 1 mailbox and 1 controller. Ancient Realms (SHA-256 `12F7E719…`): exact 37 LoadErrors (7 named + 30 "None"), exactly 1 controller. Everything else fails: a changed hash, set drift, unattributed LoadErrors, a missing/duplicate singleton, any crash/assertion/persistence error line (`SevereLogMarkers`), a world `quick_check` other than ok. New read-only `analyze-boot <log> <backupId>`. |
+| `29c74e5` | Shutdown classes: NORMAL < 240 s, WARNING 240–300 s (both allow the next batch; never a mod compatibility failure), DEGRADED 300–600 s (blocks the next batch until reviewed), EMERGENCY ≥ 600 s. Stop behaviour unchanged from `26091fa`. |
+| `dcf19db` | Live harness `set-mods` (controlled mod sets for staging tests; harness only) with tested input rules (`ModSetSelection`). |
+
+**Validation**
+- `dotnet build -c Release --no-incremental`: 0 warnings, 0 errors.
+- `dotnet test -c Release`: **398 / 398**, 0 skipped.
+
+**Read-only 7-mod check** (no server start): `analyze-boot` on the control boot log `ConanSandbox-backup-2026.10.02-20.34.59.log` (03:28:53) against backup `2026-10-03_033503`:
+- Mount sequence = modlist (7 mods). ModRelatedProblems = none.
+- Known non-blocking: `ITQOL-MAILBOX-HEALTHPOOL` ×1 and `ANCIENT-REALMS-DANGLING-REF-1..7` ×1 each.
+- LoadErrors: ITQoL 23 = validated set (exact); Ancient Realms 37 = validated set (exact); unattributed none.
+- `quick_check` ok. ITQoL mailbox 1, ITQoL controller 1, Ancient Realms controller 1 (all PASS); no duplicate controllers.
+
+Batch D: not started.
