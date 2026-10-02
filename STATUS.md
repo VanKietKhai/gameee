@@ -25,6 +25,22 @@ PROJECT DEPLOYMENT TARGET: **private friends-only dedicated server over Radmin V
 
 The server's `Autologin attempt failed, unable to register server!` is **NOT A BLOCKER** for this deployment, provided authenticated clients can direct-connect. No project time is spent making the server public. See HANDOFF "Deployment model".
 
+Environment (operator decision, 2026-10-02):
+- `D:\conan exiles\depot_443031` = **STAGING / PRE-PRODUCTION**.
+- Current world = **TEST / VALIDATION WORLD**. Its `game_0.db` is not production data.
+- **PRODUCTION SAVE: NOT CREATED YET.** It is created and frozen only after:
+  1. all target mods are validated
+  2. the final load order is accepted
+  3. backup/restore is verified
+  4. campaign systems are accepted
+  5. the user explicitly approves starting the real campaign
+- The production campaign starts on a **NEW** world. The current staging world is **never promoted** to production.
+- Moving campaign-built content into the new world is conditional:
+  - use a mod's export/import only if that mod or tool actually supports it, proven on staging
+  - otherwise rebuild from the documented build sheet (`CAMPAIGN_V1.md` 10.4)
+  - no migration capability is claimed until it is verified
+- Only one session commits or pushes at a time.
+
 ## Terminology: standalone-first
 
 Conan Server Control is standalone-first on the **SERVER/MANAGEMENT** side. SteamCMD and the Steam client are not required for normal server-management operations once a valid Dedicated Server installation exists.
@@ -125,10 +141,16 @@ Unchanged gate / lease / readiness / cold-backup / `ModBatchTransaction`. Additi
 
 M3 Task 4E (one Local mod) is accepted as PASS.
 
-Next: **Target Modpack V1** (`MODPACK_V1.md`). Ten mods are planned, and the metadata and conflict/test matrix are recorded. Nothing is installed yet.
-- Cumulative batches: A (StackMe10K, which replaces WickStacks; Savage Paragon; Grit & Grease) → B → C → D1 / D2 / D3, then a review of all ten.
-- Batch A waits for the local `.pak` paths.
-- The final load order is not declared until all ten have been tested together with runtime evidence.
+Next: **Target Modpack V1** (`MODPACK_V1.md`). **Fifteen** mods are planned (the ten originals plus five campaign mods added 2026-10-02), and the metadata and conflict/test matrix are recorded. Nothing is installed yet.
+- Cumulative batches: A (StackMe10K, which replaces WickStacks; Savage Paragon; Grit & Grease) → B → C → D1 / D2 / D3 → E (Sudo + Thrall Wars Utilities) → F1 (Night Terrors + PvE Plus Ambush) → F2 (Thrall Wars Dungeon Mod), then a review of all fifteen.
+- **Batch A PASS** (2026-10-02, `2aca0cf`; `M3_LIVE_TEST_REPORT.md`): StackMe10K, Savage Paragon and Grit & Grease are installed on `depot_443031` in that order. The runtime mount order and container `Order` follow `modlist.txt` (PROVEN). Final verified backup `2026-10-02_074354`. StackMe10K's 10,000 stacks are not verified in-game. Next: Batch B (all ten V1 `.pak` files are local).
+- The final load order is not declared until all fifteen have been tested together with runtime evidence. The proposed starting order is in `CAMPAIGN_V1.md` section 3.
+
+Then: **Chronicler Campaign V1** (`CAMPAIGN_V1.md`). This is design only; "Twelve Legends" is removed from the plan (it never existed on this host).
+- An admin-configured PvE campaign: Acts I–IV, then Thrall Wars Normal and Hard.
+- Built from Thrall Wars Utilities and Sudo CharVars. No DevKit.
+- Built and QA'd on staging (`depot_443031`, a test/validation world). The production world is created only after the acceptance criteria and explicit user approval (see "Deployment Model").
+- In-game building and QA are **blocked by 4F** (no authenticated admin client) and by the missing `.pak` files.
 
 ## Last Completed Task
 
@@ -136,4 +158,4 @@ M3 Task 4 pre-live fixes, 4A SteamCMD, and the standalone-first pivot (Local mod
 
 ## Current Task
 
-Matched-version server verified. 4F recorded as blocked by client authentication. Pre-4E validation done (`0d54acc`): acknowledgement-gated graceful stop with process-tree Offline, Radmin/LAN address split, 313 / 313 tests, live 10-minute stop PASS (154 s, exit 0, no kill, no WAL, no orphans). 4E PASS (accepted). Target Modpack V1 planned (`MODPACK_V1.md`); waiting for the local `.pak` paths before Batch A. Do not modify the real client, and do not configure a public Internet server.
+Matched-version server verified. 4F recorded as blocked by client authentication. Pre-4E validation done (`0d54acc`): acknowledgement-gated graceful stop with process-tree Offline, Radmin/LAN address split, 313 / 313 tests, live 10-minute stop PASS (154 s, exit 0, no kill, no WAL, no orphans). 4E PASS (accepted). Target Modpack V1 (`MODPACK_V1.md`, now fifteen mods): Batch A PASS (`2aca0cf`); Batch B is next. Chronicler Campaign V1 designed (`CAMPAIGN_V1.md`): no in-game QA has run, and the design work changed nothing on the server. Do not modify the real client, and do not configure a public Internet server.
