@@ -469,6 +469,7 @@ internal sealed class Harness : IAsyncDisposable
         var server = _services.GetRequiredService<IServerProcessManager>();
         var timeline = TrackStates(server);
         var logOffset = FileLength(ServerLog);
+        var logHead = ReadHead(ServerLog);
         var clock = Stopwatch.StartNew();
         try
         {
@@ -485,6 +486,13 @@ internal sealed class Harness : IAsyncDisposable
         }
 
         var startup = clock.Elapsed;
+        // Conan rotates ConanSandbox.log on start (the old file becomes a -backup). The new log can
+        // already be longer than the old offset, so a changed first line means "read from 0".
+        if (!string.Equals(logHead, ReadHead(ServerLog), StringComparison.Ordinal))
+        {
+            logOffset = 0;
+        }
+
         var probe = await _services.GetRequiredService<IServerReadinessProbe>().ProbeAsync(new ServerReadinessContext
         {
             ProcessId = server.State.ProcessId ?? 0,
@@ -1555,6 +1563,19 @@ internal sealed class Harness : IAsyncDisposable
         IPGlobalProperties.GetIPGlobalProperties().GetActiveTcpListeners().Any(e => e.Port == port);
 
     private static long FileLength(string path) => File.Exists(path) ? new FileInfo(path).Length : 0;
+
+    /// <summary>First line of the log ("Log file open, &lt;time&gt;"), which identifies one server run.</summary>
+    private static string ReadHead(string path)
+    {
+        if (!File.Exists(path))
+        {
+            return string.Empty;
+        }
+
+        using var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete);
+        using var reader = new StreamReader(stream);
+        return reader.ReadLine() ?? string.Empty;
+    }
 
     private static string ReadLogFrom(string path, long offset, int maxLines)
     {

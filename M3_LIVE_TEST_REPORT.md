@@ -394,6 +394,59 @@ The 20 new cases in `M3PreE4StopAndNetworkTests` cover:
 - **Finding:** Conan does not delete its extraction cache `Saved\ExtractedMods\WickProbe-WindowsServer.*` (~1.5 MB) after the mod is removed. It is not mounted (not in the modlist). A future removal step could retire matching `ExtractedMods` files as well.
 - **Product change made for this checkpoint** (`581615d`): removing a Local mod now retires its installed pak (SHA-256-gated move, never a delete).
 
+## Modpack V1 Batch A + multi-mod load order (4E.2) — live, PASS
+
+- Remote head before the test: `1e318d4`. Branch clean; no Conan process.
+- Server `D:\conan exiles\depot_443031` (CL-377096). All steps went through the harness using the app's real services. No client, no Workshop, no SteamCMD.
+- A concurrent docs-only session ("Twelve Legends removal and quest system") was active. Over a coordination message it confirmed it would not start the server, run the harness or touch `Mods`.
+
+**Mods** (sources in `C:\Users\vkkha\Downloads\mod conan`, all valid pak v12 with a `-WindowsServer` sub-pak; installed to `ConanSandbox\Mods\<name>.pak`):
+
+| Role | Mod | File | Size | SHA-256 (source = installed) |
+| --- | --- | --- | --- | --- |
+| A | StackMe10K (Nexus mod 3) | `StackMe10K.pak` | 4,641,754 B | `30F5DF54…5C8A0` |
+| B | Savage Paragon (Workshop 3766043945; size matches) | `SavageParagon.pak` | 4,760,799 B | `5F2673D9…312B5` |
+| C | Grit & Grease (Workshop 3801774752; size matches) | `GritandGrease.pak` | 68,049,336 B | `B5FA39CC…4ACCA` |
+
+| Step | Result | Evidence |
+| --- | --- | --- |
+| Baseline | PASS | Diagnostics READY (0 FAIL). `Mods` held only an empty `modlist.txt`; empty catalog. Verified cold backup `2026-10-02_073104`, `quick_check` = ok. |
+| Import ×3 (production Local pipeline) | PASS | Installed SHA-256 = source SHA-256; the sources are unchanged. Each import also took its own verified cold backup. |
+| Initial order A, B, C (`MoveAsync`) | PASS | `modlist.txt` = `StackMe10K.pak \| SavageParagon.pak \| GritandGrease.pak`; `.pak` files untouched. |
+| Boot 1 | **PASS** | Online 44.5 s. Mount sequence StackMe10K → SavageParagon → GritandGrease. Container `Order` 1000 / 1001 / 1002. Contributes 5 / 91 / 382 packages. No duplicates and no mod errors. |
+| Reorder to C, A, B (`MoveAsync`) | PASS | `modlist.txt` = `GritandGrease.pak \| StackMe10K.pak \| SavageParagon.pak`. Every `.pak` has an unchanged SHA-256, size, creation and write time, so nothing was re-copied. |
+| Boot 2 | **PASS** | Online 36.4 s. Mount sequence GritandGrease → StackMe10K → SavageParagon. Container `Order` G&G 1000, StackMe10K 1001, Paragon 1002. |
+| Remove middle (StackMe10K) via `RemoveAsync` | **PASS** | Verified `pre-mod-removal` backup `2026-10-02_073932` (`quick_check` ok). Pak retired to `app-data\removed-mods\20261002-073932-695\StackMe10K.pak` (hash matches). `modlist.txt` = `GritandGrease.pak \| SavageParagon.pak`. Remaining hashes and the source are unchanged. |
+| Boot 3 (`--expect-absent StackMe10K.pak`) | **PASS** | Online 40.6 s. G&G → Paragon (Order 1000 / 1001). No log line mentions StackMe10K. No missing-mod or stale-modlist errors. |
+| Restore A (cumulative batches) | PASS | Re-imported (hash match), order back to A, B, C. |
+| Boot 4 (Batch A final) | **PASS** | Online 46.5 s; same sequence and Order as Boot 1. `Persistence: Loading mod controller` for `StackMe10K_Modcontroller_C`, `BP_SavageParagon_ModController_C` and `BP_GritnGreaseModController_C`. No error or warning line mentions any of the three. |
+| Final verified cold backup | PASS | `2026-10-02_074354`, `game_0.db` 667,648 B, `quick_check` = ok. |
+
+Stops: all four were acknowledged RCON `shutdown`s, 300 s extended window, 66–68 s, exit code 0, **forced kill NO**, no WAL/SHM, **no orphan processes**.
+
+**Runtime load order: PROVEN** for mount order and container priority.
+- In both configurations the server's `Mounting mod pak file` sequence followed `modlist.txt` exactly.
+- The IoStore container `Order` was reassigned by modlist position: first entry 1000, then +1 per entry.
+- **Not exercised:** which mod wins an asset both override. None of the three is known to override the same asset, so later-entry-wins precedence is Unreal's documented behaviour for a higher `Order`, not observed here.
+
+**ExtractedMods** (read-only):
+- Conan extracts each mod's `-WindowsServer` sub-pak once (all mtimes 07:32:05) and reuses it on later boots.
+- While StackMe10K was removed, `StackMe10K-WindowsServer.pak/.ucas/.utoc` (1,440,291 B) stayed in the cache but was not mounted. It is current again after the restore.
+- `WickProbe-WindowsServer.*` (1,491,114 B) is still stale from 4E.
+- Technical debt:
+  - Removal does not retire extraction-cache files.
+  - **Unverified risk:** whether Conan refreshes the cache when a Local `.pak` is replaced by a newer file of the same name.
+- Nothing was deleted.
+
+Other notes:
+- **StackMe10K 10,000 stacks: IN-GAME BEHAVIOR NOT YET VERIFIED.** Server logs only show that it mounts and loads.
+- Boot time with Batch A: 36–47 s (vanilla 30–33 s).
+- **Client: 0 files changed** under `D:\conan exiles\Conan Exiles Enhanced` during the run.
+- **Harness issues found and fixed during the run:**
+  - **Log-offset bug** (fixed in this checkpoint): Conan rotates `ConanSandbox.log` on start, so the first Boot 1 analysis read past the new log's mount lines and reported 0 mounts (FAIL). The server itself had mounted all three mods. Now a changed first log line means "read from 0", and Boot 1 was re-run and passed.
+  - **Shell quoting mistake** (operator side, before the successful imports): three `import-local` attempts were run with a wrong path. The pipeline rejected them at staging and nothing changed; three extra verified baseline backups were taken.
+- Build PASS (0 warnings, 0 errors); `dotnet test` 315 / 315, 0 skipped.
+
 ## Direction change: standalone-first (corrected 2026-10-02)
 
 After 4B the requirement was recorded as "players use **standalone** Conan clients (no Steam client, library or Workshop sync)". 4F showed that this is wrong for multiplayer. Corrected statement:
