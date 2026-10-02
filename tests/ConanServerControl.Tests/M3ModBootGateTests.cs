@@ -410,41 +410,69 @@ public sealed class M3ModBootGateTests
         Assert.Single(problems);
     }
 
-    // ------------------------------------------------------------ Shutdown duration metric
+    // ------------------------------------------------------------ Shutdown duration classes (policy 2026-10-03)
 
     [Theory]
     [InlineData(70.0)]
     [InlineData(177.0)]
-    [InlineData(183.7)]
+    [InlineData(211.2)]
     [InlineData(239.9)]
-    public void Shutdown_below_240_seconds_passes(double seconds)
+    public void Shutdown_below_240_seconds_is_normal(double seconds)
     {
-        Assert.True(ModBootGates.EvaluateShutdownDuration(TimeSpan.FromSeconds(seconds), 300).Pass);
-    }
-
-    [Theory]
-    [InlineData(240.0)]
-    [InlineData(301.8)]
-    [InlineData(450.0)]
-    public void Graceful_stops_past_240_seconds_still_fail_the_batch_gate_even_with_the_600_s_ceiling(double seconds)
-    {
-        // The stop policy may let a proven shutdown finish (no kill at 300 s); the compatibility gate still fails.
         var gate = ModBootGates.EvaluateShutdownDuration(TimeSpan.FromSeconds(seconds), 300, 600);
 
-        Assert.False(gate.Pass);
-        Assert.StartsWith("HIGH RISK", gate.Detail, StringComparison.Ordinal);
-        Assert.Contains("emergency ceiling 600 s", gate.Detail, StringComparison.Ordinal);
+        Assert.Equal(ShutdownSeverity.Normal, ModBootGates.ClassifyShutdownDuration(TimeSpan.FromSeconds(seconds)));
+        Assert.True(gate.Pass);
+        Assert.StartsWith("NORMAL", gate.Detail, StringComparison.Ordinal);
     }
 
     [Theory]
     [InlineData(240.0)]
     [InlineData(275.5)]
-    [InlineData(300.0)]
-    public void Shutdown_at_or_above_240_seconds_is_high_risk(double seconds)
+    [InlineData(299.9)]
+    public void Shutdown_from_240_to_300_seconds_is_a_warning_and_not_a_failure(double seconds)
     {
-        var gate = ModBootGates.EvaluateShutdownDuration(TimeSpan.FromSeconds(seconds), 300);
+        var gate = ModBootGates.EvaluateShutdownDuration(TimeSpan.FromSeconds(seconds), 300, 600);
 
+        Assert.Equal(ShutdownSeverity.Warning, ModBootGates.ClassifyShutdownDuration(TimeSpan.FromSeconds(seconds)));
+        Assert.True(gate.Pass);
+        Assert.StartsWith("WARNING", gate.Detail, StringComparison.Ordinal);
+        Assert.Contains("not a mod compatibility failure", gate.Detail, StringComparison.Ordinal);
+    }
+
+    [Theory]
+    [InlineData(300.0)]
+    [InlineData(301.8)]
+    [InlineData(450.0)]
+    [InlineData(599.9)]
+    public void Shutdown_from_300_to_600_seconds_is_degraded_and_blocks_the_next_batch(double seconds)
+    {
+        var gate = ModBootGates.EvaluateShutdownDuration(TimeSpan.FromSeconds(seconds), 300, 600);
+
+        Assert.Equal(ShutdownSeverity.Degraded, ModBootGates.ClassifyShutdownDuration(TimeSpan.FromSeconds(seconds)));
         Assert.False(gate.Pass);
-        Assert.StartsWith("HIGH RISK", gate.Detail, StringComparison.Ordinal);
+        Assert.StartsWith("DEGRADED", gate.Detail, StringComparison.Ordinal);
+        Assert.Contains("not a mod compatibility failure", gate.Detail, StringComparison.Ordinal);
+        Assert.Contains("emergency ceiling 600 s", gate.Detail, StringComparison.Ordinal);
+    }
+
+    [Theory]
+    [InlineData(600.0)]
+    [InlineData(601.5)]
+    public void Shutdown_at_600_seconds_or_more_reached_the_emergency_ceiling(double seconds)
+    {
+        var gate = ModBootGates.EvaluateShutdownDuration(TimeSpan.FromSeconds(seconds), 300, 600);
+
+        Assert.Equal(ShutdownSeverity.Emergency, ModBootGates.ClassifyShutdownDuration(TimeSpan.FromSeconds(seconds)));
+        Assert.False(gate.Pass);
+        Assert.StartsWith("EMERGENCY", gate.Detail, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void Shutdown_class_thresholds_are_240_300_and_600_seconds()
+    {
+        Assert.Equal(240, ModBootGates.ShutdownWarningSeconds);
+        Assert.Equal(300, ModBootGates.ShutdownDegradedSeconds);
+        Assert.Equal(600, ModBootGates.ShutdownEmergencySeconds);
     }
 }

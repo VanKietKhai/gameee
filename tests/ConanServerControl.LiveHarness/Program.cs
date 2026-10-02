@@ -1753,10 +1753,14 @@ internal sealed class Harness : IAsyncDisposable
                 ("WorldFiles", string.Join("; ", WorldSnapshot()))),
             ReadLogFrom(ServerLog, logOffset, 25));
 
-        // Shutdown duration is a batch metric: at or above 240 s the next batch must not be added.
-        _log.Write(step, "shutdown duration gate", durationGate.Pass ? "PASS" : "FAIL", stopDuration,
+        // Shutdown duration is a batch metric, never a mod compatibility verdict: NORMAL/WARNING allow the next
+        // batch, DEGRADED/EMERGENCY block it until reviewed.
+        var severity = ModBootGates.ClassifyShutdownDuration(stopDuration);
+        _log.Write(step, "shutdown duration gate", severity.ToString().ToUpperInvariant(), stopDuration,
             Facts(("ShutdownDurationSeconds", stopDuration.TotalSeconds.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture)),
-                ("HighRiskThresholdSeconds", ModBootGates.ShutdownHighRiskSeconds.ToString()),
+                ("Severity", severity.ToString().ToUpperInvariant()),
+                ("NextBatchAllowed", durationGate.Pass ? "YES" : "NO (review first)"),
+                ("Thresholds", $"warning {ModBootGates.ShutdownWarningSeconds} s, degraded {ModBootGates.ShutdownDegradedSeconds} s, emergency {ModBootGates.ShutdownEmergencySeconds} s"),
                 ("GracefulWindowSeconds", _settings.Current.Advanced.GracefulStopTimeoutSeconds.ToString()),
                 ("EmergencyCeilingSeconds", _settings.Current.Advanced.EmergencyStopCeilingSeconds.ToString()),
                 ("Gate", durationGate.Detail)),

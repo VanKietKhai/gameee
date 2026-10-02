@@ -73,8 +73,14 @@ public static class ModBootGates
     public const string AncientRealmsControllerClassPath =
         "/Game/Mods/Ancient_Realms/AR_BP_ModController.AR_BP_ModController_C";
 
-    /// <summary>A stop at or above this many seconds is HIGH RISK (the graceful window is 300 s).</summary>
-    public const int ShutdownHighRiskSeconds = 240;
+    /// <summary>A stop at or above this many seconds is WARNING (investigate host load).</summary>
+    public const int ShutdownWarningSeconds = 240;
+
+    /// <summary>A stop at or above this many seconds is DEGRADED (no new mod batch until reviewed).</summary>
+    public const int ShutdownDegradedSeconds = 300;
+
+    /// <summary>A stop at or above this many seconds reached the EMERGENCY force-kill ceiling.</summary>
+    public const int ShutdownEmergencySeconds = 600;
 
     private const string AncientRealmsReason =
         "Batch C (2026-10-03): dangling package reference (the missing package exists in no mod or vanilla container); " +
@@ -313,10 +319,19 @@ public static class ModBootGates
     public static BootGateResult EvaluateItqolMailbox(bool itqolInstalled, int? mailboxCount) =>
         EvaluateSingletonActor(SingletonActors[0], itqolInstalled, mailboxCount);
 
+    public static ShutdownSeverity ClassifyShutdownDuration(TimeSpan duration) => duration.TotalSeconds switch
+    {
+        >= ShutdownEmergencySeconds => ShutdownSeverity.Emergency,
+        >= ShutdownDegradedSeconds => ShutdownSeverity.Degraded,
+        >= ShutdownWarningSeconds => ShutdownSeverity.Warning,
+        _ => ShutdownSeverity.Normal
+    };
+
     /// <summary>
-    /// Shutdown duration metric: at or above <see cref="ShutdownHighRiskSeconds"/> is HIGH RISK, so the batch gate
-    /// fails. This is a compatibility judgement only; the force-kill decision belongs to the stop policy
-    /// (graceful window, then the emergency ceiling for a proven shutdown).
+    /// Shutdown duration metric (operator policy, 2026-10-03). The long phase is base-game, single-threaded
+    /// work that host CPU load stretches, so duration is never a mod compatibility failure. <c>Pass</c> means
+    /// another mod batch may be added: NORMAL and WARNING pass, DEGRADED and EMERGENCY block it until reviewed.
+    /// The force-kill decision belongs to the stop policy, not to this metric.
     /// </summary>
     public static BootGateResult EvaluateShutdownDuration(TimeSpan duration, int gracefulWindowSeconds, int? emergencyCeilingSeconds = null)
     {
@@ -324,11 +339,35 @@ public static class ModBootGates
         var limits = emergencyCeilingSeconds is int ceiling
             ? $"graceful window {gracefulWindowSeconds} s, emergency ceiling {ceiling} s"
             : $"graceful window {gracefulWindowSeconds} s";
-        return seconds >= ShutdownHighRiskSeconds
-            ? new BootGateResult(false,
-                $"HIGH RISK: {seconds:0.0} s >= {ShutdownHighRiskSeconds} s ({limits}). " +
-                "Stop before adding another batch.")
-            : new BootGateResult(true,
-                $"OK: {seconds:0.0} s < {ShutdownHighRiskSeconds} s ({limits})");
+        return ClassifyShutdownDuration(duration) switch
+        {
+            ShutdownSeverity.Normal => new BootGateResult(true,
+                $"NORMAL: {seconds:0.0} s < {ShutdownWarningSeconds} s ({limits})"),
+            ShutdownSeverity.Warning => new BootGateResult(true,
+                $"WARNING: {seconds:0.0} s in {ShutdownWarningSeconds}-{ShutdownDegradedSeconds} s ({limits}). " +
+                "Investigate host load; not a mod compatibility failure."),
+            ShutdownSeverity.Degraded => new BootGateResult(false,
+                $"DEGRADED: {seconds:0.0} s in {ShutdownDegradedSeconds}-{ShutdownEmergencySeconds} s ({limits}). " +
+                "Do not add another mod batch until reviewed; not a mod compatibility failure."),
+            _ => new BootGateResult(false,
+                $"EMERGENCY: {seconds:0.0} s >= {ShutdownEmergencySeconds} s ({limits}). " +
+                "The force-kill ceiling was reached; review before any further batch.")
+        };
     }
+}
+
+/// <summary>Shutdown duration classes (operator policy, 2026-10-03).</summary>
+public enum ShutdownSeverity
+{
+    /// <summary>Below 240 s.</summary>
+    Normal,
+
+    /// <summary>240-300 s: investigate host load.</summary>
+    Warning,
+
+    /// <summary>300-600 s: no new mod batch until reviewed.</summary>
+    Degraded,
+
+    /// <summary>600 s or more: the emergency force-kill ceiling.</summary>
+    Emergency
 }
