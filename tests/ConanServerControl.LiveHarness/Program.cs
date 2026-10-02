@@ -150,6 +150,7 @@ internal static class Program
                 "stop" => await harness.StopExistingAsync(),
                 "import-local" => await harness.ImportLocalAsync(args[1]),
                 "remove-local" => await harness.RemoveLocalAsync(args[1]),
+                "restore" => await harness.RestoreBackupAsync(args[1]),
                 "cold-backup" => await harness.ColdBackupCommandAsync(),
                 "graceful-test" => await harness.GracefulTestAsync(args[1]),
                 _ => Unknown(command)
@@ -1070,6 +1071,63 @@ internal sealed class Harness : IAsyncDisposable
                 ("ModsDirectory", DescribeDirectory(modsDir)),
                 ("WorldFilesAfter", string.Join("; ", WorldSnapshot()))),
             liveFilesChanged: "server Mods + modlist.txt (expected)");
+        return ok ? 0 : 1;
+    }
+
+    /// <summary>
+    /// Restores a verified backup through the production <see cref="IBackupService.RestoreAsync"/>: a pre-restore
+    /// safety backup, then the world files, <c>Saved\Config</c> and <c>modlist.txt</c>. The server must be offline.
+    /// PASS only when the restored world database equals the backup's and no non-empty WAL is left beside it.
+    /// </summary>
+    public async Task<int> RestoreBackupAsync(string backupId)
+    {
+        const string step = "restore";
+        if (Program.ServerProcesses().Count > 0 || _services.GetRequiredService<IServerProcessManager>().State.Status is not ServerStatus.Offline and not ServerStatus.Error)
+        {
+            _log.Write(step, "precondition: server offline", "FAIL", null, Facts(("Processes", DescribeProcesses())));
+            return 1;
+        }
+
+        var worldDb = ConanServerControl.Core.Backups.ConanWorldFiles.EnhancedMain;
+        var backupDb = Path.Combine(_services.GetRequiredService<IAppPaths>().BackupsDirectory, backupId, "world", worldDb);
+        if (!PathValidator.IsSafeRelativeName(backupId) || !File.Exists(backupDb))
+        {
+            _log.Write(step, "precondition: backup world exists", "FAIL", null, Facts(("BackupId", backupId), ("Expected", backupDb)));
+            return 1;
+        }
+
+        var modList = Path.Combine(_serverDir, "ConanSandbox", "Mods", AppConstants.ModListFileName);
+        string ReadModList() => File.Exists(modList) ? File.ReadAllText(modList).Replace("\r\n", " | ").Replace('\n', '|') : "missing";
+        var backupHash = Sha256(backupDb);
+        _log.Write(step, "pre-restore state", "INFO", null,
+            Facts(("BackupId", backupId), ("BackupWorldSha256", backupHash), ("ModList", ReadModList()), ("WorldFiles", string.Join("; ", WorldSnapshot()))),
+            liveFilesChanged: "no");
+
+        var clock = Stopwatch.StartNew();
+        string? error = null;
+        try
+        {
+            await _services.GetRequiredService<IBackupService>().RestoreAsync(backupId, startAfter: false);
+        }
+        catch (Exception ex)
+        {
+            error = ex.Message;
+        }
+
+        var liveDb = Path.Combine(Saved, worldDb);
+        var liveHash = File.Exists(liveDb) ? Sha256(liveDb) : "missing";
+        var wal = Path.Combine(Saved, worldDb + "-wal");
+        var walBytes = File.Exists(wal) ? new FileInfo(wal).Length : 0;
+        var matches = string.Equals(liveHash, backupHash, StringComparison.OrdinalIgnoreCase);
+        var ok = error is null && matches && walBytes == 0;
+        _log.Write(step, "IBackupService.RestoreAsync", ok ? "PASS" : "FAIL", clock.Elapsed,
+            Facts(("Error", error ?? string.Empty),
+                ("BackupId", backupId),
+                ("RestoredWorldMatchesBackup", matches.ToString()),
+                ("WalBytesAfterRestore", walBytes.ToString()),
+                ("ModList", ReadModList()),
+                ("WorldFiles", string.Join("; ", WorldSnapshot()))),
+            liveFilesChanged: "yes (world files, Saved\\Config, modlist.txt)");
         return ok ? 0 : 1;
     }
 

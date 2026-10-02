@@ -618,6 +618,98 @@ Impact:
 
 `dotnet build -c Release --no-incremental`: 0 warnings, 0 errors. `dotnet test -c Release`: **344 / 344**, 0 skipped (315 + 29 `M3ModBootGateTests`).
 
+## Modpack V1 Batch C — Ancient Realms Enhanced: test, investigation, rollback (STAGING)
+
+**Operator status (2026-10-03):**
+- Ancient Realms: **ROLLBACK COMPLETE · RETEST REQUIRED · COMPATIBILITY NOT YET ACCEPTED · NOT REJECTED.**
+- Its load errors are **not** whitelisted. A retest runs only on a quiet host (see "Host load" below).
+- Batch D is not started.
+
+### Source and import
+
+- **Source:** `C:\Users\vkkha\Downloads\mod conan\Ancient_Realms.pak`.
+  - 496,900,005 B, equal to the Workshop item size.
+  - SHA-256 **`12F7E7192043270FC5F2290C5989F8B8285494BA47A054646790B4A042D1FD1A`**.
+  - Valid pak v12, unencrypted index, with a `-WindowsServer` `.pak/.ucas/.utoc` payload.
+  - modinfo: Workshop `3755775098`, v0.1.260707, `minimumVersion` Enhanced.
+  - No dependency keys, no Workshop Required items, no companion files.
+- **Pre-Batch-C backup** `2026-10-02_152307` (`quick_check` ok), **pinned** at `E:\CSC-M3-Live\pinned-backups\2026-10-02_152307`. 102 files byte-identical to the source, read-only, plus `.SHA256SUMS.txt`.
+- **Import (Local pipeline):** PASS.
+  - Verified pipeline backup `152436`.
+  - Installed SHA-256 = source SHA-256; the source is unchanged.
+  - modlist = the 6 Batch B mods + `Ancient_Realms.pak` (Order 1006).
+
+### Boots
+
+All boots are on the staging TEST world.
+
+| Boot | Mods | Readiness | AR errors: named / all AR-attributable | Peak working set / max private | Stop: shutdown sent → tree exit | Stop gate | Forced kill | World check |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| C1 (2026-10-02, 200 s hold) | 7 | 35.4 s | 7 / 37 | 6.8 / 9.1 GB | 15:29:10.6 → 15:32:09.9 | 180.6 s | NO | `153648`, `quick_check` ok |
+| C2 (2026-10-02, 130 s hold) | 7 | 35.3 s | 7 / 37 | 8.1 / 9.0 GB | 15:39:52.3 → 15:42:43.4 | 172.2 s | NO | `154352`, `quick_check` ok |
+| Investigation cycle 1 (2026-10-03, 150 s hold, **loaded host**) | 7 | **102.1 s** | 7 / 37 | 6.1 / 9.0 GB | 00:28:16.6 → 00:33:17.2 | **301.8 s** | **YES** (exit −1, WAL 671,592 B left) | `003449`: `quick_check` and `integrity_check` ok after WAL replay |
+| Rollback check (2026-10-03, 150 s hold, **loaded host**, **without AR**) | 6 | 67.2 s | 0 / 0 | 6.6 / 9.0 GB | 00:42:40.5 → 00:47:41.2 | **301.7 s** | **YES** (exit −1, WAL 671,592 B left) | `004820`: `quick_check` and `integrity_check` ok after WAL replay |
+
+- Every boot: all mods LOADED in modlist order; ITQoL mailbox gate = 1 (known warning ×1); no fatal or crash.
+- Both forced kills came after `LogExit: Game engine shut down`, and the last world write preceded the teardown.
+
+### Ancient Realms error evidence (kept for the retest decision)
+
+**Exactly the same 7 named lines on every AR boot** (C1, C2, investigation cycle 1):
+
+```
+LoadErrors: While trying to load package /Game/Mods/Ancient_Realms/AR_BP_ModController, a dependent package None (35924C262CEDD960) was not available.
+LoadErrors: While trying to load package /Game/Mods/Ancient_Realms/AR_BP_ModController, a dependent package None (CFFAB4A08E3DB146) was not available.
+LoadErrors: While trying to load package /Game/Mods/Ancient_Realms/Buildings/_MASTER/BP_PL_Decal_Floor_Master, a dependent package None (D0B5ED96C9B95112) was not available.
+LoadErrors: While trying to load package /Game/Mods/Ancient_Realms/Buildings/Brick/brick_03/BP_PL_Water_Well_Fountain, a dependent package None (FE8C96EB21683A73) was not available.
+LoadErrors: While trying to load package /Game/Mods/Ancient_Realms/Buildings/Ceramic/ceramic_02_white/BP_PL_Water_Well_Fountain_gold, a dependent package None (FE8C96EB21683A73) was not available.
+LoadErrors: While trying to load package /Game/Mods/Ancient_Realms/Buildings/Concrete/concrete_04/BP_PL_Water_Well_Fountain, a dependent package None (FE8C96EB21683A73) was not available.
+LoadErrors: While trying to load package /Game/Mods/Ancient_Realms/Buildings/Stone/stone_05/BP_PL_Water_Well_Fountain, a dependent package None (FE8C96EB21683A73) was not available.
+```
+
+- **Exactly the same 37 AR-attributable `LoadErrors` per AR boot** (identical multisets): the 7 named lines plus 30 `package None` lines. They reference 10 unique missing package IDs:
+  - `1B6F0F85A6FACB01`, `1FCB1FA801D75583`, `35924C262CEDD960`, `5A19E15D92AF952`, `7C3C9C3D45215971`
+  - `9F5919676AD734DE`, `CFFAB4A08E3DB146`, `D0B5ED96C9B95112`, `F6DA87602985C3AA`, `FE8C96EB21683A73`
+
+  The 23 ITQoL-attributable lines (Batch B) are unchanged, and there are 0 unattributed `LoadErrors`.
+- **Version-bound:** tied to `Ancient_Realms.pak` SHA-256 `12F7E719…FD1A`. The installed hash was re-checked on the day.
+- **Dangling references, not a missing dependency:**
+  - The 10 IDs are a real package entry in **no** container: AR's own three TOCs (4,953 / 7,222 / 4,953 entries), the 34 vanilla server `.utoc`, the 37 vanilla client `.utoc`, and all 13 local mod paks.
+  - Their names are unresolved, because the mods' asset registries are compressed.
+- **Referencing classes are present:** the `FPackageId` (CityHash64 of the lower-case UTF-16 package name) of all 6 referencing packages is in the AR server container. The building classes and the controller ship and load; only some of their dependencies are absent.
+- **Maps:** AR ships three developer maps (`AlmostEmpty`, `icon_creation_map`, `test_building_map`). The server never referenced or streamed them, and there are no map or level errors.
+- **Controller:** `AddActiveModControllerClass` → `Persistence: Spawning mod controller: AR_BP_ModController_C` (C1), then `Loading mod controller` (C2, cycle 1).
+  - One actor and `mod_controllers` row 148, never duplicated.
+- **No other AR error lines.** No crash. **No real save error**: the only save-like matches are vanilla `LogBinkMoviePlayer` title-movie failures, present in Batch B too. Persistence errors are the known ITQoL line only.
+- Runtime errors after world start are identical in kind and count to Batch B.
+- **SQLite:** every backup passes `quick_check`. After a forced kill, `integrity_check` also passes once the WAL is replayed (on a private temp copy). There are no duplicate actors, and the only world changes are AR additions plus `game_events`.
+
+### Rollback (operator rule: any failed criterion → roll back)
+
+Investigation cycle 1 failed **no forced kill** and **stop < 240 s**. Cycles 2–3 were not run.
+1. `remove-local Ancient_Realms.pak`: verified `pre-mod-removal` backup `2026-10-03_003751`. The pak was retired to `app-data\removed-mods\20261003-003756-722\` (hash matches); modlist = the 6 Batch B mods; the source is unchanged.
+2. `restore 2026-10-02_152307`: new harness command using the production `IBackupService.RestoreAsync`, which takes a pre-restore safety backup (`2026-10-03_003829`).
+   - The restored `game_0.db` SHA-256 = backup (`20841D67…`); WAL after restore = 0 B.
+   - World, `Saved\Config` and `modlist.txt` were restored.
+3. **Verified:**
+   - Boot: 6/6 mods; analysis PASS with the known ITQoL warning only.
+   - Backup `004820`: 113 actors, 23 `mod_controllers` rows, mailbox 1, 0 AR actors, 0 duplicates, the same actor-class set as the pre-C baseline.
+
+### Host load: the forced kills are not attributable to Ancient Realms
+
+- The rollback check boot **without** AR shows the same forced kill (301.7 s) as AR cycle 1 (301.8 s).
+- **Host state at that time:** League of Legends (game and client) running, plus Discord, Chrome and ChatGPT; about 6 GB RAM free. With no server running, the other session measured CPU 49–82% busy and a commit charge of 26 / 32 GB.
+- **Effect on boots:** readiness rose from about 35 s to 67–102 s.
+- **Effect on stops:** the silent stop gap (PreExit → `LogExit: Preparing to exit`) rose from about 160 s (2026-10-02 afternoon) to about 288 s.
+- **Conclusion:** timing data from this host state is not comparable. The AR retest needs a quiet host, and the 300 s force-kill ceiling needs the policy change below.
+
+### Notes
+
+- **Staging config:** `ServerSettings.ini` `ThrallDamageToNPCsMultiplier` = 0.300000, set by the other session after the rollback (backup `2026-10-03_005048`). Restoring any older backup brings back 0.5, so re-apply 0.3 after a restore.
+- **ExtractedMods:** AR's server files (14,622,398 B) stay in `Saved\ExtractedMods` after removal, unmounted; WickProbe is still stale too. Nothing was deleted.
+- **Harness:** `restore <backupId>` (server Offline only; PASS = restored world hash equals the backup and no non-empty WAL).
+- **Build:** 0 warnings / 0 errors; `dotnet test` 344 / 344, 0 skipped.
+
 ## Direction change: standalone-first (corrected 2026-10-02)
 
 After 4B the requirement was recorded as "players use **standalone** Conan clients (no Steam client, library or Workshop sync)". 4F showed that this is wrong for multiplayer. Corrected statement:

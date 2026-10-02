@@ -7,7 +7,13 @@ Status: **IN PROGRESS. Batch A PASS, Batch B PASS (server-side).** Six mods are 
   - **SERVER-SIDE COMPATIBILITY: PASS**
   - **IN-GAME BEHAVIOR: NOT YET VERIFIED**
   - **ITQOL MAILBOX ISSUE: KNOWN NON-BLOCKING WARNING** (exact, version-bound rule; see gate 6)
-- **Current staging load order** (not a final declaration):
+  - Correction (`cc13afa`): Batch B boots also log 23 ITQoL `LoadErrors` (dangling package references). The harness did not flag them at the time.
+- **Batch C — Ancient Realms** (2026-10-02/03): **ROLLBACK COMPLETE · RETEST REQUIRED · COMPATIBILITY NOT YET ACCEPTED · NOT REJECTED.**
+  - Ancient Realms **stays in Target Modpack V1**.
+  - Its 7 named / 37 attributable `LoadErrors` (dangling references; identical on every AR boot; `Ancient_Realms.pak` SHA-256 `12F7E719…FD1A`) are **not whitelisted**.
+  - The rollback was triggered by a forced kill (301.8 s) on a heavily loaded host. The same forced kill happened **without** AR (301.7 s), so it is not attributable to AR.
+  - Retest: the original 3-cycle test, **only on a quiet host**, after the shutdown policy change. Evidence: `M3_LIVE_TEST_REPORT.md` "Batch C".
+- **Current staging load order** (not a final declaration; Ancient Realms rolled back):
   1. `StackMe10K.pak`
   2. `SavageParagon.pak`
   3. `GritandGrease.pak`
@@ -16,8 +22,12 @@ Status: **IN PROGRESS. Batch A PASS, Batch B PASS (server-side).** Six mods are 
   6. `WO_RidingThralls.pak`
 - **Restore points:**
   - Known-good pre-Batch-B backup `2026-10-02_141009`, **pinned** at `E:\CSC-M3-Live\pinned-backups\2026-10-02_141009` (outside retention)
-  - latest verified backup `2026-10-02_144937`
-- **Next:** Batch C (Ancient Realms). Not started; it waits for the operator.
+  - Known-good pre-Batch-C backup `2026-10-02_152307`, **pinned** at `E:\CSC-M3-Live\pinned-backups\2026-10-02_152307`. Restoring it brings back `ThrallDamageToNPCsMultiplier=0.5`; re-apply 0.3.
+  - Latest verified backup: `2026-10-03_005048` (pre-C world after the rollback, `ThrallDamageToNPCsMultiplier=0.3`)
+- **Next:**
+  1. Shutdown policy change: the 240 s gate is separate from the force-kill ceiling.
+  2. Then the quiet-host Ancient Realms retest.
+  3. Batch D is not started.
 
 Operator decisions (2026-10-02):
 - WickProbe / WickStacks is **not** part of the modpack. Mod #10 is **StackMe10K**.
@@ -51,7 +61,7 @@ Workshop pages contain hidden template notices ("incompatible with Conan Exiles 
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | Thrall Reputation | Workshop `3787066846` | 2026-09-15 | 833,760 B | none | B | Batch B PASS (server-side) |
 | 2 | Savage Paragon | Workshop `3766043945` | 2026-09-23 | 4,760,799 B | none | A | Batch A PASS (server-side) |
-| 3 | Ancient Realms Enhanced (Work In Progress) | Workshop `3755775098` | 2026-09-15 | 496,900,005 B | none | C | no |
+| 3 | Ancient Realms Enhanced (Work In Progress) | Workshop `3755775098` | 2026-09-15 | 496,900,005 B | none | C | Batch C rolled back (forced kill on a loaded host); RETEST REQUIRED; not rejected |
 | 4 | Improved Thralls & QoL | Workshop `3758661389` | 2026-09-24 | 154,632,086 B | none | B | Batch B PASS (server-side) |
 | 5 | Fantasy Races Of Exiles | Workshop `3780741325` | 2026-09-15 | 5,293,057 B | none | D1 | no |
 | 6 | [Enhanced] WO - Riding Thralls | Workshop `3803149679` | 2026-09-25 | 78,896,983 B | none | B | Batch B PASS (server-side) |
