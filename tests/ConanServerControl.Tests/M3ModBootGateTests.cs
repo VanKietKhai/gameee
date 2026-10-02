@@ -57,6 +57,20 @@ public sealed class M3ModBootGateTests
 
     // ------------------------------------------------------------ Known warning rules
 
+    [Theory]
+    [InlineData("LoadErrors:")]
+    [InlineData("LoadErrors: unfamiliar message")]
+    [InlineData("LoadErrors: While trying to load package None, a dependent package None (XYZ) was not available")]
+    [InlineData("LoadErrors: While trying to load package None, a dependent package None (12345678901234567) was not available")]
+    [InlineData("loaderrors: unknown format")]
+    public void Malformed_load_errors_are_preserved_and_fail_closed(string line)
+    {
+        var entries = ModBootGates.ParseLoadErrors([Logged(line), "LogTemp: unrelated"]);
+        var entry = Assert.Single(entries);
+        Assert.Equal(Logged(line), entry.RawUnparsedLine);
+        Assert.False(ModBootGates.EvaluateLoadErrors("Unknown.pak", null, entries).Pass);
+    }
+
     [Fact]
     public void Known_warning_rules_are_exactly_the_itqol_mailbox_line_and_the_seven_ancient_realms_lines()
     {

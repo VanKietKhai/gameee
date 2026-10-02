@@ -20,6 +20,7 @@ public sealed record BootGateResult(bool Pass, string Detail);
 /// <summary>One <c>LoadErrors</c> line: the package being loaded and the missing dependency's package id.</summary>
 public sealed record LoadErrorEntry(string Package, string MissingPackageId)
 {
+    public string? RawUnparsedLine { get; init; }
     public override string ToString() => $"{Package} -> {MissingPackageId}";
 }
 
@@ -191,7 +192,7 @@ public static class ModBootGates
     ];
 
     private static readonly Regex LoadErrorLine = new(
-        @"LoadErrors: While trying to load package (?<pkg>\S+), a dependent package None \((?<id>[0-9A-Fa-f]+)\) was not available",
+        @"^LoadErrors: While trying to load package (?<pkg>\S+), a dependent package None \((?<id>[0-9A-Fa-f]{1,16})\) was not available\. Additional explanatory information follows:$",
         RegexOptions.Compiled);
 
     private static KnownBootWarning AncientRealmsLoadError(int number, string package, string missingPackageId) =>
@@ -202,14 +203,18 @@ public static class ModBootGates
             "Additional explanatory information follows:",
             AncientRealmsReason);
 
-    /// <summary>Every <c>LoadErrors: … dependent package None (id) was not available</c> line, in log order.</summary>
+    /// <summary>Every <c>LoadErrors: â€¦ dependent package None (id) was not available</c> line, in log order.</summary>
     public static IReadOnlyList<LoadErrorEntry> ParseLoadErrors(IEnumerable<string> lines)
     {
         ArgumentNullException.ThrowIfNull(lines);
-        return lines.Select(l => LoadErrorLine.Match(l))
-            .Where(m => m.Success)
-            .Select(m => new LoadErrorEntry(m.Groups["pkg"].Value, m.Groups["id"].Value.ToUpperInvariant()))
-            .ToList();
+        return lines.Where(l => l.Contains("LoadErrors:", StringComparison.OrdinalIgnoreCase))
+            .Select(l =>
+            {
+                var match = LoadErrorLine.Match(StripLogPrefix(l));
+                return match.Success
+                    ? new LoadErrorEntry(match.Groups["pkg"].Value, match.Groups["id"].Value.ToUpperInvariant())
+                    : new LoadErrorEntry("<unparsed>", "") { RawUnparsedLine = l };
+            }).ToList();
     }
 
     /// <summary>
@@ -219,6 +224,8 @@ public static class ModBootGates
     public static BootGateResult EvaluateLoadErrors(string modPakFileName, string? installedSha256, IReadOnlyList<LoadErrorEntry> attributed)
     {
         ArgumentNullException.ThrowIfNull(attributed);
+        if (attributed.Any(e => e.RawUnparsedLine is not null))
+            return new BootGateResult(false, "UNKNOWN: unparsed LoadErrors line");
         var baseline = LoadErrorBaselines.FirstOrDefault(b =>
             string.Equals(b.ModPakFileName, modPakFileName, StringComparison.OrdinalIgnoreCase));
         var hashMatches = baseline is not null &&

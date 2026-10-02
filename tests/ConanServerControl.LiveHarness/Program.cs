@@ -562,7 +562,8 @@ internal sealed class Harness : IAsyncDisposable
         var singletonsOk = true;
         if (scanMods)
         {
-            singletonsOk = RecordWorldIntegrityGate(step, LiveWorldDb) & RecordSingletonActorGates(step);
+            singletonsOk = stopped && EnsureNoForeignServer(step) &&
+                RecordWorldIntegrityGate(step, LiveWorldDb) && RecordSingletonActorGates(step);
             ObserveExtractedMods(step);
         }
 
@@ -585,7 +586,7 @@ internal sealed class Harness : IAsyncDisposable
         _log.Write(step, "mod load analysis (last boot log, read-only)", analysis.Ok ? "PASS" : "FAIL", null,
             analysis.Facts, analysis.Evidence, liveFilesChanged: "no");
         var integrityOk = RecordWorldIntegrityGate(step, LiveWorldDb);
-        var singletonsOk = RecordSingletonActorGates(step);
+        var singletonsOk = integrityOk && RecordSingletonActorGates(step);
         return analysis.Ok && integrityOk && singletonsOk ? 0 : 1;
     }
 
@@ -616,7 +617,7 @@ internal sealed class Harness : IAsyncDisposable
         _log.Write(step, $"mod load analysis ({Path.GetFileName(log)}, read-only)", analysis.Ok ? "PASS" : "FAIL", null,
             analysis.Facts, analysis.Evidence, liveFilesChanged: "no");
         var integrityOk = RecordWorldIntegrityGate(step, db);
-        var singletonsOk = RecordSingletonActorGates(step, db);
+        var singletonsOk = integrityOk && RecordSingletonActorGates(step, db);
         return analysis.Ok && integrityOk && singletonsOk ? 0 : 1;
     }
 
@@ -635,27 +636,18 @@ internal sealed class Harness : IAsyncDisposable
         }
         catch (Exception ex)
         {
-            result = "error: " + ex.Message;
+            result = "INCONCLUSIVE: " + ex.Message;
         }
 
         var ok = string.Equals(result, "ok", StringComparison.Ordinal);
-        _log.Write(step, "world integrity gate (quick_check, read-only)", ok ? "PASS" : "FAIL", null,
+        _log.Write(step, "world integrity gate (quick_check, read-only)", ok ? "PASS" : result.StartsWith("INCONCLUSIVE:", StringComparison.Ordinal) ? "INCONCLUSIVE" : "FAIL", null,
             Facts(("WorldDb", db), ("QuickCheck", result)), liveFilesChanged: "no");
         return ok;
     }
 
-    private static Microsoft.Data.Sqlite.SqliteConnection OpenWorldReadOnly(string db)
-    {
-        var builder = new Microsoft.Data.Sqlite.SqliteConnectionStringBuilder
-        {
-            DataSource = new Uri(db).AbsoluteUri + "?immutable=1",
-            Mode = Microsoft.Data.Sqlite.SqliteOpenMode.ReadOnly,
-            Pooling = false
-        };
-        var connection = new Microsoft.Data.Sqlite.SqliteConnection(builder.ToString());
-        connection.Open();
-        return connection;
-    }
+    private static Microsoft.Data.Sqlite.SqliteConnection OpenWorldReadOnly(string db) =>
+        ConanServerControl.Infrastructure.Backups.StoppedWorldReader.Open(db,
+            () => Program.ServerProcesses().Count == 0);
 
     /// <summary>
     /// For every installed mod with a singleton object (the ITQoL server mailbox, the Ancient Realms controller),
@@ -1471,13 +1463,15 @@ internal sealed class Harness : IAsyncDisposable
         // Every LoadErrors line must belong to an installed mod and match that mod's validated set exactly.
         // "package None" lines name no asset, so they are attributed by the missing package id appearing in the
         // mod's extracted server container (its import data).
-        var (loadErrorsByMod, unattributedLoadErrors) = AttributeLoadErrors(ModBootGates.ParseLoadErrors(lines), expected);
+        var parsedLoadErrors = ModBootGates.ParseLoadErrors(lines);
+        var (loadErrorsByMod, unattributedLoadErrors) = AttributeLoadErrors(parsedLoadErrors.Where(e => e.RawUnparsedLine is null).ToList(), expected);
         var loadErrorGates = expected
             .Select(pak => (Pak: pak, Gate: ModBootGates.EvaluateLoadErrors(pak, installedSha256.GetValueOrDefault(pak),
                 loadErrorsByMod.GetValueOrDefault(pak) ?? [])))
             .ToList();
         var loadErrorProblems = loadErrorGates.Where(g => !g.Gate.Pass).Select(g => $"{g.Pak}: {g.Gate.Detail}")
             .Concat(unattributedLoadErrors.Select(e => $"unattributed LoadErrors: {e}"))
+            .Concat(parsedLoadErrors.Where(e => e.RawUnparsedLine is not null).Select(e => $"unparsed LoadErrors: {e.RawUnparsedLine}"))
             .ToList();
 
         var perMod = new List<string>();
