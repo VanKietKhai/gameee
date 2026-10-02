@@ -826,3 +826,70 @@ What was implemented and unit-tested (272 / 272 tests):
    - The project will not bypass Steam/Funcom authentication. 4F stopped and reported.
 3. **Mod redistribution.** Bundles redistribute mod files to players. Administrators are responsible for respecting mod authors' terms.
 4. **Fresh-server backups.** The cold safety backup requires `ConanSandbox\Saved` to exist. On a server that has never booted, a mod import aborts at the backup step. This is the existing Task 2 policy and has not changed.
+
+## Shutdown-timing study (STAGING, 2026-10-03) — non-randomized
+
+**Operator conclusion (accepted 2026-10-03):** Conan Enhanced has a long base-game shutdown phase. It is predominantly single-threaded and highly sensitive to host CPU contention. **Shutdown duration is not attributed to mod count.**
+
+**Setup**
+- Server `D:\conan exiles\depot_443031`, staging TEST world, `ThrallDamageToNPCsMultiplier=0.300000`.
+- Every run: boot → real readiness → **150 s hold** → RCON `shutdown`.
+- Metric: `ShutdownSentAt` → `ProcessTreeExitedAt` (whole process tree gone).
+- Configurations were switched only through the production catalog (`SetEnabledAsync` + `MoveAsync`; harness `set-mods`, which lives on the local worktree branch `wip/shutdown-timing` and is not merged). No `.pak` was copied or removed.
+- Pre-study verified backup `2026-10-03_012832`, pinned read-only in `E:\CSC-M3-Live\pinned-backups\`. Restored through the app afterwards.
+- Host: League of Legends closed. An orphaned `findstr` (PID 28280, started 2026-10-02 03:51, about 2 of 8 threads) ran throughout. Chrome and Discord were open.
+- **Not randomized:** configurations ran in a fixed order, one block of three runs each. Batch A's runs drifted from 210 to 193 s, so order and warm-up effects are mixed with configuration effects.
+
+**Results** (seconds, shutdown command → process-tree exit)
+
+| Configuration | Runs | Median | Policy class (2026-10-03) |
+| --- | --- | --- | --- |
+| No mods | 171.0 / 169.7 / 170.1 | 170.1 | NORMAL |
+| Batch A + Riding Thralls | 174.8 / 174.6 / 175.5 | 174.8 | NORMAL |
+| Batch A + Thrall Reputation | 183.9 / 179.1 (run 2: startup hang, below); reruns 182.1 / 193.7 | 183.0 (4 runs) | NORMAL |
+| Batch A + Ancient Realms | 194.4 / 181.1 / 183.3 | 183.3 | NORMAL |
+| All 7 mods (control, after restore) | 175.9 | — | NORMAL |
+| All 7 mods (other session's quiet-host retest, ~150 s hold) | 183.1 / 185.9 / 195.9 | 185.9 | NORMAL |
+| Batch A (3 mods) | 210.2 / 199.8 / 193.3 | 199.8 | NORMAL |
+| Batch A + Improved Thralls & QoL | 220.9 / 206.2 / 211.2 | 211.2 | NORMAL |
+
+All study runs were acknowledged, with exit code 0, **no forced kill**, no WAL/SHM left, and no orphan processes.
+
+Earlier data points under host load: 301.7 / 301.8 s, force-killed by the then-300 s policy, with League of Legends running and CPU at 49–82 % with the server off.
+
+**What the server does during the long phase** (5 s process sampler, Batch A run 2)
+- From `PreExit Game` until `LogExit: Preparing to exit`, the `-Shipping` process uses **exactly one CPU core continuously** (about 5.0 CPU-seconds per 5 s).
+- Disk read/write counters are flat, working set and private memory are flat, and the log is silent. The game-thread frame counter stays frozen (for example `[898]` for 187 s).
+- The network shows no wait pattern: one connection goes `CloseWait` mid-phase without effect.
+- So the long phase is single-threaded CPU work on the game thread, not network or disk waiting. Any competing CPU load stretches it, which matches the 288 s phase seen while League of Legends was running.
+
+**Interpretation limits**
+- No mods vs mods: about 170 s vs about 175–211 s. Mods add at most about 40 s at this uptime, while the base game alone accounts for about 170 s.
+- Differences between mod configurations are within the drift seen inside a single configuration's three runs (up to 17 s). **This study does not attribute a specific shutdown penalty to a specific mod.**
+- Shutdown time grows with uptime (about 70 s after 40 s, about 170–210 s after 3 min, about 154 s vanilla after 11 min on 2026-10-02). Long production uptimes may be slower still. Not measured.
+
+**Shutdown policy (operator decision, 2026-10-03)**
+
+| Duration | Class | Action |
+| --- | --- | --- |
+| < 240 s | NORMAL / ACCEPTABLE | — |
+| 240–300 s | WARNING | Investigate host load. Not a mod compatibility failure. |
+| 300–600 s | DEGRADED | No new mod batch until reviewed. A graceful shutdown with positive progress continues. |
+| ≥ 600 s | EMERGENCY ceiling | Process-tree kill if still alive. |
+
+No-ack / no-progress shutdowns keep the short (30 s) unresponsive fallback. The stop behaviour is already in the product (`26091fa`).
+
+The harness gate (`ModBootGates.EvaluateShutdownDuration`) still uses the earlier single 240 s HIGH-RISK threshold. Aligning it with this table is **pending**: it overlaps the unmerged branch `wip/mod-warning-classification` (`23007b7`), which edits the same file.
+
+**Batch A + Thrall Reputation startup hang: TRANSIENT / NOT REPRODUCED**
+- Study run 2 (02:35:52) hung right after launch. The log stopped 2 s in, at `Loading asset registry state for mod 'SavageParagon'`, and readiness timed out after 600 s ("World still loading").
+- The same configuration was rerun twice on 2026-10-03:
+  - 43.9 s and 38.5 s, both "World is ticking", mod load PASS.
+  - Stops 182.1 s and 193.7 s; exit 0, no kill, no WAL, no orphans.
+
+**State after the study**
+- The world was restored to the verified final backup `2026-10-03_033503` (live `game_0.db` byte-identical; SHA-256 `1FD6089F9A52E74A29FCB907225AD9D491F4B984BFE6562C252DFEA9F8264793`).
+- `quick_check` and `integrity_check` = ok. ITQoL mailbox = 1, ITQoL controller = 1, Ancient Realms controller = 1, no duplicate controllers.
+- 7 mods in the original order; `ThrallDamageToNPCsMultiplier=0.300000`.
+- The orphaned `findstr` PID 28280 was **not** terminated: its CommandLine is unreadable and it predates the study, so it could not be confirmed as part of it.
+- Batch D: not started.
