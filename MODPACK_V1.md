@@ -8,6 +8,10 @@ Status: **IN PROGRESS. Batch A PASS, Batch B PASS, Batch C PASS (server-side).**
   - **IN-GAME BEHAVIOR: NOT YET VERIFIED**
   - **ITQOL MAILBOX ISSUE: KNOWN NON-BLOCKING WARNING** (exact, version-bound rule; see gate 6)
   - Correction (`cc13afa`): Batch B boots also log 23 ITQoL `LoadErrors` (dangling package references). The harness did not flag them at the time.
+  - **ITQoL 23 LOAD ERRORS: KNOWN NON-BLOCKING WARNING** (operator, 2026-10-03). Bound to `ImprovedThrallsAndQoL.pak` SHA-256 `F35D9D927B4E76869D57DC7073B61FCF2215039B628343B28D6B0989A0B48272`; exact set only.
+    - Attributed to 17 ITQoL packages: realm templates, a material instance, the FollowerDNA altar and door, a mailbox UI widget, and the humanoid-NPC component.
+    - Identical across 12 boots; 21 backups pass `quick_check` with controller = 1 and mailbox = 1. Evidence: `M3_LIVE_TEST_REPORT.md` "Investigation: the 23 Improved Thralls & QoL LoadErrors".
+    - **GAMEPLAY FUNCTIONALITY: NOT YET VERIFIED.**
 - **Batch C — Ancient Realms**, accepted 2026-10-03 after the quiet-host retest:
   - **BATCH C SERVER-SIDE COMPATIBILITY: PASS**
   - **ANCIENT REALMS GAMEPLAY: NOT YET VERIFIED**
@@ -275,7 +279,7 @@ Gates for **every** step. All are required; a FAIL stops the plan.
    - Each mod's set must equal its validated baseline **exactly**. A mod without a baseline must have none, and a line attributed to no mod fails.
    - Baselines:
      - **Ancient Realms:** 37 per boot = **KNOWN NON-BLOCKING**.
-     - **ITQoL:** 23 per boot = **PENDING OPERATOR CLASSIFICATION**, monitored exactly but not accepted. They were never gated before; see the `cc13afa` correction.
+     - **ITQoL:** 23 per boot = **KNOWN NON-BLOCKING** (operator, 2026-10-03, after attribution to 17 ITQoL packages), bound to SHA-256 `F35D9D92…8272`. The ITQoL controller and the mailbox must each exist exactly once.
    - This closes the gap that hid ITQoL's 23 lines: new dangling references from any mod, including Batch D, now fail.
 7. Clean shutdown: acknowledged, exit code 0, no forced kill, no WAL/SHM, no orphan processes.
 8. Verified cold backup after the stop, SQLite `quick_check` = ok.

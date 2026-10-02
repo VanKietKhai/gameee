@@ -557,19 +557,19 @@ internal sealed class Harness : IAsyncDisposable
         }
 
         var stopped = await StopAndRecordAsync(server, step, timeline);
-        var mailboxOk = true;
+        var singletonsOk = true;
         if (scanMods)
         {
-            mailboxOk = RecordItqolMailboxGate(step);
+            singletonsOk = RecordSingletonActorGates(step);
             ObserveExtractedMods(step);
         }
 
-        return stopped && modLoadOk && mailboxOk ? 0 : 1;
+        return stopped && modLoadOk && singletonsOk ? 0 : 1;
     }
 
     /// <summary>
     /// Read-only: re-runs the mod-load analysis on the current <c>ConanSandbox.log</c> (the last boot) and
-    /// the ITQoL mailbox gate on the stopped world. Starts nothing; refuses while a Conan server runs.
+    /// the singleton-object gates on the stopped world. Starts nothing; refuses while a Conan server runs.
     /// </summary>
     public int AnalyzeLastBoot()
     {
@@ -582,40 +582,47 @@ internal sealed class Harness : IAsyncDisposable
         var analysis = AnalyzeModLoad(ReadLogFrom(ServerLog, 0, int.MaxValue), []);
         _log.Write(step, "mod load analysis (last boot log, read-only)", analysis.Ok ? "PASS" : "FAIL", null,
             analysis.Facts, analysis.Evidence, liveFilesChanged: "no");
-        var mailboxOk = RecordItqolMailboxGate(step);
-        return analysis.Ok && mailboxOk ? 0 : 1;
+        var singletonsOk = RecordSingletonActorGates(step);
+        return analysis.Ok && singletonsOk ? 0 : 1;
     }
 
     /// <summary>
-    /// With Improved Thralls &amp; QoL enabled, the stopped world must hold exactly one ITQoL server mailbox.
-    /// This gate is what keeps the known mailbox warning non-blocking: a missing or duplicated mailbox fails.
+    /// For every installed mod with a singleton object (the ITQoL server mailbox, the Ancient Realms controller),
+    /// the stopped world must hold exactly one. These gates are what keep those mods' known warnings
+    /// non-blocking: a missing or duplicated persistence object fails the boot.
     /// </summary>
-    private bool RecordItqolMailboxGate(string step)
+    private bool RecordSingletonActorGates(string step)
     {
-        var installed = _settings.Current.Mods.Mods.Any(m =>
-            m.Enabled && string.Equals(m.LocalFileName, ModBootGates.ItqolPakFileName, StringComparison.OrdinalIgnoreCase));
-        int? count = null;
-        string? error = null;
-        if (installed)
+        var allPass = true;
+        foreach (var actor in ModBootGates.SingletonActors)
         {
-            try
+            var installed = _settings.Current.Mods.Mods.Any(m =>
+                m.Enabled && string.Equals(m.LocalFileName, actor.ModPakFileName, StringComparison.OrdinalIgnoreCase));
+            int? count = null;
+            string? error = null;
+            if (installed)
             {
-                count = CountWorldActors(ModBootGates.ItqolMailboxClassPath);
+                try
+                {
+                    count = CountWorldActors(actor.ClassPath);
+                }
+                catch (Exception ex)
+                {
+                    error = ex.Message;
+                }
             }
-            catch (Exception ex)
-            {
-                error = ex.Message;
-            }
+
+            var gate = ModBootGates.EvaluateSingletonActor(actor, installed, count);
+            _log.Write(step, $"{actor.Label} gate (stopped world, read-only)", installed ? (gate.Pass ? "PASS" : "FAIL") : "INFO", null,
+                Facts(("ModInstalled", installed ? "YES" : "NO"),
+                    ("Count", count?.ToString() ?? "n/a"),
+                    ("Gate", gate.Detail),
+                    ("Error", error ?? string.Empty)),
+                liveFilesChanged: "no");
+            allPass &= gate.Pass;
         }
 
-        var gate = ModBootGates.EvaluateItqolMailbox(installed, count);
-        _log.Write(step, "ITQoL server mailbox gate (stopped world, read-only)", installed ? (gate.Pass ? "PASS" : "FAIL") : "INFO", null,
-            Facts(("ItqolInstalled", installed ? "YES" : "NO"),
-                ("MailboxCount", count?.ToString() ?? "n/a"),
-                ("Gate", gate.Detail),
-                ("Error", error ?? string.Empty)),
-            liveFilesChanged: "no");
-        return gate.Pass;
+        return allPass;
     }
 
     /// <summary>
@@ -641,7 +648,7 @@ internal sealed class Harness : IAsyncDisposable
         connection.Open();
         using var command = connection.CreateCommand();
         command.CommandText = "SELECT COUNT(*) FROM actor_position WHERE substr(class, 1, length($prefix)) = $prefix";
-        command.Parameters.AddWithValue("$prefix", classPath.Split('.')[0]);
+        command.Parameters.AddWithValue("$prefix", classPath.Split('.')[0] + "."); // the exact package, any class in it
         return Convert.ToInt32(command.ExecuteScalar());
     }
 
@@ -1313,13 +1320,25 @@ internal sealed class Harness : IAsyncDisposable
             .ToList();
 
         // Only the exact, version-bound known warnings are set aside; every other flagged line still fails.
-        var installedSha256 = ModBootGates.KnownWarnings
-            .Select(w => w.ModPakFileName)
+        var installedSha256 = ModBootGates.KnownWarnings.Select(w => w.ModPakFileName)
+            .Concat(ModBootGates.LoadErrorBaselines.Select(b => b.ModPakFileName))
             .Distinct(StringComparer.OrdinalIgnoreCase)
             .Where(pak => expected.Contains(pak, StringComparer.OrdinalIgnoreCase) && File.Exists(Path.Combine(modsDir, pak)))
             .ToDictionary(pak => pak, pak => Sha256(Path.Combine(modsDir, pak)), StringComparer.OrdinalIgnoreCase);
         var (problems, known) = ModBootGates.ClassifyProblems(flagged, installedSha256);
         var modProblems = problems.ToList();
+
+        // Every LoadErrors line must belong to an installed mod and match that mod's validated set exactly.
+        // "package None" lines name no asset, so they are attributed by the missing package id appearing in the
+        // mod's extracted server container (its import data).
+        var (loadErrorsByMod, unattributedLoadErrors) = AttributeLoadErrors(ModBootGates.ParseLoadErrors(lines), expected);
+        var loadErrorGates = expected
+            .Select(pak => (Pak: pak, Gate: ModBootGates.EvaluateLoadErrors(pak, installedSha256.GetValueOrDefault(pak),
+                loadErrorsByMod.GetValueOrDefault(pak) ?? [])))
+            .ToList();
+        var loadErrorProblems = loadErrorGates.Where(g => !g.Gate.Pass).Select(g => $"{g.Pak}: {g.Gate.Detail}")
+            .Concat(unattributedLoadErrors.Select(e => $"unattributed LoadErrors: {e}"))
+            .ToList();
 
         var perMod = new List<string>();
         var allLoaded = true;
@@ -1350,7 +1369,8 @@ internal sealed class Harness : IAsyncDisposable
         var modListMatchesCatalog = modList.SequenceEqual(expected, StringComparer.OrdinalIgnoreCase);
         var duplicates = mountSequence.GroupBy(m => m, StringComparer.OrdinalIgnoreCase).Where(g => g.Count() > 1)
             .Select(g => $"{g.Key} x{g.Count()}").ToArray();
-        var ok = allLoaded && modProblems.Count == 0 && absentProblems.Count == 0 && duplicates.Length == 0 && modListMatchesCatalog;
+        var ok = allLoaded && modProblems.Count == 0 && loadErrorProblems.Count == 0 && absentProblems.Count == 0 &&
+                 duplicates.Length == 0 && modListMatchesCatalog;
 
         var facts = Facts(
             ("ModListAtBoot", string.Join(" | ", modList)),
@@ -1368,15 +1388,77 @@ internal sealed class Harness : IAsyncDisposable
                 ? "none"
                 : string.Join("; ", known.GroupBy(k => k.Warning.Id)
                     .Select(g => $"{g.Key} x{g.Count()} ({g.First().Warning.ModPakFileName} SHA-256 = validated {g.First().Warning.ValidatedPakSha256[..8]}...)"))),
+            ("LoadErrorsByMod", string.Join(" || ", loadErrorGates
+                .Where(g => loadErrorsByMod.ContainsKey(g.Pak) || !g.Gate.Pass)
+                .Select(g => $"{g.Pak}: {g.Gate.Detail}")) is { Length: > 0 } loadErrorSummary ? loadErrorSummary : "none"),
+            ("UnattributedLoadErrors", unattributedLoadErrors.Count == 0 ? "none" : unattributedLoadErrors.Count.ToString()),
+            ("LoadErrorProblems", loadErrorProblems.Count == 0 ? "none" : loadErrorProblems.Count.ToString()),
             ("ExpectAbsent", expectAbsent.Length == 0 ? "none" : string.Join(", ", expectAbsent)),
             ("ExpectAbsentViolations", absentProblems.Count == 0 ? "none" : string.Join("; ", absentProblems)));
         var evidenceLines = lines.Where(l =>
                 mountRegex.IsMatch(l) || containerRegex.IsMatch(l) || pakRegex.IsMatch(l) || contributesRegex.IsMatch(l) ||
                 stems.Any(s => l.Contains(s!, StringComparison.OrdinalIgnoreCase)))
             .Concat(modProblems.Select(p => "PROBLEM: " + p))
+            .Concat(loadErrorProblems.Select(p => "PROBLEM (LoadErrors): " + p))
             .Concat(known.Select(k => $"KNOWN NON-BLOCKING ({k.Warning.Id}): {k.Line}"))
-            .Take(120);
+            .Take(160);
         return (ok, facts, string.Join(Environment.NewLine, evidenceLines));
+    }
+
+    /// <summary>
+    /// Assigns each LoadErrors entry to an installed mod: by its <c>/Game/Mods/&lt;mod&gt;/</c> package path, or, for
+    /// "package None", by the missing package id's 8 little-endian bytes appearing in that mod's extracted
+    /// <c>-WindowsServer.ucas</c>. Entries that match no installed mod are returned as unattributed.
+    /// </summary>
+    private (Dictionary<string, List<LoadErrorEntry>> ByMod, List<LoadErrorEntry> Unattributed) AttributeLoadErrors(
+        IReadOnlyList<LoadErrorEntry> entries, IReadOnlyList<string> installedPaks)
+    {
+        var byMod = new Dictionary<string, List<LoadErrorEntry>>(StringComparer.OrdinalIgnoreCase);
+        var unattributed = new List<LoadErrorEntry>();
+        var containers = new Dictionary<string, byte[]?>(StringComparer.OrdinalIgnoreCase);
+        byte[]? Container(string stem)
+        {
+            if (!containers.TryGetValue(stem, out var bytes))
+            {
+                var path = Path.Combine(Saved, "ExtractedMods", stem + "-WindowsServer.ucas");
+                bytes = File.Exists(path) ? File.ReadAllBytes(path) : null;
+                containers[stem] = bytes;
+            }
+
+            return bytes;
+        }
+
+        foreach (var entry in entries)
+        {
+            var owner = installedPaks.FirstOrDefault(pak =>
+            {
+                var stem = Path.GetFileNameWithoutExtension(pak);
+                if (!string.Equals(entry.Package, "None", StringComparison.Ordinal))
+                {
+                    return entry.Package.StartsWith($"/Game/Mods/{stem}/", StringComparison.OrdinalIgnoreCase);
+                }
+
+                var idBytes = new byte[8];
+                System.Buffers.Binary.BinaryPrimitives.WriteUInt64LittleEndian(idBytes, Convert.ToUInt64(entry.MissingPackageId, 16));
+                return Container(stem) is { } bytes && bytes.AsSpan().IndexOf(idBytes) >= 0;
+            });
+            if (owner is null)
+            {
+                unattributed.Add(entry);
+            }
+            else
+            {
+                if (!byMod.TryGetValue(owner, out var list))
+                {
+                    list = [];
+                    byMod[owner] = list;
+                }
+
+                list.Add(entry);
+            }
+        }
+
+        return (byMod, unattributed);
     }
 
     private static string[] ReadModList(string modsDir)

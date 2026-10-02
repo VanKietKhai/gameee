@@ -166,7 +166,10 @@ Next: **Target Modpack V1** (`MODPACK_V1.md`). **Fifteen** mods are planned (the
   - Unproven shutdowns keep the 30 s fallback.
   - 353 / 353 tests.
 - **Harness classification code** (the AR exception rules, the exact `LoadErrors` set gate 6b, the AR controller gate): implemented, and committed only after its build and test. These are deferred until the shutdown-timing study ends, so the build does not disturb the measurements.
-- **Open decision:** ITQoL's 23 `LoadErrors` per boot (Batch B) are **PENDING OPERATOR CLASSIFICATION**. They are monitored exactly and not accepted.
+- **ITQoL 23 `LoadErrors` (Batch B): KNOWN NON-BLOCKING WARNING** (operator, 2026-10-03), bound to `ImprovedThrallsAndQoL.pak` SHA-256 `F35D9D92…8272`.
+  - SERVER-SIDE COMPATIBILITY: PASS. GAMEPLAY FUNCTIONALITY: NOT YET VERIFIED.
+  - Attributed to 17 ITQoL packages; identical in 12 boots.
+  - Invalidated by any set change, a hash change, a crash, a save/persistence error, an integrity failure, or a missing/duplicate ITQoL controller or mailbox.
 - **Batch D is not started**, and waits for the timing study to finish and the final shutdown policy to be committed and pushed.
 - The final load order is not declared until all fifteen have been tested together with runtime evidence. The proposed starting order is in `CAMPAIGN_V1.md` section 3.
 

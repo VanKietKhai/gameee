@@ -770,9 +770,81 @@ The compatibility threshold and the force-kill ceiling are now separate:
   - a missing or duplicate persistence object (the AR controller must exist exactly once in the stopped world)
 - **Harness implementation:** `ModBootGates` plus the harness (exact known-warning rules, the attributed `LoadErrors` set gate, an AR controller gate, and tests). It is committed separately once built and tested. The build is deferred until the other session's shutdown-timing study ends, so the measurements are not disturbed.
 - **Also recorded:**
-  - ITQoL's 23 `LoadErrors` per boot (Batch B, `cc13afa`) are **PENDING OPERATOR CLASSIFICATION**: monitored exactly, not accepted.
+  - ITQoL's 23 `LoadErrors` per boot (Batch B, `cc13afa`) were **PENDING OPERATOR CLASSIFICATION** at this point. This was superseded the same day: after attribution they were accepted as a KNOWN NON-BLOCKING WARNING for the exact file version (see "Investigation: the 23 Improved Thralls & QoL LoadErrors").
   - With the new gate, any unattributed `LoadErrors`, or any from a mod without a validated set (Batch D onward), fail the boot.
 - **Timing context:** the other session's first isolated data point, Batch A alone (3 mods, about 150 s hold), stopped in 210.2 s, longer than the 6- and 7-mod quiet runs (172–196 s). Stop time is not driven by mod count alone. The study's conclusions belong to that session.
+
+## Investigation: the 23 Improved Thralls & QoL `LoadErrors` (2026-10-03)
+
+**Operator decision (2026-10-03), after this investigation:**
+- **23 LOAD ERRORS: KNOWN NON-BLOCKING WARNING**, bound to `ImprovedThrallsAndQoL.pak` SHA-256 `F35D9D92…8272` only.
+- **SERVER-SIDE COMPATIBILITY: PASS**
+- **GAMEPLAY FUNCTIONALITY: NOT YET VERIFIED**
+- The exception covers only the exact validated 23-line set.
+- **It is invalidated by:**
+  - any added, removed, changed or unattributed line
+  - a changed file hash
+  - a crash
+  - a save or persistence error
+  - a world-integrity failure
+  - a missing or duplicate ITQoL mailbox or ITQoL controller (both must exist exactly once in the stopped world)
+
+Status during the investigation (superseded): monitored / pending operator classification.
+- Everything below is tied to `ImprovedThrallsAndQoL.pak` SHA-256 `F35D9D927B4E76869D57DC7073B61FCF2215039B628343B28D6B0989A0B48272`, the installed file (re-hashed).
+- All analysis was read-only: no server action and no build, during the other session's timing study.
+
+### Method
+
+- **Package names:** the IoStore TOC of ITQoL's `-WindowsServer` container has a directory index that names all 941 packages. Each name's `FPackageId` (CityHash64 of the lower-case UTF-16 name) equals its chunk id for **941 / 941**.
+- **Referencing packages:** the container header chunk is stored uncompressed (`IoCn`, version 5, matching container id; package data itself is Oodle-compressed). It lists every package's imported package ids (6,449 imports). The 16 missing ids are imported by **17 named ITQoL packages, 23 imports in total**, which matches the 23 log lines and their per-id multiplicities exactly.
+  - The log itself prints `package None` for the referencing package.
+- **Same in every build:** the ITQoL Windows client container (946 packages) and the LinuxServer container (941) have the identical 23 imports from the same 17 packages.
+- **Missing everywhere:** none of the 16 ids is a package in **any** shipped container, whether ITQoL client, Windows server or Linux server, the 34 vanilla server `.utoc`, the 37 vanilla client `.utoc`, or the 13 local mod paks.
+- **Conclusion:** these are dangling references to assets that were never shipped on any platform. They are not client content stripped from the server build.
+- The missing assets' names are **not recoverable** offline: the package data is Oodle-compressed and the imports are hashes. Their asset-registry names were searched by hashing 3,582 mod path strings and 92,654 vanilla file names, with no match.
+
+### Per line
+
+| Lines | Missing id(s) | Referencing ITQoL package(s) (all present in the WindowsServer payload) | Feature area | Server-side effect |
+| --- | --- | --- | --- | --- |
+| 5 | `37820E3E…`, `3DF389CD…`, `4039BB70…`, `942F6E15…`, `F3F9C875…` | `Realms/Templates/TemplateStructures/Singularity/MI_volcano_rock_master_INST` (a material instance) | Realms (pocket-realm templates) | A render asset. A dedicated server does not render it; the client visual is not verified. |
+| 6 | `3C7F626B…` ×2, `A0EB4DCC…` ×2, `FBEAD091…` ×2 | `Realms/Templates/Sizes/BP_Realm_ThroneOfWinter_L`, `_M` | Realms | No realm actor exists in the world |
+| 1 | `9D4E774A…` | `Realms/Templates/TemplateStructures/ThroneofWinter` | Realms | Same |
+| 3 | `86A2CF31…` ×3 | `Realms/Templates/TemplateStructures/ThePleasureGrove_L`, `_M`, `_S` | Realms | Same |
+| 3 | `9CB1BD6A…` ×3 | `Realms/Templates/Sizes/BP_Realm_ThePleasureGrove_L`, `_M`, `_S` | Realms | Same |
+| 1 | `B49E9D60…` | `Realms/Templates/Sizes/BP_Realm_SunkenTemple_XL` | Realms | Same |
+| 1 | `89B52F32…` | `FollowerDNA/BP_PL_AltarOfTheFallen` | Altar of the Fallen (thrall resurrection placeable) | No such placeable exists in the world. **Follower gameplay is not verified.** |
+| 1 | `6C7B432A…` | `FollowerDNA/BP_SacrificeDoorOpener_v2` | Altar / sacrifice placeable | No such placeable exists in the world. **Not verified.** |
+| 1 | `8040D314…` | `UI/Views/Mailbox/W_V_Mailbox_BackpackSelector_Item` (a UMG widget) | Mailbox UI | A client UI widget, never created on a dedicated server. The server mailbox object (`BP_PL_ServerMailContainer`) is a different package and is not a referencing package. **Mailbox UI is not verified.** |
+| 1 | `2876A0A7…` | `AC_ImprovedThrallsAndIQoL_HumanoidNPC` (actor component for humanoid NPCs) | NPC / follower behaviour | The TEST world has 0 characters and 0 followers, so this is unobservable server-side. **Follower gameplay is not verified.** |
+
+### Not affected (server-side evidence)
+
+- **Controller:** `MC_ImprovedThrallsAndQoL` is not a referencing package. It was spawned once (B1) and loaded from the save on all 11 later boots.
+- **Mailbox:** the server mailbox package is not a referencing package. Exactly 1 mailbox in every backup.
+- **Settings:** no settings package is referencing. ITQoL persists no admin settings: its controller stores only `MailboxChestSpawned` and `ExcludedPlaceablesFromPickUpAll`, and `dw_settings` is unchanged from the pre-ITQoL world. So the compiled defaults apply, and the author says "Everything is disabled by default". The enabled-feature state is UNVERIFIED in-game.
+- **Persistence:** the world holds only 2 ITQoL object types (the controller and the mailbox). Neither is a referencing package.
+
+### Stability
+
+**12 ITQoL boots** (Batch B: B1, B2, restart cycles 1–3; then C1, C2, investigation cycle 1, rollback check, retest 1–3):
+- the exact same 23 signatures on every boot
+- 0 other ITQoL error lines
+- 0 fatal / crash lines
+- 0 persistence errors besides the known mailbox line (absent on B1, the first boot, and present once on every later one)
+- 0 save errors
+- The two forced kills (2026-10-03) were host load: Batch A alone also stopped slowly (210 s) in the timing study.
+
+**21 world backups with ITQoL** (`142111` … `012238`):
+- `quick_check` ok, with the WAL replayed on a temp copy where one existed
+- ITQoL controller = 1, mailbox = 1, only those 2 ITQoL object types, 0 duplicate actors
+
+### Assessment
+
+- **Attribution:** RESOLVED for all 23 lines, each to a named ITQoL package present in the server payload. The identities of the missing assets are UNRESOLVED and not recoverable offline.
+- **Stability:** sufficient (12 boots, 21 backups).
+- **Gameplay:** NOT YET VERIFIED, notably the follower-related packages (`AC_…HumanoidNPC`, `FollowerDNA` altar/door) and the Mailbox UI.
+- **Classification:** the operator accepted the exact set as a **KNOWN NON-BLOCKING WARNING** for this file version (see the top of this section).
 
 ## Direction change: standalone-first (corrected 2026-10-02)
 
