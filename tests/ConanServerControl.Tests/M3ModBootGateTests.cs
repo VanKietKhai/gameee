@@ -161,6 +161,20 @@ public sealed class M3ModBootGateTests
 
     [Theory]
     [InlineData(240.0)]
+    [InlineData(301.8)]
+    [InlineData(450.0)]
+    public void Graceful_stops_past_240_seconds_still_fail_the_batch_gate_even_with_the_600_s_ceiling(double seconds)
+    {
+        // The stop policy may let a proven shutdown finish (no kill at 300 s); the compatibility gate still fails.
+        var gate = ModBootGates.EvaluateShutdownDuration(TimeSpan.FromSeconds(seconds), 300, 600);
+
+        Assert.False(gate.Pass);
+        Assert.StartsWith("HIGH RISK", gate.Detail, StringComparison.Ordinal);
+        Assert.Contains("emergency ceiling 600 s", gate.Detail, StringComparison.Ordinal);
+    }
+
+    [Theory]
+    [InlineData(240.0)]
     [InlineData(275.5)]
     [InlineData(300.0)]
     public void Shutdown_at_or_above_240_seconds_is_high_risk(double seconds)

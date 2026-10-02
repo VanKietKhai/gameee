@@ -335,10 +335,10 @@ public sealed class ServerProcessManager : IServerProcessManager, IDisposable
     }
 
     /// <summary>
-    /// Graceful first, force-kill last. The extended window applies only after the server
-    /// acknowledged the shutdown or its log shows the shutdown under way; otherwise a short window
-    /// keeps an unresponsive server from delaying the kill. Offline is reported only once the whole
-    /// process tree (launcher and the -Shipping server child) is gone.
+    /// Graceful first, force-kill last. A shutdown the server acknowledged, or whose progress its log
+    /// shows, may outlast the graceful window and is killed only at the emergency ceiling; otherwise a
+    /// short window keeps an unresponsive server from delaying the kill. Offline is reported only once
+    /// the whole process tree (launcher and the -Shipping server child) is gone.
     /// </summary>
     private async Task StopTreeAsync(IManagedProcess process, bool force, bool expected, CancellationToken cancellationToken)
     {
@@ -350,13 +350,14 @@ public sealed class ServerProcessManager : IServerProcessManager, IDisposable
         var advanced = _settings.Current.Advanced;
         var extendedWindow = TimeSpan.FromSeconds(Math.Max(5, advanced.GracefulStopTimeoutSeconds));
         var shortWindow = TimeSpan.FromSeconds(Math.Clamp(advanced.UnacknowledgedStopTimeoutSeconds, 1, extendedWindow.TotalSeconds));
+        var emergencyCeiling = TimeSpan.FromSeconds(Math.Max(extendedWindow.TotalSeconds, advanced.EmergencyStopCeilingSeconds));
         var forceTimeout = TimeSpan.FromSeconds(Math.Max(3, advanced.ForceStopTimeoutSeconds));
 
         if (!force)
         {
             var mark = _shutdownProbe?.Mark() ?? 0;
             report = await TryGracefulShutdownAsync(report, cancellationToken).ConfigureAwait(false);
-            report = await WaitForGracefulExitAsync(process, report, mark, shortWindow, extendedWindow, cancellationToken)
+            report = await WaitForGracefulExitAsync(process, report, mark, shortWindow, extendedWindow, emergencyCeiling, cancellationToken)
                 .ConfigureAwait(false);
             if (process.TreeHasExited)
             {
@@ -365,8 +366,9 @@ public sealed class ServerProcessManager : IServerProcessManager, IDisposable
             }
 
             _logger.LogWarning(
-                "Graceful stop did not finish within {Window} (acknowledged: {Acknowledged}, progress: {Progress}). Attempting CloseMainWindow.",
-                TimeSpan.FromSeconds(report.GracefulWindowSeconds), report.ShutdownAcknowledged, report.ShutdownProgressEvidence ?? "none");
+                "Graceful stop did not finish within {Limit} (acknowledged: {Acknowledged}, progress: {Progress}). Attempting CloseMainWindow.",
+                TimeSpan.FromSeconds(report.ExtendedWindowUsed ? report.EmergencyCeilingSeconds : report.GracefulWindowSeconds),
+                report.ShutdownAcknowledged, report.ShutdownProgressEvidence ?? "none");
             // A console server started without a window has no main window; only wait when one was asked to close.
             if (process.CloseMainWindow() &&
                 await WaitForTreeExitAsync(process, TimeSpan.FromSeconds(5), cancellationToken).ConfigureAwait(false))
@@ -451,10 +453,12 @@ public sealed class ServerProcessManager : IServerProcessManager, IDisposable
         long mark,
         TimeSpan shortWindow,
         TimeSpan extendedWindow,
+        TimeSpan emergencyCeiling,
         CancellationToken cancellationToken)
     {
         var started = DateTime.UtcNow;
         var nextProbe = DateTime.MinValue;
+        var exceeded = false;
         while (true)
         {
             if (process.TreeHasExited)
@@ -473,8 +477,19 @@ public sealed class ServerProcessManager : IServerProcessManager, IDisposable
                 }
             }
 
+            // A proven shutdown (acknowledged or progressing) is killed only at the emergency ceiling;
+            // anything else gets the short window.
             var extended = report.ShutdownAcknowledged || report.ShutdownProgressEvidence is not null;
-            if (now - started >= (extended ? extendedWindow : shortWindow))
+            var elapsed = now - started;
+            if (extended && !exceeded && elapsed >= extendedWindow)
+            {
+                exceeded = true;
+                _logger.LogWarning(
+                    "Graceful window {Window} exceeded while the shutdown is acknowledged ({Acknowledged}) or progressing ({Progress}); waiting up to the emergency ceiling {Ceiling}.",
+                    extendedWindow, report.ShutdownAcknowledged, report.ShutdownProgressEvidence ?? "none", emergencyCeiling);
+            }
+
+            if (elapsed >= (extended ? emergencyCeiling : shortWindow))
             {
                 break;
             }
@@ -486,7 +501,9 @@ public sealed class ServerProcessManager : IServerProcessManager, IDisposable
         return report with
         {
             ExtendedWindowUsed = used,
-            GracefulWindowSeconds = (int)(used ? extendedWindow : shortWindow).TotalSeconds
+            GracefulWindowSeconds = (int)(used ? extendedWindow : shortWindow).TotalSeconds,
+            EmergencyCeilingSeconds = used ? (int)emergencyCeiling.TotalSeconds : 0,
+            GracefulWindowExceeded = exceeded
         };
     }
 

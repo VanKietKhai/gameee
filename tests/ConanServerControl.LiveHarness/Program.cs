@@ -320,6 +320,7 @@ internal sealed class Harness : IAsyncDisposable
             s.Advanced.RestartAfterCrash = false; // never auto-restart while diagnosing live boots
             s.Advanced.GracefulStopTimeoutSeconds = AppConstants.DefaultGracefulStopTimeoutSeconds;
             s.Advanced.UnacknowledgedStopTimeoutSeconds = AppConstants.DefaultUnacknowledgedStopTimeoutSeconds;
+            s.Advanced.EmergencyStopCeilingSeconds = AppConstants.DefaultEmergencyStopCeilingSeconds;
             s.WebAdmin.Enabled = false;
         });
 
@@ -1579,7 +1580,8 @@ internal sealed class Harness : IAsyncDisposable
         var leftovers = Program.ServerProcesses();
         var ok = error is null && server.State.Status == ServerStatus.Offline && leftovers.Count == 0;
         var stop = server.State.LastStop;
-        var durationGate = ModBootGates.EvaluateShutdownDuration(stopDuration, _settings.Current.Advanced.GracefulStopTimeoutSeconds);
+        var durationGate = ModBootGates.EvaluateShutdownDuration(
+            stopDuration, _settings.Current.Advanced.GracefulStopTimeoutSeconds, _settings.Current.Advanced.EmergencyStopCeilingSeconds);
         var milestones = ShutdownMilestones(ReadLogFrom(ServerLog, logOffset, int.MaxValue));
         var walLeft = File.Exists(Path.Combine(Saved, "game_0.db-wal"));
         var shmLeft = File.Exists(Path.Combine(Saved, "game_0.db-shm"));
@@ -1594,6 +1596,8 @@ internal sealed class Harness : IAsyncDisposable
                 ("ShutdownProgressAt", Local(stop?.ShutdownProgressAt)),
                 ("ShutdownProgressEvidence", Truncate(stop?.ShutdownProgressEvidence, 160)),
                 ("GracefulWindow", stop is null ? "n/a" : $"{stop.GracefulWindowSeconds}s ({(stop.ExtendedWindowUsed ? "extended" : "short")})"),
+                ("EmergencyCeiling", stop is null || stop.EmergencyCeilingSeconds == 0 ? "n/a (short window)" : $"{stop.EmergencyCeilingSeconds}s"),
+                ("GracefulWindowExceeded", stop is null ? "n/a" : stop.GracefulWindowExceeded ? "YES (kept waiting: shutdown proven)" : "NO"),
                 ("ForcedKill", stop is null ? "n/a" : stop.ForcedKill ? "YES" : "NO"),
                 ("ProcessTreeExitedAt", Local(stop?.ProcessTreeExitedAt)),
                 ("ServerLogMilestones", milestones),
@@ -1607,6 +1611,7 @@ internal sealed class Harness : IAsyncDisposable
             Facts(("ShutdownDurationSeconds", stopDuration.TotalSeconds.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture)),
                 ("HighRiskThresholdSeconds", ModBootGates.ShutdownHighRiskSeconds.ToString()),
                 ("GracefulWindowSeconds", _settings.Current.Advanced.GracefulStopTimeoutSeconds.ToString()),
+                ("EmergencyCeilingSeconds", _settings.Current.Advanced.EmergencyStopCeilingSeconds.ToString()),
                 ("Gate", durationGate.Detail)),
             liveFilesChanged: "no");
         return ok && durationGate.Pass;

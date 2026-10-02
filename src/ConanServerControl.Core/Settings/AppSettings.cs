@@ -177,8 +177,18 @@ public sealed class RconSettings
 
 public sealed class AdvancedSettings
 {
-    /// <summary>Extended stop window after an acknowledged shutdown or observed shutdown progress.</summary>
+    /// <summary>
+    /// Expected graceful window after an acknowledged shutdown or observed shutdown progress. Exceeding it
+    /// is logged, but such a stop keeps waiting up to <see cref="EmergencyStopCeilingSeconds"/>.
+    /// </summary>
     public int GracefulStopTimeoutSeconds { get; set; } = AppConstants.DefaultGracefulStopTimeoutSeconds;
+
+    /// <summary>
+    /// Hard ceiling for a proven (acknowledged or progressing) shutdown; the process tree is killed only
+    /// here. Never below <see cref="GracefulStopTimeoutSeconds"/>. A new key, so existing settings.json
+    /// files load with the default.
+    /// </summary>
+    public int EmergencyStopCeilingSeconds { get; set; } = AppConstants.DefaultEmergencyStopCeilingSeconds;
 
     /// <summary>Stop window when the shutdown is neither acknowledged nor visibly progressing.</summary>
     public int UnacknowledgedStopTimeoutSeconds { get; set; } = AppConstants.DefaultUnacknowledgedStopTimeoutSeconds;

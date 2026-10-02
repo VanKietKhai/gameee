@@ -107,15 +107,22 @@ public static class ModBootGates
         };
     }
 
-    /// <summary>Shutdown duration metric: at or above <see cref="ShutdownHighRiskSeconds"/> is HIGH RISK.</summary>
-    public static BootGateResult EvaluateShutdownDuration(TimeSpan duration, int gracefulWindowSeconds)
+    /// <summary>
+    /// Shutdown duration metric: at or above <see cref="ShutdownHighRiskSeconds"/> is HIGH RISK, so the batch gate
+    /// fails. This is a compatibility judgement only; the force-kill decision belongs to the stop policy
+    /// (graceful window, then the emergency ceiling for a proven shutdown).
+    /// </summary>
+    public static BootGateResult EvaluateShutdownDuration(TimeSpan duration, int gracefulWindowSeconds, int? emergencyCeilingSeconds = null)
     {
         var seconds = duration.TotalSeconds;
+        var limits = emergencyCeilingSeconds is int ceiling
+            ? $"graceful window {gracefulWindowSeconds} s, emergency ceiling {ceiling} s"
+            : $"graceful window {gracefulWindowSeconds} s";
         return seconds >= ShutdownHighRiskSeconds
             ? new BootGateResult(false,
-                $"HIGH RISK: {seconds:0.0} s >= {ShutdownHighRiskSeconds} s (graceful window {gracefulWindowSeconds} s). " +
+                $"HIGH RISK: {seconds:0.0} s >= {ShutdownHighRiskSeconds} s ({limits}). " +
                 "Stop before adding another batch.")
             : new BootGateResult(true,
-                $"OK: {seconds:0.0} s < {ShutdownHighRiskSeconds} s (graceful window {gracefulWindowSeconds} s)");
+                $"OK: {seconds:0.0} s < {ShutdownHighRiskSeconds} s ({limits})");
     }
 }
