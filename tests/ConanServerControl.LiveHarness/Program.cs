@@ -152,6 +152,7 @@ internal static class Program
                 "import-local" => await harness.ImportLocalAsync(args[1]),
                 "remove-local" => await harness.RemoveLocalAsync(args[1]),
                 "restore" => await harness.RestoreBackupAsync(args[1]),
+                "set-mods" => await harness.SetModsAsync(args[1]),
                 "cold-backup" => await harness.ColdBackupCommandAsync(),
                 "graceful-test" => await harness.GracefulTestAsync(args[1]),
                 _ => Unknown(command)
@@ -1262,6 +1263,80 @@ internal sealed class Harness : IAsyncDisposable
                 ("SourceStillPresentAndUnchanged", (sourceHashAfter == sourceHashBefore && sourceHashAfter != "missing").ToString()),
                 ("ModsDirectoryAfter", DescribeDirectory(modsDir))),
             liveFilesChanged: "server Mods + modlist.txt (expected)");
+        return ok ? 0 : 1;
+    }
+
+    // ------------------------------------------------------------ Shutdown-timing study (isolated mod sets)
+
+    /// <summary>
+    /// Makes exactly the listed catalog mods enabled, in that order, through the production catalog
+    /// (SetEnabledAsync + MoveAsync); every other catalog mod is disabled, stays in the catalog and keeps
+    /// its .pak in Mods (not in modlist.txt, so not mounted). "none" disables all. No file is copied.
+    /// </summary>
+    public async Task<int> SetModsAsync(string csv)
+    {
+        if (Program.ServerProcesses().Count > 0)
+        {
+            _log.Write("timing-set-mods", "precondition: server offline", "FAIL", null, Facts(("Processes", DescribeProcesses())));
+            return 1;
+        }
+
+        IReadOnlyList<string> wanted;
+        try
+        {
+            wanted = ModSetSelection.Parse(csv);
+        }
+        catch (ArgumentException ex)
+        {
+            _log.Write("timing-set-mods", "input", "FAIL", null, Facts(("Error", ex.Message)));
+            return 1;
+        }
+
+        var modsDir = Path.Combine(_serverDir, "ConanSandbox", "Mods");
+        var before = PakFacts(modsDir);
+        var listBefore = ReadModList(modsDir);
+        var catalog = _services.GetRequiredService<IModCatalogService>();
+        var unknown = ModSetSelection.Unknown(wanted, catalog.Mods.Where(m => m.LocalFileName is not null).Select(m => m.LocalFileName!));
+        string? error = unknown.Count > 0 ? "not in catalog: " + string.Join(", ", unknown) : null;
+        if (error is null)
+        {
+            try
+            {
+                foreach (var mod in catalog.Mods.ToArray())
+                {
+                    var on = wanted.Any(w => ModKeys.Matches(mod, ModKeys.Local(w)));
+                    if (mod.Enabled != on)
+                    {
+                        await catalog.SetEnabledAsync(ModKeys.For(mod), on);
+                    }
+                }
+
+                for (var i = 0; i < wanted.Count; i++)
+                {
+                    await catalog.MoveAsync(ModKeys.Local(wanted[i]), i);
+                }
+            }
+            catch (Exception ex)
+            {
+                error = ex.Message;
+            }
+        }
+
+        var after = PakFacts(modsDir);
+        var listAfter = ReadModList(modsDir);
+        var listMatches = listAfter.SequenceEqual(wanted, StringComparer.OrdinalIgnoreCase);
+        var paksUntouched = before.Count == after.Count && before.All(kv => after.TryGetValue(kv.Key, out var v) && v == kv.Value);
+        var ok = error is null && listMatches && paksUntouched;
+        _log.Write("timing-set-mods", "IModCatalogService.SetEnabledAsync + MoveAsync (exact enabled set)", ok ? "PASS" : "FAIL", null,
+            Facts(
+                ("Error", error ?? string.Empty),
+                ("Requested", wanted.Count == 0 ? "none" : string.Join(" | ", wanted)),
+                ("ModListBefore", string.Join(" | ", listBefore)),
+                ("ModListAfter", string.Join(" | ", listAfter)),
+                ("ModListMatchesRequest", listMatches.ToString()),
+                ("Catalog", string.Join("; ", _settings.Current.Mods.Mods.OrderBy(m => m.LoadOrder).Select(m => $"{m.LoadOrder}:{m.LocalFileName}:{(m.Enabled ? "on" : "off")}"))),
+                ("PaksUntouched(hash,size,created,written)", paksUntouched.ToString())),
+            liveFilesChanged: "server modlist.txt only (expected)");
         return ok ? 0 : 1;
     }
 
