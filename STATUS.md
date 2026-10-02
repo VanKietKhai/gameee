@@ -100,7 +100,7 @@ However, multiplayer clients must use a legitimate Conan client session capable 
 
 ## Build Status
 
-Measured 2026-10-02 at `0d54acc` (pre-4E validation):
+Measured 2026-10-02 after the Batch B gates (`ModBootGates` and harness):
 
 `dotnet build -c Release --no-incremental`:
 PASS
@@ -108,12 +108,12 @@ PASS
 0 errors
 
 `dotnet test -c Release`:
-313 passed
+344 passed
 0 failed
-313 total
+344 total
 0 skipped
 
-(`982a5c3` alone, before the pre-4E fixes: build PASS, 293 / 293.)
+(Earlier: `0d54acc` 313 / 313; `2aca0cf` 315 / 315; `982a5c3` 293 / 293. The .NET SDK 8.0.425 is the user-local install at `%LOCALAPPDATA%\Microsoft\dotnet`. The `dotnet` on PATH, `C:\Program Files\dotnet`, has no SDK.)
 
 ## Current Architecture
 
@@ -143,7 +143,16 @@ M3 Task 4E (one Local mod) is accepted as PASS.
 
 Next: **Target Modpack V1** (`MODPACK_V1.md`). **Fifteen** mods are planned (the ten originals plus five campaign mods added 2026-10-02), and the metadata and conflict/test matrix are recorded. Nothing is installed yet.
 - Cumulative batches: A (StackMe10K, which replaces WickStacks; Savage Paragon; Grit & Grease) → B → C → D1 / D2 / D3 → E (Sudo + Thrall Wars Utilities) → F1 (Night Terrors + PvE Plus Ambush) → F2 (Thrall Wars Dungeon Mod), then a review of all fifteen.
-- **Batch A PASS** (2026-10-02, `2aca0cf`; `M3_LIVE_TEST_REPORT.md`): StackMe10K, Savage Paragon and Grit & Grease are installed on `depot_443031` in that order. The runtime mount order and container `Order` follow `modlist.txt` (PROVEN). Final verified backup `2026-10-02_074354`. StackMe10K's 10,000 stacks are not verified in-game. Next: Batch B (all ten V1 `.pak` files are local).
+- **Batch A PASS** (2026-10-02, `2aca0cf`; `M3_LIVE_TEST_REPORT.md`): StackMe10K, Savage Paragon and Grit & Grease are installed on `depot_443031` in that order. The runtime mount order and container `Order` follow `modlist.txt` (PROVEN). Final verified backup `2026-10-02_074354`. StackMe10K's 10,000 stacks are not verified in-game.
+- **Batch B accepted** (2026-10-02; `76ce7da` plus the 3-cycle restart test, in `M3_LIVE_TEST_REPORT.md`):
+  - **SERVER-SIDE COMPATIBILITY: PASS**
+  - **IN-GAME BEHAVIOR: NOT YET VERIFIED**
+  - **ITQOL MAILBOX ISSUE: KNOWN NON-BLOCKING WARNING**
+- **The known warning is one exact, version-bound rule** (`Core/LiveTesting/ModBootGates`). It is accepted only while the stopped world holds exactly 1 ITQoL mailbox. Any other ITQoL, BP_PL or mod error still fails.
+- **Current staging order:** StackMe10K → SavageParagon → GritandGrease → ThrallReputation → ImprovedThrallsAndQoL → WO_RidingThralls.
+- **Pre-Batch-B restore point `2026-10-02_141009`** is pinned at `E:\CSC-M3-Live\pinned-backups\` (outside retention, read-only, hash-verified).
+- **Shutdown duration is a batch gate.** Batch B measured 177–184 s against a 300 s window. 240 s or more = HIGH RISK: stop before adding another batch.
+- Next: **Batch C** (Ancient Realms). Not started; it waits for the operator.
 - The final load order is not declared until all fifteen have been tested together with runtime evidence. The proposed starting order is in `CAMPAIGN_V1.md` section 3.
 
 Then: **Chronicler Campaign V1** (`CAMPAIGN_V1.md`). This is design only; "Twelve Legends" is removed from the plan (it never existed on this host).
@@ -158,4 +167,4 @@ M3 Task 4 pre-live fixes, 4A SteamCMD, and the standalone-first pivot (Local mod
 
 ## Current Task
 
-Matched-version server verified. 4F recorded as blocked by client authentication. Pre-4E validation done (`0d54acc`): acknowledgement-gated graceful stop with process-tree Offline, Radmin/LAN address split, 313 / 313 tests, live 10-minute stop PASS (154 s, exit 0, no kill, no WAL, no orphans). 4E PASS (accepted). Target Modpack V1 (`MODPACK_V1.md`, now fifteen mods): Batch A PASS (`2aca0cf`); Batch B is next. Chronicler Campaign V1 designed (`CAMPAIGN_V1.md`): no in-game QA has run, and the design work changed nothing on the server. Do not modify the real client, and do not configure a public Internet server.
+Matched-version server verified. 4F recorded as blocked by client authentication. Pre-4E validation done (`0d54acc`): acknowledgement-gated graceful stop with process-tree Offline, Radmin/LAN address split, 313 / 313 tests, live 10-minute stop PASS (154 s, exit 0, no kill, no WAL, no orphans). 4E PASS (accepted). Target Modpack V1 (`MODPACK_V1.md`, now fifteen mods): Batch A PASS (`2aca0cf`); Batch B PASS server-side (accepted; ITQoL mailbox = known non-blocking warning); Batch C not started. Chronicler Campaign V1 designed (`CAMPAIGN_V1.md`): no in-game QA has run, and the design work changed nothing on the server. Do not modify the real client, and do not configure a public Internet server.

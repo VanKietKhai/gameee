@@ -137,6 +137,7 @@ internal static class Program
                 "install-server" => await harness.InstallServerAsync(),
                 "boot" => await harness.BootAsync("boot", HoldSeconds(args), scanMods: false, ObserveSeconds(args)),
                 "mod-boot" => await harness.BootAsync("mod-boot", HoldSeconds(args), scanMods: true, expectAbsent: ExpectAbsent(args)),
+                "analyze-last-boot" => harness.AnalyzeLastBoot(),
                 "reorder-local" => await harness.ReorderLocalAsync(args[1]),
                 "extracted" => harness.ObserveExtractedMods("extracted"),
                 "cycle" => await harness.CycleAsync(),
@@ -554,12 +555,92 @@ internal sealed class Harness : IAsyncDisposable
         }
 
         var stopped = await StopAndRecordAsync(server, step, timeline);
+        var mailboxOk = true;
         if (scanMods)
         {
+            mailboxOk = RecordItqolMailboxGate(step);
             ObserveExtractedMods(step);
         }
 
-        return stopped && modLoadOk ? 0 : 1;
+        return stopped && modLoadOk && mailboxOk ? 0 : 1;
+    }
+
+    /// <summary>
+    /// Read-only: re-runs the mod-load analysis on the current <c>ConanSandbox.log</c> (the last boot) and
+    /// the ITQoL mailbox gate on the stopped world. Starts nothing; refuses while a Conan server runs.
+    /// </summary>
+    public int AnalyzeLastBoot()
+    {
+        const string step = "analyze-last-boot";
+        if (!EnsureNoForeignServer(step))
+        {
+            return 1;
+        }
+
+        var analysis = AnalyzeModLoad(ReadLogFrom(ServerLog, 0, int.MaxValue), []);
+        _log.Write(step, "mod load analysis (last boot log, read-only)", analysis.Ok ? "PASS" : "FAIL", null,
+            analysis.Facts, analysis.Evidence, liveFilesChanged: "no");
+        var mailboxOk = RecordItqolMailboxGate(step);
+        return analysis.Ok && mailboxOk ? 0 : 1;
+    }
+
+    /// <summary>
+    /// With Improved Thralls &amp; QoL enabled, the stopped world must hold exactly one ITQoL server mailbox.
+    /// This gate is what keeps the known mailbox warning non-blocking: a missing or duplicated mailbox fails.
+    /// </summary>
+    private bool RecordItqolMailboxGate(string step)
+    {
+        var installed = _settings.Current.Mods.Mods.Any(m =>
+            m.Enabled && string.Equals(m.LocalFileName, ModBootGates.ItqolPakFileName, StringComparison.OrdinalIgnoreCase));
+        int? count = null;
+        string? error = null;
+        if (installed)
+        {
+            try
+            {
+                count = CountWorldActors(ModBootGates.ItqolMailboxClassPath);
+            }
+            catch (Exception ex)
+            {
+                error = ex.Message;
+            }
+        }
+
+        var gate = ModBootGates.EvaluateItqolMailbox(installed, count);
+        _log.Write(step, "ITQoL server mailbox gate (stopped world, read-only)", installed ? (gate.Pass ? "PASS" : "FAIL") : "INFO", null,
+            Facts(("ItqolInstalled", installed ? "YES" : "NO"),
+                ("MailboxCount", count?.ToString() ?? "n/a"),
+                ("Gate", gate.Detail),
+                ("Error", error ?? string.Empty)),
+            liveFilesChanged: "no");
+        return gate.Pass;
+    }
+
+    /// <summary>
+    /// Counts world actors of the blueprint <paramref name="classPath"/> (any class string starting with its
+    /// package path). The stopped world is opened read-only and immutable, so SQLite creates no -wal/-shm
+    /// files and takes no locks.
+    /// </summary>
+    private int? CountWorldActors(string classPath)
+    {
+        var db = Path.Combine(Saved, ConanServerControl.Core.Backups.ConanWorldFiles.EnhancedMain);
+        if (!File.Exists(db))
+        {
+            return null;
+        }
+
+        var builder = new Microsoft.Data.Sqlite.SqliteConnectionStringBuilder
+        {
+            DataSource = new Uri(db).AbsoluteUri + "?immutable=1",
+            Mode = Microsoft.Data.Sqlite.SqliteOpenMode.ReadOnly,
+            Pooling = false
+        };
+        using var connection = new Microsoft.Data.Sqlite.SqliteConnection(builder.ToString());
+        connection.Open();
+        using var command = connection.CreateCommand();
+        command.CommandText = "SELECT COUNT(*) FROM actor_position WHERE substr(class, 1, length($prefix)) = $prefix";
+        command.Parameters.AddWithValue("$prefix", classPath.Split('.')[0]);
+        return Convert.ToInt32(command.ExecuteScalar());
     }
 
     /// <summary>
@@ -1164,13 +1245,22 @@ internal sealed class Harness : IAsyncDisposable
 
         var stems = expected.Concat(expectAbsent).Select(Path.GetFileNameWithoutExtension).Where(s => !string.IsNullOrEmpty(s)).ToArray();
         var problemMarkers = new[] { "Error", "Warning", "Fatal", "Failed", "missing", "not found", "Could not", "Unable" };
-        var modProblems = lines
+        var flagged = lines
             .Where(l => problemMarkers.Any(p => l.Contains(p, StringComparison.OrdinalIgnoreCase)))
             .Where(l => stems.Any(s => l.Contains(s!, StringComparison.OrdinalIgnoreCase)) ||
                         l.Contains("modlist", StringComparison.OrdinalIgnoreCase) ||
                         l.Contains("LogModManager", StringComparison.Ordinal) ||
                         l.Contains("Failed to mount", StringComparison.OrdinalIgnoreCase))
             .ToList();
+
+        // Only the exact, version-bound known warnings are set aside; every other flagged line still fails.
+        var installedSha256 = ModBootGates.KnownWarnings
+            .Select(w => w.ModPakFileName)
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .Where(pak => expected.Contains(pak, StringComparer.OrdinalIgnoreCase) && File.Exists(Path.Combine(modsDir, pak)))
+            .ToDictionary(pak => pak, pak => Sha256(Path.Combine(modsDir, pak)), StringComparer.OrdinalIgnoreCase);
+        var (problems, known) = ModBootGates.ClassifyProblems(flagged, installedSha256);
+        var modProblems = problems.ToList();
 
         var perMod = new List<string>();
         var allLoaded = true;
@@ -1215,12 +1305,17 @@ internal sealed class Harness : IAsyncDisposable
             ("PerMod", string.Join(" || ", perMod)),
             ("DuplicateMounts", duplicates.Length == 0 ? "none" : string.Join(", ", duplicates)),
             ("ModRelatedProblems", modProblems.Count == 0 ? "none" : modProblems.Count.ToString()),
+            ("KnownNonBlockingWarnings", known.Count == 0
+                ? "none"
+                : string.Join("; ", known.GroupBy(k => k.Warning.Id)
+                    .Select(g => $"{g.Key} x{g.Count()} ({g.First().Warning.ModPakFileName} SHA-256 = validated {g.First().Warning.ValidatedPakSha256[..8]}...)"))),
             ("ExpectAbsent", expectAbsent.Length == 0 ? "none" : string.Join(", ", expectAbsent)),
             ("ExpectAbsentViolations", absentProblems.Count == 0 ? "none" : string.Join("; ", absentProblems)));
         var evidenceLines = lines.Where(l =>
                 mountRegex.IsMatch(l) || containerRegex.IsMatch(l) || pakRegex.IsMatch(l) || contributesRegex.IsMatch(l) ||
                 stems.Any(s => l.Contains(s!, StringComparison.OrdinalIgnoreCase)))
             .Concat(modProblems.Select(p => "PROBLEM: " + p))
+            .Concat(known.Select(k => $"KNOWN NON-BLOCKING ({k.Warning.Id}): {k.Line}"))
             .Take(120);
         return (ok, facts, string.Join(Environment.NewLine, evidenceLines));
     }
@@ -1421,10 +1516,12 @@ internal sealed class Harness : IAsyncDisposable
             error = ex.Message;
         }
 
+        var stopDuration = clock.Elapsed;
         await Task.Delay(2000);
         var leftovers = Program.ServerProcesses();
         var ok = error is null && server.State.Status == ServerStatus.Offline && leftovers.Count == 0;
         var stop = server.State.LastStop;
+        var durationGate = ModBootGates.EvaluateShutdownDuration(stopDuration, _settings.Current.Advanced.GracefulStopTimeoutSeconds);
         var milestones = ShutdownMilestones(ReadLogFrom(ServerLog, logOffset, int.MaxValue));
         var walLeft = File.Exists(Path.Combine(Saved, "game_0.db-wal"));
         var shmLeft = File.Exists(Path.Combine(Saved, "game_0.db-shm"));
@@ -1446,7 +1543,15 @@ internal sealed class Harness : IAsyncDisposable
                 ("ShmLeftAfterStop", shmLeft ? "YES" : "NO"),
                 ("WorldFiles", string.Join("; ", WorldSnapshot()))),
             ReadLogFrom(ServerLog, logOffset, 25));
-        return ok;
+
+        // Shutdown duration is a batch metric: at or above 240 s the next batch must not be added.
+        _log.Write(step, "shutdown duration gate", durationGate.Pass ? "PASS" : "FAIL", stopDuration,
+            Facts(("ShutdownDurationSeconds", stopDuration.TotalSeconds.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture)),
+                ("HighRiskThresholdSeconds", ModBootGates.ShutdownHighRiskSeconds.ToString()),
+                ("GracefulWindowSeconds", _settings.Current.Advanced.GracefulStopTimeoutSeconds.ToString()),
+                ("Gate", durationGate.Detail)),
+            liveFilesChanged: "no");
+        return ok && durationGate.Pass;
     }
 
     private static string Local(DateTimeOffset? utc) => utc?.ToLocalTime().ToString("HH:mm:ss.fff") ?? "n/a";

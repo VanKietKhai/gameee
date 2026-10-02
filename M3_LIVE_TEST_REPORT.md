@@ -445,6 +445,7 @@ Other notes:
 - **Harness issues found and fixed during the run:**
   - **Log-offset bug** (fixed in this checkpoint): Conan rotates `ConanSandbox.log` on start, so the first Boot 1 analysis read past the new log's mount lines and reported 0 mounts (FAIL). The server itself had mounted all three mods. Now a changed first log line means "read from 0", and Boot 1 was re-run and passed.
   - **Shell quoting mistake** (operator side, before the successful imports): three `import-local` attempts were run with a wrong path. The pipeline rejected them at staging and nothing changed; three extra verified baseline backups were taken.
+- Build PASS (0 warnings, 0 errors); `dotnet test` 315 / 315, 0 skipped.
 
 ## Modpack V1 Batch B — STAGING / PRE-PRODUCTION (server-side PASS with one known issue; in-game work BLOCKED)
 
@@ -528,7 +529,76 @@ Read-only checks on copies of the verified backups `141009` → `142111` → `14
 - Stop time grew to 191 s with six mods after about 6 minutes of uptime. The 300 s extended window still held, but larger mods (Ancient Realms 497 MB, Shemite 2.1 GB) and longer uptimes may exceed it; re-measure in Batch C.
 - `ThrallDamageToNPCsMultiplier` is 0.5 vs the stated 0.3 philosophy.
 - The 4E WickProbe controller rows remain in the save.
-- Build PASS (0 warnings, 0 errors); `dotnet test` 315 / 315, 0 skipped.
+
+## Modpack V1 Batch B — restart stability (3 cycles) and acceptance
+
+**Operator decision (2026-10-02):**
+- Batch B is **ACCEPTED**: **SERVER-SIDE COMPATIBILITY: PASS**.
+- **IN-GAME BEHAVIOR: NOT YET VERIFIED** (4F).
+- **ITQOL MAILBOX ISSUE: KNOWN NON-BLOCKING WARNING.**
+- Batch B stays installed; no rollback; Batch C not started.
+
+### Restart cycles
+
+- **Setup:** staging `D:\conan exiles\depot_443031` (TEST world) with the six-mod load order unchanged. Mods, ITQoL settings and the client were not touched.
+- **Per cycle:**
+  1. `mod-boot --hold 150`: Offline → Start → true readiness → about 150 s online → graceful stop.
+  2. `cold-backup`: verified backup with `quick_check`.
+  3. A separate read-only check of the backup copy (`immutable=1`): `quick_check` plus a count of the mailbox rows.
+- **Baseline:** the B2 backup `142352`.
+
+| Item | Cycle 1 | Cycle 2 | Cycle 3 |
+| --- | --- | --- | --- |
+| Readiness ("World is ticking") | 33.3 s | 33.2 s | 39.6 s |
+| Mods loaded, modlist order, `Order` 1000–1005 | 6/6 | 6/6 | 6/6 |
+| `BP_PL_ServerMailContainer` CreateHealthPool line | 1 (frame 0) | 1 (frame 0) | 1 (frame 0) |
+| Mailbox actor rows (`buildings` / `buildable_health` / `properties`) | 1 (1 / 2 / 1) | 1 (1 / 2 / 1) | 1 (1 / 2 / 1) |
+| Duplicate / missing mailbox | NO / NO | NO / NO | NO / NO |
+| Other ITQoL errors | none | none | none |
+| Other mod-specific errors / fatals | none / none | none / none | none / none |
+| Stop (acknowledged RCON `shutdown`, exit 0, no WAL/SHM, no orphans) | PASS, 180.3 s | PASS, 177.0 s | PASS, 183.7 s |
+| Forced kill | NO | NO | NO |
+| Verified backup, `quick_check` | `143558` ok | `144252` ok | `144937` ok |
+
+- The mailbox is the same object every cycle: actor 147 at (0, 0, −50000).
+- 113 actors and 23 `mod_controllers` rows, unchanged.
+- The only row-count change is the server's own `game_events` table (cycle 3: 302 → 325).
+
+### Known non-blocking warning rule (harness)
+
+`Core/LiveTesting/ModBootGates` holds **exactly one** rule, `ITQOL-MAILBOX-HEALTHPOOL`.
+- **Exact message** (the line without its `[timestamp][frame]` prefix): `Persistence: Error: Code: UConanBuildingPersistenceComponent::CreateHealthPool - DefaultObject not loaded: /Game/Mods/ImprovedThrallsAndQoL/Mailbox/BP_PL_ServerMailContainer.BP_PL_ServerMailContainer_C`
+- **Version-bound:** it applies only while the installed `ImprovedThrallsAndQoL.pak` SHA-256 is `F35D9D927B4E76869D57DC7073B61FCF2215039B628343B28D6B0989A0B48272`. A new ITQoL version must be validated again.
+- `mod-boot` reports a matching line under `KnownNonBlockingWarnings`, not `ModRelatedProblems`.
+- The boot **still FAILS** when:
+  - any other ITQoL line, any other BP_PL line or any other mod error appears
+  - the same message appears with a different ITQoL file
+  - the **ITQoL mailbox gate** fails: after every `mod-boot` stop, the stopped world (read-only, immutable) must hold **exactly 1** `BP_PL_ServerMailContainer`. 0 = MISSING, 2 or more = DUPLICATE, unreadable = FAIL.
+  - world integrity fails: `cold-backup` `quick_check` is unchanged.
+- **Unit tests:** `M3ModBootGateTests`, 29 cases.
+- **Live check on real data:** the new read-only `analyze-last-boot` command, run on the cycle 3 log and the stopped world.
+  - Analysis PASS: `ModRelatedProblems` = none, `KnownNonBlockingWarnings` = `ITQOL-MAILBOX-HEALTHPOOL x1`.
+  - Mailbox gate PASS (count 1).
+  - The world file was unchanged, and no WAL/SHM was created.
+
+### Shutdown duration metric (all later batches)
+
+- Every stop now logs a `shutdown duration gate` entry. **240 s or more = HIGH RISK = FAIL**: stop before adding another batch. The graceful window is 300 s.
+- **Batch B observed range: 177–184 s** after about 2.5 minutes of uptime. B1 was 191 s after about 6.5 minutes; B2 was 70 s after a short uptime.
+- Batch A stops were 66–68 s.
+- The extra time is a **silent ~160 s gap** after `BattlEyeClient: ClientLoadingScreenStopped` and before `LogExit: Preparing to exit`. No log lines appear in it and no mod is named, so the cause is not attributed.
+
+### Known-good restore point pinned
+
+- Pre-Batch-B backup `2026-10-02_141009`: Batch A world, `game_0.db` 667,648 B, SHA-256 `C6BC2052…8415`.
+- **Copied** (robocopy, timestamps kept) to `E:\CSC-M3-Live\pinned-backups\2026-10-02_141009`, outside `app-data\backups`. Retention (keep latest 10 / keep 14 days) only lists and deletes inside `app-data\backups`.
+- 87 files, 21,316,556 B. Every file's SHA-256, size and mtime equals the source, and the source was unchanged by the copy. The world hash matches the backup's own `metadata.json`.
+- The copy is marked read-only. Per-file hashes and restore notes sit beside it: `2026-10-02_141009.SHA256SUMS.txt`, `README-PINNED.txt`.
+- The original stays in `app-data\backups` until retention ages it out (about 2026-10-16).
+
+### Build
+
+`dotnet build -c Release --no-incremental`: 0 warnings, 0 errors. `dotnet test -c Release`: **344 / 344**, 0 skipped (315 + 29 `M3ModBootGateTests`).
 
 ## Direction change: standalone-first (corrected 2026-10-02)
 

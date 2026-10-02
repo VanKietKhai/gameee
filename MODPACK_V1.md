@@ -1,10 +1,23 @@
 # Target Modpack V1 — private Radmin Conan server
 
-Status: **IN PROGRESS. Batch A PASS** (2026-10-02, `2aca0cf`; details in `M3_LIVE_TEST_REPORT.md` "Modpack V1 Batch A").
-- Installed on `depot_443031`: `StackMe10K.pak | SavageParagon.pak | GritandGrease.pak`, in that order.
-- Final verified cold backup `2026-10-02_074354`, `quick_check` = ok.
-- Runtime mount order and IoStore container `Order` follow `modlist.txt` (first entry 1000, then +1): **PROVEN**. Which mod wins an asset that two mods override was not exercised.
-- Next: Batch B.
+Status: **IN PROGRESS. Batch A PASS, Batch B PASS (server-side).** Six mods are installed on staging `depot_443031` (TEST world). Details are in `M3_LIVE_TEST_REPORT.md`.
+- **Batch A** (`2aca0cf`):
+  - Runtime mount order and IoStore container `Order` follow `modlist.txt` (first entry 1000, then +1): **PROVEN**. Which mod wins an asset that two mods override was not exercised.
+- **Batch B** (`76ce7da`, plus the 3-cycle restart test), accepted 2026-10-02:
+  - **SERVER-SIDE COMPATIBILITY: PASS**
+  - **IN-GAME BEHAVIOR: NOT YET VERIFIED**
+  - **ITQOL MAILBOX ISSUE: KNOWN NON-BLOCKING WARNING** (exact, version-bound rule; see gate 6)
+- **Current staging load order** (not a final declaration):
+  1. `StackMe10K.pak`
+  2. `SavageParagon.pak`
+  3. `GritandGrease.pak`
+  4. `ThrallReputation.pak`
+  5. `ImprovedThrallsAndQoL.pak`
+  6. `WO_RidingThralls.pak`
+- **Restore points:**
+  - Known-good pre-Batch-B backup `2026-10-02_141009`, **pinned** at `E:\CSC-M3-Live\pinned-backups\2026-10-02_141009` (outside retention)
+  - latest verified backup `2026-10-02_144937`
+- **Next:** Batch C (Ancient Realms). Not started; it waits for the operator.
 
 Operator decisions (2026-10-02):
 - WickProbe / WickStacks is **not** part of the modpack. Mod #10 is **StackMe10K**.
@@ -36,12 +49,12 @@ Workshop pages contain hidden template notices ("incompatible with Conan Exiles 
 
 | # | Mod | Source / ID | Updated | Item size | Required items | Batch | Live-tested |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | Thrall Reputation | Workshop `3787066846` | 2026-09-15 | 833,760 B | none | B | no |
+| 1 | Thrall Reputation | Workshop `3787066846` | 2026-09-15 | 833,760 B | none | B | Batch B PASS (server-side) |
 | 2 | Savage Paragon | Workshop `3766043945` | 2026-09-23 | 4,760,799 B | none | A | Batch A PASS (server-side) |
 | 3 | Ancient Realms Enhanced (Work In Progress) | Workshop `3755775098` | 2026-09-15 | 496,900,005 B | none | C | no |
-| 4 | Improved Thralls & QoL | Workshop `3758661389` | 2026-09-24 | 154,632,086 B | none | B | no |
+| 4 | Improved Thralls & QoL | Workshop `3758661389` | 2026-09-24 | 154,632,086 B | none | B | Batch B PASS (server-side) |
 | 5 | Fantasy Races Of Exiles | Workshop `3780741325` | 2026-09-15 | 5,293,057 B | none | D1 | no |
-| 6 | [Enhanced] WO - Riding Thralls | Workshop `3803149679` | 2026-09-25 | 78,896,983 B | none | B | no |
+| 6 | [Enhanced] WO - Riding Thralls | Workshop `3803149679` | 2026-09-25 | 78,896,983 B | none | B | Batch B PASS (server-side) |
 | 7 | Shemite City State: Enhanced (v2.1) | Workshop `3755371705` | 2026-09-16 | 2,098,034,644 B | none | D3 | no |
 | 8 | Cannibal Captivity v0.0.16 (Enhanced) | Workshop `3765743138` | 2026-09-29 | 112,432,880 B | none | D2 | no |
 | 9 | Grit & Grease (Weapon Infusions) | Workshop `3801774752` | 2026-09-20 | 68,049,336 B | none | A | Batch A PASS (server-side) |
@@ -228,9 +241,18 @@ Gates for **every** step. All are required; a FAIL stops the plan.
    - the extracted container mounted
    - `contributes N package(s)`
    - no duplicate mounts, no missing-mod, dependency or mod errors (`mod-boot` analysis)
+   - **One known non-blocking exception** (Batch B decision, `ModBootGates.KnownWarnings`):
+     - the exact line `Persistence: Error: Code: UConanBuildingPersistenceComponent::CreateHealthPool - DefaultObject not loaded: /Game/Mods/ImprovedThrallsAndQoL/Mailbox/BP_PL_ServerMailContainer.BP_PL_ServerMailContainer_C`
+     - only while `ImprovedThrallsAndQoL.pak` SHA-256 = `F35D9D92…8272`
+     - only with the **ITQoL mailbox gate** passing: the stopped world holds exactly 1 `BP_PL_ServerMailContainer`
+
+     Any other ITQoL, BP_PL or mod error still fails. A missing or duplicated mailbox fails, and so does a new ITQoL version.
 7. Clean shutdown: acknowledged, exit code 0, no forced kill, no WAL/SHM, no orphan processes.
 8. Verified cold backup after the stop, SQLite `quick_check` = ok.
 9. Record: boot time, server working set at readiness, `Saved\ExtractedMods` size, local `.pak` size vs Workshop size.
+10. **Shutdown duration** (logged by every harness stop as `shutdown duration gate`):
+    - Batch B baseline 177–184 s; graceful window 300 s.
+    - **240 s or more = HIGH RISK**: the gate FAILS, and the plan **stops before another batch is added**.
 
 Step-specific checks:
 
