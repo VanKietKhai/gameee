@@ -445,6 +445,89 @@ Other notes:
 - **Harness issues found and fixed during the run:**
   - **Log-offset bug** (fixed in this checkpoint): Conan rotates `ConanSandbox.log` on start, so the first Boot 1 analysis read past the new log's mount lines and reported 0 mounts (FAIL). The server itself had mounted all three mods. Now a changed first log line means "read from 0", and Boot 1 was re-run and passed.
   - **Shell quoting mistake** (operator side, before the successful imports): three `import-local` attempts were run with a wrong path. The pipeline rejected them at staging and nothing changed; three extra verified baseline backups were taken.
+
+## Modpack V1 Batch B — STAGING / PRE-PRODUCTION (server-side PASS with one known issue; in-game work BLOCKED)
+
+- **Environment:** `D:\conan exiles\depot_443031` = **STAGING / PRE-PRODUCTION**. The world is a **TEST / VALIDATION WORLD**. No production save exists.
+- **Code and repo:**
+  - Validated code baseline `2aca0cf`.
+  - The repo was at `bc9899a` (docs by the "Twelve Legends" session; its files were not touched).
+- **Coordination:** the other session reported that its user instruction says Batch B must not start before the paks are validated read-only.
+  - This session installed Batch B on its own user's explicit instruction, after the read-only validation below.
+  - Further server actions are **paused** pending the user's confirmation.
+- **Pre-change copies:**
+  - `modlist.txt` and `Saved\Config\WindowsServer\*.ini` copied to `E:\CSC-M3-Live\live-test\batchB-pre-20261002-141001\` (SHA-256 recorded).
+  - Verified cold backup `2026-10-02_141009` (`quick_check` = ok). The world hash equals the end of Batch A, so nothing changed it in between.
+- **Server-setting discrepancy (not changed):** `ServerSettings.ini` has `ThrallDamageToNPCsMultiplier=0.5` (the Conan default), not the `0.300000` named as the server philosophy. Batch B only forbids increasing it, so it was left at 0.5. The operator decides whether to set 0.3.
+
+**Paks**
+
+All three are in `C:\Users\vkkha\Downloads\mod conan`. Each is a valid Unreal pak v12 with a `-WindowsServer` `.pak/.utoc/.ucas` payload, and its size equals the Workshop item size. Source SHA-256 = installed SHA-256, and the sources are untouched.
+
+| Mod | File | Size | SHA-256 |
+| --- | --- | --- | --- |
+| Thrall Reputation (3787066846) | `ThrallReputation.pak` | 833,760 B | `5CE7A95D31400518DF31F72349FBB4D181D2D6D0771D970159B4DBF150DE10B9` |
+| Improved Thralls & QoL (3758661389) | `ImprovedThrallsAndQoL.pak` | 154,632,086 B | `F35D9D927B4E76869D57DC7073B61FCF2215039B628343B28D6B0989A0B48272` |
+| WO - Riding Thralls (3803149679) | `WO_RidingThralls.pak` | 78,896,983 B | `ACF569D38D7CB73E7523A096200AB1948E72C2783CB70953F43ADC2EFE7B34A8` |
+
+**Load order (staging, after Batch B)**
+
+Batch A is kept unchanged and Batch B is appended through the production pipeline. `MoveAsync` confirmed the order with no `.pak` rewritten.
+
+1. `StackMe10K.pak`
+2. `SavageParagon.pak`
+3. `GritandGrease.pak`
+4. `ThrallReputation.pak`
+5. `ImprovedThrallsAndQoL.pak`
+6. `WO_RidingThralls.pak`
+
+No verified dependency required changing it. Savage Paragon's "load after any XP mod" does not apply: ITQoL's XP features (Inactive Follower XP, party Shared XP) are not XP-curve changes, and both are off by default.
+
+**Boots**
+
+| Boot | Result | Evidence |
+| --- | --- | --- |
+| B1 (5-minute hold) | **PASS** | Online 41.5 s. Mount sequence = modlist; container `Order` 1000–1005. Contributes 5 / 91 / 382 / 18 / 942 / 57 packages. New controllers spawned: `ReputationModController_C`, `MC_ImprovedThrallsAndQoL_C`, `WO_BP_RT_ModController_C`. No crash or crash loop over 5 minutes. Memory at readiness: 4.81 GB working set, 5.49 GB private. |
+| B1 errors | none from the mods | Every Error/Warning category is also in the vanilla log with the same messages (AIDataTable `WarTest*` rows, `ItemInventory`, `building` stability, `LogBaseSpawner`, `LevelStreaming` `/Game/Developers/...`, `BinkMoviePlayer`). Two `LogActor` warnings attach the ITQoL `Lamplighter_Sphere` component to NPCs. |
+| B1 stop | PASS | Acknowledged `shutdown`, extended window. **191.4 s**: quiet teardown of 171 s, then exit at 189 s. Exit code 0, no forced kill, no WAL/SHM, no orphans. |
+| B2 (restart) | Load PASS, **1 known issue** | Online 39.6 s, same sequence and Order. All three new controllers `Loading` from the save (no re-spawn, no duplicates). **Known issue:** `Persistence: Error: UConanBuildingPersistenceComponent::CreateHealthPool - DefaultObject not loaded: /Game/Mods/ImprovedThrallsAndQoL/Mailbox/BP_PL_ServerMailContainer`. |
+| B2 stop | PASS | 70.0 s, exit code 0, no kill, no WAL, no orphans. |
+
+**World integrity**
+
+Read-only checks on copies of the verified backups `141009` → `142111` → `142352`:
+- **pre-B → B1: only additions.**
+  - Three mod controllers (ids 127–129).
+  - **One ITQoL placeable**: `BP_PL_ServerMailContainer` (id 147, owner −1, hidden at z = −50000; property `MailboxChestSpawned`). It belongs to the mod's "Mailbox System".
+  - Three properties and 23 `game_events` rows.
+  - Nothing deleted; `quick_check` = ok.
+- **B1 → B2:** only `game_events` +17. The mailbox is still a single object (id 147, same health rows), and the controllers are unchanged.
+- **The TEST world has no player data:** `account`, `characters`, `item_inventory`, `guilds` and `follower_markers` are all 0. Player, base, inventory and follower integrity therefore has **nothing to verify yet**; it needs a client.
+- Stale save rows: the 4E WickProbe controller (id 123) still has `mod_controllers` and `actor_position` rows after its removal. No error is logged.
+
+**Configuration** (nothing was invented; no files or DB rows were edited for mod settings)
+
+- **Thrall Reputation:** **No supported balance configuration found — using mod defaults.**
+  - The author lists configuration options as a future improvement.
+  - Assets show fixed tiers (`E_FriendshipTier` with a damage-bonus percentage per tier) and UI only (`W_ReputationBar`, `W_ThrallPartyList`).
+  - No global buff was applied.
+- **Improved Thralls & QoL:**
+  - Settings exist only in its in-game admin UI (`DataCmd ImprovedThrallsQoL`; assets `DT_DefaultSettings`, `DT_GeneralSettings`, `E_AdminSettingsType`). No server file or RCON path is documented.
+  - The author states "Everything is disabled by default!". No settings were persisted in the world after two boots, so the server runs compiled defaults.
+  - Every requested OFF / 1.0 / 0 value is therefore met **by default (author claim, not seen in the UI)**. Every requested ON value is **NOT APPLIED** until an authenticated admin client is available.
+  - All requested options exist in the current description, except a **global Thrall Base Stat Modifier**: only *Individual* Thrall Base Stat Modifiers exist (pets and golems have global ones).
+- **Riding Thralls:**
+  - Mode is per player, chosen at the craftable "Registrar" placeable in-game. Modes described: one mount per follower; shared mounts; the player's follower as **passenger on the player's mount** (closest to "Ride With Me").
+  - **No mode is selected yet** (needs a client).
+  - The mod changes no combat stats and adds no follower count.
+
+**Blocked by 4F (no authenticated client):** client join and mod-mismatch check, all in-game checks for Thrall Reputation, ITQoL and Riding Thralls, and the Authority / Commander role-balance test (Step 8).
+
+**Known issues and risks**
+- ITQoL server mailbox `CreateHealthPool` persistence error on restart: the object persists and is not duplicated; in-game effect not yet verified.
+- Stop time grew to 191 s with six mods after about 6 minutes of uptime. The 300 s extended window still held, but larger mods (Ancient Realms 497 MB, Shemite 2.1 GB) and longer uptimes may exceed it; re-measure in Batch C.
+- `ThrallDamageToNPCsMultiplier` is 0.5 vs the stated 0.3 philosophy.
+- The 4E WickProbe controller rows remain in the save.
 - Build PASS (0 warnings, 0 errors); `dotnet test` 315 / 315, 0 skipped.
 
 ## Direction change: standalone-first (corrected 2026-10-02)
