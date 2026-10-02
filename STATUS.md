@@ -126,7 +126,7 @@ Unchanged gate / lease / readiness / cold-backup / `ModBatchTransaction`. Additi
 M3 Task 4E (one Local mod) is accepted as PASS.
 
 Next: **Target Modpack V1** (`MODPACK_V1.md`). Ten mods are planned, and the metadata and conflict/test matrix are recorded. Nothing is installed yet.
-- Cumulative batches: A (WickStacks, Savage Paragon, Grit & Grease) → B → C → D1 / D2 / D3, then a review of all ten.
+- Cumulative batches: A (StackMe10K, which replaces WickStacks; Savage Paragon; Grit & Grease) → B → C → D1 / D2 / D3, then a review of all ten.
 - Batch A waits for the local `.pak` paths.
 - The final load order is not declared until all ten have been tested together with runtime evidence.
 

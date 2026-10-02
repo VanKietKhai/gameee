@@ -10,7 +10,7 @@ Sources (read-only, 2026-10-02):
 - Steam Web API `GetPublishedFileDetails` (public data; all nine items returned `result=1`).
 - The raw HTML of each Workshop page, checked for a "Required items" block.
 - Workshop descriptions. These are the authors' claims and are not verified here.
-- A local inspection of the WickStacks archive.
+- A local, read-only inspection of the stack-mod archives (StackMe10K, WickStacks).
 
 Workshop pages contain hidden template notices ("incompatible with Conan Exiles Enhanced", "removed from the community"). Their style is `display: none`, so they do not apply to these items. One automated page summary misreported them; they are ignored here.
 
@@ -27,7 +27,7 @@ Workshop pages contain hidden template notices ("incompatible with Conan Exiles 
 | 7 | Shemite City State: Enhanced (v2.1) | Workshop `3755371705` | 2026-09-16 | 2,098,034,644 B | none | D3 | no |
 | 8 | Cannibal Captivity v0.0.16 (Enhanced) | Workshop `3765743138` | 2026-09-29 | 112,432,880 B | none | D2 | no |
 | 9 | Grit & Grease (Weapon Infusions) | Workshop `3801774752` | 2026-09-20 | 68,049,336 B | none | A | no |
-| 10 | WickStacks | Nexus, Conan Exiles Enhanced mod 48 | archive 2026-09-19 | 4,492,459 B (`WickProbe.pak`) | unknown | A | **alone, 4E PASS** |
+| 10 | **StackMe10K** (replaces WickStacks, 2026-10-02) | Nexus, Conan Exiles Enhanced mod 3 | archive 2026-09-17 | 4,641,754 B (`StackMe10K.pak`) | unknown | A | no |
 
 The Workshop item sizes total about 3.02 GB. When a local `.pak` arrives, its size is compared with the Workshop size as a version hint. A mismatch is recorded, not treated as a failure.
 
@@ -72,18 +72,21 @@ The Workshop item sizes total about 3.02 GB. When a local `.pak` arrives, its si
    - Weapon resin infusions that add elemental damage as a percentage of weapon damage.
    - Feats in the survival tab; crafted at the alchemy bench (level 10+).
    - The author says it is designed for dedicated servers.
-10. **WickStacks**
-   - The Nexus page could not be fetched automatically (HTTP 403), so public metadata is **unverified**.
-   - The local archive `C:\Users\vkkha\Downloads\mod conan\WickStacks 48 1 2026-09-19T22-02Z rcRAMvI71.zip` contains one file, `WickProbe.pak` (4,492,459 B, CRC32 `b035a5bf`).
-   - It is byte-identical (CRC32 and SHA-256 `D7FE0EC0…D79C`) to `Downloads\mod conan\WickProbe.pak`, which 4E live-tested alone. Internal mod name: `WickProbe`.
-   - Server container assets (read from the extracted `.utoc`): `BP_WickProbeController`, `DT_WickStackControl`, `DT_WickStackPatch`, `ItemTable`.
-   - **Intended stack size 10,000: NOT VERIFIABLE server-side so far.** The 4E boot log has no ItemTable or stack lines. It needs an in-game check by an authenticated client, or the mod's documentation.
+10. **StackMe10K** (the operator's choice on 2026-10-02, replacing WickStacks)
+   - Local file: `C:\Users\vkkha\Downloads\mod conan\StackMe10K.pak`.
+     - 4,641,754 B, SHA-256 `30F5DF542826145FC4B1619296DD135A1370A13CFFBF66DF83E317F52885C8A0`, CRC32 `11f33854`.
+     - Valid Unreal pak, version 12.
+   - Byte-identical (CRC32) to the only file in `StackMe10K 3 1 2026-09-17T12-27Z 5Mov28s9h.zip` (Nexus mod 3, file 1).
+   - Enhanced container with `StackMe10K-WindowsServer`, `-LinuxServer` and `-Windows` (client) sub-paks. Internal paths `/Game/Mods/StackMe10K/`, `StackMe10K_Modcontroller`, and an `ItemTable` reference.
+   - The Nexus page blocks automated fetches (HTTP 403). A search snippet describes it as "max stack size to 10,000 for 2,000+ items"; this is unverified.
+   - **Intended stack size 10,000: NOT VERIFIABLE server-side so far.** The earlier stack mod's 4E boot log had no ItemTable or stack lines. It needs an in-game check by an authenticated client, or the mod's documentation.
+   - **Why WickStacks was dropped:** its archive `WickStacks 48 1 2026-09-19T22-02Z rcRAMvI71.zip` contains only `WickProbe.pak`. That file is byte-identical to the file 4E tested alone (SHA-256 `D7FE0EC0…D79C`, internal name `WickProbe`; assets `BP_WickProbeController`, `DT_WickStackControl`, `DT_WickStackPatch`, `ItemTable`). WickProbe is no longer part of V1. Its stale `Saved\ExtractedMods\WickProbe-WindowsServer.*` files stay as observed technical debt.
 
 ## Conflict matrix
 
 `●` = the mod changes the area (author description or asset evidence). `◐` = touches it indirectly.
 
-| Area | Wick | Paragon | G&G | ThrRep | ITQoL | Riding | AncR | FROE | Cannibal | Shemite |
+| Area | SM10K | Paragon | G&G | ThrRep | ITQoL | Riding | AncR | FROE | Cannibal | Shemite |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Item stack sizes / ItemTable | ● | | ◐ items | | ● multiplier | | ◐ items | | | ◐ items |
 | Follower stats / buffs | | ● | | ● buff | ● modifiers | | | | | |
@@ -101,8 +104,8 @@ Specific pair risks to watch:
 
 | Pair | Risk | Mitigation / test |
 | --- | --- | --- |
-| WickStacks × ITQoL Stack Size Multiplier | Two stack-size systems | **Rule: with WickStacks installed, the ITQoL Stack Size Multiplier stays disabled.** It is off by default; never enable it. |
-| WickStacks × item-adding mods (G&G, Ancient Realms, Shemite) | The 10,000 stack may not apply to modded items, depending on the patch scope and order | In-game check later. Server logs cannot show stack sizes. |
+| StackMe10K × ITQoL Stack Size Multiplier | Two stack-size systems | **Rule: with StackMe10K installed, the ITQoL Stack Size Multiplier stays disabled.** It is off by default; never enable it. |
+| StackMe10K × item-adding mods (G&G, Ancient Realms, Shemite) | The 10,000 stack may not apply to modded items, depending on the patch scope and order | In-game check later. Server logs cannot show stack sizes. |
 | Thrall Reputation × ITQoL | Two follower party UIs; Thrall Reputation warns about stats-window changes | UI check needs an authenticated client (blocked, 4F). Server side: load evidence and errors only. |
 | ITQoL × Riding Thralls | Both change follower movement and handling (summon, send home, inventory pick-up vs mounting and passengers) | Keep ITQoL follower features off initially; record load order in any report. |
 | Savage Paragon × Thrall Reputation × ITQoL | Stacking follower buffs | **Rule: ITQoL Additional Follower Count and thrall stat modifiers stay disabled until balance testing.** |
@@ -117,7 +120,7 @@ Batches are **cumulative**: earlier batches stay installed. The full ten-mod set
 
 | Step | Adds | Installed after |
 | --- | --- | --- |
-| A | WickStacks, Savage Paragon, Grit & Grease | 3 |
+| A | StackMe10K, Savage Paragon, Grit & Grease | 3 |
 | B | Thrall Reputation, Improved Thralls & QoL, Riding Thralls | 6 |
 | C | Ancient Realms Enhanced | 7 |
 | D1 | Fantasy Races Of Exiles | 8 |
@@ -145,7 +148,7 @@ Step-specific checks:
 
 | Step | Extra checks |
 | --- | --- |
-| A | WickStacks was already loaded alone in 4E; now confirm it loads together with Paragon and G&G. Note: Paragon's multiplayer is "beta" by the author's own statement. |
+| A | First live boot for StackMe10K, Paragon and G&G. Note: Paragon's multiplayer is "beta" by the author's own statement. |
 | B | ITQoL loads with everything **default-off**. Stack Size Multiplier, Additional Follower Count and thrall stat modifiers must stay disabled. |
 | C | Large item (497 MB): watch boot time, memory and extraction size. Back up before and after. |
 | D1 | NPC spawn-table mod: watch spawn or DataTable errors in the boot log. |
@@ -155,7 +158,7 @@ Step-specific checks:
 
 ## Configuration rules (V1)
 
-- **WickStacks installed → ITQoL Stack Size Multiplier stays DISABLED.**
+- **StackMe10K installed → ITQoL Stack Size Multiplier stays DISABLED.**
 - **ITQoL Additional Follower Count stays DISABLED** until balance testing.
 - **ITQoL thrall stat modifiers stay DISABLED** until balance testing. That covers individual thrall base stat modifiers, and, as a precaution, the pet and golem stat modifiers and the global weapon and armor base stat modifiers.
 
@@ -163,7 +166,7 @@ ITQoL is documented as default-off, so the rule holds as long as nobody changes 
 
 ## Open items
 
-1. **WickStacks 10,000:** how to verify it (in-game check, or mod documentation). Server logs do not show stack sizes.
+1. **StackMe10K 10,000:** how to verify it (in-game check, or mod documentation). Server logs did not show stack sizes for the earlier stack mod in 4E.
 2. **ITQoL settings state:** where the mod persists its admin settings (probably the world database). A read-only inspection of a backup **copy** after Batch B could confirm "all off" without a client, if the storage is identifiable.
 3. **Workshop mod `.pak` file names** are not in the public metadata. They become known when the local paths are provided.
 4. Whether Batch A should also carry the 4E.2 multi-mod steps (explicit order, reorder, remove the middle mod, re-boot).
