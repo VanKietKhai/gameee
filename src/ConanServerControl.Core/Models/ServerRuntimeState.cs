@@ -120,6 +120,12 @@ public sealed record ServerStopReport
 
     public int GracefulWindowSeconds { get; init; }
 
+    /// <summary>Hard ceiling that applied to this stop (0 when the short unacknowledged window applied).</summary>
+    public int EmergencyCeilingSeconds { get; init; }
+
+    /// <summary>The server was still exiting when the graceful window ran out, and the stop kept waiting.</summary>
+    public bool GracefulWindowExceeded { get; init; }
+
     public bool ForcedKill { get; init; }
 
     /// <summary>When the whole managed process tree was gone. Null if it was still running.</summary>

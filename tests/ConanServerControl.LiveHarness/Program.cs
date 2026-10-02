@@ -151,6 +151,7 @@ internal static class Program
                 "import-local" => await harness.ImportLocalAsync(args[1]),
                 "remove-local" => await harness.RemoveLocalAsync(args[1]),
                 "restore" => await harness.RestoreBackupAsync(args[1]),
+                "set-mods" => await harness.SetModsAsync(args[1]),
                 "cold-backup" => await harness.ColdBackupCommandAsync(),
                 "graceful-test" => await harness.GracefulTestAsync(args[1]),
                 _ => Unknown(command)
@@ -320,6 +321,7 @@ internal sealed class Harness : IAsyncDisposable
             s.Advanced.RestartAfterCrash = false; // never auto-restart while diagnosing live boots
             s.Advanced.GracefulStopTimeoutSeconds = AppConstants.DefaultGracefulStopTimeoutSeconds;
             s.Advanced.UnacknowledgedStopTimeoutSeconds = AppConstants.DefaultUnacknowledgedStopTimeoutSeconds;
+            s.Advanced.EmergencyStopCeilingSeconds = AppConstants.DefaultEmergencyStopCeilingSeconds;
             s.WebAdmin.Enabled = false;
         });
 
@@ -1195,6 +1197,72 @@ internal sealed class Harness : IAsyncDisposable
         return ok ? 0 : 1;
     }
 
+    // ------------------------------------------------------------ Shutdown-timing study (isolated mod sets)
+
+    /// <summary>
+    /// Makes exactly the listed catalog mods enabled, in that order, through the production catalog
+    /// (SetEnabledAsync + MoveAsync); every other catalog mod is disabled, stays in the catalog and keeps
+    /// its .pak in Mods (not in modlist.txt, so not mounted). "none" disables all. No file is copied.
+    /// </summary>
+    public async Task<int> SetModsAsync(string csv)
+    {
+        if (Program.ServerProcesses().Count > 0)
+        {
+            _log.Write("timing-set-mods", "precondition: server offline", "FAIL", null, Facts(("Processes", DescribeProcesses())));
+            return 1;
+        }
+
+        var wanted = csv.Equals("none", StringComparison.OrdinalIgnoreCase)
+            ? []
+            : csv.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        var modsDir = Path.Combine(_serverDir, "ConanSandbox", "Mods");
+        var before = PakFacts(modsDir);
+        var listBefore = ReadModList(modsDir);
+        var catalog = _services.GetRequiredService<IModCatalogService>();
+        var unknown = wanted.Where(w => !catalog.Mods.Any(m => ModKeys.Matches(m, ModKeys.Local(w)))).ToArray();
+        string? error = unknown.Length > 0 ? "not in catalog: " + string.Join(", ", unknown) : null;
+        if (error is null)
+        {
+            try
+            {
+                foreach (var mod in catalog.Mods.ToArray())
+                {
+                    var on = wanted.Any(w => ModKeys.Matches(mod, ModKeys.Local(w)));
+                    if (mod.Enabled != on)
+                    {
+                        await catalog.SetEnabledAsync(ModKeys.For(mod), on);
+                    }
+                }
+
+                for (var i = 0; i < wanted.Length; i++)
+                {
+                    await catalog.MoveAsync(ModKeys.Local(wanted[i]), i);
+                }
+            }
+            catch (Exception ex)
+            {
+                error = ex.Message;
+            }
+        }
+
+        var after = PakFacts(modsDir);
+        var listAfter = ReadModList(modsDir);
+        var listMatches = listAfter.SequenceEqual(wanted, StringComparer.OrdinalIgnoreCase);
+        var paksUntouched = before.Count == after.Count && before.All(kv => after.TryGetValue(kv.Key, out var v) && v == kv.Value);
+        var ok = error is null && listMatches && paksUntouched;
+        _log.Write("timing-set-mods", "IModCatalogService.SetEnabledAsync + MoveAsync (exact enabled set)", ok ? "PASS" : "FAIL", null,
+            Facts(
+                ("Error", error ?? string.Empty),
+                ("Requested", wanted.Length == 0 ? "none" : string.Join(" | ", wanted)),
+                ("ModListBefore", string.Join(" | ", listBefore)),
+                ("ModListAfter", string.Join(" | ", listAfter)),
+                ("ModListMatchesRequest", listMatches.ToString()),
+                ("Catalog", string.Join("; ", _settings.Current.Mods.Mods.OrderBy(m => m.LoadOrder).Select(m => $"{m.LoadOrder}:{m.LocalFileName}:{(m.Enabled ? "on" : "off")}"))),
+                ("PaksUntouched(hash,size,created,written)", paksUntouched.ToString())),
+            liveFilesChanged: "server modlist.txt only (expected)");
+        return ok ? 0 : 1;
+    }
+
     // ------------------------------------------------------------ 4E.2 multi-mod load order
 
     /// <summary>
@@ -1579,7 +1647,8 @@ internal sealed class Harness : IAsyncDisposable
         var leftovers = Program.ServerProcesses();
         var ok = error is null && server.State.Status == ServerStatus.Offline && leftovers.Count == 0;
         var stop = server.State.LastStop;
-        var durationGate = ModBootGates.EvaluateShutdownDuration(stopDuration, _settings.Current.Advanced.GracefulStopTimeoutSeconds);
+        var durationGate = ModBootGates.EvaluateShutdownDuration(
+            stopDuration, _settings.Current.Advanced.GracefulStopTimeoutSeconds, _settings.Current.Advanced.EmergencyStopCeilingSeconds);
         var milestones = ShutdownMilestones(ReadLogFrom(ServerLog, logOffset, int.MaxValue));
         var walLeft = File.Exists(Path.Combine(Saved, "game_0.db-wal"));
         var shmLeft = File.Exists(Path.Combine(Saved, "game_0.db-shm"));
@@ -1594,6 +1663,8 @@ internal sealed class Harness : IAsyncDisposable
                 ("ShutdownProgressAt", Local(stop?.ShutdownProgressAt)),
                 ("ShutdownProgressEvidence", Truncate(stop?.ShutdownProgressEvidence, 160)),
                 ("GracefulWindow", stop is null ? "n/a" : $"{stop.GracefulWindowSeconds}s ({(stop.ExtendedWindowUsed ? "extended" : "short")})"),
+                ("EmergencyCeiling", stop is null || stop.EmergencyCeilingSeconds == 0 ? "n/a (short window)" : $"{stop.EmergencyCeilingSeconds}s"),
+                ("GracefulWindowExceeded", stop is null ? "n/a" : stop.GracefulWindowExceeded ? "YES (kept waiting: shutdown proven)" : "NO"),
                 ("ForcedKill", stop is null ? "n/a" : stop.ForcedKill ? "YES" : "NO"),
                 ("ProcessTreeExitedAt", Local(stop?.ProcessTreeExitedAt)),
                 ("ServerLogMilestones", milestones),
@@ -1607,6 +1678,7 @@ internal sealed class Harness : IAsyncDisposable
             Facts(("ShutdownDurationSeconds", stopDuration.TotalSeconds.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture)),
                 ("HighRiskThresholdSeconds", ModBootGates.ShutdownHighRiskSeconds.ToString()),
                 ("GracefulWindowSeconds", _settings.Current.Advanced.GracefulStopTimeoutSeconds.ToString()),
+                ("EmergencyCeilingSeconds", _settings.Current.Advanced.EmergencyStopCeilingSeconds.ToString()),
                 ("Gate", durationGate.Detail)),
             liveFilesChanged: "no");
         return ok && durationGate.Pass;

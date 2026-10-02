@@ -52,6 +52,15 @@ public static class AppConstants
     public const int DefaultGracefulStopTimeoutSeconds = 300;
 
     /// <summary>
+    /// Hard emergency ceiling for a shutdown that is proven to be progressing (acknowledged by RCON or
+    /// visible in the server log). Passing the graceful window alone no longer force-kills such a stop:
+    /// on 2026-10-03, with a heavily loaded host, the exit sequence went quiet for ~288 s and two clean
+    /// shutdowns were killed at 300 s, leaving game_0.db-wal behind. The process tree is killed only
+    /// at this ceiling. Batch timing is judged separately (240 s = HIGH RISK in the live harness).
+    /// </summary>
+    public const int DefaultEmergencyStopCeilingSeconds = 600;
+
+    /// <summary>
     /// Graceful-stop window when the shutdown was not acknowledged and no shutdown progress is seen
     /// (RCON unavailable, command rejected, server hung). Waiting the extended window here would only
     /// delay the force-kill fallback.

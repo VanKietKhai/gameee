@@ -267,7 +267,7 @@ public sealed partial class IntegrationDiagnosticsService : IIntegrationDiagnost
         }
 
         if (s.Advanced.GracefulStopTimeoutSeconds <= 0 || s.Advanced.UnacknowledgedStopTimeoutSeconds <= 0 ||
-            s.Advanced.ForceStopTimeoutSeconds <= 0)
+            s.Advanced.EmergencyStopCeilingSeconds <= 0 || s.Advanced.ForceStopTimeoutSeconds <= 0)
         {
             problems.Add("Stop timeouts must be greater than 0 seconds.");
         }

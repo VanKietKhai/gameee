@@ -180,18 +180,20 @@ public class M3PreE4StopAndNetworkTests
         await h.Manager.StopAsync();
 
         var stop = h.Manager.State.LastStop!;
-        Assert.True(clock.Elapsed < TimeSpan.FromSeconds(15), $"{scenario}: stop took {clock.Elapsed} with a 300 s extended window.");
+        Assert.True(clock.Elapsed < TimeSpan.FromSeconds(15), $"{scenario}: stop took {clock.Elapsed} with a 300 s window and a 600 s ceiling.");
         Assert.False(stop.ExtendedWindowUsed);
         Assert.Equal(1, stop.GracefulWindowSeconds);
+        Assert.Equal(0, stop.EmergencyCeilingSeconds);
+        Assert.False(stop.GracefulWindowExceeded);
         Assert.True(stop.ForcedKill);
         Assert.Equal(1, h.Process.KillCalls);
         Assert.Equal(ServerStatus.Offline, h.Manager.State.Status);
     }
 
     [Fact]
-    public async Task Forced_kill_remains_the_final_fallback_after_an_acknowledged_shutdown_that_never_exits()
+    public async Task Forced_kill_remains_the_final_fallback_at_the_emergency_ceiling_after_an_acknowledged_shutdown_that_never_exits()
     {
-        var h = await StopHarness.CreateAsync(rconConfigured: true, gracefulSeconds: 5);
+        var h = await StopHarness.CreateAsync(rconConfigured: true, gracefulSeconds: 5, ceilingSeconds: 8);
         h.Rcon.Reply = Acknowledged; // acknowledged, but the process hangs in its exit sequence
 
         await h.Manager.StartAsync();
@@ -201,10 +203,118 @@ public class M3PreE4StopAndNetworkTests
         var stop = h.Manager.State.LastStop!;
         Assert.True(stop.ExtendedWindowUsed);
         Assert.Equal(5, stop.GracefulWindowSeconds);
-        Assert.True(clock.Elapsed >= TimeSpan.FromSeconds(4.5), $"Killed after {clock.Elapsed}, before the extended window.");
+        Assert.Equal(8, stop.EmergencyCeilingSeconds);
+        Assert.True(stop.GracefulWindowExceeded);
+        Assert.True(clock.Elapsed >= TimeSpan.FromSeconds(7.5), $"Killed after {clock.Elapsed}, before the emergency ceiling.");
         Assert.True(stop.ForcedKill);
         Assert.Equal(1, h.Process.KillCalls);
         Assert.Equal(ServerStatus.Offline, h.Manager.State.Status);
+    }
+
+    // ------------------------------------------------------------ 2026-10-03 policy: graceful window vs emergency ceiling
+
+    [Fact]
+    public async Task Acknowledged_shutdown_that_outlasts_the_graceful_window_finishes_without_a_kill()
+    {
+        // Live 2026-10-03: two clean shutdowns were still exiting at 300 s and were killed mid-exit.
+        var h = await StopHarness.CreateAsync(rconConfigured: true, gracefulSeconds: 5, ceilingSeconds: 15);
+        h.Rcon.Reply = Acknowledged;
+        h.Rcon.OnShutdown = () => h.Process.ExitAfter(TimeSpan.FromSeconds(7)); // past the 5 s window, before the ceiling
+
+        await h.Manager.StartAsync();
+        await h.Manager.StopAsync();
+
+        var stop = h.Manager.State.LastStop!;
+        Assert.Equal(ServerStatus.Offline, h.Manager.State.Status);
+        Assert.True(stop.ExtendedWindowUsed);
+        Assert.True(stop.GracefulWindowExceeded);
+        Assert.Equal(5, stop.GracefulWindowSeconds);
+        Assert.Equal(15, stop.EmergencyCeilingSeconds);
+        Assert.False(stop.ForcedKill);
+        Assert.Equal(0, h.Process.KillCalls);
+        Assert.Equal(0, stop.ExitCode);
+    }
+
+    [Fact]
+    public async Task Log_progress_without_an_rcon_reply_also_continues_past_the_graceful_window()
+    {
+        var h = await StopHarness.CreateAsync(rconConfigured: true, gracefulSeconds: 5, ceilingSeconds: 15);
+        h.Rcon.Throw = new TimeoutException("RCON did not answer within 5 s.");
+        h.Rcon.OnShutdown = () =>
+        {
+            h.Probe.Evidence = "[2026.10.03-17.42.41:027][934]LogCore: Engine exit requested (reason: GenericPlatform RequestExit)";
+            h.Process.ExitAfter(TimeSpan.FromSeconds(7));
+        };
+
+        await h.Manager.StartAsync();
+        await h.Manager.StopAsync();
+
+        var stop = h.Manager.State.LastStop!;
+        Assert.False(stop.ShutdownAcknowledged);
+        Assert.Contains("Engine exit requested", stop.ShutdownProgressEvidence);
+        Assert.True(stop.GracefulWindowExceeded);
+        Assert.False(stop.ForcedKill);
+        Assert.Equal(0, h.Process.KillCalls);
+        Assert.Equal(ServerStatus.Offline, h.Manager.State.Status);
+    }
+
+    [Fact]
+    public async Task Unacknowledged_shutdown_without_progress_never_waits_for_the_emergency_ceiling()
+    {
+        var h = await StopHarness.CreateAsync(rconConfigured: true, gracefulSeconds: 5, ceilingSeconds: 600);
+        h.Rcon.Throw = new TimeoutException("RCON did not answer within 5 s."); // no reply, no log progress
+
+        await h.Manager.StartAsync();
+        var clock = Stopwatch.StartNew();
+        await h.Manager.StopAsync();
+
+        var stop = h.Manager.State.LastStop!;
+        Assert.True(clock.Elapsed < TimeSpan.FromSeconds(10), $"Stop took {clock.Elapsed}; an unproven shutdown must use the short window.");
+        Assert.False(stop.ExtendedWindowUsed);
+        Assert.Equal(0, stop.EmergencyCeilingSeconds);
+        Assert.False(stop.GracefulWindowExceeded);
+        Assert.True(stop.ForcedKill);
+        Assert.Equal(1, h.Process.KillCalls);
+    }
+
+    [Fact]
+    public async Task Emergency_ceiling_below_the_graceful_window_is_raised_to_the_graceful_window()
+    {
+        var h = await StopHarness.CreateAsync(rconConfigured: true, gracefulSeconds: 5, ceilingSeconds: 1);
+        h.Rcon.Reply = Acknowledged; // never exits
+
+        await h.Manager.StartAsync();
+        var clock = Stopwatch.StartNew();
+        await h.Manager.StopAsync();
+
+        var stop = h.Manager.State.LastStop!;
+        Assert.Equal(5, stop.EmergencyCeilingSeconds);
+        Assert.True(clock.Elapsed >= TimeSpan.FromSeconds(4.5), $"Killed after {clock.Elapsed}, before the graceful window.");
+        Assert.True(stop.ForcedKill);
+    }
+
+    [Fact]
+    public void Stop_policy_defaults_are_30_s_short_300_s_graceful_600_s_ceiling()
+    {
+        var advanced = new Core.Settings.AdvancedSettings();
+        Assert.Equal(30, advanced.UnacknowledgedStopTimeoutSeconds);
+        Assert.Equal(300, advanced.GracefulStopTimeoutSeconds);
+        Assert.Equal(600, advanced.EmergencyStopCeilingSeconds);
+        Assert.True(Core.LiveTesting.ModBootGates.ShutdownHighRiskSeconds < advanced.GracefulStopTimeoutSeconds);
+    }
+
+    [Fact]
+    public async Task An_existing_settings_file_without_the_ceiling_key_loads_the_600_s_default()
+    {
+        var (_, paths, settings) = QaTestSupport.CreateData();
+        Directory.CreateDirectory(Path.GetDirectoryName(paths.SettingsFilePath)!);
+        await File.WriteAllTextAsync(paths.SettingsFilePath,
+            """{ "advanced": { "gracefulStopTimeoutSeconds": 300, "unacknowledgedStopTimeoutSeconds": 30 } }""");
+
+        var loaded = await settings.LoadAsync();
+
+        Assert.Equal(300, loaded.Advanced.GracefulStopTimeoutSeconds);
+        Assert.Equal(600, loaded.Advanced.EmergencyStopCeilingSeconds);
     }
 
     [Fact]
@@ -415,7 +525,7 @@ public class M3PreE4StopAndNetworkTests
 
         public ScriptedShutdownProbe Probe { get; }
 
-        public static async Task<StopHarness> CreateAsync(bool rconConfigured, int gracefulSeconds = 300)
+        public static async Task<StopHarness> CreateAsync(bool rconConfigured, int gracefulSeconds = 300, int ceilingSeconds = 600)
         {
             var (_, _, settings) = QaTestSupport.CreateData();
             await QaTestSupport.ConfigureInstallAsync(settings, Path.Combine(Path.GetTempPath(), "csc-m3-stop", Guid.NewGuid().ToString("n")));
@@ -423,6 +533,7 @@ public class M3PreE4StopAndNetworkTests
             {
                 s.Rcon.Enabled = true;
                 s.Advanced.GracefulStopTimeoutSeconds = gracefulSeconds;
+                s.Advanced.EmergencyStopCeilingSeconds = ceilingSeconds;
                 s.Advanced.UnacknowledgedStopTimeoutSeconds = 1;
                 s.Advanced.ForceStopTimeoutSeconds = 1;
                 s.Advanced.ReadinessPollIntervalMilliseconds = 20;
