@@ -1,6 +1,12 @@
 # Target Modpack V1 — private Radmin Conan server
 
-Status: **PLANNED. Metadata and test matrix only.** Nothing has been installed. Batch A waits for the local `.pak` paths.
+Status: **PLANNED. Metadata and test matrix only.** Nothing has been installed. Batch A waits for the Savage Paragon and Grit & Grease `.pak` paths.
+
+Operator decisions (2026-10-02):
+- WickProbe / WickStacks is **not** part of the modpack. Mod #10 is **StackMe10K**.
+- Batches are **cumulative**: A stays installed during B, A+B during C, and so on until all ten are tested together.
+- Batch A also performs the multi-mod / load-order checkpoint (4E.2).
+- While StackMe10K is installed, the Improved Thralls & QoL Stack Size Multiplier stays **OFF**.
 
 - **Final load order: NOT DECLARED.** It is declared only after all ten mods have been tested together and the runtime evidence has been reviewed.
 - **Deployment:** private friends-only dedicated server over Radmin VPN (`D:\conan exiles\depot_443031`, CL-377096).
@@ -79,7 +85,7 @@ The Workshop item sizes total about 3.02 GB. When a local `.pak` arrives, its si
    - Byte-identical (CRC32) to the only file in `StackMe10K 3 1 2026-09-17T12-27Z 5Mov28s9h.zip` (Nexus mod 3, file 1).
    - Enhanced container with `StackMe10K-WindowsServer`, `-LinuxServer` and `-Windows` (client) sub-paks. Internal paths `/Game/Mods/StackMe10K/`, `StackMe10K_Modcontroller`, and an `ItemTable` reference.
    - The Nexus page blocks automated fetches (HTTP 403). A search snippet describes it as "max stack size to 10,000 for 2,000+ items"; this is unverified.
-   - **Intended stack size 10,000: NOT VERIFIABLE server-side so far.** The earlier stack mod's 4E boot log had no ItemTable or stack lines. It needs an in-game check by an authenticated client, or the mod's documentation.
+   - **10,000 stack behaviour: IN-GAME BEHAVIOR NOT YET VERIFIED.** Server logs are not evidence of stack sizes: the earlier stack mod's 4E boot log had no ItemTable or stack lines. Server-side tests can show only that the mod mounts and loads. Verifying the behaviour needs an in-game check by an authenticated client.
    - **Why WickStacks was dropped:** its archive `WickStacks 48 1 2026-09-19T22-02Z rcRAMvI71.zip` contains only `WickProbe.pak`. That file is byte-identical to the file 4E tested alone (SHA-256 `D7FE0EC0…D79C`, internal name `WickProbe`; assets `BP_WickProbeController`, `DT_WickStackControl`, `DT_WickStackPatch`, `ItemTable`). WickProbe is no longer part of V1. Its stale `Saved\ExtractedMods\WickProbe-WindowsServer.*` files stay as observed technical debt.
 
 ## Conflict matrix
@@ -148,13 +154,34 @@ Step-specific checks:
 
 | Step | Extra checks |
 | --- | --- |
-| A | First live boot for StackMe10K, Paragon and G&G. Note: Paragon's multiplayer is "beta" by the author's own statement. |
+| A | First live boot for StackMe10K, Paragon and G&G, plus the multi-mod / load-order checkpoint below. Note: Paragon's multiplayer is "beta" by the author's own statement. |
 | B | ITQoL loads with everything **default-off**. Stack Size Multiplier, Additional Follower Count and thrall stat modifiers must stay disabled. |
 | C | Large item (497 MB): watch boot time, memory and extraction size. Back up before and after. |
 | D1 | NPC spawn-table mod: watch spawn or DataTable errors in the boot log. |
 | D2 | Crash risk reported after the 2026-09-15 update; watch for server crashes during boot and a 10-minute hold. |
 | D3 | Map mod, 2.1 GB: watch boot time, memory (host has 16 GB; the vanilla server uses about 5.6–6.9 GB) and the ExtractedMods size. D: has 403.8 GB free. |
 | Review | Mount sequence and IoStore container `Order=` for all ten. Propose an order only from that evidence plus the author constraints. |
+
+### Batch A: multi-mod / load-order checkpoint (4E.2)
+
+Roles: **A = StackMe10K, B = Savage Paragon, C = Grit & Grease.** Every step uses the per-batch gates above.
+
+1. **Baseline:** server Offline, no process tree, diagnostics, `Mods` and `modlist.txt` recorded, verified cold backup (`quick_check` = ok). Stop if the backup verification fails.
+2. **Import** A, B and C through the production Local pipeline. Record source, source SHA-256, installed path and installed SHA-256; the hashes must match, and the sources must stay untouched.
+3. **Initial explicit order** A, B, C via `reorder-local`. `modlist.txt` must match exactly.
+4. **Boot 1:** real readiness, and positive current-boot load evidence for all three (no missing-mod, dependency or duplicate-mount errors). Record the runtime mount sequence and container `Order=`. Clean stop.
+5. **Reorder** to C, A, B through the app (never by hand). `modlist.txt` must change accordingly, `.pak` hashes must be unchanged, and nothing may be re-copied.
+6. **Boot 2:** load evidence for all three. Does the log mount sequence follow the new order? If it cannot be shown, record **NOT PROVEN**. Clean stop.
+7. **Remove the middle entry** (A = StackMe10K at that point) through the app:
+   - verified `pre-mod-removal` backup
+   - the `.pak` archived to `removed-mods`
+   - the source untouched
+   - `modlist.txt` = C, B
+   - remaining hashes unchanged
+8. **Boot 3** with `--expect-absent StackMe10K.pak`: the removed mod is not mounted, B and C load, and there are no stale or missing-mod errors. Clean stop.
+9. **ExtractedMods:** observe read-only and record stale artifacts per removed mod as technical debt. Nothing is deleted.
+10. **Restore Batch A** (batches are cumulative): re-import StackMe10K, set the order, boot, positive evidence for all three, clean stop, verified cold backup (`quick_check` = ok).
+11. `dotnet build` and `dotnet test` (no skipped tests). Then stop for review before Batch B.
 
 ## Configuration rules (V1)
 
@@ -166,10 +193,11 @@ ITQoL is documented as default-off, so the rule holds as long as nobody changes 
 
 ## Open items
 
-1. **StackMe10K 10,000:** how to verify it (in-game check, or mod documentation). Server logs did not show stack sizes for the earlier stack mod in 4E.
+1. **StackMe10K 10,000:** IN-GAME BEHAVIOR NOT YET VERIFIED. It needs an authenticated client (4F is blocked); server logs are not evidence of it.
 2. **ITQoL settings state:** where the mod persists its admin settings (probably the world database). A read-only inspection of a backup **copy** after Batch B could confirm "all off" without a client, if the storage is identifiable.
 3. **Workshop mod `.pak` file names** are not in the public metadata. They become known when the local paths are provided.
-4. Whether Batch A should also carry the 4E.2 multi-mod steps (explicit order, reorder, remove the middle mod, re-boot).
+4. ~~Whether Batch A carries the 4E.2 steps~~: resolved, yes (see "Batch A: multi-mod / load-order checkpoint").
+5. Local paths still needed: the Savage Paragon `.pak` and the Grit & Grease `.pak`.
 
 Harness commands for each step (from `d23e091`):
 - `cold-backup`
