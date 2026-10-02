@@ -710,6 +710,70 @@ Investigation cycle 1 failed **no forced kill** and **stop < 240 s**. Cycles 2�
 - **Harness:** `restore <backupId>` (server Offline only; PASS = restored world hash equals the backup and no non-empty WAL).
 - **Build:** 0 warnings / 0 errors; `dotnet test` 344 / 344, 0 skipped.
 
+### Shutdown policy correction (operator, 2026-10-03)
+
+The compatibility threshold and the force-kill ceiling are now separate:
+
+| Time | Meaning |
+| --- | --- |
+| 240 s | HIGH RISK: the batch compatibility gate fails and the next batch is not started (unchanged) |
+| 300 s | Graceful window. A shutdown **acknowledged by RCON or progressing in the current-boot log** is no longer killed here. The overrun is logged (`GracefulWindowExceeded`). |
+| 600 s | Emergency ceiling (`AdvancedSettings.EmergencyStopCeilingSeconds`, a new key, so existing settings files load 600). The process tree is killed here if still alive. |
+
+- With no acknowledgement and no shutdown progress, the 30 s short fallback is unchanged; nothing waits 600 s blindly.
+- The ceiling is never below the graceful window.
+- "Offline only when the whole process tree is gone" and the final tree kill are unchanged.
+- Regression tests:
+  - `M3PreE4StopAndNetworkTests` adds 6: an acknowledged stop that outlasts the window is not killed; log progress without an RCON reply continues; an unproven stop never waits for the ceiling; a ceiling below the window is raised; the defaults are 30/300/600; an old settings file loads 600. The hang-forever case is now killed at the ceiling, not the window.
+  - `M3ModBootGateTests` adds 3: stops of 240 s or more still fail the batch gate, even with the 600 s ceiling.
+- **Build:** 0 warnings / 0 errors; `dotnet test` **353 / 353**, 0 skipped.
+
+### Quiet-host retest (2026-10-03 01:01–01:23): all 3 cycles PASS
+
+**Host:**
+- League of Legends closed; no other games; idle build servers stopped; no other Conan or harness session; 8.0 GB RAM free.
+- Background load noted: a stuck `tasklist | findstr` pipeline (`findstr` PID 28280) has used about 2 of 8 threads since 2026-10-02 03:51. It was also present during every earlier baseline run and was left untouched.
+
+**Setup:**
+- Start state: the known-good pre-Batch-C world (post-rollback, verified backup `2026-10-03_010141`: 113 actors, 23 controllers, 0 duplicates; `ThrallDamageToNPCsMultiplier=0.3`).
+- Ancient Realms reinstalled through the Local pipeline: backup `010158`; installed SHA-256 = source = `12F7E719…FD1A`; 7-mod test order.
+- Each cycle: `mod-boot --hold 150` with the new stop policy, then a verified cold backup.
+
+| Cycle | Readiness | AR named / attributable | Other AR errors | Shutdown ack / engine exit requested | Stop (gate) | Window exceeded | Forced kill | Peak working set / max private | Backup, `quick_check` | Persistence / save errors | Controller | Mailbox |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | 36.5 s | 7 / 37 | 0 | YES 01:05:45.8 / 01:05:46.3 | 183.1 s | NO | NO | 7.66 / 9.06 GB | `010858` ok | known ITQoL only / 0 | spawned (row 148) | 1 |
+| 2 | 36.5 s | 7 / 37 | 0 | YES 01:12:34.9 / 01:12:35.4 | 185.9 s | NO | NO | 8.45 / 9.01 GB | `011547` ok | known ITQoL only / 0 | loaded | 1 |
+| 3 | 36.5 s | 7 / 37 | 0 | YES 01:19:16.1 / 01:19:16.6 | 195.9 s | NO | NO | 8.74 / 9.05 GB | `012238` ok | known ITQoL only / 0 | loaded | 1 |
+
+- Every stop: exit code 0, no WAL/SHM left, no orphans.
+- World changes across the cycles: the AR controller actor and `mod_controllers` row 148 (cycle 1), then `game_events` only. No duplicate or missing persistence objects.
+- **Cross-boot comparison:** across all six AR boots (C1, C2, investigation cycle 1, retest 1–3), the 7 named and 37 attributable signatures are **identical multisets**. There are 0 other AR error lines, 0 unattributed `LoadErrors`, no crash, and no save errors.
+- **Criteria met for reclassification.** The AR errors are eligible for a KNOWN NON-BLOCKING WARNING rule bound to `Ancient_Realms.pak` SHA-256 `12F7E719…FD1A`. **Not applied: the operator decides.**
+- **Stop-time trend:** 183 → 186 → 196 s, still under 240 s but rising, with a margin of about 44 s. Watch it before Batch D.
+- Staging now runs **7 mods** (Ancient Realms reinstalled).
+
+### Batch C acceptance and warning classification (operator, 2026-10-03)
+
+- **BATCH C SERVER-SIDE COMPATIBILITY: PASS**
+- **ANCIENT REALMS GAMEPLAY: NOT YET VERIFIED**
+- **MAP / BUILDING / COLLISION BEHAVIOR: NOT YET VERIFIED**
+- **Reclassified as KNOWN NON-BLOCKING WARNING:** only the exact validated AR signatures, bound to `Ancient_Realms.pak` SHA-256 `12F7E7192043270FC5F2290C5989F8B8285494BA47A054646790B4A042D1FD1A`:
+  - the 7 named lines above (`ANCIENT-REALMS-DANGLING-REF-1..7`)
+  - the exact 37-entry per-boot `LoadErrors` multiset, including the 30 "package None" lines
+- **No other Ancient Realms error is suppressed.**
+- **The exception is invalidated by:**
+  - any new AR signature, or an extra or missing occurrence
+  - a changed file hash
+  - a crash
+  - a save or persistence error
+  - a world-integrity failure (`quick_check`)
+  - a missing or duplicate persistence object (the AR controller must exist exactly once in the stopped world)
+- **Harness implementation:** `ModBootGates` plus the harness (exact known-warning rules, the attributed `LoadErrors` set gate, an AR controller gate, and tests). It is committed separately once built and tested. The build is deferred until the other session's shutdown-timing study ends, so the measurements are not disturbed.
+- **Also recorded:**
+  - ITQoL's 23 `LoadErrors` per boot (Batch B, `cc13afa`) are **PENDING OPERATOR CLASSIFICATION**: monitored exactly, not accepted.
+  - With the new gate, any unattributed `LoadErrors`, or any from a mod without a validated set (Batch D onward), fail the boot.
+- **Timing context:** the other session's first isolated data point, Batch A alone (3 mods, about 150 s hold), stopped in 210.2 s, longer than the 6- and 7-mod quiet runs (172–196 s). Stop time is not driven by mod count alone. The study's conclusions belong to that session.
+
 ## Direction change: standalone-first (corrected 2026-10-02)
 
 After 4B the requirement was recorded as "players use **standalone** Conan clients (no Steam client, library or Workshop sync)". 4F showed that this is wrong for multiplayer. Corrected statement:

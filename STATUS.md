@@ -152,14 +152,22 @@ Next: **Target Modpack V1** (`MODPACK_V1.md`). **Fifteen** mods are planned (the
 - **Current staging order:** StackMe10K → SavageParagon → GritandGrease → ThrallReputation → ImprovedThrallsAndQoL → WO_RidingThralls.
 - **Pre-Batch-B restore point `2026-10-02_141009`** is pinned at `E:\CSC-M3-Live\pinned-backups\` (outside retention, read-only, hash-verified).
 - **Shutdown duration is a batch gate.** Batch B measured 177–184 s against a 300 s window. 240 s or more = HIGH RISK: stop before adding another batch.
-- **Batch C (Ancient Realms):** **ROLLBACK COMPLETE · RETEST REQUIRED · NOT YET ACCEPTED · NOT REJECTED** (`M3_LIVE_TEST_REPORT.md` "Batch C").
-  - Its 7 / 37 `LoadErrors` are identical on every AR boot, are dangling references, and are not whitelisted.
-  - The rollback was triggered by a forced kill (301.8 s) on a heavily loaded host. The rollback check without AR was also force-killed (301.7 s), so host load, not AR, caused it.
-  - Staging is back to Batch B (6 mods) on the pre-C world, with `ThrallDamageToNPCsMultiplier=0.3`.
-- Next:
-  1. **Shutdown policy:** keep 240 s as the HIGH-RISK batch gate; no force-kill at 300 s while shutdown progress is proven; 600 s emergency ceiling.
-  2. **Quiet-host Ancient Realms retest** (3 cycles).
-  3. Batch D is not started.
+- **Batch C (Ancient Realms) accepted 2026-10-03** (`M3_LIVE_TEST_REPORT.md` "Batch C"):
+  - **BATCH C SERVER-SIDE COMPATIBILITY: PASS**
+  - **ANCIENT REALMS GAMEPLAY: NOT YET VERIFIED**
+  - **MAP / BUILDING / COLLISION BEHAVIOR: NOT YET VERIFIED**
+  - The exact 7 / 37 AR `LoadErrors` signatures are a **KNOWN NON-BLOCKING WARNING** bound to `Ancient_Realms.pak` SHA-256 `12F7E719…FD1A`.
+  - Invalidated by: a new AR signature, a changed hash, a crash, a save/persistence error, a world-integrity failure, or a missing/duplicate AR controller.
+  - History: an early forced kill on a loaded host led to a rollback. The quiet-host retest passed 3/3.
+  - Staging runs 7 mods with `ThrallDamageToNPCsMultiplier=0.3`.
+- **Shutdown policy committed (`26091fa`):**
+  - 240 s = HIGH-RISK batch gate.
+  - Proven shutdowns (RCON acknowledgement or log progress) are not killed at 300 s; they get a 600 s emergency ceiling (`AdvancedSettings.EmergencyStopCeilingSeconds`; existing settings.json files get 600).
+  - Unproven shutdowns keep the 30 s fallback.
+  - 353 / 353 tests.
+- **Harness classification code** (the AR exception rules, the exact `LoadErrors` set gate 6b, the AR controller gate): implemented, and committed only after its build and test. These are deferred until the shutdown-timing study ends, so the build does not disturb the measurements.
+- **Open decision:** ITQoL's 23 `LoadErrors` per boot (Batch B) are **PENDING OPERATOR CLASSIFICATION**. They are monitored exactly and not accepted.
+- **Batch D is not started**, and waits for the timing study to finish and the final shutdown policy to be committed and pushed.
 - The final load order is not declared until all fifteen have been tested together with runtime evidence. The proposed starting order is in `CAMPAIGN_V1.md` section 3.
 
 Then: **Chronicler Campaign V1** (`CAMPAIGN_V1.md`). This is design only; "Twelve Legends" is removed from the plan (it never existed on this host).
@@ -174,4 +182,4 @@ M3 Task 4 pre-live fixes, 4A SteamCMD, and the standalone-first pivot (Local mod
 
 ## Current Task
 
-Matched-version server verified. 4F recorded as blocked by client authentication. Pre-4E validation done (`0d54acc`): acknowledgement-gated graceful stop with process-tree Offline, Radmin/LAN address split, 313 / 313 tests, live 10-minute stop PASS (154 s, exit 0, no kill, no WAL, no orphans). 4E PASS (accepted). Target Modpack V1 (`MODPACK_V1.md`, now fifteen mods): Batch A PASS (`2aca0cf`); Batch B PASS server-side (accepted; ITQoL mailbox = known non-blocking warning); Batch C (Ancient Realms) rolled back after a host-load forced kill, retest required on a quiet host, not rejected. Chronicler Campaign V1 designed (`CAMPAIGN_V1.md`): no in-game QA has run, and the design work changed nothing on the server. Do not modify the real client, and do not configure a public Internet server.
+Matched-version server verified. 4F recorded as blocked by client authentication. Pre-4E validation done (`0d54acc`): acknowledgement-gated graceful stop with process-tree Offline, Radmin/LAN address split, 313 / 313 tests, live 10-minute stop PASS (154 s, exit 0, no kill, no WAL, no orphans). 4E PASS (accepted). Target Modpack V1 (`MODPACK_V1.md`, now fifteen mods): Batch A PASS (`2aca0cf`); Batch B PASS server-side (accepted; ITQoL mailbox = known non-blocking warning); Batch C (Ancient Realms) PASS server-side after a quiet-host retest (exact AR LoadErrors = known non-blocking, bound to the file hash; gameplay and map/building/collision not verified); Batch D waits for the shutdown-timing study. Chronicler Campaign V1 designed (`CAMPAIGN_V1.md`): no in-game QA has run, and the design work changed nothing on the server. Do not modify the real client, and do not configure a public Internet server.

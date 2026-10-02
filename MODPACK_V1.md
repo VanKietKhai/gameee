@@ -1,6 +1,6 @@
 # Target Modpack V1 — private Radmin Conan server
 
-Status: **IN PROGRESS. Batch A PASS, Batch B PASS (server-side).** Six mods are installed on staging `depot_443031` (TEST world). Details are in `M3_LIVE_TEST_REPORT.md`.
+Status: **IN PROGRESS. Batch A PASS, Batch B PASS, Batch C PASS (server-side).** Seven mods are installed on staging `depot_443031` (TEST world). Details are in `M3_LIVE_TEST_REPORT.md`.
 - **Batch A** (`2aca0cf`):
   - Runtime mount order and IoStore container `Order` follow `modlist.txt` (first entry 1000, then +1): **PROVEN**. Which mod wins an asset that two mods override was not exercised.
 - **Batch B** (`76ce7da`, plus the 3-cycle restart test), accepted 2026-10-02:
@@ -8,26 +8,35 @@ Status: **IN PROGRESS. Batch A PASS, Batch B PASS (server-side).** Six mods are 
   - **IN-GAME BEHAVIOR: NOT YET VERIFIED**
   - **ITQOL MAILBOX ISSUE: KNOWN NON-BLOCKING WARNING** (exact, version-bound rule; see gate 6)
   - Correction (`cc13afa`): Batch B boots also log 23 ITQoL `LoadErrors` (dangling package references). The harness did not flag them at the time.
-- **Batch C — Ancient Realms** (2026-10-02/03): **ROLLBACK COMPLETE · RETEST REQUIRED · COMPATIBILITY NOT YET ACCEPTED · NOT REJECTED.**
-  - Ancient Realms **stays in Target Modpack V1**.
-  - Its 7 named / 37 attributable `LoadErrors` (dangling references; identical on every AR boot; `Ancient_Realms.pak` SHA-256 `12F7E719…FD1A`) are **not whitelisted**.
-  - The rollback was triggered by a forced kill (301.8 s) on a heavily loaded host. The same forced kill happened **without** AR (301.7 s), so it is not attributable to AR.
-  - Retest: the original 3-cycle test, **only on a quiet host**, after the shutdown policy change. Evidence: `M3_LIVE_TEST_REPORT.md` "Batch C".
-- **Current staging load order** (not a final declaration; Ancient Realms rolled back):
+- **Batch C — Ancient Realms**, accepted 2026-10-03 after the quiet-host retest:
+  - **BATCH C SERVER-SIDE COMPATIBILITY: PASS**
+  - **ANCIENT REALMS GAMEPLAY: NOT YET VERIFIED**
+  - **MAP / BUILDING / COLLISION BEHAVIOR: NOT YET VERIFIED**
+  - **AR LOAD ERRORS: KNOWN NON-BLOCKING WARNING**, for the exact validated signatures only, bound to `Ancient_Realms.pak` SHA-256 `12F7E7192043270FC5F2290C5989F8B8285494BA47A054646790B4A042D1FD1A`:
+    - the 7 named lines (gate 6)
+    - the exact 37-entry `LoadErrors` set, including the 30 "package None" lines (gate 6b)
+    - No other Ancient Realms error is suppressed.
+  - **The exception is invalidated by:** any new AR signature, a changed file hash, a crash, a save/persistence error, a world-integrity failure, or a missing/duplicate persistence object (the AR controller must exist exactly once).
+  - **History:**
+    - The first investigation cycle was force-killed (301.8 s) on a heavily loaded host and rolled back. The same kill happened without AR (301.7 s).
+    - Quiet-host retest: 3/3 cycles PASS; the 7/37 signatures are identical on all six AR boots; stops 183 / 186 / 196 s; `quick_check` ok; mailbox 1.
+    - Evidence: `M3_LIVE_TEST_REPORT.md` "Batch C".
+- **Current staging load order** (test order, not a final declaration):
   1. `StackMe10K.pak`
   2. `SavageParagon.pak`
   3. `GritandGrease.pak`
   4. `ThrallReputation.pak`
   5. `ImprovedThrallsAndQoL.pak`
   6. `WO_RidingThralls.pak`
+  7. `Ancient_Realms.pak`
 - **Restore points:**
   - Known-good pre-Batch-B backup `2026-10-02_141009`, **pinned** at `E:\CSC-M3-Live\pinned-backups\2026-10-02_141009` (outside retention)
   - Known-good pre-Batch-C backup `2026-10-02_152307`, **pinned** at `E:\CSC-M3-Live\pinned-backups\2026-10-02_152307`. Restoring it brings back `ThrallDamageToNPCsMultiplier=0.5`; re-apply 0.3.
   - Latest verified backup: `2026-10-03_005048` (pre-C world after the rollback, `ThrallDamageToNPCsMultiplier=0.3`)
 - **Next:**
-  1. Shutdown policy change: the 240 s gate is separate from the force-kill ceiling.
-  2. Then the quiet-host Ancient Realms retest.
-  3. Batch D is not started.
+  1. Shutdown policy: committed (`26091fa`).
+  2. The other session's isolated shutdown-timing study runs from its own fixed worktree (started 01:29, about 2 h).
+  3. **Batch D is not started**, and waits until the timing study finishes and the final shutdown policy is committed and pushed.
 
 Operator decisions (2026-10-02):
 - WickProbe / WickStacks is **not** part of the modpack. Mod #10 is **StackMe10K**.
@@ -61,7 +70,7 @@ Workshop pages contain hidden template notices ("incompatible with Conan Exiles 
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | Thrall Reputation | Workshop `3787066846` | 2026-09-15 | 833,760 B | none | B | Batch B PASS (server-side) |
 | 2 | Savage Paragon | Workshop `3766043945` | 2026-09-23 | 4,760,799 B | none | A | Batch A PASS (server-side) |
-| 3 | Ancient Realms Enhanced (Work In Progress) | Workshop `3755775098` | 2026-09-15 | 496,900,005 B | none | C | Batch C rolled back (forced kill on a loaded host); RETEST REQUIRED; not rejected |
+| 3 | Ancient Realms Enhanced (Work In Progress) | Workshop `3755775098` | 2026-09-15 | 496,900,005 B | none | C | Batch C PASS (server-side; quiet-host retest; gameplay and map/building/collision not verified) |
 | 4 | Improved Thralls & QoL | Workshop `3758661389` | 2026-09-24 | 154,632,086 B | none | B | Batch B PASS (server-side) |
 | 5 | Fantasy Races Of Exiles | Workshop `3780741325` | 2026-09-15 | 5,293,057 B | none | D1 | no |
 | 6 | [Enhanced] WO - Riding Thralls | Workshop `3803149679` | 2026-09-25 | 78,896,983 B | none | B | Batch B PASS (server-side) |
@@ -257,12 +266,27 @@ Gates for **every** step. All are required; a FAIL stops the plan.
      - only with the **ITQoL mailbox gate** passing: the stopped world holds exactly 1 `BP_PL_ServerMailContainer`
 
      Any other ITQoL, BP_PL or mod error still fails. A missing or duplicated mailbox fails, and so does a new ITQoL version.
+   - **Seven Ancient Realms exceptions** (Batch C decision, 2026-10-03, `ANCIENT-REALMS-DANGLING-REF-1..7`):
+     - the exact 7 `LoadErrors` lines recorded in `M3_LIVE_TEST_REPORT.md` "Batch C"
+     - only while `Ancient_Realms.pak` SHA-256 = `12F7E719…FD1A`
+     - only with the **AR controller gate** passing: exactly 1 `AR_BP_ModController` in the stopped world
+6b. **LoadErrors set** (Batch C):
+   - Every `LoadErrors … dependent package None (<id>) was not available` line is attributed to an installed mod: by its `/Game/Mods/<mod>/` path, or, for "package None", by the id's bytes in that mod's extracted server container.
+   - Each mod's set must equal its validated baseline **exactly**. A mod without a baseline must have none, and a line attributed to no mod fails.
+   - Baselines:
+     - **Ancient Realms:** 37 per boot = **KNOWN NON-BLOCKING**.
+     - **ITQoL:** 23 per boot = **PENDING OPERATOR CLASSIFICATION**, monitored exactly but not accepted. They were never gated before; see the `cc13afa` correction.
+   - This closes the gap that hid ITQoL's 23 lines: new dangling references from any mod, including Batch D, now fail.
 7. Clean shutdown: acknowledged, exit code 0, no forced kill, no WAL/SHM, no orphan processes.
 8. Verified cold backup after the stop, SQLite `quick_check` = ok.
 9. Record: boot time, server working set at readiness, `Saved\ExtractedMods` size, local `.pak` size vs Workshop size.
 10. **Shutdown duration** (logged by every harness stop as `shutdown duration gate`):
-    - Batch B baseline 177–184 s; graceful window 300 s.
+    - Batch B baseline 177–184 s.
     - **240 s or more = HIGH RISK**: the gate FAILS, and the plan **stops before another batch is added**.
+    - This is the **compatibility threshold** only. The **force-kill policy** is separate (2026-10-03):
+      - When the shutdown is acknowledged by RCON **or** shows progress in the current-boot log, there is no kill at the 300 s graceful window. The stop keeps waiting up to the **600 s emergency ceiling** (`EmergencyStopCeilingSeconds`), then kills the process tree.
+      - With neither acknowledgement nor progress, the **30 s short fallback** still applies.
+      - The harness records `GracefulWindowExceeded` and `EmergencyCeiling` on every stop.
 
 Step-specific checks:
 
