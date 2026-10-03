@@ -300,7 +300,8 @@ public class M3PreE4StopAndNetworkTests
         Assert.Equal(30, advanced.UnacknowledgedStopTimeoutSeconds);
         Assert.Equal(300, advanced.GracefulStopTimeoutSeconds);
         Assert.Equal(600, advanced.EmergencyStopCeilingSeconds);
-        Assert.True(Core.LiveTesting.ModBootGates.ShutdownHighRiskSeconds < advanced.GracefulStopTimeoutSeconds);
+        Assert.True(Core.LiveTesting.ModBootGates.ShutdownWarningSeconds < advanced.GracefulStopTimeoutSeconds);
+        Assert.Equal(Core.LiveTesting.ModBootGates.ShutdownEmergencySeconds, advanced.EmergencyStopCeilingSeconds);
     }
 
     [Fact]

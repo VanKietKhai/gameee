@@ -138,6 +138,7 @@ internal static class Program
                 "boot" => await harness.BootAsync("boot", HoldSeconds(args), scanMods: false, ObserveSeconds(args)),
                 "mod-boot" => await harness.BootAsync("mod-boot", HoldSeconds(args), scanMods: true, expectAbsent: ExpectAbsent(args)),
                 "analyze-last-boot" => harness.AnalyzeLastBoot(),
+                "analyze-boot" => harness.AnalyzeBoot(args[1], args[2]),
                 "reorder-local" => await harness.ReorderLocalAsync(args[1]),
                 "extracted" => harness.ObserveExtractedMods("extracted"),
                 "cycle" => await harness.CycleAsync(),
@@ -151,6 +152,7 @@ internal static class Program
                 "import-local" => await harness.ImportLocalAsync(args[1]),
                 "remove-local" => await harness.RemoveLocalAsync(args[1]),
                 "restore" => await harness.RestoreBackupAsync(args[1]),
+                "set-mods" => await harness.SetModsAsync(args[1]),
                 "cold-backup" => await harness.ColdBackupCommandAsync(),
                 "graceful-test" => await harness.GracefulTestAsync(args[1]),
                 _ => Unknown(command)
@@ -557,19 +559,20 @@ internal sealed class Harness : IAsyncDisposable
         }
 
         var stopped = await StopAndRecordAsync(server, step, timeline);
-        var mailboxOk = true;
+        var singletonsOk = true;
         if (scanMods)
         {
-            mailboxOk = RecordItqolMailboxGate(step);
+            singletonsOk = stopped && EnsureNoForeignServer(step) &&
+                RecordWorldIntegrityGate(step, LiveWorldDb) && RecordSingletonActorGates(step);
             ObserveExtractedMods(step);
         }
 
-        return stopped && modLoadOk && mailboxOk ? 0 : 1;
+        return stopped && modLoadOk && singletonsOk ? 0 : 1;
     }
 
     /// <summary>
     /// Read-only: re-runs the mod-load analysis on the current <c>ConanSandbox.log</c> (the last boot) and
-    /// the ITQoL mailbox gate on the stopped world. Starts nothing; refuses while a Conan server runs.
+    /// the singleton-object gates on the stopped world. Starts nothing; refuses while a Conan server runs.
     /// </summary>
     public int AnalyzeLastBoot()
     {
@@ -582,40 +585,107 @@ internal sealed class Harness : IAsyncDisposable
         var analysis = AnalyzeModLoad(ReadLogFrom(ServerLog, 0, int.MaxValue), []);
         _log.Write(step, "mod load analysis (last boot log, read-only)", analysis.Ok ? "PASS" : "FAIL", null,
             analysis.Facts, analysis.Evidence, liveFilesChanged: "no");
-        var mailboxOk = RecordItqolMailboxGate(step);
-        return analysis.Ok && mailboxOk ? 0 : 1;
+        var integrityOk = RecordWorldIntegrityGate(step, LiveWorldDb);
+        var singletonsOk = integrityOk && RecordSingletonActorGates(step);
+        return analysis.Ok && integrityOk && singletonsOk ? 0 : 1;
     }
 
     /// <summary>
-    /// With Improved Thralls &amp; QoL enabled, the stopped world must hold exactly one ITQoL server mailbox.
-    /// This gate is what keeps the known mailbox warning non-blocking: a missing or duplicated mailbox fails.
+    /// Read-only: runs the mod-load analysis on a named boot log in <c>Saved\Logs</c> (for example a rotated
+    /// <c>ConanSandbox-backup-*.log</c>) and the integrity and singleton-object gates on a verified backup's world
+    /// database, opened immutable. Uses the current catalog as the installed mod set. Starts nothing.
     /// </summary>
-    private bool RecordItqolMailboxGate(string step)
+    public int AnalyzeBoot(string logFileName, string backupId)
     {
-        var installed = _settings.Current.Mods.Mods.Any(m =>
-            m.Enabled && string.Equals(m.LocalFileName, ModBootGates.ItqolPakFileName, StringComparison.OrdinalIgnoreCase));
-        int? count = null;
-        string? error = null;
-        if (installed)
+        const string step = "analyze-boot";
+        if (!EnsureNoForeignServer(step))
         {
-            try
-            {
-                count = CountWorldActors(ModBootGates.ItqolMailboxClassPath);
-            }
-            catch (Exception ex)
-            {
-                error = ex.Message;
-            }
+            return 1;
         }
 
-        var gate = ModBootGates.EvaluateItqolMailbox(installed, count);
-        _log.Write(step, "ITQoL server mailbox gate (stopped world, read-only)", installed ? (gate.Pass ? "PASS" : "FAIL") : "INFO", null,
-            Facts(("ItqolInstalled", installed ? "YES" : "NO"),
-                ("MailboxCount", count?.ToString() ?? "n/a"),
-                ("Gate", gate.Detail),
-                ("Error", error ?? string.Empty)),
-            liveFilesChanged: "no");
-        return gate.Pass;
+        var log = Path.Combine(Saved, "Logs", Path.GetFileName(logFileName));
+        var db = Path.Combine(_layout.AppData, "backups", Path.GetFileName(backupId), "world",
+            ConanServerControl.Core.Backups.ConanWorldFiles.EnhancedMain);
+        if (!File.Exists(log) || !File.Exists(db))
+        {
+            _log.Write(step, "inputs", "FAIL", null, Facts(("Log", log), ("LogExists", File.Exists(log).ToString()),
+                ("WorldDb", db), ("WorldDbExists", File.Exists(db).ToString())));
+            return 1;
+        }
+
+        var analysis = AnalyzeModLoad(ReadLogFrom(log, 0, int.MaxValue), []);
+        _log.Write(step, $"mod load analysis ({Path.GetFileName(log)}, read-only)", analysis.Ok ? "PASS" : "FAIL", null,
+            analysis.Facts, analysis.Evidence, liveFilesChanged: "no");
+        var integrityOk = RecordWorldIntegrityGate(step, db);
+        var singletonsOk = integrityOk && RecordSingletonActorGates(step, db);
+        return analysis.Ok && integrityOk && singletonsOk ? 0 : 1;
+    }
+
+    private string LiveWorldDb => Path.Combine(Saved, ConanServerControl.Core.Backups.ConanWorldFiles.EnhancedMain);
+
+    /// <summary>World integrity gate: SQLite <c>quick_check</c> on the stopped world (opened immutable) must be "ok".</summary>
+    private bool RecordWorldIntegrityGate(string step, string db)
+    {
+        string result;
+        try
+        {
+            using var connection = OpenWorldReadOnly(db);
+            using var command = connection.CreateCommand();
+            command.CommandText = "PRAGMA quick_check";
+            result = Convert.ToString(command.ExecuteScalar()) ?? "null";
+        }
+        catch (Exception ex)
+        {
+            result = "INCONCLUSIVE: " + ex.Message;
+        }
+
+        var ok = string.Equals(result, "ok", StringComparison.Ordinal);
+        _log.Write(step, "world integrity gate (quick_check, read-only)", ok ? "PASS" : result.StartsWith("INCONCLUSIVE:", StringComparison.Ordinal) ? "INCONCLUSIVE" : "FAIL", null,
+            Facts(("WorldDb", db), ("QuickCheck", result)), liveFilesChanged: "no");
+        return ok;
+    }
+
+    private static Microsoft.Data.Sqlite.SqliteConnection OpenWorldReadOnly(string db) =>
+        ConanServerControl.Infrastructure.Backups.StoppedWorldReader.Open(db,
+            () => Program.ServerProcesses().Count == 0);
+
+    /// <summary>
+    /// For every installed mod with a singleton object (the ITQoL server mailbox, the Ancient Realms controller),
+    /// the stopped world must hold exactly one. These gates are what keep those mods' known warnings
+    /// non-blocking: a missing or duplicated persistence object fails the boot.
+    /// </summary>
+    private bool RecordSingletonActorGates(string step, string? db = null)
+    {
+        var allPass = true;
+        foreach (var actor in ModBootGates.SingletonActors)
+        {
+            var installed = _settings.Current.Mods.Mods.Any(m =>
+                m.Enabled && string.Equals(m.LocalFileName, actor.ModPakFileName, StringComparison.OrdinalIgnoreCase));
+            int? count = null;
+            string? error = null;
+            if (installed)
+            {
+                try
+                {
+                    count = CountWorldActors(actor.ClassPath, db ?? LiveWorldDb);
+                }
+                catch (Exception ex)
+                {
+                    error = ex.Message;
+                }
+            }
+
+            var gate = ModBootGates.EvaluateSingletonActor(actor, installed, count);
+            _log.Write(step, $"{actor.Label} gate (stopped world, read-only)", installed ? (gate.Pass ? "PASS" : "FAIL") : "INFO", null,
+                Facts(("ModInstalled", installed ? "YES" : "NO"),
+                    ("Count", count?.ToString() ?? "n/a"),
+                    ("Gate", gate.Detail),
+                    ("Error", error ?? string.Empty)),
+                liveFilesChanged: "no");
+            allPass &= gate.Pass;
+        }
+
+        return allPass;
     }
 
     /// <summary>
@@ -623,25 +693,17 @@ internal sealed class Harness : IAsyncDisposable
     /// package path). The stopped world is opened read-only and immutable, so SQLite creates no -wal/-shm
     /// files and takes no locks.
     /// </summary>
-    private int? CountWorldActors(string classPath)
+    private static int? CountWorldActors(string classPath, string db)
     {
-        var db = Path.Combine(Saved, ConanServerControl.Core.Backups.ConanWorldFiles.EnhancedMain);
         if (!File.Exists(db))
         {
             return null;
         }
 
-        var builder = new Microsoft.Data.Sqlite.SqliteConnectionStringBuilder
-        {
-            DataSource = new Uri(db).AbsoluteUri + "?immutable=1",
-            Mode = Microsoft.Data.Sqlite.SqliteOpenMode.ReadOnly,
-            Pooling = false
-        };
-        using var connection = new Microsoft.Data.Sqlite.SqliteConnection(builder.ToString());
-        connection.Open();
+        using var connection = OpenWorldReadOnly(db);
         using var command = connection.CreateCommand();
         command.CommandText = "SELECT COUNT(*) FROM actor_position WHERE substr(class, 1, length($prefix)) = $prefix";
-        command.Parameters.AddWithValue("$prefix", classPath.Split('.')[0]);
+        command.Parameters.AddWithValue("$prefix", classPath.Split('.')[0] + "."); // the exact package, any class in it
         return Convert.ToInt32(command.ExecuteScalar());
     }
 
@@ -1196,6 +1258,80 @@ internal sealed class Harness : IAsyncDisposable
         return ok ? 0 : 1;
     }
 
+    // ------------------------------------------------------------ Shutdown-timing study (isolated mod sets)
+
+    /// <summary>
+    /// Makes exactly the listed catalog mods enabled, in that order, through the production catalog
+    /// (SetEnabledAsync + MoveAsync); every other catalog mod is disabled, stays in the catalog and keeps
+    /// its .pak in Mods (not in modlist.txt, so not mounted). "none" disables all. No file is copied.
+    /// </summary>
+    public async Task<int> SetModsAsync(string csv)
+    {
+        if (Program.ServerProcesses().Count > 0)
+        {
+            _log.Write("timing-set-mods", "precondition: server offline", "FAIL", null, Facts(("Processes", DescribeProcesses())));
+            return 1;
+        }
+
+        IReadOnlyList<string> wanted;
+        try
+        {
+            wanted = ModSetSelection.Parse(csv);
+        }
+        catch (ArgumentException ex)
+        {
+            _log.Write("timing-set-mods", "input", "FAIL", null, Facts(("Error", ex.Message)));
+            return 1;
+        }
+
+        var modsDir = Path.Combine(_serverDir, "ConanSandbox", "Mods");
+        var before = PakFacts(modsDir);
+        var listBefore = ReadModList(modsDir);
+        var catalog = _services.GetRequiredService<IModCatalogService>();
+        var unknown = ModSetSelection.Unknown(wanted, catalog.Mods.Where(m => m.LocalFileName is not null).Select(m => m.LocalFileName!));
+        string? error = unknown.Count > 0 ? "not in catalog: " + string.Join(", ", unknown) : null;
+        if (error is null)
+        {
+            try
+            {
+                foreach (var mod in catalog.Mods.ToArray())
+                {
+                    var on = wanted.Any(w => ModKeys.Matches(mod, ModKeys.Local(w)));
+                    if (mod.Enabled != on)
+                    {
+                        await catalog.SetEnabledAsync(ModKeys.For(mod), on);
+                    }
+                }
+
+                for (var i = 0; i < wanted.Count; i++)
+                {
+                    await catalog.MoveAsync(ModKeys.Local(wanted[i]), i);
+                }
+            }
+            catch (Exception ex)
+            {
+                error = ex.Message;
+            }
+        }
+
+        var after = PakFacts(modsDir);
+        var listAfter = ReadModList(modsDir);
+        var listMatches = listAfter.SequenceEqual(wanted, StringComparer.OrdinalIgnoreCase);
+        var paksUntouched = before.Count == after.Count && before.All(kv => after.TryGetValue(kv.Key, out var v) && v == kv.Value);
+        var ok = error is null && listMatches && paksUntouched;
+        _log.Write("timing-set-mods", "IModCatalogService.SetEnabledAsync + MoveAsync (exact enabled set)", ok ? "PASS" : "FAIL", null,
+            Facts(
+                ("Error", error ?? string.Empty),
+                ("Requested", wanted.Count == 0 ? "none" : string.Join(" | ", wanted)),
+                ("ModListBefore", string.Join(" | ", listBefore)),
+                ("ModListAfter", string.Join(" | ", listAfter)),
+                ("ModListMatchesRequest", listMatches.ToString()),
+                ("Catalog", string.Join("; ", _settings.Current.Mods.Mods.OrderBy(m => m.LoadOrder).Select(m => $"{m.LoadOrder}:{m.LocalFileName}:{(m.Enabled ? "on" : "off")}"))),
+                ("PaksUntouched(hash,size,created,written)", paksUntouched.ToString())),
+            liveFilesChanged: "server modlist.txt only (expected)");
+        return ok ? 0 : 1;
+    }
+
     // ------------------------------------------------------------ 4E.2 multi-mod load order
 
     /// <summary>
@@ -1310,16 +1446,33 @@ internal sealed class Harness : IAsyncDisposable
                         l.Contains("modlist", StringComparison.OrdinalIgnoreCase) ||
                         l.Contains("LogModManager", StringComparison.Ordinal) ||
                         l.Contains("Failed to mount", StringComparison.OrdinalIgnoreCase))
+            // Crash, save and persistence errors fail a boot whichever mod (if any) they name;
+            // only an exact, version-bound known warning is set aside below.
+            .Union(lines.Where(l => ModBootGates.SevereLogMarkers.Any(m => l.Contains(m, StringComparison.Ordinal))))
             .ToList();
 
         // Only the exact, version-bound known warnings are set aside; every other flagged line still fails.
-        var installedSha256 = ModBootGates.KnownWarnings
-            .Select(w => w.ModPakFileName)
+        var installedSha256 = ModBootGates.KnownWarnings.Select(w => w.ModPakFileName)
+            .Concat(ModBootGates.LoadErrorBaselines.Select(b => b.ModPakFileName))
             .Distinct(StringComparer.OrdinalIgnoreCase)
             .Where(pak => expected.Contains(pak, StringComparer.OrdinalIgnoreCase) && File.Exists(Path.Combine(modsDir, pak)))
             .ToDictionary(pak => pak, pak => Sha256(Path.Combine(modsDir, pak)), StringComparer.OrdinalIgnoreCase);
         var (problems, known) = ModBootGates.ClassifyProblems(flagged, installedSha256);
         var modProblems = problems.ToList();
+
+        // Every LoadErrors line must belong to an installed mod and match that mod's validated set exactly.
+        // "package None" lines name no asset, so they are attributed by the missing package id appearing in the
+        // mod's extracted server container (its import data).
+        var parsedLoadErrors = ModBootGates.ParseLoadErrors(lines);
+        var (loadErrorsByMod, unattributedLoadErrors) = AttributeLoadErrors(parsedLoadErrors.Where(e => e.RawUnparsedLine is null).ToList(), expected);
+        var loadErrorGates = expected
+            .Select(pak => (Pak: pak, Gate: ModBootGates.EvaluateLoadErrors(pak, installedSha256.GetValueOrDefault(pak),
+                loadErrorsByMod.GetValueOrDefault(pak) ?? [])))
+            .ToList();
+        var loadErrorProblems = loadErrorGates.Where(g => !g.Gate.Pass).Select(g => $"{g.Pak}: {g.Gate.Detail}")
+            .Concat(unattributedLoadErrors.Select(e => $"unattributed LoadErrors: {e}"))
+            .Concat(parsedLoadErrors.Where(e => e.RawUnparsedLine is not null).Select(e => $"unparsed LoadErrors: {e.RawUnparsedLine}"))
+            .ToList();
 
         var perMod = new List<string>();
         var allLoaded = true;
@@ -1350,7 +1503,8 @@ internal sealed class Harness : IAsyncDisposable
         var modListMatchesCatalog = modList.SequenceEqual(expected, StringComparer.OrdinalIgnoreCase);
         var duplicates = mountSequence.GroupBy(m => m, StringComparer.OrdinalIgnoreCase).Where(g => g.Count() > 1)
             .Select(g => $"{g.Key} x{g.Count()}").ToArray();
-        var ok = allLoaded && modProblems.Count == 0 && absentProblems.Count == 0 && duplicates.Length == 0 && modListMatchesCatalog;
+        var ok = allLoaded && modProblems.Count == 0 && loadErrorProblems.Count == 0 && absentProblems.Count == 0 &&
+                 duplicates.Length == 0 && modListMatchesCatalog;
 
         var facts = Facts(
             ("ModListAtBoot", string.Join(" | ", modList)),
@@ -1368,15 +1522,77 @@ internal sealed class Harness : IAsyncDisposable
                 ? "none"
                 : string.Join("; ", known.GroupBy(k => k.Warning.Id)
                     .Select(g => $"{g.Key} x{g.Count()} ({g.First().Warning.ModPakFileName} SHA-256 = validated {g.First().Warning.ValidatedPakSha256[..8]}...)"))),
+            ("LoadErrorsByMod", string.Join(" || ", loadErrorGates
+                .Where(g => loadErrorsByMod.ContainsKey(g.Pak) || !g.Gate.Pass)
+                .Select(g => $"{g.Pak}: {g.Gate.Detail}")) is { Length: > 0 } loadErrorSummary ? loadErrorSummary : "none"),
+            ("UnattributedLoadErrors", unattributedLoadErrors.Count == 0 ? "none" : unattributedLoadErrors.Count.ToString()),
+            ("LoadErrorProblems", loadErrorProblems.Count == 0 ? "none" : loadErrorProblems.Count.ToString()),
             ("ExpectAbsent", expectAbsent.Length == 0 ? "none" : string.Join(", ", expectAbsent)),
             ("ExpectAbsentViolations", absentProblems.Count == 0 ? "none" : string.Join("; ", absentProblems)));
         var evidenceLines = lines.Where(l =>
                 mountRegex.IsMatch(l) || containerRegex.IsMatch(l) || pakRegex.IsMatch(l) || contributesRegex.IsMatch(l) ||
                 stems.Any(s => l.Contains(s!, StringComparison.OrdinalIgnoreCase)))
             .Concat(modProblems.Select(p => "PROBLEM: " + p))
+            .Concat(loadErrorProblems.Select(p => "PROBLEM (LoadErrors): " + p))
             .Concat(known.Select(k => $"KNOWN NON-BLOCKING ({k.Warning.Id}): {k.Line}"))
-            .Take(120);
+            .Take(160);
         return (ok, facts, string.Join(Environment.NewLine, evidenceLines));
+    }
+
+    /// <summary>
+    /// Assigns each LoadErrors entry to an installed mod: by its <c>/Game/Mods/&lt;mod&gt;/</c> package path, or, for
+    /// "package None", by the missing package id's 8 little-endian bytes appearing in that mod's extracted
+    /// <c>-WindowsServer.ucas</c>. Entries that match no installed mod are returned as unattributed.
+    /// </summary>
+    private (Dictionary<string, List<LoadErrorEntry>> ByMod, List<LoadErrorEntry> Unattributed) AttributeLoadErrors(
+        IReadOnlyList<LoadErrorEntry> entries, IReadOnlyList<string> installedPaks)
+    {
+        var byMod = new Dictionary<string, List<LoadErrorEntry>>(StringComparer.OrdinalIgnoreCase);
+        var unattributed = new List<LoadErrorEntry>();
+        var containers = new Dictionary<string, byte[]?>(StringComparer.OrdinalIgnoreCase);
+        byte[]? Container(string stem)
+        {
+            if (!containers.TryGetValue(stem, out var bytes))
+            {
+                var path = Path.Combine(Saved, "ExtractedMods", stem + "-WindowsServer.ucas");
+                bytes = File.Exists(path) ? File.ReadAllBytes(path) : null;
+                containers[stem] = bytes;
+            }
+
+            return bytes;
+        }
+
+        foreach (var entry in entries)
+        {
+            var owner = installedPaks.FirstOrDefault(pak =>
+            {
+                var stem = Path.GetFileNameWithoutExtension(pak);
+                if (!string.Equals(entry.Package, "None", StringComparison.Ordinal))
+                {
+                    return entry.Package.StartsWith($"/Game/Mods/{stem}/", StringComparison.OrdinalIgnoreCase);
+                }
+
+                var idBytes = new byte[8];
+                System.Buffers.Binary.BinaryPrimitives.WriteUInt64LittleEndian(idBytes, Convert.ToUInt64(entry.MissingPackageId, 16));
+                return Container(stem) is { } bytes && bytes.AsSpan().IndexOf(idBytes) >= 0;
+            });
+            if (owner is null)
+            {
+                unattributed.Add(entry);
+            }
+            else
+            {
+                if (!byMod.TryGetValue(owner, out var list))
+                {
+                    list = [];
+                    byMod[owner] = list;
+                }
+
+                list.Add(entry);
+            }
+        }
+
+        return (byMod, unattributed);
     }
 
     private static string[] ReadModList(string modsDir)
@@ -1606,10 +1822,14 @@ internal sealed class Harness : IAsyncDisposable
                 ("WorldFiles", string.Join("; ", WorldSnapshot()))),
             ReadLogFrom(ServerLog, logOffset, 25));
 
-        // Shutdown duration is a batch metric: at or above 240 s the next batch must not be added.
-        _log.Write(step, "shutdown duration gate", durationGate.Pass ? "PASS" : "FAIL", stopDuration,
+        // Shutdown duration is a batch metric, never a mod compatibility verdict: NORMAL/WARNING allow the next
+        // batch, DEGRADED/EMERGENCY block it until reviewed.
+        var severity = ModBootGates.ClassifyShutdownDuration(stopDuration);
+        _log.Write(step, "shutdown duration gate", severity.ToString().ToUpperInvariant(), stopDuration,
             Facts(("ShutdownDurationSeconds", stopDuration.TotalSeconds.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture)),
-                ("HighRiskThresholdSeconds", ModBootGates.ShutdownHighRiskSeconds.ToString()),
+                ("Severity", severity.ToString().ToUpperInvariant()),
+                ("NextBatchAllowed", durationGate.Pass ? "YES" : "NO (review first)"),
+                ("Thresholds", $"warning {ModBootGates.ShutdownWarningSeconds} s, degraded {ModBootGates.ShutdownDegradedSeconds} s, emergency {ModBootGates.ShutdownEmergencySeconds} s"),
                 ("GracefulWindowSeconds", _settings.Current.Advanced.GracefulStopTimeoutSeconds.ToString()),
                 ("EmergencyCeilingSeconds", _settings.Current.Advanced.EmergencyStopCeilingSeconds.ToString()),
                 ("Gate", durationGate.Detail)),
