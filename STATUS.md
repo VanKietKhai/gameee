@@ -3,6 +3,12 @@
 ## Last Updated
 2026-10-03
 
+## Operator decision 2026-10-03 (after D1 STOP B)
+
+- **Fantasy Races Of Exiles: EXCLUDED / DEFERRED, no longer part of Modpack V1.** It reached readiness and did not corrupt the world, but produced 15 novel `NPC: Error: Data: No stat templates found for StatModifier template None.` lines, absent from all earlier healthy boots, which may affect NPC stats or spawn behavior. Gameplay impact cannot be ruled out, so it is excluded rather than accepting an unsafe warning. Not re-run, the 15 lines are not whitelisted, and the D1 logs and evidence are preserved for possible future investigation. Historical D1 records are unchanged.
+- **Ancient Realms `MergeDataTables - ToBeAddedDataTable is null`: ACCEPTED as KNOWN NON-BLOCKING**, only with the exact signature, `Ancient_Realms.pak` SHA-256 `12F7E719…FD1A`, and at most 2 occurrences per boot. A third occurrence, a changed signature or a changed hash fails.
+- **Accepted core (7):** StackMe10K, Savage Paragon, Grit & Grease, Thrall Reputation, Improved Thralls & QoL, WO Riding Thralls, Ancient Realms Enhanced. **Next candidates:** Cannibal Captivity Enhanced (Workshop 3765743138), then Shemite City State Enhanced (3755371705).
+
 ## Latest unattended checkpoint
 
 STOP B: Batch D1 reached readiness but full-log review found 15 new NPC stat-template errors. Rollback to the verified seven-mod world/order completed; server OFFLINE. D2/D3/final ten-mod validation not started. QA-019/020 and the reviewed integration are merged at 09cbf1a; safety and merged builds clean, 410/410 tests passed with zero skipped. Exact SDK 8.0.425 is installed user-locally; global.json unchanged. See FINAL_REPORT.md and AGENT_HANDOFF.md. New live work requires review of the D1 error and the harness scan coverage gap. Production world remains NOT CREATED.

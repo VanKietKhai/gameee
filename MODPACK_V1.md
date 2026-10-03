@@ -2,6 +2,8 @@
 
 Status: **IN PROGRESS. Batch A PASS, Batch B PASS, Batch C PASS (server-side).** Seven mods are installed on staging `depot_443031` (TEST world). Details are in `M3_LIVE_TEST_REPORT.md`.
 
+**2026-10-03 operator decision: Fantasy Races Of Exiles is EXCLUDED / DEFERRED from Modpack V1.** It reached readiness and did not corrupt the world, but produced 15 novel `NPC: Error: Data: No stat templates found for StatModifier template None.` lines, absent from all 11 earlier healthy boots, which may affect NPC stats or spawn behavior; gameplay impact cannot be ruled out, so it is excluded rather than accepting an unsafe warning. Not re-run and not whitelisted; D1 logs/evidence preserved (`artifacts/batch-d-20261003/`, backup `2026-10-03_142725`). The accepted core is the seven mods below; the next candidates are Cannibal Captivity (the former D2 slot; it becomes the 8th installed mod) then Shemite City State (9th). Older D1/D2/D3 labels in this file and in earlier reports are historical and are not renumbered. The Ancient Realms `MergeDataTables - ToBeAddedDataTable is null` line (exact, hash-bound, at most 2 per boot) is accepted as KNOWN NON-BLOCKING.
+
 **2026-10-03 resumed Batch D: STOP B.** D1 Fantasy Races booted with eight mods but produced 15 new NPC stat-template errors during full-log review. Clean NORMAL shutdown (72.5 s); production rollback verified. Seven-mod catalog/order restored, server OFFLINE. D2/D3/final ten-mod validation not started. No new warning accepted; see FINAL_REPORT.md.
 - **Batch A** (`2aca0cf`):
   - Runtime mount order and IoStore container `Order` follow `modlist.txt` (first entry 1000, then +1): **PROVEN**. Which mod wins an asset that two mods override was not exercised.
@@ -74,7 +76,7 @@ Workshop pages contain hidden template notices ("incompatible with Conan Exiles 
 | 2 | Savage Paragon | Workshop `3766043945` | 2026-09-23 | 4,760,799 B | none | A | Batch A PASS (server-side) |
 | 3 | Ancient Realms Enhanced (Work In Progress) | Workshop `3755775098` | 2026-09-15 | 496,900,005 B | none | C | Batch C PASS (server-side; quiet-host retest; gameplay and map/building/collision not verified) |
 | 4 | Improved Thralls & QoL | Workshop `3758661389` | 2026-09-24 | 154,632,086 B | none | B | Batch B PASS (server-side) |
-| 5 | Fantasy Races Of Exiles | Workshop `3780741325` | 2026-09-15 | 5,293,057 B | none | D1 | no |
+| 5 | Fantasy Races Of Exiles — **EXCLUDED / DEFERRED 2026-10-03** | Workshop `3780741325` | 2026-09-15 | 5,293,057 B | none | D1 (STOP B) | no |
 | 6 | [Enhanced] WO - Riding Thralls | Workshop `3803149679` | 2026-09-25 | 78,896,983 B | none | B | Batch B PASS (server-side) |
 | 7 | Shemite City State: Enhanced (v2.1) | Workshop `3755371705` | 2026-09-16 | 2,098,034,644 B | none | D3 | no |
 | 8 | Cannibal Captivity v0.0.16 (Enhanced) | Workshop `3765743138` | 2026-09-29 | 112,432,880 B | none | D2 | no |
@@ -242,9 +244,9 @@ Batches are **cumulative**: earlier batches stay installed. The full fifteen-mod
 | A | StackMe10K, Savage Paragon, Grit & Grease | 3 |
 | B | Thrall Reputation, Improved Thralls & QoL, Riding Thralls | 6 |
 | C | Ancient Realms Enhanced | 7 |
-| D1 | Fantasy Races Of Exiles | 8 |
-| D2 | Cannibal Captivity | 9 |
-| D3 | Shemite City State | 10 |
+| D1 | ~~Fantasy Races Of Exiles~~ EXCLUDED / DEFERRED (2026-10-03, 15 novel NPC stat-template errors) | not installed |
+| D2 | Cannibal Captivity (next live batch; becomes the 8th installed mod) | 8 |
+| D3 | Shemite City State | 9 |
 | E | Tot ! Enhanced Sudo, Thrall Wars Utilities (always together: TWU requires Sudo) | 12 |
 | F1 | Night Terrors, PvE Plus Ambush | 14 |
 | F2 | Thrall Wars Dungeon Mod | 15 |

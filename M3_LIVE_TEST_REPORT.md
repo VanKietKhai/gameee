@@ -1,6 +1,12 @@
 # M3 Task 4 — Live Test Report
 
-## Latest checkpoint — 2026-10-03 22:55 +07:00: D1 scanner fix and read-only re-analysis (server not started)
+## Operator decision — 2026-10-03: Fantasy Races EXCLUDED; AR merge warning ACCEPTED
+
+- **Fantasy Races Of Exiles is EXCLUDED / DEFERRED from Modpack V1.** It reached readiness and did not corrupt the world, but produced 15 novel `NPC: Error: Data: No stat templates found for StatModifier template None.` lines, absent from the prior healthy boots, which may affect NPC stats/spawn behavior. Gameplay impact cannot currently be ruled out, so it is excluded rather than accepting an unsafe warning. D1 is NOT re-run, the 15 lines are NOT whitelisted, and no further reverse-engineering is planned in this phase. The D1 logs and evidence stay preserved for possible future investigation. The D1 classification below (INCONCLUSIVE) and all earlier D1 text are historical and unchanged.
+- **Ancient Realms `LogModController: Error: AModController::MergeDataTables - ToBeAddedDataTable is null` is ACCEPTED as KNOWN NON-BLOCKING** (pending confirmation below is resolved), only while the exact signature matches, `Ancient_Realms.pak` SHA-256 is `12F7E719…FD1A`, and at most 2 occur per boot. A third occurrence, signature drift or a changed hash fails. Not broadened.
+- Accepted core: StackMe10K, Savage Paragon, Grit & Grease, Thrall Reputation, Improved Thralls & QoL, WO Riding Thralls, Ancient Realms. Next live batch: Cannibal Captivity (Workshop 3765743138), then Shemite City State (3755371705).
+
+## Previous checkpoint — 2026-10-03 22:55 +07:00: D1 scanner fix and read-only re-analysis (server not started)
 
 Took over Codex's uncommitted scanner WIP unchanged, built and tested it (SDK 8.0.425, build 0 warnings/errors), then fixed two problems found by running it read-only on real logs, committed as `d8908ee`. Tests 440/440, 0 skipped (410 prior + 30 new).
 

@@ -121,7 +121,7 @@ public static class ModBootGates
             "Surfaced 2026-10-03 when error scanning stopped depending on a mod name (never part of the Batch C set). " +
             "Exactly 2 lines, printed right after the Ancient Realms controller registers, in every boot that mounts " +
             "Ancient_Realms.pak (3 of 3) and in none of the 8 boots without it. Passes only at most twice for this exact " +
-            "file; operator confirmation of this addition is pending.")
+            "file; accepted by the operator 2026-10-03 as known non-blocking (not broadened).")
         {
             MaxOccurrences = 2
         }
