@@ -1,5 +1,9 @@
 # M3 Task 4 — Live Test Report
 
+## Operator decision — 2026-10-04: #11 Room For One More EXCLUDED / DEFERRED; #12-#14 continue independently
+
+Do not whitelist the 5 `MergeDataTables - ToBeAddedDataTable is null` errors. Reasons recorded by the operator: five new unvalidated merge errors immediately after its controller registered; its controller blueprint name overlaps with WO Riding Thralls'; the mod warns about compatibility risk with mount/passenger mods; gameplay compatibility cannot currently be verified. #11 is not revisited in this phase; evidence (`artifacts/batch-d-20261003/M11-RoomForOneMore-*`, snapshot `p11-roomforone-1`, failed-world backup `2026-10-04_050719`) is kept. #12 Simple Minimap, #13 Player DBNO and #14 Chest Labels are tested one at a time on top of the accepted 10-mod baseline (13 mods if all pass), followed by a final 13-mod validation with a clean restart. The historical #11 record below is unchanged.
+
 ## Mods #11-#14 series — 2026-10-04 04:4x-05:08 +07:00: sources verified; #11 Room For One More FAIL / STOP, rolled back; #12-#14 NOT RUN
 
 **Installed and accepted state is still the 10-mod pack. Per the operator rule each mod must pass completely before the next, so Simple Minimap, Player DBNO and Chest Labels were not imported. Gameplay NOT YET VERIFIED; production world NOT CREATED.**
