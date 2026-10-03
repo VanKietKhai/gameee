@@ -610,7 +610,10 @@ internal sealed class Harness : IAsyncDisposable
             return 1;
         }
 
-        var log = Path.Combine(Saved, "Logs", Path.GetFileName(logFileName));
+        // A rooted path names a preserved log elsewhere (for example inside a backup); read in place, never copied.
+        var log = Path.IsPathRooted(logFileName)
+            ? logFileName
+            : Path.Combine(Saved, "Logs", Path.GetFileName(logFileName));
         var db = Path.Combine(_layout.AppData, "backups", Path.GetFileName(backupId), "world",
             ConanServerControl.Core.Backups.ConanWorldFiles.EnhancedMain);
         if (!File.Exists(log) || !File.Exists(db))
