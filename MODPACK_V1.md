@@ -2,6 +2,8 @@
 
 Status: **IN PROGRESS. Batch A PASS, Batch B PASS, Batch C PASS (server-side).** Seven mods are installed on staging `depot_443031` (TEST world). Details are in `M3_LIVE_TEST_REPORT.md`.
 
+**2026-10-04: Shemite City State (9th) STOP, rolled back; INCONCLUSIVE (gate-blocked).** It loaded and ran stably, but produced 9 new unvalidated LoadErrors, 6 new spawn-table errors and a DEGRADED 319.6 s shutdown, so it was rolled back (nothing whitelisted). The accepted state is the 8 mods below. Core modpack validation is not run. See `M3_LIVE_TEST_REPORT.md`.
+
 **2026-10-04: Cannibal Captivity (8th mod) ACCEPTED server-side after a controlled rerun.** Current staging load order: StackMe10K, SavageParagon, GritandGrease, ThrallReputation, ImprovedThrallsAndQoL, WO_RidingThralls, Ancient_Realms, Cannibal_Captivity. Its 99 `LogScript` teardown warnings are a KNOWN NON-BLOCKING server-side warning set (exact pak hash `DB6E3C29…F04F`, exact message and object-path family under `/Game/Mods/Cannibal_Captivity/Base/CannibalCaptivityLevel`, teardown phase only, exactly 99); a 100th line, a pre-shutdown line, a changed path/signature/hash or any other unknown line fails. In-game behavior NOT verified. Shemite City State is next and not started.
 
 **2026-10-03 operator decision: Fantasy Races Of Exiles is EXCLUDED / DEFERRED from Modpack V1.** It reached readiness and did not corrupt the world, but produced 15 novel `NPC: Error: Data: No stat templates found for StatModifier template None.` lines, absent from all 11 earlier healthy boots, which may affect NPC stats or spawn behavior; gameplay impact cannot be ruled out, so it is excluded rather than accepting an unsafe warning. Not re-run and not whitelisted; D1 logs/evidence preserved (`artifacts/batch-d-20261003/`, backup `2026-10-03_142725`). The accepted core is the seven mods below; the next candidates are Cannibal Captivity (the former D2 slot; it becomes the 8th installed mod) then Shemite City State (9th). Older D1/D2/D3 labels in this file and in earlier reports are historical and are not renumbered. The Ancient Realms `MergeDataTables - ToBeAddedDataTable is null` line (exact, hash-bound, at most 2 per boot) is accepted as KNOWN NON-BLOCKING.
@@ -248,7 +250,7 @@ Batches are **cumulative**: earlier batches stay installed. The full fifteen-mod
 | C | Ancient Realms Enhanced | 7 |
 | D1 | ~~Fantasy Races Of Exiles~~ EXCLUDED / DEFERRED (2026-10-03, 15 novel NPC stat-template errors) | not installed |
 | D2 | Cannibal Captivity — ACCEPTED server-side 2026-10-04 (controlled rerun; known teardown warning set) | 8 |
-| D3 | Shemite City State (next, not started) | 9 |
+| D3 | Shemite City State — STOP 2026-10-04, rolled back (9 new LoadErrors, 6 new spawn-table errors, DEGRADED 319.6 s shutdown; INCONCLUSIVE) | 8 (not 9) |
 | E | Tot ! Enhanced Sudo, Thrall Wars Utilities (always together: TWU requires Sudo) | 12 |
 | F1 | Night Terrors, PvE Plus Ambush | 14 |
 | F2 | Thrall Wars Dungeon Mod | 15 |
