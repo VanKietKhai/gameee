@@ -1,6 +1,25 @@
 # M3 Task 4 — Live Test Report
 
-## Latest checkpoint — 2026-10-03 14:29 +07:00: STOP B, D1 rolled back
+## Latest checkpoint — 2026-10-03 22:55 +07:00: D1 scanner fix and read-only re-analysis (server not started)
+
+Took over Codex's uncommitted scanner WIP unchanged, built and tested it (SDK 8.0.425, build 0 warnings/errors), then fixed two problems found by running it read-only on real logs, committed as `d8908ee`. Tests 440/440, 0 skipped (410 prior + 30 new).
+
+**Scanner.** Every `Error`/`Fatal` line of any category is now scanned regardless of mod names, every occurrence kept, malformed/unknown lines fail closed, and a final scan of the complete current-boot log (through shutdown) runs after the readiness scan. The WIP as written flagged 1,646 lines on the known-good seven-mod boot (1,414 `LogScript` + 110 `LogDataTable` warnings are base-game volume), so it would have failed every boot. Corrections: warnings are scanned only in NPC/spawn/stat/persistence/save/database/mod-controller/world categories (or when they name a mod); nine recorded base-game error kinds, each present in at least 10 of 11 healthy boot logs, are suppressed by exact message kind and reported as the `BaseGameErrorKindsSuppressed` fact. The D1 message and near-misses of those kinds are never suppressed (tested).
+
+**Operator confirmation pending.** Widening the scan newly surfaced `LogModController: Error: AModController::MergeDataTables - ToBeAddedDataTable is null` (2 per boot). It was never in the Batch C set. It appears directly after the Ancient Realms controller registers, in 3 of 3 boots that mount `Ancient_Realms.pak` and 0 of 8 without it. It is now a hash-bound known warning with `MaxOccurrences = 2` (a third line fails). Revert it if the operator does not accept it.
+
+**Read-only analysis (no server start, `analyze-boot` on preserved logs).**
+
+| Log | Result |
+|---|---|
+| Seven-mod baseline boot (`ConanSandbox.log`, backup 142750) | PASS (exit 0); known ITQoL mailbox x1, AR merge x2; LoadErrors ITQoL 23 / AR 37 exact; quick_check ok; mailbox/ITQoL ctrl/AR ctrl 1/1/1 |
+| D1 boot (backup 142725, SHA-256 = preserved artifact `AC751A4E…`) | FAIL by design: exactly 15 UNKNOWN lines (the NPC stat-template message); nothing else unknown; quick_check ok; singletons 1/1/1 |
+
+**D1 evidence on the 15 lines.** Identical message x15, 07:24:54-58 UTC, inside the first ~4 s of world ticking while NPCs spawn; none names an NPC, package or asset. The message occurs 0 times in all 11 earlier healthy boot logs (no mods through the seven-mod run); every other Error kind in the D1 boot also occurs in those logs. The Fantasy Races container index lists `FROE_StatModifierTemplateDataTable`, `FROE_StatTemplateDataTable`, `FROE_NPCStatsAndGrowthsDataTable`, region/village spawn data tables and a goblin summon NPC, so attribution to it is technically plausible but circumstantial (the mod's controller was freshly spawned in this boot). The D1 world (backup 142725): quick_check ok, exactly 1 `FROE_BP_ModController`, +1 `actor_position` and +1 `mod_controllers` row versus baseline, no persisted FROE NPCs, no crash/assertion/persistence-error lines.
+
+**D1 classification: INCONCLUSIVE.** Not CANDIDATE NON-BLOCKING because: (1) only one boot exists, so stability is unproven; (2) attribution is circumstantial, not proven; (3) the message concerns NPC stat-modifier lookup, and an effect on spawned NPC stats cannot be ruled out from the log. Not BLOCKING because there is no crash, integrity or persistence evidence. No exception added. D1 not re-run; D2/D3 not started; server never started in this phase.
+
+## Previous checkpoint — 2026-10-03 14:29 +07:00: STOP B, D1 rolled back
 
 Resumed from 0bb2b2a. Installed exact official Microsoft SDK 8.0.425 user-locally with SHA-512 verification. QA-019/020 safety build and tests passed (410/410, zero skipped), then merged to the live branch at 09cbf1a and rebuilt/retested with the same results. First-run WAL test sharing failure was confined to the Windows test fixture and corrected before merge.
 

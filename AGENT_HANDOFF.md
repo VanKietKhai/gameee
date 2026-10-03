@@ -2,7 +2,7 @@
 
 - CURRENT LOCAL TIME: 2026-10-03 14:29 +07:00.
 - CURRENT BRANCH: claude/m3-task4-live-windows (primary checkout E:\github\gameee).
-- CURRENT HEAD: 09cbf1a is the validated merge; the following documentation commit records the final STOP B state.
+- CURRENT HEAD: d8908ee (scanner fix) on top of 982d117; later commits on this branch are the harness read-only-path tweak and this handoff. Takeover by Claude at 2026-10-03 22:55 +07:00 preserved Codex's WIP as-is and extended it.
 - PRESERVED SAFETY BRANCH: codex/m3-batch-d-safety at abe3875, containing original checkpoint 0bb2b2a. Its worktree is E:\github\gameee\.worktrees\batch-d.
 - CURRENT STAGE: STOP B after D1; rollback completed and verified. Do not start D2/D3.
 - LAST COMPLETED CHECKPOINT: QA-019/020 compiled and tested; merged branch compiled and tested; both full runs 410 passed, 0 failed, 0 skipped, builds 0 warnings/errors. D1 boot/stop completed, then failed full-log review.
@@ -10,8 +10,9 @@
 - LATEST VERIFIED BACKUP: 2026-10-03_142750 (restored seven-mod world; manifest/hash verification and quick_check=ok). Known pre-D1 restore point: 2026-10-03_142352. Failed-D1 state preserved by automatic pre-restore backup 2026-10-03_142725.
 - SERVER STATE: OFFLINE, clean process-tree exit; no root/shipping/orphan/harness process.
 - LAST SHUTDOWN CLASS: NORMAL, 72.5 seconds, acknowledged, exit code 0, forced kill NO, orphan NO, no WAL/SHM left after D1 stop.
-- NEXT ACTION: human review of new D1 NPC stat-template errors and harness full-lifecycle scan gap before another live attempt.
-- OPEN BLOCKERS: 15 occurrences of "NPC: Error: Data: No stat templates found for StatModifier template None." at 14:24:54-58, absent from the pre-D1 seven-mod log ConanSandbox-backup-2026.10.02-20.34.59.log. Attribution/cause remains unproven. No exception added.
+- NEXT ACTION: operator decision on D1 (rerun to test stability, or leave Fantasy Races out) and on the pending Ancient Realms MergeDataTables-null known warning. Scanner gap is fixed (d8908ee, 440/440 tests); D2/D3 not started; server not started.
+- D1 CLASSIFICATION: INCONCLUSIVE. 15 identical NPC stat-template lines, 0 in all 11 earlier healthy boots, only novel Error kind in the D1 boot; Fantasy Races ships StatModifier/StatTemplate/NPC-stat data tables (plausible, unproven attribution); one boot only; stat effect unknown; no crash/integrity/persistence evidence (D1 world quick_check ok, 1 FROE controller). Not a known warning. Expect any D1 rerun to FAIL the gate on those 15 lines unless the operator accepts them in committed code.
+- OPEN BLOCKERS: D1 INCONCLUSIVE (above). Pending operator confirmation: ANCIENT-REALMS-MERGE-DATATABLE-NULL (exactly 2/boot, hash-bound), added to KnownWarnings because the wider scan surfaced it on the accepted seven-mod boot.
 
 ## SDK and validation
 
