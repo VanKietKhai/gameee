@@ -1,5 +1,9 @@
 # M3 Task 4 — Live Test Report
 
+## Operator decision — 2026-10-04: Thrall Wars Dungeon EXCLUDED / DEFERRED
+
+Do not whitelist the 73 LoadErrors, the 3 `LogMaterial` errors or the 4 `LogModController` merge errors; in particular do not accept the loot-table row-structure mismatches as a known harmless baseline. All Thrall Wars evidence (snapshots `p3-thrallwars-pre` and `p3-thrallwars-1`, boot log SHA-256 `B50A313B…5161`, failed-world backup `2026-10-04_031850`, retired pak archive, `artifacts/batch-d-20261003/P3-ThrallWars-*`) is kept for possible future investigation. Accepted pack: the 10 mods through PvE Plus Ambush; Fantasy Races, Shemite and Thrall Wars are excluded. The historical P3 record below is unchanged.
+
 ## Boss/PvE phase P3 — Thrall Wars Dungeon (11th mod, `SlaveWarsServer.pak`) — 2026-10-04 03:02-03:20 +07:00: FAIL / STOP, rolled back (new unvalidated errors)
 
 **The server loaded the mod and ran stably, but the boot produced 73 new LoadErrors and 7 new errors with no validated baseline. Per the operator rule nothing was whitelisted: evidence preserved, P3 rolled back, STOP. The final 11-mod validation was NOT run. Installed and accepted state: the 10 mods through PvE Plus Ambush.**

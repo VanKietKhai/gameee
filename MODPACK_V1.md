@@ -2,6 +2,8 @@
 
 Status: **IN PROGRESS. Batch A PASS, Batch B PASS, Batch C PASS (server-side).** Seven mods are installed on staging `depot_443031` (TEST world). Details are in `M3_LIVE_TEST_REPORT.md`.
 
+**2026-10-04 operator decision: Thrall Wars Dungeon is EXCLUDED / DEFERRED from Modpack V1.** Its 73 LoadErrors, 3 `LogMaterial` errors and 4 `LogModController` merge errors are not whitelisted, and the loot-table row-structure mismatches are explicitly not accepted as harmless; all evidence, snapshots and the failed-world backup are kept. The accepted pack is the 10 mods through PvE Plus Ambush (Fantasy Races, Shemite and Thrall Wars excluded). Next: one final full validation of the 10-mod pack.
+
 **2026-10-04 Boss/PvE P3: Thrall Wars Dungeon FAIL / STOP, rolled back.** It mounted and ran stably (readiness 37.5 s, shutdown NORMAL 176.0 s, one new controller) but produced 73 new unvalidated LoadErrors and 7 new errors (3 loot-table `MergeDataTables` row-structure mismatches, 1 null merge target, 3 `LogMaterial` errors); nothing whitelisted. The installed and accepted state is the 10 mods through PvE Plus Ambush (backups pre-P3 `2026-10-04_030240`, latest verified `2026-10-04_031929`). Final 11-mod validation not run; decision pending.
 
 **2026-10-04 Boss/PvE P2: PvE Plus Ambush PASS server-side** (mod 10 on top of Night Terrors; readiness 37.5 s, 660.5 s hold, 0 unknown, LoadErrors 60 vs 60, no new NPC/stat/spawn-table errors, no conflict between the two ambush systems, three controllers one each, shutdown NORMAL 177.0 s; gameplay not verified; backups pre-P2 `2026-10-04_024506`, post-P2 `2026-10-04_030121`). P3 Thrall Wars Dungeon follows.
