@@ -1,5 +1,14 @@
 # M3 Task 4 — Live Test Report
 
+## Step A control boot of the unchanged 10-mod baseline — 2026-10-04 05:55-06:10 +07:00: `Exile_Priest_4_Hyrkanian` ABSENT; Simple Minimap stays FAIL / DEFERRED
+
+Operator decision: do not exclude Simple Minimap permanently yet; run one control boot of the accepted 10-mod pack to see whether `Exile_Priest_4_Hyrkanian` is boot variance; if present rerun Simple Minimap, if absent keep it FAIL / DEFERRED, no rerun.
+
+- **Control run (batch `ctrl10-1`, plan `ctrl10-pre`, verified pre-batch backup `2026-10-04_055459`):** quiet host (CPU mean 21% before; 27% during); 10-mod modlist and all 10 pak hashes exact; live DB = `2026-10-04_035205`; `quick_check` ok; singletons 1/1/1. True readiness 34.2 s; hold 660.4 s; order exact (Order 1000-1009); complete-log analysis PASS, 0 unknown; ITQoL 23, AR 37, mailbox x1, AR merge x2, Cannibal 99 teardown all exact; LoadErrors 60 vs 60; weighted-table ids only the two accepted ones (`WarTestLongLeash`, `Wildlife_Siptah_Firstman_Warrior4`, once each); controllers one each; shutdown **NORMAL 159.6 s** (exit 0, no forced kill, no orphan, host CPU 26% during the stop); `quick_check` ok. Verified post-run backup `2026-10-04_061022`; snapshot `ctrl10-1` (boot log SHA-256 `28DA50B3081C78BEF0A2FF52A3BBEDD100224526CE5EA46E753496719D93EE69`). Differences from the earlier accepted boot: only two wildlife AI-LOD3 lines of an already-known kind (`Komodo`, `Fawn`) and a `LogActor` Lamplighter warning 2 vs 1.
+- **Result: `Exile_Priest_4_Hyrkanian` = ABSENT** in the control boot, and in every other recorded boot (25 logs plus the control); it appears only in the Simple Minimap boot (`p12-minimap-1`, once, at world init).
+- **Decision applied:** Simple Minimap stays **FAIL / DEFERRED**; neither its LoadError (`C88E5FE76A79516D`) nor the spawn-table line is whitelisted; no Simple Minimap rerun in this phase. Caveat: one control boot shows the unchanged baseline does not reproduce the line; it does not prove the mod causes it (the cause stays unattributed).
+- Whitelist and catalog unchanged. #13 Player DBNO and #14 Chest Labels proceed independently on the 10-mod baseline (12 mods if both pass).
+
 ## #12 Simple Minimap (Xevyr, Workshop 3719513784) — 2026-10-04 05:27-05:44 +07:00: FAIL / STOP, rolled back (unvalidated LoadError and spawn-table error)
 
 **Simple Minimap loaded and ran stably but its boot logged 1 new LoadError and 1 new spawn-table error with no validated baseline. Per the operator rule nothing was whitelisted: evidence preserved, rolled back, STOP. #13 Player DBNO and #14 Chest Labels were NOT run. The accepted pack is still the 10 mods. Gameplay NOT YET VERIFIED; production world NOT CREATED.**

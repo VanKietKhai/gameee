@@ -2,6 +2,8 @@
 
 Status: **IN PROGRESS. Batch A PASS, Batch B PASS, Batch C PASS (server-side).** Seven mods are installed on staging `depot_443031` (TEST world). Details are in `M3_LIVE_TEST_REPORT.md`.
 
+**2026-10-04 Step A control boot of the unchanged 10-mod baseline: `Exile_Priest_4_Hyrkanian` ABSENT** (control passed everything: 0 unknown, LoadErrors 60 vs 60, controllers one each, shutdown NORMAL 159.6 s). Per the operator rule **Simple Minimap stays FAIL / DEFERRED**: neither its LoadError nor the spawn-table line is whitelisted and it is not rerun in this phase. #13 Player DBNO and #14 Chest Labels proceed independently on the 10-mod baseline (12 mods if both pass).
+
 **2026-10-04 #12 Simple Minimap FAIL / STOP, rolled back; #13 Player DBNO and #14 Chest Labels NOT RUN.** Simple Minimap loaded and ran stably (readiness 34.2 s, shutdown NORMAL 172.4 s, one new controller) but logged 1 new LoadError (id `C88E5FE76A79516D`, present only in its own container) and 1 new spawn-table error (`Exile_Priest_4_Hyrkanian`, in none of the other 25 logs, cause unattributed); nothing whitelisted, rolled back to the verified pre-#12 backup `2026-10-04_052716`. The accepted pack remains the 10 mods; the series stops until the operator decides.
 
 **2026-10-04 operator decision: #11 WO - Room For One More is EXCLUDED / DEFERRED from V1** (its 5 `MergeDataTables` errors are not whitelisted; its controller blueprint name overlaps with Riding Thralls'; the mod itself warns about mount/passenger conflicts; not revisited in this phase; evidence and the failed-world backup kept). **#12 Simple Minimap, #13 Player DBNO and #14 Chest Labels continue independently**, cumulatively on the accepted 10-mod baseline (13 mods if all pass), then a final 13-mod validation.
