@@ -18,6 +18,19 @@ public sealed record KnownBootWarning(
     public int MaxOccurrences { get; init; } = int.MaxValue;
 }
 
+/// <summary>
+/// A set of identical warnings accepted only together: bound to one mod file's SHA-256, one exact message pattern
+/// (matched against the message without its <c>[timestamp][frame]</c> prefix), one phase (after the main-world
+/// teardown begins) and an exact occurrence count. See <see cref="ModBootGates.PhaseBoundWarnings"/>.
+/// </summary>
+public sealed record PhaseBoundWarning(
+    string Id,
+    string ModPakFileName,
+    string ValidatedPakSha256,
+    string MessagePattern,
+    int ExactCount,
+    string Reason);
+
 /// <summary>Result of one live-harness gate.</summary>
 public sealed record BootGateResult(bool Pass, string Detail);
 
@@ -278,23 +291,84 @@ public static class ModBootGates
     public static IReadOnlyList<string> SelectProblemLines(IEnumerable<string> lines, IEnumerable<string> modStems, ValidatedCatalog catalog)
     {
         var stems = modStems.Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
-        return lines.Where(line =>
-        {
-            var message = StripLogPrefix(line);
-            if (message.Contains("LoadErrors:", StringComparison.OrdinalIgnoreCase))
-                return false; // ParseLoadErrors retains malformed lines and the caller gates all entries.
-            if (MatchBaseGameNoise(line, catalog.BaseGameNoise) is not null)
-                return false;
-            if (ErrorSeverity.IsMatch(message) ||
-                catalog.SevereLogMarkers.Any(m => message.Contains(m, StringComparison.OrdinalIgnoreCase)))
-                return true;
-            return ProblemMarkers.Any(m => message.Contains(m, StringComparison.OrdinalIgnoreCase)) &&
-                (RelevantWarningFamily.IsMatch(message) ||
-                 stems.Any(s => message.Contains(s, StringComparison.OrdinalIgnoreCase)) ||
-                 message.Contains("modlist", StringComparison.OrdinalIgnoreCase) ||
-                 message.Contains("Failed to mount", StringComparison.OrdinalIgnoreCase));
-        }).ToList();
+        return lines.Where(line => IsProblemLine(line, stems, catalog)).ToList();
     }
+
+    /// <summary>Whether one log line is selected by <see cref="SelectProblemLines(IEnumerable{string}, IEnumerable{string}, ValidatedCatalog)"/>.</summary>
+    public static bool IsProblemLine(string line, IReadOnlyCollection<string> modStems, ValidatedCatalog catalog)
+    {
+        var message = StripLogPrefix(line);
+        if (message.Contains("LoadErrors:", StringComparison.OrdinalIgnoreCase))
+            return false; // ParseLoadErrors retains malformed lines and the caller gates all entries.
+        if (MatchBaseGameNoise(line, catalog.BaseGameNoise) is not null)
+            return false;
+        if (ErrorSeverity.IsMatch(message) ||
+            catalog.SevereLogMarkers.Any(m => message.Contains(m, StringComparison.OrdinalIgnoreCase)))
+            return true;
+        return ProblemMarkers.Any(m => message.Contains(m, StringComparison.OrdinalIgnoreCase)) &&
+            (RelevantWarningFamily.IsMatch(message) ||
+             modStems.Any(s => !string.IsNullOrWhiteSpace(s) && message.Contains(s, StringComparison.OrdinalIgnoreCase)) ||
+             message.Contains("modlist", StringComparison.OrdinalIgnoreCase) ||
+             message.Contains("Failed to mount", StringComparison.OrdinalIgnoreCase));
+    }
+
+    /// <summary>
+    /// The log message at which the main world's teardown begins (its <c>BeginTearingDown</c> line). A phase-bound
+    /// warning is judged against the first such line that follows the engine exit request.
+    /// </summary>
+    public const string MainWorldTeardownMessage = "LogWorld: BeginTearingDown for /Game/Maps/ConanSandbox/ConanSandbox";
+
+    public const string EngineExitRequestMarker = "Engine exit requested";
+
+    /// <summary>
+    /// Index of the main-world teardown line that follows the first engine exit request, or null when the log shows
+    /// no such teardown (so nothing can be proven to belong to it).
+    /// </summary>
+    public static int? FindTeardownStart(IReadOnlyList<string> lines)
+    {
+        var exitRequested = -1;
+        for (var i = 0; i < lines.Count; i++)
+        {
+            var message = StripLogPrefix(lines[i]).TrimEnd();
+            if (exitRequested < 0)
+            {
+                if (message.Contains(EngineExitRequestMarker, StringComparison.Ordinal))
+                    exitRequested = i;
+            }
+            else if (string.Equals(message, MainWorldTeardownMessage, StringComparison.Ordinal))
+            {
+                return i;
+            }
+        }
+
+        return null;
+    }
+
+    /// <summary>The Cannibal Captivity file validated for <see cref="PhaseBoundWarnings"/> (2026-10-03/04, two runs).</summary>
+    public const string CannibalCaptivityPakFileName = "Cannibal_Captivity.pak";
+
+    public const string CannibalCaptivityValidatedSha256 = "DB6E3C299912E48E4DEC8293A58C8DEF1D881FDBDC44F1E67CE99A9BF348F04F";
+
+    /// <summary>
+    /// Warnings accepted only as a complete set, in one phase, for one exact file. Unlike <see cref="KnownWarnings"/>
+    /// these are judged on the whole boot log: the set is accepted only when the file hash matches, every matching
+    /// line is in the required phase (after the main-world teardown begins), and the count is exactly
+    /// <see cref="PhaseBoundWarning.ExactCount"/>. A 100th line, a line before teardown, a changed path or signature
+    /// or a changed hash leaves every matching line an unknown problem.
+    /// </summary>
+    public static readonly IReadOnlyList<PhaseBoundWarning> PhaseBoundWarnings =
+    [
+        new PhaseBoundWarning(
+            "CANNIBAL-CAPTIVITY-TEARDOWN-NO-WORLD",
+            CannibalCaptivityPakFileName,
+            CannibalCaptivityValidatedSha256,
+            @"^LogScript: Warning: Script Msg: No world was found for object \(/Game/Mods/Cannibal_Captivity/Base/CannibalCaptivityLevel\.CannibalCaptivityLevel:PersistentLevel\.[^()\s]+\) passed in to UEngine::GetWorldFromContextObject\(\)\.$",
+            99,
+            "Cannibal Captivity (2026-10-03/04): 99 identical LogScript warnings from the mod's level instance while the world is torn down " +
+            "after shutdown; zero while online. Observed in two controlled runs (same count, same object-path family, same position in the " +
+            "log, 84-95 ms burst) with quick_check ok, singleton objects intact and NORMAL clean stops. Operator-accepted as a known " +
+            "non-blocking server-side teardown warning for this exact file; in-game behavior is not verified.")
+    ];
 
     private static KnownBootWarning AncientRealmsLoadError(int number, string package, string missingPackageId) =>
         new($"ANCIENT-REALMS-DANGLING-REF-{number}",

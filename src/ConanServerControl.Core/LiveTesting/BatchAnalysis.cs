@@ -15,11 +15,12 @@ public sealed record ValidatedCatalog(
     IReadOnlyList<LoadErrorBaseline> LoadErrorBaselines,
     IReadOnlyList<ModBootGates.BaseGameNoiseKind> BaseGameNoise,
     IReadOnlyList<string> SevereLogMarkers,
-    IReadOnlyList<SingletonActor> SingletonActors)
+    IReadOnlyList<SingletonActor> SingletonActors,
+    IReadOnlyList<PhaseBoundWarning>? PhaseBoundWarnings = null)
 {
     public static ValidatedCatalog Current => new(
         ModBootGates.KnownWarnings, ModBootGates.LoadErrorBaselines, ModBootGates.BaseGameNoise,
-        ModBootGates.SevereLogMarkers, ModBootGates.SingletonActors);
+        ModBootGates.SevereLogMarkers, ModBootGates.SingletonActors, ModBootGates.PhaseBoundWarnings);
 }
 
 /// <summary>One mod file of a batch: exact name, SHA-256 and size.</summary>
@@ -147,7 +148,9 @@ public sealed record BootLogAnalysisResult(
     IReadOnlyDictionary<string, BootGateResult> LoadErrorGates,
     IReadOnlyDictionary<string, int> LoadErrorCountsByMod,
     IReadOnlyList<LoadErrorEntry> UnattributedLoadErrors,
-    IReadOnlyList<string> LoadErrorProblems)
+    IReadOnlyList<string> LoadErrorProblems,
+    IReadOnlyList<(PhaseBoundWarning Warning, string Line)>? PhaseBoundAccepted = null,
+    IReadOnlyList<string>? PhaseBoundNotes = null)
 {
     public bool Clean => Unknown.Count == 0 && LoadErrorProblems.Count == 0;
 }
@@ -170,9 +173,46 @@ public static class BootLogAnalyzer
 
         var stems = context.ModList.Concat(context.ExpectAbsent)
             .Select(Path.GetFileNameWithoutExtension).Where(s => !string.IsNullOrEmpty(s)).Select(s => s!).ToArray();
-        var flagged = ModBootGates.SelectProblemLines(lines, stems, context.Catalog);
         var sha = context.Sha256ByPak;
-        var (problems, known) = ModBootGates.ClassifyProblems(flagged, sha, context.Catalog);
+        var indexed = lines.Select((line, index) => (Line: line, Index: index))
+            .Where(x => ModBootGates.IsProblemLine(x.Line, stems, context.Catalog)).ToList();
+
+        // Phase-bound warning sets are judged on the whole log: all-or-nothing, so a count or phase deviation
+        // leaves every matching line an unknown problem.
+        var accepted = new List<(PhaseBoundWarning, string)>();
+        var notes = new List<string>();
+        var teardownStart = ModBootGates.FindTeardownStart(lines);
+        foreach (var warning in context.Catalog.PhaseBoundWarnings ?? [])
+        {
+            if (!sha.TryGetValue(warning.ModPakFileName, out var installedSha) ||
+                !string.Equals(installedSha, warning.ValidatedPakSha256, StringComparison.OrdinalIgnoreCase))
+            {
+                continue; // not this file (or not installed): the lines, if any, stay unknown
+            }
+
+            var pattern = new System.Text.RegularExpressions.Regex(warning.MessagePattern, System.Text.RegularExpressions.RegexOptions.CultureInvariant);
+            var matches = indexed.Where(x => pattern.IsMatch(ModBootGates.StripLogPrefix(x.Line).TrimEnd())).ToList();
+            if (matches.Count == 0)
+            {
+                continue;
+            }
+
+            var outside = teardownStart is { } start ? matches.Count(m => m.Index <= start) : matches.Count;
+            if (matches.Count == warning.ExactCount && outside == 0)
+            {
+                accepted.AddRange(matches.Select(m => (warning, m.Line)));
+                var taken = matches.Select(m => m.Index).ToHashSet();
+                indexed.RemoveAll(x => taken.Contains(x.Index));
+                notes.Add($"{warning.Id}: ACCEPTED {matches.Count} of exactly {warning.ExactCount}, all after the main-world teardown began (analysed line {teardownStart + 1}).");
+            }
+            else
+            {
+                notes.Add($"{warning.Id}: NOT accepted, so all {matches.Count} matching lines stay unknown: expected exactly {warning.ExactCount}; " +
+                          (teardownStart is null ? "no main-world teardown found in the log" : $"{outside} not after the teardown start"));
+            }
+        }
+
+        var (problems, known) = ModBootGates.ClassifyProblems(indexed.Select(x => x.Line), sha, context.Catalog);
 
         var noise = lines.Select(l => ModBootGates.MatchBaseGameNoise(l, context.Catalog.BaseGameNoise))
             .Where(id => id is not null).GroupBy(id => id!).ToDictionary(g => g.Key, g => g.Count());
@@ -189,7 +229,8 @@ public static class BootLogAnalyzer
             .ToList();
 
         return new BootLogAnalysisResult(problems, known, noise, gates,
-            byMod.ToDictionary(kv => kv.Key, kv => kv.Value.Count, StringComparer.OrdinalIgnoreCase), unattributed, loadErrorProblems);
+            byMod.ToDictionary(kv => kv.Key, kv => kv.Value.Count, StringComparer.OrdinalIgnoreCase), unattributed, loadErrorProblems,
+            accepted, notes);
     }
 
     /// <summary>

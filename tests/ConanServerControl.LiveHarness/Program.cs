@@ -138,7 +138,8 @@ internal static class Program
                 "boot" => await harness.BootAsync("boot", HoldSeconds(args), scanMods: false, ObserveSeconds(args)),
                 "mod-boot" => await harness.BootAsync("mod-boot", HoldSeconds(args), scanMods: true, expectAbsent: ExpectAbsent(args),
                     batchId: OptionValue(args, "--batch")),
-                "analyze-snapshot" => harness.AnalyzeSnapshot(args[1], args.Length > 2 && !args[2].StartsWith("--") ? args[2] : null),
+                "analyze-snapshot" => harness.AnalyzeSnapshot(args[1], args.Length > 2 && !args[2].StartsWith("--") ? args[2] : null,
+                    useCurrentCatalog: args.Contains("--current-catalog")),
                 "create-snapshot" => harness.CreateSnapshot(args[1], args[2], args[3], args.Skip(4).ToArray()),
                 "analyze-last-boot" => harness.AnalyzeLastBoot(),
                 "analyze-boot" => harness.AnalyzeBoot(args[1], args[2]),
@@ -650,7 +651,7 @@ internal sealed class Harness : IAsyncDisposable
     /// boot-log copy), never from the live catalog. The result is the same after the mod was removed or the server
     /// rolled back. With a backup id it also runs the integrity and singleton gates on that backup's world.
     /// </summary>
-    public int AnalyzeSnapshot(string snapshotDirectory, string? backupId)
+    public int AnalyzeSnapshot(string snapshotDirectory, string? backupId, bool useCurrentCatalog = false)
     {
         const string step = "analyze-snapshot";
         BatchAnalysisSnapshot snapshot;
@@ -665,8 +666,15 @@ internal sealed class Harness : IAsyncDisposable
             return 1;
         }
 
+        if (useCurrentCatalog)
+        {
+            // Re-judge the recorded boot (modlist, hashes, log) under today's committed rules instead of the
+            // recorded ones. The default is to reproduce the recorded judgement exactly.
+            snapshot = snapshot with { Catalog = ValidatedCatalog.Current };
+        }
+
         var analysis = AnalyzeModLoad(ReadLogFrom(logPath, 0, int.MaxValue), [], snapshot);
-        _log.Write(step, $"mod load analysis (snapshot {snapshot.BatchId}, read-only)", analysis.Ok ? "PASS" : "FAIL", null,
+        _log.Write(step, $"mod load analysis (snapshot {snapshot.BatchId}, {(useCurrentCatalog ? "CURRENT catalog" : "recorded catalog")}, read-only)", analysis.Ok ? "PASS" : "FAIL", null,
             analysis.Facts, analysis.Evidence, liveFilesChanged: "no");
         if (backupId is null)
         {
@@ -1623,6 +1631,7 @@ internal sealed class Harness : IAsyncDisposable
             ("BaseGameErrorKindsSuppressed", analysis.BaseGameNoiseCounts.Count == 0
                 ? "none"
                 : string.Join("; ", analysis.BaseGameNoiseCounts.OrderBy(kv => kv.Key, StringComparer.Ordinal).Select(kv => $"{kv.Key} x{kv.Value}"))),
+            ("PhaseBoundKnownWarnings", analysis.PhaseBoundNotes is { Count: > 0 } phaseNotes ? string.Join(" || ", phaseNotes) : "none"),
             ("KnownNonBlockingWarnings", known.Count == 0
                 ? "none"
                 : string.Join("; ", known.GroupBy(k => k.Warning.Id)
@@ -1642,6 +1651,8 @@ internal sealed class Harness : IAsyncDisposable
         var evidence = modProblems.Select(p => "UNKNOWN / FAIL: " + p)
             .Concat(loadErrorProblems.Select(p => "UNKNOWN / FAIL (LoadErrors): " + p))
             .Concat(known.Select(k => $"KNOWN NON-BLOCKING ({k.Warning.Id}): {k.Line}"))
+            .Concat((analysis.PhaseBoundAccepted ?? []).GroupBy(a => a.Warning.Id).Select(g =>
+                $"KNOWN NON-BLOCKING, PHASE-BOUND ({g.Key}) x{g.Count()}: first {g.First().Line}  last {g.Last().Line}"))
             .Concat(evidenceLines);
         return (ok, facts, string.Join(Environment.NewLine, evidence));
     }

@@ -71,8 +71,10 @@ public sealed class BatchAnalysisSnapshotTests : IDisposable
     {
         var log = CannibalBootLog();
 
-        // 1. Analyse while Cannibal is installed -> FAIL on the 99 warnings.
-        var installed = Context("cannibal-run-1", [.. SevenMods, "Cannibal_Captivity.pak"]);
+        // 1. Analyse while Cannibal is installed -> FAIL on the 99 warnings. The catalog is the one in force when
+        // that boot ran: the phase-bound Cannibal acceptance was only added after the controlled rerun.
+        var catalogOfThatRun = ValidatedCatalog.Current with { PhaseBoundWarnings = null };
+        var installed = Context("cannibal-run-1", [.. SevenMods, "Cannibal_Captivity.pak"], catalogOfThatRun);
         var whileInstalled = BootLogAnalyzer.Analyze(log, installed, _ => null);
         Assert.Equal(99, whileInstalled.Unknown.Count);
         Assert.Equal(CannibalTeardownWarnings(), whileInstalled.Unknown);
@@ -83,7 +85,7 @@ public sealed class BatchAnalysisSnapshotTests : IDisposable
         var dir = BatchAnalysisSnapshotStore.Save(Path.Combine(_root, "snapshots"), installed, logFile);
 
         // 2. Cannibal leaves the current catalog (rollback). Analysing against the live view now passes: the gap.
-        var rolledBack = Context("live", SevenMods);
+        var rolledBack = Context("live", SevenMods, catalogOfThatRun);
         Assert.Empty(BootLogAnalyzer.Analyze(log, rolledBack, _ => null).Unknown);
 
         // 3. The preserved batch snapshot gives the SAME failure, from its own copy of the log.
