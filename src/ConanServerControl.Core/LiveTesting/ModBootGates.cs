@@ -308,7 +308,18 @@ public static class ModBootGates
         if (ErrorSeverity.IsMatch(message) ||
             catalog.SevereLogMarkers.Any(m => message.Contains(m, StringComparison.OrdinalIgnoreCase)))
             return true;
-        return ProblemMarkers.Any(m => message.Contains(m, StringComparison.OrdinalIgnoreCase)) &&
+        // The problem-word test must not see a mod's own name: "NightTerrors" contains "error", so every ordinary
+        // mount line for that mod looked like a problem. Mask each mod stem out of the text used for that test only;
+        // an Error/Fatal severity, a severe marker or a real problem word elsewhere in the line is still caught above
+        // and here, and "names a mod" below still uses the original message.
+        var markerText = message;
+        foreach (var stem in modStems)
+        {
+            if (!string.IsNullOrWhiteSpace(stem))
+                markerText = markerText.Replace(stem, " ", StringComparison.OrdinalIgnoreCase);
+        }
+
+        return ProblemMarkers.Any(m => markerText.Contains(m, StringComparison.OrdinalIgnoreCase)) &&
             (RelevantWarningFamily.IsMatch(message) ||
              modStems.Any(s => !string.IsNullOrWhiteSpace(s) && message.Contains(s, StringComparison.OrdinalIgnoreCase)) ||
              message.Contains("modlist", StringComparison.OrdinalIgnoreCase) ||

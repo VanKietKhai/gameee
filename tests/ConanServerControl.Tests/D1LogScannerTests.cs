@@ -93,6 +93,38 @@ public sealed class D1LogScannerTests
         Assert.Empty(ModBootGates.SelectProblemLines([line], []));
     }
 
+    // The ordinary mount evidence for Night Terrors, exactly as logged. "NightTerrors" contains "error", which made the
+    // scanner treat each of these as a problem.
+    [Theory]
+    [InlineData("LogModManager: Mounting mod pak file: D:/conan exiles/depot_443031/ConanSandbox/Mods/NightTerrors.pak")]
+    [InlineData("LogModManager: extracting ../../../ConanSandbox/Mods/NightTerrors-WindowsServer.pak from D:/conan exiles/depot_443031/ConanSandbox/Mods/NightTerrors.pak")]
+    [InlineData("LogModManager: extracted ../../../ConanSandbox/Mods/NightTerrors-WindowsServer.ucas - copy took 0.00 s (0.3 MB, 585.2 MB/s)")]
+    [InlineData("LogModManager: FDreamworldModsModule::MountMod: D:/conan exiles/depot_443031/ConanSandbox/Mods/NightTerrors.pak - validate/extract took 0.011 seconds")]
+    [InlineData("LogIoDispatcher: Display: Mounted container 'D:/conan exiles/depot_443031/ConanSandbox/Saved/ExtractedMods/NightTerrors-WindowsServer.utoc', Id='e0a36273861edc67', Order=1008, Slot=0, Options=(None), Flags=(Compressed|Indexed), HasSoftRefs=False")]
+    [InlineData("LogPakFile: Display: Mounted IoStore container \"D:/conan exiles/depot_443031/ConanSandbox/Saved/ExtractedMods/NightTerrors-WindowsServer.utoc\"")]
+    [InlineData("LogModManager: Loading asset registry state for mod 'NightTerrors'")]
+    [InlineData("LogModManager: Mod 'NightTerrors' contributes 166 package(s) to provenance map.")]
+    [InlineData("LogModManager: AddActiveModControllerClass: /Game/Mods/NightTerrors/BP_NightTerrors_ModController.BP_NightTerrors_ModController_C")]
+    [InlineData("Persistence: Spawning mod controller: BP_NightTerrors_ModController_C")]
+    public void A_mod_name_that_contains_a_problem_word_does_not_make_ordinary_lines_problems(string message)
+    {
+        Assert.Empty(ModBootGates.SelectProblemLines(["[2026.10.03-19.25.48:100][  0]" + message], ["NightTerrors"]));
+    }
+
+    [Theory]
+    [InlineData("LogModManager: Warning: NightTerrors asset registry is stale")]
+    [InlineData("LogModManager: Failed to mount NightTerrors.pak")]
+    [InlineData("LogScript: Warning: Script Msg: Failed to load /Game/Mods/NightTerrors/BP/BP_Demon")]
+    [InlineData("NightTerrors: Error: Data: missing row")]
+    [InlineData("LogTemp: Fatal: NightTerrors crashed")]
+    [InlineData("Assertion failed: NightTerrors")]
+    [InlineData("LogSpawn: Warning: NightTerrors table is missing")]
+    public void Real_problems_naming_the_same_mod_are_still_selected(string message)
+    {
+        var line = "[2026.10.03-19.25.48:100][  0]" + message;
+        Assert.Equal(line, Assert.Single(ModBootGates.SelectProblemLines([line], ["NightTerrors"])));
+    }
+
     [Fact]
     public void Only_the_two_weighted_table_ids_of_the_healthy_boots_are_base_game_noise()
     {
