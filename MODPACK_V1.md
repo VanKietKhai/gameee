@@ -2,6 +2,8 @@
 
 Status: **IN PROGRESS. Batch A PASS, Batch B PASS, Batch C PASS (server-side).** Seven mods are installed on staging `depot_443031` (TEST world). Details are in `M3_LIVE_TEST_REPORT.md`.
 
+**2026-10-04 final 8-mod core validation, attempt 1:** every check passed (readiness, 661.7 s hold, complete-log analysis with 0 unknown and all known sets exact, `quick_check`, singletons, clean process-tree stop) except the shutdown time, 307.9 s = DEGRADED, measured while the host CPU averaged 79% (the same 8 mods stopped in 181.7 s and 199.2 s on a quiet host). By the stated rule this is not a pass: core modpack V1 server-side is NOT YET; retry on a quiet host. Gameplay not verified; production world not created.
+
 **2026-10-04 operator decision: Shemite City State is EXCLUDED / DEFERRED from Modpack V1** (not re-run; its 9 LoadErrors and 6 spawn-table errors are not whitelisted; evidence, snapshots and backups kept). Core V1 is the 8 mods below; Fantasy Races is also excluded. The next step is one final full 8-mod core validation.
 
 **2026-10-04: Shemite City State (9th) STOP, rolled back; INCONCLUSIVE (gate-blocked).** It loaded and ran stably, but produced 9 new unvalidated LoadErrors, 6 new spawn-table errors and a DEGRADED 319.6 s shutdown, so it was rolled back (nothing whitelisted). The accepted state is the 8 mods below. Core modpack validation is not run. See `M3_LIVE_TEST_REPORT.md`.
