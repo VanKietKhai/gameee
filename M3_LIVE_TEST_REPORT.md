@@ -1,5 +1,9 @@
 # M3 Task 4 — Live Test Report
 
+## Operator decision — 2026-10-04: Shemite City State EXCLUDED / DEFERRED
+
+Do not rerun Shemite; do not whitelist its 9 LoadErrors or its 6 spawn-table errors (`Catacomb_Wretch` x5, `Wildlife_SiptahTwoHornedRhino_Baby` x1). Reason: the run reached readiness and preserved world integrity but introduced those previously unvalidated errors and a DEGRADED 319.6 s shutdown; the spawn-table errors may affect gameplay/spawn behavior and are not sufficiently explained to accept as harmless. All Shemite evidence (snapshots `shemite-run-1-pre` and `shemite-run-1`, backups `2026-10-04_001912`, `_004137`, `_004207`, the retired pak archive, `artifacts/batch-d-20261003/D3-Shemite-*`) is kept for possible future investigation. Accepted server-side core: the 8 mods ending with Cannibal Captivity; Fantasy Races also excluded. The historical Shemite record below is unchanged.
+
 ## Shemite City State (9th mod) — 2026-10-04 00:2x-00:43 +07:00: STOP, rolled back (gate-blocked; INCONCLUSIVE)
 
 **Result: the server loaded Shemite and ran stably, but two gates failed (new unvalidated LoadErrors; DEGRADED shutdown 319.6 s). Per the operator rule nothing was whitelisted: evidence preserved, rolled back to the verified PRE-SHEMITE 8-mod backup, STOP. 9-mod core validation NOT RUN.**
