@@ -1,5 +1,13 @@
 # Unattended Batch D handoff
 
+## FINAL RESUME POINTER — 2026-10-03 14:30 +07:00
+
+This STOP F was resolved. Authoritative current handoff: E:\github\gameee\AGENT_HANDOFF.md and FINAL_REPORT.md, branch claude/m3-task4-live-windows at 982d117 (pushed). SDK 8.0.425 installed user-locally; safety and merged builds clean, 410/410 tests, zero skipped. Original 0bb2b2a remains in history. Do not repeat SDK installation or integration.
+
+Current stage is STOP B after D1: 15 new NPC stat-template errors appeared after readiness. D1 stopped normally (72.5 s), production rollback completed, seven-mod catalog/order restored. Latest verified seven-mod backup 2026-10-03_142750; pre-D1 restore point 142352; failed-D1 safety copy 142725. quick_check=ok, singleton counts=1/1/1, no running server/root/shipping/orphan/harness processes. D2/D3/final validation not started. Next action is human review of D1 error and harness scan gap. Production world NOT CREATED.
+
+All content below is historical and superseded by the primary-checkout final handoff.
+
 ## Resume checkpoint (2026-10-03, approximately 14:20 +07:00)
 
 - CURRENT BRANCH: codex/m3-batch-d-safety; preserved checkpoint 0bb2b2a remains in history.

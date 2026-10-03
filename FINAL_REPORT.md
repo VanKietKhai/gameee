@@ -1,5 +1,9 @@
 # Unattended Batch D final report
 
+## FINAL RESUME POINTER — 2026-10-03
+
+Authoritative final report: E:\github\gameee\FINAL_REPORT.md at claude/m3-task4-live-windows commit 982d117, pushed. STOP F resolved with official SDK 8.0.425; QA-019/020 merged and verified, 410 tests passed before and after merge. Run ended at STOP B: D1 produced 15 new NPC stat-template errors; clean 72.5-second stop, production rollback verified to seven mods. Server OFFLINE; backup 2026-10-03_142750, quick_check=ok, singleton counts 1/1/1. D2/D3/final validation NOT STARTED. Original checkpoint 0bb2b2a preserved. The remaining report is historical.
+
 ## Resumed run in progress — 2026-10-03
 
 SDK blocker resolved: official Microsoft SDK 8.0.425 installed user-locally with SHA-512 verification. global.json and existing runtimes unchanged. Safety branch build: 0 warnings/errors. Full Windows tests: 410 passed, 0 failed, 0 skipped after correcting Windows file sharing in the new WAL test fixture. QA-019/020 implementation reviewed relative to 2659af6. Merge and live Batch D validation are next; no live operation performed yet. The original 0bb2b2a checkpoint is preserved in branch history.
