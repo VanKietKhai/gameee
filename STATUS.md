@@ -9,7 +9,11 @@
 - **Ancient Realms `MergeDataTables - ToBeAddedDataTable is null`: ACCEPTED as KNOWN NON-BLOCKING**, only with the exact signature, `Ancient_Realms.pak` SHA-256 `12F7E719…FD1A`, and at most 2 occurrences per boot. A third occurrence, a changed signature or a changed hash fails.
 - **Accepted core (7):** StackMe10K, Savage Paragon, Grit & Grease, Thrall Reputation, Improved Thralls & QoL, WO Riding Thralls, Ancient Realms Enhanced. **Next candidates:** Cannibal Captivity Enhanced (Workshop 3765743138), then Shemite City State Enhanced (3755371705).
 
-## Cannibal Captivity live batch (2026-10-03): STOP, rolled back
+## Cannibal Captivity (2026-10-04): ACCEPTED server-side after a controlled rerun
+
+Kept as the 8th mod. The 99 teardown warnings reproduced exactly (same signature and object-path family, same log positions, all after the main-world teardown began, none online, no other unknown lines, `quick_check` ok, singletons 1/1/1, NORMAL stops 199.2 s / 181.7 s) and are now **KNOWN NON-BLOCKING — SERVER-SIDE TEARDOWN WARNING**, bound to the exact pak hash `DB6E3C29…F04F`, the exact signature/path family, the teardown phase and an exact count of 99; any 100th line, pre-shutdown line, changed path/signature/hash or other unknown fails. In-game behavior NOT verified. Analysis is now reproducible from an immutable per-batch snapshot. Current load order: the seven plus `Cannibal_Captivity.pak`; latest verified backup `2026-10-04_001102`; server OFFLINE; Shemite City State not started. Details: `M3_LIVE_TEST_REPORT.md`.
+
+## Cannibal Captivity first run (2026-10-03): STOP, rolled back (historical)
 
 Boot (39.6 s), 10-minute hold, graceful stop (199.2 s NORMAL), `quick_check` and singleton gates all passed, but the complete-log scan found 99 identical `LogScript` warnings naming `/Game/Mods/Cannibal_Captivity/...` during world teardown. Per the operator rule (any UNKNOWN = rollback and STOP) the batch was rolled back and verified (DB/modlist hashes equal the seven-mod baseline); nothing was whitelisted. Shemite City State not started; server OFFLINE. Decision pending: accept that exact teardown warning, or exclude Cannibal Captivity. Details: `M3_LIVE_TEST_REPORT.md`.
 

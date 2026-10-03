@@ -1,6 +1,33 @@
 # M3 Task 4 — Live Test Report
 
-## Cannibal Captivity (D2 slot, 8th mod) — 2026-10-03 23:2x +07:00: STOP, rolled back
+## Cannibal Captivity controlled rerun — 2026-10-04 00:1x +07:00: ACCEPTED (server-side), KNOWN NON-BLOCKING teardown warning
+
+**Cannibal Captivity is kept as the 8th mod. Classification: KNOWN NON-BLOCKING, server-side teardown warning only. In-game behavior NOT verified.**
+
+Operator decision: keep the mod; the 99 teardown warnings are a candidate warning set pending one controlled reproduction. First, the analysis reproducibility gap was fixed (`c6bcef7`): every live batch now records an immutable snapshot (batch id, ordered modlist, each pak's name/SHA-256/size, the validated catalog in force, and the boot log's hash with a read-only copy) and `analyze-snapshot` replays from it. On real data both preserved runs now FAIL on exactly 99 lines from the recorded snapshot while Cannibal is not installed (the live-catalog analysis had said PASS).
+
+Controlled rerun (`mod-boot --hold 600 --batch cannibal-run-2`): baseline verified first (live DB `1FD6089F…4793` and modlist `4D48BF24…2D86` identical to the seven-mod state, no Conan process); verified pre-batch backup `2026-10-03_235120`; production Local import (source = installed = catalog SHA-256 `DB6E3C299912E48E4DEC8293A58C8DEF1D881FDBDC44F1E67CE99A9BF348F04F`, order 8).
+
+| Item | Run 1 (2026-10-03 23:24) | Rerun (2026-10-04 00:05) |
+|---|---|---|
+| True readiness | 39.6 s | 35.4 s |
+| Online hold | 600.3 s | 600.5 s |
+| Shutdown (gate) | 199.2 s NORMAL | 181.7 s NORMAL (stop 183.7 s) |
+| Stop | RCON acked, exit 0, no kill, no orphan | same |
+| `LogScript` "No world was found for object (/Game/Mods/Cannibal_Captivity/Base/CannibalCaptivityLevel…)" | 99 | **99** |
+| Same object-path family (digits normalised) | 23 kinds | identical 23 kinds |
+| Position | log lines 7541-7658, after PreExit | identical line positions, after PreExit |
+| Before shutdown / before main-world teardown | 0 / 0 | **0 / 0** |
+| Burst | 95 ms (frame 151) | 84 ms (frame 796; the frame counter is not part of the signature) |
+| Other unknown warnings/errors | none | **none** |
+| New LoadErrors | none (ITQoL 23, AR 37 exact) | none |
+| `quick_check` / singletons (mailbox, ITQoL ctrl, AR ctrl) | ok / 1,1,1 | **ok / 1,1,1** |
+
+All acceptance conditions held, so the set was accepted as `CANNIBAL-CAPTIVITY-TEARDOWN-NO-WORLD` (`8002636`): bound to the exact pak hash; the exact message and object-path family (strictly under `/Game/Mods/Cannibal_Captivity/Base/CannibalCaptivityLevel.CannibalCaptivityLevel:PersistentLevel.`); only after the main-world teardown begins; **exactly 99**, judged on the whole log and all-or-nothing. A 100th line, fewer than 99, a line before teardown, a changed path/message/severity, a changed hash, or any other Cannibal-named warning/error leaves the matching lines an unknown problem. There is no broad `Contains("Cannibal_Captivity")` rule. Tests 470/470, 0 skipped.
+
+State after the rerun: server OFFLINE; accepted 8-mod load order (the seven plus `Cannibal_Captivity.pak`); `modlist.txt` matches; verified post-run backup **`2026-10-04_001102`** (hashes + `quick_check` ok; live DB identical; mailbox/ITQoL controller/AR controller 1/1/1). Snapshots: `E:\CSC-M3-Live\live-test\batch-snapshots\cannibal-run-1` (retroactive) and `cannibal-run-2` (log sha256 `287647168E3B2B2BB44D3319E0793C9A4220FE4BABDD24D68DF3FA789043C9A1`). Shemite City State NOT started.
+
+## Cannibal Captivity (D2 slot, 8th mod) — 2026-10-03 23:2x +07:00: STOP, rolled back (historical, superseded by the rerun above)
 
 **Result: FAIL / STOP on the complete-log scan (99 unknown lines). Rolled back and verified. Shutdown NORMAL. World intact.**
 

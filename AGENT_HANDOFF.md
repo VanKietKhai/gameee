@@ -1,20 +1,19 @@
-# Batch D handoff — STOP B
+# Batch D handoff — Cannibal Captivity ACCEPTED, Shemite next
 
-- CURRENT LOCAL TIME: 2026-10-03 14:29 +07:00.
+- CURRENT LOCAL TIME: 2026-10-04 00:2x +07:00.
 - CURRENT BRANCH: claude/m3-task4-live-windows (primary checkout E:\github\gameee).
-- CURRENT HEAD: d8908ee (scanner fix) on top of 982d117; later commits on this branch are the harness read-only-path tweak and this handoff. Takeover by Claude at 2026-10-03 22:55 +07:00 preserved Codex's WIP as-is and extended it.
-- PRESERVED SAFETY BRANCH: codex/m3-batch-d-safety at abe3875, containing original checkpoint 0bb2b2a. Its worktree is E:\github\gameee\.worktrees\batch-d.
-- CURRENT STAGE: STOP B after D1; rollback completed and verified. Do not start D2/D3.
-- LAST COMPLETED CHECKPOINT: QA-019/020 compiled and tested; merged branch compiled and tested; both full runs 410 passed, 0 failed, 0 skipped, builds 0 warnings/errors. D1 boot/stop completed, then failed full-log review.
-- CURRENT ACTIVE MODLIST: StackMe10K.pak -> SavageParagon.pak -> GritandGrease.pak -> ThrallReputation.pak -> ImprovedThrallsAndQoL.pak -> WO_RidingThralls.pak -> Ancient_Realms.pak. Catalog and modlist agree, all seven enabled.
-- LATEST VERIFIED BACKUP: 2026-10-03_142750 (restored seven-mod world; manifest/hash verification and quick_check=ok). Known pre-D1 restore point: 2026-10-03_142352. Failed-D1 state preserved by automatic pre-restore backup 2026-10-03_142725.
-- SERVER STATE: OFFLINE, clean process-tree exit; no root/shipping/orphan/harness process.
-- LAST SHUTDOWN CLASS: NORMAL, 72.5 seconds, acknowledged, exit code 0, forced kill NO, orphan NO, no WAL/SHM left after D1 stop.
-- OPERATOR DECISION 2026-10-03: Fantasy Races EXCLUDED / DEFERRED from V1 (do not re-run, do not whitelist the 15 lines, keep D1 evidence). AR MergeDataTables-null ACCEPTED as known non-blocking (exact signature, AR hash 12F7E719..., max 2 per boot).
-- CANNIBAL CAPTIVITY RESULT (2026-10-03 ~23:40): STOP, rolled back. Boot/hold/stop/integrity PASS (readiness 39.6 s, 600 s hold, shutdown 199.2 s NORMAL, quick_check ok, singletons 1/1/1) but the complete-log scan found 99 identical UNKNOWN `LogScript: Warning ... No world was found for object (/Game/Mods/Cannibal_Captivity/...)` lines in the shutdown teardown (frame 151). Not whitelisted. Restored backup 2026-10-03_232338, mod removed; live DB/modlist hashes equal pre-batch. Pre-restore (failed world) backup 2026-10-03_233922; latest verified backup 2026-10-03_233931. Shemite NOT started.
-- NEXT ACTION: operator decision: accept the exact teardown warning (hash-bound, path-bound, count-capped) or exclude Cannibal Captivity; then Shemite City State. See M3_LIVE_TEST_REPORT.md "Cannibal Captivity".
-- D1 CLASSIFICATION: INCONCLUSIVE. 15 identical NPC stat-template lines, 0 in all 11 earlier healthy boots, only novel Error kind in the D1 boot; Fantasy Races ships StatModifier/StatTemplate/NPC-stat data tables (plausible, unproven attribution); one boot only; stat effect unknown; no crash/integrity/persistence evidence (D1 world quick_check ok, 1 FROE controller). Not a known warning. Expect any D1 rerun to FAIL the gate on those 15 lines unless the operator accepts them in committed code.
-- OPEN BLOCKERS: none for the seven-mod baseline. D1 is closed by exclusion (historical classification INCONCLUSIVE).
+- CURRENT HEAD: the docs commit after 8002636 (feat: accept the validated Cannibal Captivity teardown warning set); before it c6bcef7 (immutable batch-analysis snapshots) and a4d63e8/310c701 (operator decisions, first Cannibal STOP).
+- PRESERVED SAFETY BRANCH: codex/m3-batch-d-safety at abe3875 (original checkpoint 0bb2b2a). Its worktree is E:\github\gameee\.worktreesatch-d.
+- CURRENT STAGE: Cannibal Captivity (8th mod) ACCEPTED server-side after a controlled rerun. Shemite City State is next and NOT started. Tests 470 passed, 0 failed, 0 skipped; build 0 warnings/errors.
+- LAST COMPLETED CHECKPOINT: Cannibal Captivity rerun (mod-boot --hold 600 --batch cannibal-run-2): readiness 35.4 s, 600.5 s hold, shutdown 181.7 s NORMAL, exit 0, no kill/orphan, quick_check ok, mailbox/ITQoL ctrl/AR ctrl 1/1/1; exactly 99 teardown warnings, identical to run 1, none before shutdown, no other unknown line.
+- CURRENT ACTIVE MODLIST: StackMe10K.pak -> SavageParagon.pak -> GritandGrease.pak -> ThrallReputation.pak -> ImprovedThrallsAndQoL.pak -> WO_RidingThralls.pak -> Ancient_Realms.pak -> Cannibal_Captivity.pak (modlist.txt and catalog agree, all eight enabled; Cannibal SHA-256 DB6E3C299912E48E4DEC8293A58C8DEF1D881FDBDC44F1E67CE99A9BF348F04F).
+- LATEST VERIFIED BACKUP: 2026-10-04_001102 (post-rerun 8-mod world; hashes + quick_check ok). Seven-mod rollback point before Cannibal: 2026-10-03_235120 (rerun) / 2026-10-03_232338 (first run). Older: 2026-10-03_142750.
+- SERVER STATE: OFFLINE, clean process-tree exit; no Conan or harness process. (An old orphan findstr PID 28280 from before this work is still running; not touched.)
+- LAST SHUTDOWN CLASS: NORMAL, 181.7 s, acknowledged, exit code 0, forced kill NO, orphan NO.
+- ACCEPTED WARNING GATES (ModBootGates): ITQoL mailbox x1; 7 Ancient Realms dangling refs; Ancient Realms MergeDataTables-null (exact, AR hash, max 2); Cannibal teardown set CANNIBAL-CAPTIVITY-TEARDOWN-NO-WORLD (exact Cannibal hash, exact message and object-path family, after main-world teardown only, exactly 99, all-or-nothing). Fantasy Races EXCLUDED/DEFERRED (its 15 NPC stat-template lines are NOT whitelisted; evidence kept under artifacts/batch-d-20261003/ and backup 2026-10-03_142725).
+- ANALYSIS: every mod-boot now writes an immutable snapshot (E:\CSC-M3-Live\live-testatch-snapshots\<batch>, read-only, log hash-verified). Replay with `analyze-snapshot <dir> [backupId] [--current-catalog]`; analyze-boot is live-catalog based and says so. Snapshots cannibal-run-1 (retroactive) and cannibal-run-2 exist.
+- NEXT ACTION: report to the operator, then (on approval) Shemite City State (Workshop 3755371705): same cycle, rollback and STOP on any unknown error, integrity failure or DEGRADED/EMERGENCY shutdown. In-game behavior of every mod, including Cannibal Captivity, is NOT verified (4F blocked by client authentication).
+- OPEN BLOCKERS: none for the 8-mod baseline.
 
 ## SDK and validation
 
