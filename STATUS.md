@@ -9,6 +9,10 @@
 - **Ancient Realms `MergeDataTables - ToBeAddedDataTable is null`: ACCEPTED as KNOWN NON-BLOCKING**, only with the exact signature, `Ancient_Realms.pak` SHA-256 `12F7E719…FD1A`, and at most 2 occurrences per boot. A third occurrence, a changed signature or a changed hash fails.
 - **Accepted core (7):** StackMe10K, Savage Paragon, Grit & Grease, Thrall Reputation, Improved Thralls & QoL, WO Riding Thralls, Ancient Realms Enhanced. **Next candidates:** Cannibal Captivity Enhanced (Workshop 3765743138), then Shemite City State Enhanced (3755371705).
 
+## Cannibal Captivity live batch (2026-10-03): STOP, rolled back
+
+Boot (39.6 s), 10-minute hold, graceful stop (199.2 s NORMAL), `quick_check` and singleton gates all passed, but the complete-log scan found 99 identical `LogScript` warnings naming `/Game/Mods/Cannibal_Captivity/...` during world teardown. Per the operator rule (any UNKNOWN = rollback and STOP) the batch was rolled back and verified (DB/modlist hashes equal the seven-mod baseline); nothing was whitelisted. Shemite City State not started; server OFFLINE. Decision pending: accept that exact teardown warning, or exclude Cannibal Captivity. Details: `M3_LIVE_TEST_REPORT.md`.
+
 ## Latest unattended checkpoint
 
 STOP B: Batch D1 reached readiness but full-log review found 15 new NPC stat-template errors. Rollback to the verified seven-mod world/order completed; server OFFLINE. D2/D3/final ten-mod validation not started. QA-019/020 and the reviewed integration are merged at 09cbf1a; safety and merged builds clean, 410/410 tests passed with zero skipped. Exact SDK 8.0.425 is installed user-locally; global.json unchanged. See FINAL_REPORT.md and AGENT_HANDOFF.md. New live work requires review of the D1 error and the harness scan coverage gap. Production world remains NOT CREATED.
