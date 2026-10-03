@@ -1,6 +1,35 @@
 # M3 Task 4 — Live Test Report
 
-## Final full 8-mod core validation, attempt 1 — 2026-10-04 01:0x-01:24 +07:00: everything passed except the shutdown time (DEGRADED 307.9 s, host under load)
+## Final full 8-mod core validation, quiet-host retry — 2026-10-04 01:3x-02:07 +07:00: PASS. CORE MODPACK V1 SERVER-SIDE = PASS
+
+**Both parts passed: (A) the full validation and (B) the clean restart validation. Gameplay NOT YET VERIFIED (4F blocked by client authentication). Production world NOT CREATED. Shemite and Fantasy Races remain EXCLUDED / DEFERRED.**
+
+- **Quiet-host precondition:** League of Legends closed (only a Riot launcher background service left); server Offline, no Conan process; 150 s of host CPU sampling: mean 27% (min 10%, max 60% from a transient caused by my own commands), 16-21% in the minutes before boot. The old orphan `findstr` pipeline (PID 28280, about 1.4 cores) was still running and was not touched; it was also present during the earlier quiet 181.7 s and 199.2 s stops. Other unknown/user processes were not terminated.
+- **State before:** `16deaed` clean; modlist exactly the 8 accepted mods in order; all 8 pak hashes and sizes equal the immutable record, no extra Mods files; live DB `D2A0356D…7A73` identical to verified backup `2026-10-04_012406`; `quick_check` ok; singletons 1/1/1. Verified pre-final backup **`2026-10-04_013946`**; immutable plan `core8-final-retry-pre` (no new mod; catalog SHA-256 `767B4BCD…7818`, the same rule set as attempt 1).
+
+| | A: full validation (`core8-final-2`) | B: clean restart (`core8-final-2-restart`) |
+|---|---|---|
+| True readiness (world ticking) | 36.4 s | 36.4 s |
+| Online hold | 660.5 s | 301.7 s |
+| Mount order / container Order | modlist order, 1000-1007 | modlist order, 1000-1007 |
+| Complete boot/runtime/teardown analysis | PASS, 0 unknown | PASS, 0 unknown |
+| ITQoL / AR LoadErrors | 23 / 37 exact | 23 / 37 exact |
+| Mailbox x1; AR merge x2 | exact | exact |
+| Cannibal teardown warnings | 99 of exactly 99, after teardown | 99 of exactly 99, after teardown |
+| Spawn-table noise | only the two accepted ids (x2) | same |
+| Crash / assertion / save / persistence error | none | none |
+| Shutdown (gate) | 175.1 s NORMAL (stop 177.2 s) | 178.1 s NORMAL (stop 180.2 s) |
+| Stop details | acknowledged, exit 0, no forced kill, no root/shipping/orphan | same |
+| Host CPU during the stop | mean 36% (28-50%) | mean 36% (25-55%) |
+| Host CPU whole run | mean 34% (17-70%) | mean 38% (24-58%) |
+| Silent teardown phase | 154.8 s | 158.2 s |
+| `quick_check` / mailbox / ITQoL ctrl / AR ctrl | ok / 1 / 1 / 1 | ok / 1 / 1 / 1 |
+| RAM | private peak 9.16 GB, working set peak 7.53 GB, min free RAM 545 MB | private peak 9.17 GB, min free RAM 414 MB |
+| Verified backup after | `2026-10-04_015607` | **`2026-10-04_020607` (FINAL)** |
+
+Comparison: attempt 1 (host CPU 79% average from a game) stopped in 307.9 s with a 267.9 s silent phase; on the quiet host the same 8 mods stop in about 175-180 s with a 155-158 s silent phase, consistent with the earlier shutdown study. WAL-safe world checks were run on the verified backup copies (immutable read). Final live state: server OFFLINE, `modlist.txt` = the 8 mods, `game_0.db` 700,416 B with no WAL left, DB identical to the final backup. Snapshots: `core8-final-retry-pre`, `core8-final-2` (log SHA-256 `B1ADE0F035128FF10CCAB2F61A93C98AB8B2936AC87715698B32B06028C23EEE`), `core8-final-2-restart` (`76138DC49B57FFD96FEA4E8697BA753025EC2CC3E002DCAEBF8CEA6288E6FC85`). Evidence (gitignored): `artifacts/batch-d-20261003/CORE8-final2*`. **SAFE TO BEGIN BOSS/PVE MOD PHASE = YES (server-side).**
+
+## Final full 8-mod core validation, attempt 1 — 2026-10-04 01:0x-01:24 +07:00: everything passed except the shutdown time (DEGRADED 307.9 s, host under load) (historical, superseded by the retry above)
 
 **8-MOD CORE VALIDATION: FAIL on the stated criterion (shutdown must be NORMAL or WARNING). CORE MODPACK V1 SERVER-SIDE: NOT YET.** Every other check passed. The slow stop coincided with heavy host CPU load from a game running during the whole attempt, so it is attributed to the host, not to a mod, but that is an inference from the CPU samples and the earlier shutdown study, not a proof.
 

@@ -9,7 +9,11 @@
 - **Ancient Realms `MergeDataTables - ToBeAddedDataTable is null`: ACCEPTED as KNOWN NON-BLOCKING**, only with the exact signature, `Ancient_Realms.pak` SHA-256 `12F7E719…FD1A`, and at most 2 occurrences per boot. A third occurrence, a changed signature or a changed hash fails.
 - **Accepted core (7):** StackMe10K, Savage Paragon, Grit & Grease, Thrall Reputation, Improved Thralls & QoL, WO Riding Thralls, Ancient Realms Enhanced. **Next candidates:** Cannibal Captivity Enhanced (Workshop 3765743138), then Shemite City State Enhanced (3755371705).
 
-## Final 8-mod core validation, attempt 1 (2026-10-04): all checks pass except shutdown time (DEGRADED 307.9 s under heavy host load)
+## CORE MODPACK V1 SERVER-SIDE = PASS (2026-10-04, quiet-host retry)
+
+The final 8-mod core validation passed on a quiet host (League of Legends closed; host CPU 27% before, 34-38% during): full validation (readiness 36.4 s, 660.5 s hold, complete boot/runtime/teardown analysis with 0 unknown and every known warning set exact, shutdown NORMAL 175.1 s with host CPU 36%, exit 0, no forced kill, no orphan, `quick_check` ok, singletons 1/1/1) and the clean restart validation (readiness 36.4 s, same exact analysis, shutdown NORMAL 178.1 s, `quick_check` ok). Final verified backup **`2026-10-04_020607`**. Accepted core (8): StackMe10K, Savage Paragon, Grit & Grease, Thrall Reputation, Improved Thralls & QoL, WO Riding Thralls, Ancient Realms Enhanced, Cannibal Captivity Enhanced. Gameplay NOT YET VERIFIED (4F blocked by client authentication); production world NOT CREATED; Shemite and Fantasy Races EXCLUDED / DEFERRED. The boss/PvE mod phase may begin (server-side). Details: `M3_LIVE_TEST_REPORT.md`.
+
+## Final 8-mod core validation, attempt 1 (2026-10-04): all checks pass except shutdown time (DEGRADED 307.9 s under heavy host load) (historical)
 
 Readiness 71.3 s, 661.7 s hold, complete boot/runtime/teardown analysis PASS (0 unknown; all known warning sets exact), `quick_check` ok, singletons 1/1/1, no crash/assertion/persistence error, process tree fully stopped, no forced kill. The stop took 307.9 s (DEGRADED) while host CPU averaged 79% from a running game; the same 8 mods stopped in 181.7 s and 199.2 s on a quiet host. By the stated rule this is a FAIL, so **CORE MODPACK V1 SERVER-SIDE = NOT YET**; the clean-restart validation was not run. Latest verified backups: post-run `2026-10-04_012406`, pre-final `2026-10-04_010449`. 8-mod state installed; server OFFLINE. A retry belongs on a quiet host. Details: `M3_LIVE_TEST_REPORT.md`.
 
