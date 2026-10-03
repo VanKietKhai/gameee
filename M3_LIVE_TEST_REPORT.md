@@ -1,5 +1,40 @@
 # M3 Task 4 — Live Test Report
 
+## Final 10-mod campaign pack validation — 2026-10-04 03:2x-03:53 +07:00: PASS. FINAL 10-MOD CAMPAIGN PACK SERVER-SIDE = PASS
+
+**Both parts passed: (A) the full run and (B) the clean restart. Gameplay NOT YET VERIFIED (4F blocked by client authentication; none of the nine non-base mods' behavior has been tested with a client). Production world NOT CREATED.**
+
+- **Accepted pack (10):** StackMe10K, Savage Paragon, Grit & Grease, Thrall Reputation, Improved Thralls & QoL, WO Riding Thralls, Ancient Realms Enhanced, Cannibal Captivity Enhanced, Night Terrors, PvE Plus Ambush. Excluded / deferred: Fantasy Races, Shemite City State, Thrall Wars Dungeon.
+- **Before:** `79c666b` clean; server Offline, no Conan process; host CPU over 90 s 28, 26, 18, 24, 23, 21, 18, 21, 20 (mean 22%), game closed; modlist exactly the accepted 10-mod order; all 10 pak hashes and sizes exact against the immutable record, no extra files; live DB = verified backup `2026-10-04_031929`; `quick_check` ok; singletons 1/1/1. Verified pre-final backup **`2026-10-04_032619`**; immutable plan `final10-pre` (no new mod; catalog SHA-256 `767B4BCD…7818`, code head `79c666b`).
+
+| | A: full run (`final10-1`) | B: clean restart (`final10-restart`) |
+|---|---|---|
+| True readiness (world ticking) | 36.4 s | 40.5 s |
+| Online hold | 660.7 s | 301.5 s |
+| Runtime load order (container Order) | modlist order, 1000-1009 | modlist order, 1000-1009 |
+| Complete boot/runtime/teardown analysis | PASS, 0 unknown | PASS, 0 unknown |
+| ITQoL / AR LoadErrors | 23 / 37 exact | 23 / 37 exact |
+| Mailbox x1; AR merge x2 | exact | exact |
+| Cannibal teardown warnings | 99 of exactly 99, after teardown | 99 of exactly 99, after teardown |
+| Spawn-table noise | only the two accepted ids (x2) | same |
+| New LoadErrors (total vs accepted boot) | none (60 vs 60) | none (60 vs 60) |
+| Warning/error kinds new vs the accepted boot | 0 | 0 |
+| Lines naming Night Terrors / PvE Plus Ambush at warning/error severity | 0 / 0 | 0 / 0 |
+| NPC / Spawn / Stat / DataTable counts | 53 / 65 / 2 / 112 (identical) | 52 / 65 / 2 / 112 (same, -1 wildlife AI-LOD line) |
+| Crash / assertion / save / persistence error | none | none |
+| Shutdown (gate) | 174.1 s NORMAL (stop 176.1 s) | 191.4 s NORMAL (stop 193.4 s) |
+| Stop details | acknowledged, exit 0, no forced kill, no root/shipping/orphan | same |
+| Host CPU during the stop | mean 38% (28-48%) | mean 38% (20-59%) |
+| Host CPU whole run | mean 33% (18-51%) | mean 45% (19-100%; one transient spike, still NORMAL) |
+| Silent teardown phase | 154.9 s | 164.8 s |
+| RAM | private peak 9.12 GB, working set peak 7.23 GB, min free RAM 445 MB | private peak 9.17 GB, working set peak 7.34 GB, min free RAM 485 MB |
+| `quick_check` / mailbox / ITQoL ctrl / AR ctrl | ok / 1 / 1 / 1 | ok / 1 / 1 / 1 |
+| Controllers (Night Terrors 1; PvE Plus Ambush 3, one each) | present once each, no duplicates | same |
+| World table changes | `game_events` only | `game_events` +24, `properties` 253 -> 252 (the same +-1 row seen between earlier boots; no singleton or controller change) |
+| Verified backup after | `2026-10-04_034202` | **`2026-10-04_035205` (FINAL)** |
+
+Final live state: server OFFLINE; `modlist.txt` = the 10 mods in order; all 10 pak hashes and sizes exact; `game_0.db` 712,704 B with no WAL left; DB identical to the final backup. Snapshots `final10-pre`, `final10-1` (boot log SHA-256 `2C3B78312018A7FFC3CD88ED66D91EF3FBE5D28541F7B7556465FD729E88DF4E`) and `final10-restart` (`150AB724E758C140C8B74789AD5AFCC0CACDEE1EA11049F46666A6FD5D8C1BC3`). WAL-safe checks were run on the verified backup copies. **SAFE TO LOCK MODPACK (server-side) = YES. SAFE TO CREATE PRODUCTION WORLD = NO (needs explicit approval).**
+
 ## Operator decision — 2026-10-04: Thrall Wars Dungeon EXCLUDED / DEFERRED
 
 Do not whitelist the 73 LoadErrors, the 3 `LogMaterial` errors or the 4 `LogModController` merge errors; in particular do not accept the loot-table row-structure mismatches as a known harmless baseline. All Thrall Wars evidence (snapshots `p3-thrallwars-pre` and `p3-thrallwars-1`, boot log SHA-256 `B50A313B…5161`, failed-world backup `2026-10-04_031850`, retired pak archive, `artifacts/batch-d-20261003/P3-ThrallWars-*`) is kept for possible future investigation. Accepted pack: the 10 mods through PvE Plus Ambush; Fantasy Races, Shemite and Thrall Wars are excluded. The historical P3 record below is unchanged.
