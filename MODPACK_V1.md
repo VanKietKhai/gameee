@@ -2,6 +2,8 @@
 
 Status: **IN PROGRESS. Batch A PASS, Batch B PASS, Batch C PASS (server-side).** Seven mods are installed on staging `depot_443031` (TEST world). Details are in `M3_LIVE_TEST_REPORT.md`.
 
+**2026-10-04 #14 Chest Labels: run 1 clean, restart run showed intermittent base-game spawn-table ids (`Exile_Priest_4_Hyrkanian`, `Exile_OrchidPriest_4_Nordheimer`); rolled back per the stop-on-unknown rule (INCONCLUSIVE).** `Exile_Priest_4_Hyrkanian` also appeared in a boot without Simple Minimap, so it is not minimap-specific and looks like base-game variance; nothing whitelisted, Simple Minimap stays deferred. The accepted pack is the 10 plus Player DBNO (11 mods); backups pre-#14 `2026-10-04_062824`, failed-state `2026-10-04_065439`.
+
 **2026-10-04 #13 Player DBNO PASS server-side** (mod 11 on the 10-mod baseline; readiness 35.3 s, 660.6 s hold, 0 unknown, LoadErrors 60 vs 60, no warning/error naming it, one new controller object, shutdown NORMAL 177.4 s; gameplay not verified; backups pre-#13 `2026-10-04_061131`, post-#13 `2026-10-04_062716`). #14 Chest Labels follows.
 
 **2026-10-04 Step A control boot of the unchanged 10-mod baseline: `Exile_Priest_4_Hyrkanian` ABSENT** (control passed everything: 0 unknown, LoadErrors 60 vs 60, controllers one each, shutdown NORMAL 159.6 s). Per the operator rule **Simple Minimap stays FAIL / DEFERRED**: neither its LoadError nor the spawn-table line is whitelisted and it is not rerun in this phase. #13 Player DBNO and #14 Chest Labels proceed independently on the 10-mod baseline (12 mods if both pass).
