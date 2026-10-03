@@ -1,6 +1,8 @@
 # Target Modpack V1 — private Radmin Conan server
 
 Status: **IN PROGRESS. Batch A PASS, Batch B PASS, Batch C PASS (server-side).** Seven mods are installed on staging `depot_443031` (TEST world). Details are in `M3_LIVE_TEST_REPORT.md`.
+
+**2026-10-03 resumed Batch D: STOP B.** D1 Fantasy Races booted with eight mods but produced 15 new NPC stat-template errors during full-log review. Clean NORMAL shutdown (72.5 s); production rollback verified. Seven-mod catalog/order restored, server OFFLINE. D2/D3/final ten-mod validation not started. No new warning accepted; see FINAL_REPORT.md.
 - **Batch A** (`2aca0cf`):
   - Runtime mount order and IoStore container `Order` follow `modlist.txt` (first entry 1000, then +1): **PROVEN**. Which mod wins an asset that two mods override was not exercised.
 - **Batch B** (`76ce7da`, plus the 3-cycle restart test), accepted 2026-10-02:

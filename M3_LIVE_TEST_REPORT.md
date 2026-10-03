@@ -1,5 +1,17 @@
 # M3 Task 4 — Live Test Report
 
+## Latest checkpoint — 2026-10-03 14:29 +07:00: STOP B, D1 rolled back
+
+Resumed from 0bb2b2a. Installed exact official Microsoft SDK 8.0.425 user-locally with SHA-512 verification. QA-019/020 safety build and tests passed (410/410, zero skipped), then merged to the live branch at 09cbf1a and rebuilt/retested with the same results. First-run WAL test sharing failure was confined to the Windows test fixture and corrected before merge.
+
+D1 Fantasy Races Of Exiles (embedded Workshop 3780741325, Enhanced 1.0.6; 5,293,057 bytes; SHA-256 2E4D3BEEC95FCBB81A9622A42405D2C3694EE632446D89C57EA8A93E27667D4A) imported through production pipeline after verified backup 2026-10-03_142352. Eight mods mounted in order; true readiness about 39 seconds (world frame 2). Exact ITQoL 23 and Ancient Realms 37 LoadErrors passed.
+
+**D1 FAIL / STOP B:** subsequent full-log review found 15 `NPC: Error: Data: No stat templates found for StatModifier template None.` messages at 14:24:54-58. The prior seven-mod log `ConanSandbox-backup-2026.10.02-20.34.59.log` has zero. Attribution is unproven. The generic null-table errors and Lamplighter warnings also occur in prior logs, so they are not evidence of a new D1 regression. The harness's earlier scan and exit 0 do not establish batch acceptance: generic errors after its readiness scan escaped its coverage. No new exception was added.
+
+Shutdown: acknowledged, 72.5 seconds NORMAL, exit 0, no forced kill/orphan/WAL/SHM. quick_check and singleton gates passed. Production restore of 142352 succeeded; failed-D1 world preserved in automatic pre-restore backup 142725. Production removal archived the D1 pak and reconciled the seven-mod catalog. Latest backup 142750 verifies the restored world, quick_check=ok, singleton counts=1/1/1. Live DB and modlist hashes match pre-D1. No additional boot after rollback; D2/D3/final validation NOT STARTED.
+
+Evidence: `artifacts/batch-d-20261003/D1-ConanSandbox.log` (SHA-256 AC751A4EA3782488809AEA012EF8608036AAAA58B417938E1DFFD75ED601522B), structured `E:\CSC-M3-Live\live-test\m3-live-log.jsonl`; see FINAL_REPORT.md and AGENT_HANDOFF.md for final state. Client untouched; production world NOT CREATED.
+
 Status: **IN PROGRESS: checkpoint 4C/4D PASSED** on an existing dedicated server installation. Waiting for review before 4E (one Local mod).
 
 - **4F CLIENT JOIN = BLOCKED BY CLIENT AUTHENTICATION** (see "Checkpoint 4F"). This is not a network failure, a server failure or a version mismatch.

@@ -1,40 +1,36 @@
-# Unattended Batch D handoff
+# Batch D handoff — STOP B
 
-## Resume checkpoint (2026-10-03, approximately 14:20 +07:00)
+- CURRENT LOCAL TIME: 2026-10-03 14:29 +07:00.
+- CURRENT BRANCH: claude/m3-task4-live-windows (primary checkout E:\github\gameee).
+- CURRENT HEAD: 09cbf1a is the validated merge; the following documentation commit records the final STOP B state.
+- PRESERVED SAFETY BRANCH: codex/m3-batch-d-safety at abe3875, containing original checkpoint 0bb2b2a. Its worktree is E:\github\gameee\.worktrees\batch-d.
+- CURRENT STAGE: STOP B after D1; rollback completed and verified. Do not start D2/D3.
+- LAST COMPLETED CHECKPOINT: QA-019/020 compiled and tested; merged branch compiled and tested; both full runs 410 passed, 0 failed, 0 skipped, builds 0 warnings/errors. D1 boot/stop completed, then failed full-log review.
+- CURRENT ACTIVE MODLIST: StackMe10K.pak -> SavageParagon.pak -> GritandGrease.pak -> ThrallReputation.pak -> ImprovedThrallsAndQoL.pak -> WO_RidingThralls.pak -> Ancient_Realms.pak. Catalog and modlist agree, all seven enabled.
+- LATEST VERIFIED BACKUP: 2026-10-03_142750 (restored seven-mod world; manifest/hash verification and quick_check=ok). Known pre-D1 restore point: 2026-10-03_142352. Failed-D1 state preserved by automatic pre-restore backup 2026-10-03_142725.
+- SERVER STATE: OFFLINE, clean process-tree exit; no root/shipping/orphan/harness process.
+- LAST SHUTDOWN CLASS: NORMAL, 72.5 seconds, acknowledged, exit code 0, forced kill NO, orphan NO, no WAL/SHM left after D1 stop.
+- NEXT ACTION: human review of new D1 NPC stat-template errors and harness full-lifecycle scan gap before another live attempt.
+- OPEN BLOCKERS: 15 occurrences of "NPC: Error: Data: No stat templates found for StatModifier template None." at 14:24:54-58, absent from the pre-D1 seven-mod log ConanSandbox-backup-2026.10.02-20.34.59.log. Attribution/cause remains unproven. No exception added.
 
-- CURRENT BRANCH: codex/m3-batch-d-safety; preserved checkpoint 0bb2b2a remains in history.
-- CURRENT HEAD: 0bb2b2a plus the Windows WAL-test sharing fix recorded by the next commit.
-- CURRENT STAGE: Phase 1 safety validation PASS; ready for merge into claude/m3-task4-live-windows.
-- LAST COMPLETED CHECKPOINT: SDK 8.0.425 installed from Microsoft's official ZIP into C:\Users\vkkha\AppData\Local\Microsoft\dotnet-sdk-8.0.425; SHA-512 matches official release metadata. Existing runtimes and global.json unchanged.
-- BUILD/TEST: build 0 warnings, 0 errors; full suite 410 passed, 0 failed, 0 skipped. First run found a Windows sharing violation in the WAL fixture's File.ReadAllBytes; fixed by opening the fixture WAL with ReadWrite/Delete sharing, without changing production behavior. Final evidence: tests/ConanServerControl.Tests/TestResults/safety-resume-fixed.trx.
-- CURRENT ACTIVE MODLIST / LATEST VERIFIED BACKUP / LAST SHUTDOWN CLASS: unchanged from the saved seven-mod checkpoint below; no live operation yet.
-- SERVER STATE: no Conan server/root/shipping/harness process in elevated Win32_Process audit.
-- NEXT ACTION: commit/push safety validation, merge into the live development branch, rebuild/retest, then validate sources and staging before D1.
-- OPEN BLOCKERS: none at this checkpoint. Latest user resume request supersedes the previous run's elapsed 09:00 target.
+## SDK and validation
 
-The following sections preserve the earlier STOP F record as history.
+Official Microsoft SDK 8.0.425 installed at C:\Users\vkkha\AppData\Local\Microsoft\dotnet-sdk-8.0.425 using the official win-x64 ZIP; SHA-512 verified against Microsoft release metadata. global.json and existing runtimes unchanged. Invoke this directory's dotnet.exe explicitly (system PATH still selects the runtime-only host).
 
-- CURRENT LOCAL TIME: 2026-10-03T06:59:43.412125+07:00
-- CURRENT BRANCH: codex/m3-batch-d-safety
-- CURRENT HEAD: 46f8d02 (saved implementation checkpoint; the following documentation-only commit records this HEAD).
-- WORKTREE: E:\github\gameee\.worktrees\batch-d
-- CURRENT STAGE: STOP F, Phase 1 validation blocked by unavailable .NET SDK.
-- LAST COMPLETED CHECKPOINT: Existing integration 2659af6 preserved; Git/process/modlist audit completed. QA-019/020 draft fixes and 12 regression cases added, not compiled or tested.
-- CURRENT ACTIVE MODLIST: StackMe10K.pak, SavageParagon.pak, GritandGrease.pak, ThrallReputation.pak, ImprovedThrallsAndQoL.pak, WO_RidingThralls.pak, Ancient_Realms.pak (in this order).
-- LATEST VERIFIED BACKUP: E:\CSC-M3-Live\app-data\backups\2026-10-03_033503. Manifest world SHA/size reverified; read-only quick_check=ok; mailbox/controller/AR controller counts=1/1/1. Main DB SHA-256 1FD6089F9A52E74A29FCB907225AD9D491F4B984BFE6562C252DFEA9F8264793. Live main DB hash matches. WAL=0 bytes; paired SHM=32768 bytes contains no WAL frames to replay. No backup or world files changed.
-- SERVER STATE: OFFLINE, read-only Win32_Process audit found no Conan server/root/shipping/orphan or harness processes. No live operation performed in this run.
-- LAST SHUTDOWN CLASS: NORMAL, historical 05:26:27 +07:00 record: 194.8 seconds; forced kill NO, orphan NO, Offline. No new shutdown.
-- NEXT ACTION: Locate/restore the existing per-user SDK 8.0.425, then review the saved draft diff against 2659af6 and run dotnet build and dotnet test. Only after all tests pass may the safety branch be merged to claude/m3-task4-live-windows, rebuilt/retested, and Phase 2 pre-D1 validation begin. Do not repeat integration creation or completed Batch A/B/C.
-- OPEN BLOCKERS: dotnet on PATH resolves to C:\Program Files\dotnet\dotnet.exe and reports no SDKs. Both build and test fail at SDK resolution; no tests executed. The documented per-user SDK was not located in checked standard directories. No SDK installation or global.json change attempted.
+The first full safety test run had 409 passes and one Windows sharing failure in the WAL fixture's File.ReadAllBytes. Replaced only the fixture's file read with ReadWrite/Delete sharing; final safety and merged suites both pass 410/410. Saved evidence: tests/ConanServerControl.Tests/TestResults/safety-resume-fixed.trx in safety worktree, and batch-d-merged.trx in primary checkout.
 
-## Preserved Git state
+## D1 evidence and rollback
 
-Primary checkout remains claude/m3-task4-live-windows at 7455e7d. Its pre-existing untracked AGENTS.md, codex_prompt.txt, and .worktrees/ were preserved. Other registered worktrees were untouched. Fetch succeeded after sandbox elevation for Git metadata access. Safety branch started clean at 2659af6; no earlier safety changes existed.
+Source: C:\Users\vkkha\Downloads\mod conan\FantasyRacesOfExiles.pak. Embedded metadata confirms Workshop 3780741325, Enhanced, version 1.0.6. Size 5,293,057 bytes; SHA-256 2E4D3BEEC95FCBB81A9622A42405D2C3694EE632446D89C57EA8A93E27667D4A.
 
-## Draft implementation (NOT validated / NOT safe to merge yet)
+Production import created verified pre-D1 backups 142352 and 142353. Eight mods mounted in intended order; readiness at approximately 39 seconds: game port bound and world ticking (frame 2). Exact 23 ITQoL + 37 Ancient Realms LoadErrors passed. The harness scan at 14:24:53 missed subsequent NPC errors, so harness exit 0 is NOT D1 acceptance.
 
-QA-019: stopped-world reader checks process absence before file access and again before opening, refuses non-empty WAL and unpaired non-empty SHM as INCONCLUSIVE, and opens immutable read-only only for a checkpointed DB. A paired empty WAL has no frames, so leftover SHM is harmless. mod-boot short-circuits world gates after failed stop, and singleton reads short-circuit after an integrity failure. No WAL replay, deletion, repair, or live DB modification is performed.
+The generic MergeDataTables null-table error occurs twice in both D1 and the prior seven-mod boot; it is not newly attributable to D1. Lamplighter attachment warnings also existed previously. The new NPC error is the STOP B basis.
 
-QA-020: every LoadErrors marker is retained; only the full canonical message parses, with 1-16 hexadecimal ID digits. Malformed entries retain raw evidence and explicitly fail analysis, without entering attribution. Known hash/set gates are unchanged.
+After clean shutdown, production restore of 2026-10-03_142352 passed. Production removal reconciled the catalog and retired the D1 pak to E:\CSC-M3-Live\app-data\removed-mods\20261003-142751-337\FantasyRacesOfExiles.pak; source and archived hashes match. Extraction cache retained, inactive.
 
-Regression cases added: seven stopped-world cases and five malformed LoadErrors cases. The full diff was statically reviewed; git diff --check passed. Compilation and test behavior remain unverified.
+Restored live DB hash: 1FD6089F9A52E74A29FCB907225AD9D491F4B984BFE6562C252DFEA9F8264793; equals pre-D1 and latest verified backup. WAL=0 bytes; paired SHM=32768 bytes, no WAL frames. Backup quick_check=ok; mailbox/controller/AR controller=1/1/1. Modlist hash equals pre-D1: 4D48BF240CA224591BA9050C05D4CDFB3873E2F33A8C2E58C124FD40D0CB2D86.
+
+D1 log preserved at E:\github\gameee\artifacts\batch-d-20261003\D1-ConanSandbox.log (SHA-256 AC751A4EA3782488809AEA012EF8608036AAAA58B417938E1DFFD75ED601522B). Structured evidence remains E:\CSC-M3-Live\live-test\m3-live-log.jsonl.
+
+No verified backups deleted. Client unchanged. Production world NOT CREATED. Pre-existing untracked AGENTS.md, codex_prompt.txt and .worktrees/ preserved. No further live tests after STOP B.
