@@ -1,5 +1,31 @@
 # M3 Task 4 — Live Test Report
 
+## Mods #11-#14 series — 2026-10-04 04:4x-05:08 +07:00: sources verified; #11 Room For One More FAIL / STOP, rolled back; #12-#14 NOT RUN
+
+**Installed and accepted state is still the 10-mod pack. Per the operator rule each mod must pass completely before the next, so Simple Minimap, Player DBNO and Chest Labels were not imported. Gameplay NOT YET VERIFIED; production world NOT CREATED.**
+
+**Step 1 — source verification (read-only, from the packages; Conan Exiles Enhanced 2.2.2, CL-377096):**
+
+| # | File | Size (B) | SHA-256 | Embedded identity | Workshop (public metadata, read-only) |
+|---|---|---|---|---|---|
+| 11 | `WO_RoomForOneMore.pak` | 1,378,335 | `FA6086538C5FC6D42737DC001336918D9AA79AFF01412E89F0567BFF2C1A52FA` | name "[Enhanced] WO - Room For One More", author Sunie, v1.0.0, `minimumVersion` Enhanced, devkit 1002, folder `WO_RoomForOneMore`; **no Workshop ID embedded** (`steamWorkshopFileIds` empty); `-WindowsServer` pak/utoc/ucas present; UE pak footer valid | title identical, size 1,378,335 identical, tag Enhanced, updated 2026-10-01 |
+| 12 | `Simple_Minimap.pak` | 4,835,375 | `04F31A75559665C1A949D7A9A632F9A777CE7D79E926032CFC9FD101B1626AC9` | "Simple Minimap (by Xevyr) v5.2.1", `mainClient` **3719513784**, Enhanced, devkit 1002, WindowsServer present | size identical; "Compatible with everything"; no dependency |
+| 13 | `PlayerDBNO.pak` | 2,518,846 | `3E7FEEEDA8093E20211F776BC79472DC78AE338344723D55A91667BDE4F9FD65` | "Player DBNO System v1.1.1 (by Xevyr)", `mainClient` **3718882569**, Enhanced, devkit 1002, WindowsServer present | size identical; "Compatible with everything"; no dependency |
+| 14 | `ChestLabels.pak` | 1,192,363 | `C79C7E00E8B44F7A6F1250D58BF8655BA9FFBDA16FDB7A1884BBD782186D0CD8` | "Chest Labels" v5.1.2, `mainClient` **3735258746**, Enhanced, devkit 1002, WindowsServer present | size identical; "Compatible with everything"; no dependency |
+
+For #11 the numeric Workshop ID is **not provable from the package itself**: it was accepted on the exact embedded name plus a byte-exact size match against the public Workshop item (independent of the file), and this is flagged for the operator. #11's own page warns that mods altering mounts, passenger systems or attachment behavior "may conflict" and that Riding Thralls compatibility "is currently being tested". #12-#14 declare no dependency or conflict.
+
+**#11 test (batch `p11-roomforone-1`, plan `p11-roomforone-pre`, verified pre-batch backup `2026-10-04_045203`):** preparation passed (`a2973a2` clean; 10-mod state exact; live DB = backup `2026-10-04_035205`; `quick_check` ok; singletons 1/1/1; host quiet). Import PASS (source unchanged, installed = source, 11 entries with it last, earlier order intact, world unchanged). Boot: true readiness 34.2 s; hold 660.3 s; runtime order exact (container Order 1000-1010); 9 packages; no duplicate mounts; no LoadErrors (60 vs 60); no warning/error line names Room For One More or Riding Thralls; RAM private peak 9.19 GB; host CPU mean 18%. Shutdown NORMAL 154.6 s (acknowledged, exit 0, no forced kill, no orphan); `quick_check` ok; ITQoL mailbox 1, ITQoL controller 1, AR controller 1.
+
+**Why it failed:**
+- **5 new data-table merge errors.** `LogModController: Error: AModController::MergeDataTables - ToBeAddedDataTable is null` now appears 7 times (accepted Ancient Realms baseline: 2, hash-bound and capped at 2, so the cap left these 5 as unknown). All 5 are logged within 1-2 ms after the new mod's controller registers (log lines 6886-6890, right after 6885). Counts: ModController 7 vs 2, DataTable 117 vs 112, warnings/errors before shutdown 248 vs 243. Nothing else differs.
+- **Controller name collision (observed, not yet harmful):** its controller is `/Game/Mods/WO_RoomForOneMore/WO_BP_RT_ModController.WO_BP_RT_ModController_C`, the same blueprint name as Riding Thralls' `/Game/Mods/WO_RidingThralls/WO_BP_RT_ModController.WO_BP_RT_ModController_C` (different package paths). Persistence logged one `Loading mod controller: WO_BP_RT_ModController_C` and one `Spawning mod controller: WO_BP_RT_ModController_C`; the world now holds one controller of each path, no duplicates. Behavior across a restart was not tested because the run failed.
+- Failed-batch world: verified backup **`2026-10-04_050719`**; snapshot `p11-roomforone-1` (boot log SHA-256 `7CCAFEB6092987C03CB9E3C382B3DC83522B19BBF34F39C8AC4F9F75A00D8F57`); evidence `artifacts/batch-d-20261003/M11-RoomForOneMore-*` (gitignored).
+
+**Rollback (verified):** restore of `2026-10-04_045203`, then production removal of `WO_RoomForOneMore.pak` (retired to `E:\CSC-M3-Live\app-data\removed-mods\20261004-050758-071\`, hash equals the source). Modlist = the accepted 10-mod order, all 10 pak hashes and sizes exact, live DB identical to the final 10-mod backup `2026-10-04_035205`, WAL empty, integrity gates pass, no Conan process. Safety backups: pre-restore `2026-10-04_050749`, pre-removal `2026-10-04_050757`.
+
+**Classification: FAIL / STOP (unvalidated data-table merge errors).** Not whitelisted. Decisions needed: whether to baseline these 5 lines as Room For One More's (and judge what a null merge table means for its feature), exclude/defer it, or ask the author about the controller-name overlap with Riding Thralls; and whether to run #12-#14 independently of #11 (the stated rule stops the series).
+
 ## Final 10-mod campaign pack validation — 2026-10-04 03:2x-03:53 +07:00: PASS. FINAL 10-MOD CAMPAIGN PACK SERVER-SIDE = PASS
 
 **Both parts passed: (A) the full run and (B) the clean restart. Gameplay NOT YET VERIFIED (4F blocked by client authentication; none of the nine non-base mods' behavior has been tested with a client). Production world NOT CREATED.**
