@@ -94,6 +94,21 @@ public sealed class D1LogScannerTests
     }
 
     [Fact]
+    public void Only_the_two_weighted_table_ids_of_the_healthy_boots_are_base_game_noise()
+    {
+        const string prefix = "[2026.10.03-17.23.14:915][129]SpawnTable: Error: Data: USpawnTableLibrary::SpawnNPCFromWeightedTable - could not find weighted table with id: ";
+        Assert.Equal("SPAWNTABLE-WEIGHTED-TABLE", ModBootGates.MatchBaseGameNoise(prefix + "WarTestLongLeash"));
+        Assert.Equal("SPAWNTABLE-WEIGHTED-TABLE", ModBootGates.MatchBaseGameNoise(prefix + "Wildlife_Siptah_Firstman_Warrior4"));
+
+        // Seen only in the Shemite boot: new spawn content referencing missing tables must stay visible.
+        foreach (var id in new[] { "Catacomb_Wretch", "Wildlife_SiptahTwoHornedRhino_Baby", "WarTestLongLeash2", "Wildlife_Siptah_Firstman_Warrior" })
+        {
+            Assert.Null(ModBootGates.MatchBaseGameNoise(prefix + id));
+            Assert.Equal(prefix + id, Assert.Single(ModBootGates.SelectProblemLines([prefix + id], [])));
+        }
+    }
+
+    [Fact]
     public void The_new_D1_message_and_near_misses_of_baseline_kinds_are_never_baseline()
     {
         Assert.All(D1Errors, line => Assert.Null(ModBootGates.MatchBaseGameNoise(line)));

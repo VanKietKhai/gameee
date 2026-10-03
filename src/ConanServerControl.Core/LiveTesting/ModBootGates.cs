@@ -263,7 +263,10 @@ public static class ModBootGates
         Noise("DEV-ASSETGROUP-STREAMING", @"^LogLevelStreaming: Error: Couldn't find file for package /Game/Developers/MasonRoy/AssetGroups/AG_TEMP_\w+\.$"),
         Noise("WILDLIFE-AILOD3-MOVEMENT", @"^LogTemp: Error: Character 'BP_NPC_Wildlife_\w+' is in an unsafe movement move \(currently \d+\) while in AILOD3$"),
         Noise("NPC-SPAWNER-DESPAWN-ENTRY", @"^NPC: Error: Code: UNpcSpawnerComponent::Despawned - Invalid spawn entry supplied, Type: \d+, Index: \d+$"),
-        Noise("SPAWNTABLE-WEIGHTED-TABLE", @"^SpawnTable: Error: Data: USpawnTableLibrary::SpawnNPCFromWeightedTable - could not find weighted table with id: \w+$"),
+        // Exactly the two ids every healthy boot logs (once each). A different id means new spawn content references a
+        // missing table, so it must not be hidden here (found in the Shemite boot: Catacomb_Wretch x5 and
+        // Wildlife_SiptahTwoHornedRhino_Baby x1, absent from all 14 earlier logs).
+        Noise("SPAWNTABLE-WEIGHTED-TABLE", @"^SpawnTable: Error: Data: USpawnTableLibrary::SpawnNPCFromWeightedTable - could not find weighted table with id: (?:WarTestLongLeash|Wildlife_Siptah_Firstman_Warrior4)$"),
         Noise("BASESPAWNER-MODULE", @"^LogBaseSpawner: Error: ABaseSpawner::TickSpawnBase - Failed to spawn module from BP_HL_Build\w+_T2_C\.$"),
         Noise("BUILDING-STABILITY", @"^building: Error: Code: ABuildingBase::AddModule_Internal - Removing placed module that did not manage to find stability\.$")
     ];
