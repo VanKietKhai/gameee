@@ -9,6 +9,10 @@
 - **Ancient Realms `MergeDataTables - ToBeAddedDataTable is null`: ACCEPTED as KNOWN NON-BLOCKING**, only with the exact signature, `Ancient_Realms.pak` SHA-256 `12F7E719…FD1A`, and at most 2 occurrences per boot. A third occurrence, a changed signature or a changed hash fails.
 - **Accepted core (7):** StackMe10K, Savage Paragon, Grit & Grease, Thrall Reputation, Improved Thralls & QoL, WO Riding Thralls, Ancient Realms Enhanced. **Next candidates:** Cannibal Captivity Enhanced (Workshop 3765743138), then Shemite City State Enhanced (3755371705).
 
+## #13 Player DBNO (2026-10-04): PASS server-side (11 mods installed)
+
+Player DBNO (`PlayerDBNO.pak`, Workshop 3718882569, SHA-256 `3E7FEEED…FD65`) on the 10-mod baseline: readiness 35.3 s, 660.6 s hold, complete-log analysis 0 unknown, no new LoadErrors (60 vs 60), no warning/error naming it, one new controller object (`PNO_MC_ModController_C`), shutdown NORMAL 177.4 s, `quick_check` ok, singletons 1/1/1. Verified backups: pre-#13 `2026-10-04_061131`, post-#13 `2026-10-04_062716`. Gameplay (down/revive) NOT YET VERIFIED. Next: #14 Chest Labels. Production world NOT CREATED.
+
 ## Step A control boot (2026-10-04): `Exile_Priest_4_Hyrkanian` ABSENT in the unchanged 10-mod baseline; Simple Minimap stays FAIL / DEFERRED
 
 The control boot of the accepted 10 mods (batch `ctrl10-1`) passed everything (readiness 34.2 s, 660.4 s hold, 0 unknown, LoadErrors 60 vs 60, only the two accepted spawn-table ids, controllers one each, shutdown NORMAL 159.6 s, `quick_check` ok) and did **not** contain `Exile_Priest_4_Hyrkanian`, which appears only in the Simple Minimap boot. Per the operator rule Simple Minimap stays FAIL / DEFERRED (its LoadError `C88E5FE76A79516D` and the spawn-table line are not whitelisted; no rerun this phase; one control boot does not prove causation). Verified backup `2026-10-04_061022`. #13 Player DBNO and #14 Chest Labels proceed independently on the 10-mod baseline. Details: `M3_LIVE_TEST_REPORT.md`.

@@ -1,5 +1,17 @@
 # M3 Task 4 — Live Test Report
 
+## #13 Player DBNO (Xevyr, Workshop 3718882569) — 2026-10-04 06:11-06:28 +07:00: PASS server-side
+
+**Player DBNO is installed as the 11th mod (on the 10-mod baseline). Server-side PASS does NOT prove down/revive gameplay (needs multiplayer client testing): gameplay NOT YET VERIFIED. Production world NOT CREATED.**
+
+- **Source:** `C:\Users\vkkha\Downloads\mod conan\PlayerDBNO.pak`, 2,518,846 B, SHA-256 `3E7FEEEDA8093E20211F776BC79472DC78AE338344723D55A91667BDE4F9FD65`; embedded "Player DBNO System v1.1.1 (by Xevyr)", `mainClient` 3718882569, Enhanced, devkit 1002, WindowsServer payload; Workshop size identical; "Compatible with everything", no dependency (description: multiplayer, needs nearby clan members; admin commands `dc setpdbnotimer` etc.).
+- **Preparation:** `fa0ed2a` clean; 10-mod state exact; live DB = verified backup `2026-10-04_061022`; `quick_check` ok; singletons 1/1/1; host quiet (CPU 20%). Verified pre-#13 backup **`2026-10-04_061131`**; immutable plan `p13-dbno-pre`; import PASS (source unchanged, installed = source, 11 entries with it last, earlier order intact, world unchanged).
+- **Boot:** true readiness 35.3 s; hold 660.6 s; runtime order exact (container Order 1000-1010); 39 packages; no duplicate mounts. RAM: private peak 9.16 GB, working set peak 8.44 GB, min free RAM 293 MB (tightest so far; server stayed responsive); host CPU mean 26%.
+- **Complete-log analysis (snapshot `p13-dbno-1`, boot log SHA-256 `91899A81918753424FF72396B540C9DA4AF69BF342C04B12086CFA6EB137C855`): PASS, 0 unknown.** ITQoL 23, AR 37, mailbox x1, AR merge x2, Cannibal 99 teardown all exact; spawn-table noise only the two accepted ids; 0 LoadErrors problems.
+- **Independent diff against the control boot (`ctrl10-1`):** 0 warning/error lines name Player DBNO; LoadErrors 60 vs 60; Spawn 65 vs 65, DataTable 112 vs 112, NPC 53 vs 54, Stat 2 vs 2, Save 6 vs 6, Persistence 1 vs 1, ModController 2 vs 2; no crash, assertion, world-partition, down/revive-state, stat or repeated event-loop lines; warnings/errors before shutdown 244 vs 245, in teardown 1,542 vs 1,542. The only new kind was one `Komodo_Baby` AI-LOD3 line of an already-known kind.
+- **Controller / persistence:** `PNO_MC_ModController_C` registered once and exists once in the world (+1 `actor_position`, +1 `mod_controllers`); no duplicates; `quick_check` ok; ITQoL mailbox 1, ITQoL controller 1, AR controller 1; only `game_events` otherwise changed.
+- **Shutdown: NORMAL 177.4 s** (stop 179.4 s; acknowledged, exit 0, no forced kill, no root/shipping/orphan); host CPU during the stop 31%; silent phase 158.2 s. Verified post-run backup **`2026-10-04_062716`**.
+
 ## Step A control boot of the unchanged 10-mod baseline — 2026-10-04 05:55-06:10 +07:00: `Exile_Priest_4_Hyrkanian` ABSENT; Simple Minimap stays FAIL / DEFERRED
 
 Operator decision: do not exclude Simple Minimap permanently yet; run one control boot of the accepted 10-mod pack to see whether `Exile_Priest_4_Hyrkanian` is boot variance; if present rerun Simple Minimap, if absent keep it FAIL / DEFERRED, no rerun.
