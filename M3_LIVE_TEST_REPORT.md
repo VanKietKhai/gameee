@@ -1,5 +1,17 @@
 # M3 Task 4 — Live Test Report
 
+## Boss/PvE phase P2 — PvE Plus Ambush (10th mod) — 2026-10-04 02:45-03:02 +07:00: PASS server-side
+
+**PvE Plus Ambush is installed on top of Night Terrors (load order 10). Server-side PASS does NOT prove ambush gameplay or how the two ambush systems behave together in play: gameplay NOT YET VERIFIED.**
+
+- **Source:** `C:\Users\vkkha\Downloads\mod conan\PvEPlusAmbush.pak`, 5,145,777 B, SHA-256 `C9C816FAE72C07626D4F0AD1994347CBDE110FBF6CB295AADD804540E4EC5B74` (embedded `modinfo.json`: "PvE Plus Ambush (Enhanced) - v1.0.5", `mainClient` 3721274811, Enhanced, no dependency field; `-WindowsServer` content present; description states the same mod id).
+- **Preparation (scripted, fail-closed):** `c30626d` clean; server Offline, no Conan process; host quiet (CPU 30%, game closed); 9-mod state exact (modlist order, all 9 pak hashes and sizes, no extra files); live DB = verified backup `2026-10-04_024312`; `quick_check` ok; singletons 1/1/1. Verified pre-P2 backup **`2026-10-04_024506`**; immutable plan `p2-pveambush-pre`; import PASS (source unchanged, installed = source, 10 entries with the new mod last, earlier order intact, world unchanged).
+- **Boot:** true readiness 37.5 s; hold 660.5 s; mount order = modlist order, `Order` 1009; 88 packages; no duplicates. RAM: private peak 9.17 GB, working set peak 6.46 GB, min free RAM 742 MB; host CPU mean 37%.
+- **Complete-log analysis (snapshot `p2-pveambush-1`, log SHA-256 `3F6C3EFFD4E0CC0BEF738DA294EAEB1C0518A19771D44E024068E6D9CBCCEBE9`): PASS, 0 unknown.** ITQoL 23 and AR 37 exact; mailbox x1; AR merge x2; Cannibal teardown 99 of exactly 99; spawn-table noise only the two accepted ids; 0 LoadErrors problems.
+- **Independent diff against the accepted P1 boot (not the scanner):** 0 warning/error lines name PvE Plus Ambush; LoadErrors 60 vs 60; Spawn 65 vs 65, DataTable 112 vs 112, Stat 2 vs 2, Save 6 vs 6, Persistence, ModController and streaming identical, NPC 53 vs 52 (that +1 is the wildlife AI-LOD line below), zero crash, assertion or world-partition lines; warnings/errors before shutdown 244 vs 243 and in teardown 1,543 vs 1,544 (no runaway repeats). The only new kind was one `Komodo_Baby` AI-LOD3 line (an already-known base-game kind). **No conflict or error between the two ambush systems; no new NPC/stat/spawn-table errors.**
+- **Controllers:** three registered (`MDC_AmbushWidget`, `NAS_MC_ModController`, `BP_WeightedTableMerge_MC`); the world holds exactly one of each (+3 `actor_position`, +3 `mod_controllers`, +1 `properties`), no duplicates; `quick_check` ok; ITQoL mailbox 1, ITQoL controller 1, AR controller 1.
+- **Shutdown: NORMAL 177.0 s** (stop 179.0 s; acknowledged, exit 0, no forced kill, no root/shipping/orphan); host CPU during the stop 39% (24-51%); silent phase 155.6 s. Verified post-P2 backup **`2026-10-04_030121`**.
+
 ## Boss/PvE phase P1 — Night Terrors (9th mod) — 2026-10-04 02:2x-02:43 +07:00: PASS server-side
 
 **Night Terrors is installed (load order 9). Server-side PASS does NOT prove its gameplay (night encounters need players): gameplay NOT YET VERIFIED.**

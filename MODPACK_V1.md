@@ -2,6 +2,8 @@
 
 Status: **IN PROGRESS. Batch A PASS, Batch B PASS, Batch C PASS (server-side).** Seven mods are installed on staging `depot_443031` (TEST world). Details are in `M3_LIVE_TEST_REPORT.md`.
 
+**2026-10-04 Boss/PvE P2: PvE Plus Ambush PASS server-side** (mod 10 on top of Night Terrors; readiness 37.5 s, 660.5 s hold, 0 unknown, LoadErrors 60 vs 60, no new NPC/stat/spawn-table errors, no conflict between the two ambush systems, three controllers one each, shutdown NORMAL 177.0 s; gameplay not verified; backups pre-P2 `2026-10-04_024506`, post-P2 `2026-10-04_030121`). P3 Thrall Wars Dungeon follows.
+
 **2026-10-04 Boss/PvE P1: Night Terrors PASS server-side** (installed as mod 9; readiness 36.4 s, 660.6 s hold, 0 unknown, no new LoadErrors, shutdown NORMAL 177.3 s, one new controller object; gameplay not verified; backups pre-P1 `2026-10-04_022500`, post-P1 `2026-10-04_024312`). P2 PvE Plus Ambush and P3 Thrall Wars Dungeon follow.
 
 **2026-10-04 CORE MODPACK V1 SERVER-SIDE = PASS** (quiet-host retry): full validation and clean restart both passed with every gate exact, shutdowns NORMAL (175.1 s and 178.1 s, host CPU about 36%), `quick_check` ok, singletons 1/1/1; final verified backup `2026-10-04_020607`. The accepted core is the 8 mods below; Shemite and Fantasy Races are excluded. Gameplay not verified; production world not created. The boss/PvE phase is unblocked (server-side).

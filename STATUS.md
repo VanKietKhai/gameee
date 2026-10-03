@@ -9,6 +9,10 @@
 - **Ancient Realms `MergeDataTables - ToBeAddedDataTable is null`: ACCEPTED as KNOWN NON-BLOCKING**, only with the exact signature, `Ancient_Realms.pak` SHA-256 `12F7E719…FD1A`, and at most 2 occurrences per boot. A third occurrence, a changed signature or a changed hash fails.
 - **Accepted core (7):** StackMe10K, Savage Paragon, Grit & Grease, Thrall Reputation, Improved Thralls & QoL, WO Riding Thralls, Ancient Realms Enhanced. **Next candidates:** Cannibal Captivity Enhanced (Workshop 3765743138), then Shemite City State Enhanced (3755371705).
 
+## Boss/PvE phase (2026-10-04): P2 PvE Plus Ambush PASS server-side (10 mods installed)
+
+PvE Plus Ambush (`PvEPlusAmbush.pak`, Workshop 3721274811, SHA-256 `C9C816FA…5B74`) added on top of Night Terrors: readiness 37.5 s, 660.5 s hold, complete-log analysis 0 unknown, no new LoadErrors (60 vs 60), no warning/error naming it, no conflict between the two ambush systems, no new NPC/stat/spawn-table errors, three controllers (one of each in the world, no duplicates), shutdown NORMAL 177.0 s, `quick_check` ok, singletons 1/1/1. Verified backups: pre-P2 `2026-10-04_024506`, post-P2 `2026-10-04_030121`. Gameplay NOT YET VERIFIED. Next: P3 Thrall Wars Dungeon (`SlaveWarsServer.pak`). Production world NOT CREATED.
+
 ## Boss/PvE phase (2026-10-04): P1 Night Terrors PASS server-side (9 mods installed)
 
 Night Terrors (`NightTerrors.pak`, Workshop 3723538551, SHA-256 `2FE3E7AD…FBE61`) imported and booted cleanly: readiness 36.4 s, 660.6 s hold, complete-log analysis 0 unknown, no new LoadErrors (60 vs 60), no new warnings/errors naming it, one new controller object, shutdown NORMAL 177.3 s, `quick_check` ok, singletons 1/1/1. A scanner defect (a mod name containing "error") was fixed in `af0b25e`. Verified backups: pre-P1 `2026-10-04_022500`, post-P1 `2026-10-04_024312`. Gameplay NOT YET VERIFIED. Next: P2 PvE Plus Ambush, then P3 Thrall Wars Dungeon (`SlaveWarsServer.pak`). Production world NOT CREATED.
