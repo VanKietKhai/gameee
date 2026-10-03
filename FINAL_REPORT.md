@@ -1,5 +1,11 @@
 # Unattended Batch D final report
 
+## Resumed run in progress — 2026-10-03
+
+SDK blocker resolved: official Microsoft SDK 8.0.425 installed user-locally with SHA-512 verification. global.json and existing runtimes unchanged. Safety branch build: 0 warnings/errors. Full Windows tests: 410 passed, 0 failed, 0 skipped after correcting Windows file sharing in the new WAL test fixture. QA-019/020 implementation reviewed relative to 2659af6. Merge and live Batch D validation are next; no live operation performed yet. The original 0bb2b2a checkpoint is preserved in branch history.
+
+The original report below records the prior STOP F and is superseded by this resumed run.
+
 - FINAL STATUS: STOP F ? build/test validation unavailable. No live Batch D operation started.
 - REPORT LOCAL TIME: 2026-10-03T06:59:43.412125+07:00
 - CURRENT BRANCH/HEAD: safety worktree codex/m3-batch-d-safety, implementation checkpoint 46f8d02, based on 2659af6; subsequent documentation-only commit records this HEAD. Primary claude/m3-task4-live-windows stays at 7455e7d.

@@ -1,5 +1,19 @@
 # Unattended Batch D handoff
 
+## Resume checkpoint (2026-10-03, approximately 14:20 +07:00)
+
+- CURRENT BRANCH: codex/m3-batch-d-safety; preserved checkpoint 0bb2b2a remains in history.
+- CURRENT HEAD: 0bb2b2a plus the Windows WAL-test sharing fix recorded by the next commit.
+- CURRENT STAGE: Phase 1 safety validation PASS; ready for merge into claude/m3-task4-live-windows.
+- LAST COMPLETED CHECKPOINT: SDK 8.0.425 installed from Microsoft's official ZIP into C:\Users\vkkha\AppData\Local\Microsoft\dotnet-sdk-8.0.425; SHA-512 matches official release metadata. Existing runtimes and global.json unchanged.
+- BUILD/TEST: build 0 warnings, 0 errors; full suite 410 passed, 0 failed, 0 skipped. First run found a Windows sharing violation in the WAL fixture's File.ReadAllBytes; fixed by opening the fixture WAL with ReadWrite/Delete sharing, without changing production behavior. Final evidence: tests/ConanServerControl.Tests/TestResults/safety-resume-fixed.trx.
+- CURRENT ACTIVE MODLIST / LATEST VERIFIED BACKUP / LAST SHUTDOWN CLASS: unchanged from the saved seven-mod checkpoint below; no live operation yet.
+- SERVER STATE: no Conan server/root/shipping/harness process in elevated Win32_Process audit.
+- NEXT ACTION: commit/push safety validation, merge into the live development branch, rebuild/retest, then validate sources and staging before D1.
+- OPEN BLOCKERS: none at this checkpoint. Latest user resume request supersedes the previous run's elapsed 09:00 target.
+
+The following sections preserve the earlier STOP F record as history.
+
 - CURRENT LOCAL TIME: 2026-10-03T06:59:43.412125+07:00
 - CURRENT BRANCH: codex/m3-batch-d-safety
 - CURRENT HEAD: 46f8d02 (saved implementation checkpoint; the following documentation-only commit records this HEAD).

@@ -42,11 +42,11 @@ public sealed class StoppedWorldReaderTests : IDisposable
         using var command = writer.CreateCommand();
         command.CommandText = "PRAGMA journal_mode=WAL; PRAGMA wal_autocheckpoint=0; INSERT INTO actors VALUES (2);";
         command.ExecuteNonQuery();
-        var wal = File.ReadAllBytes(Database + "-wal");
+        var wal = ReadSharedBytes(Database + "-wal");
         Assert.NotEmpty(wal);
         var error = Assert.Throws<InvalidOperationException>(() => StoppedWorldReader.Open(Database, () => true));
         Assert.Contains("INCONCLUSIVE", error.Message);
-        Assert.Equal(wal, File.ReadAllBytes(Database + "-wal"));
+        Assert.Equal(wal, ReadSharedBytes(Database + "-wal"));
     }
 
     [Theory]
@@ -85,6 +85,14 @@ public sealed class StoppedWorldReaderTests : IDisposable
         Assert.Equal(1L, command.ExecuteScalar());
         Assert.Equal(0, new FileInfo(Database + "-wal").Length);
         Assert.Equal(32768, new FileInfo(Database + "-shm").Length);
+    }
+
+    private static byte[] ReadSharedBytes(string path)
+    {
+        using var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete);
+        using var copy = new MemoryStream();
+        stream.CopyTo(copy);
+        return copy.ToArray();
     }
 
     public void Dispose() => Directory.Delete(_root, recursive: true);

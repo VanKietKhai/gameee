@@ -203,7 +203,7 @@ public static class ModBootGates
             "Additional explanatory information follows:",
             AncientRealmsReason);
 
-    /// <summary>Every <c>LoadErrors: â€¦ dependent package None (id) was not available</c> line, in log order.</summary>
+    /// <summary>Every line containing a <c>LoadErrors:</c> marker, including unparsed lines, in log order.</summary>
     public static IReadOnlyList<LoadErrorEntry> ParseLoadErrors(IEnumerable<string> lines)
     {
         ArgumentNullException.ThrowIfNull(lines);
