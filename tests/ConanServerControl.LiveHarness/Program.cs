@@ -777,20 +777,28 @@ internal sealed class Harness : IAsyncDisposable
                 throw new InvalidOperationException("modlist.txt and the catalog disagree: " + string.Join(" | ", baselineList));
             }
 
-            var info = new FileInfo(newPakPath);
-            if (!info.Exists || !info.Extension.Equals(".pak", StringComparison.OrdinalIgnoreCase))
+            // "none" records a plan that validates the baseline itself (no new mod).
+            SnapshotMod? newMod = null;
+            string? newModSource = null;
+            if (!string.Equals(newPakPath, "none", StringComparison.OrdinalIgnoreCase))
             {
-                throw new FileNotFoundException("Expected new mod .pak not found", newPakPath);
+                var info = new FileInfo(newPakPath);
+                if (!info.Exists || !info.Extension.Equals(".pak", StringComparison.OrdinalIgnoreCase))
+                {
+                    throw new FileNotFoundException("Expected new mod .pak not found", newPakPath);
+                }
+
+                newMod = new SnapshotMod(info.Name, CachedSha256(info.FullName), info.Length);
+                newModSource = info.FullName;
+                if (baselineList.Contains(newMod.FileName, StringComparer.OrdinalIgnoreCase))
+                {
+                    throw new InvalidOperationException(newMod.FileName + " is already in the baseline modlist.");
+                }
             }
 
-            var newMod = new SnapshotMod(info.Name, CachedSha256(info.FullName), info.Length);
-            if (baselineList.Contains(newMod.FileName, StringComparer.OrdinalIgnoreCase))
-            {
-                throw new InvalidOperationException(newMod.FileName + " is already in the baseline modlist.");
-            }
-
+            var expectedList = newMod is null ? baselineList : [.. baselineList, newMod.FileName];
             var plan = new PreBatchSnapshot(batchId, DateTime.UtcNow, backupId, codeHead, BatchAnalysisSnapshotStore.CatalogSha256(ValidatedCatalog.Current),
-                baselineList, baseline.Mods, newMod, info.FullName, [.. baselineList, newMod.FileName], ValidatedCatalog.Current);
+                baselineList, baseline.Mods, newMod, newModSource, expectedList, ValidatedCatalog.Current);
             var dir = BatchAnalysisSnapshotStore.SavePreBatch(SnapshotRoot, plan);
             var saved = BatchAnalysisSnapshotStore.LoadPreBatch(dir);
             _log.Write(step, "immutable pre-batch snapshot", "PASS", null, Facts(
@@ -799,7 +807,9 @@ internal sealed class Harness : IAsyncDisposable
                 ("Catalog", $"{saved.Catalog.KnownWarnings.Count} known warnings; {saved.Catalog.PhaseBoundWarnings?.Count ?? 0} phase-bound sets; {saved.Catalog.LoadErrorBaselines.Count} LoadErrors baselines; {saved.Catalog.BaseGameNoise.Count} base-game noise kinds"),
                 ("BaselineModList", string.Join(" | ", saved.BaselineModList)),
                 ("BaselineMods", string.Join("; ", saved.BaselineMods.Select(m => $"{m.FileName} sha256={m.Sha256} size={m.SizeBytes}"))),
-                ("ExpectedNewMod", $"{saved.ExpectedNewMod.FileName} sha256={saved.ExpectedNewMod.Sha256} size={saved.ExpectedNewMod.SizeBytes} source={saved.ExpectedNewModSourcePath}"),
+                ("ExpectedNewMod", saved.ExpectedNewMod is null
+                    ? "none (the baseline itself is validated)"
+                    : $"{saved.ExpectedNewMod.FileName} sha256={saved.ExpectedNewMod.Sha256} size={saved.ExpectedNewMod.SizeBytes} source={saved.ExpectedNewModSourcePath}"),
                 ("ExpectedModList", string.Join(" | ", saved.ExpectedModList))),
                 liveFilesChanged: "no");
             return 0;

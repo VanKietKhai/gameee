@@ -53,9 +53,9 @@ public sealed record BatchAnalysisSnapshot(
 }
 
 /// <summary>
-/// The plan of a live batch, recorded before anything changes: the accepted baseline, the one expected new mod, the
-/// expected cumulative order, the identity of the validated catalog (its SHA-256) and of the code that judges it,
-/// and the verified pre-batch backup to roll back to.
+/// The plan of a live batch, recorded before anything changes: the accepted baseline, the one expected new mod (null
+/// when the baseline itself is being validated), the expected cumulative order, the identity of the validated
+/// catalog (its SHA-256) and of the code that judges it, and the verified pre-batch backup to roll back to.
 /// </summary>
 public sealed record PreBatchSnapshot(
     string BatchId,
@@ -65,8 +65,8 @@ public sealed record PreBatchSnapshot(
     string CatalogSha256,
     IReadOnlyList<string> BaselineModList,
     IReadOnlyList<SnapshotMod> BaselineMods,
-    SnapshotMod ExpectedNewMod,
-    string ExpectedNewModSourcePath,
+    SnapshotMod? ExpectedNewMod,
+    string? ExpectedNewModSourcePath,
     IReadOnlyList<string> ExpectedModList,
     ValidatedCatalog Catalog,
     int SchemaVersion = 1);

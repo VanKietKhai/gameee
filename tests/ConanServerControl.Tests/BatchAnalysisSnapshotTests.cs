@@ -237,6 +237,18 @@ public sealed class BatchAnalysisSnapshotTests : IDisposable
     }
 
     [Fact]
+    public void A_pre_batch_plan_can_validate_the_baseline_itself_with_no_new_mod()
+    {
+        var plan = Plan("core-final-pre") with { ExpectedNewMod = null, ExpectedNewModSourcePath = null, ExpectedModList = SevenMods };
+
+        var loaded = BatchAnalysisSnapshotStore.LoadPreBatch(BatchAnalysisSnapshotStore.SavePreBatch(Path.Combine(_root, "snapshots"), plan));
+
+        Assert.Null(loaded.ExpectedNewMod);
+        Assert.Null(loaded.ExpectedNewModSourcePath);
+        Assert.Equal(loaded.BaselineModList, loaded.ExpectedModList);
+    }
+
+    [Fact]
     public void The_catalog_hash_identifies_the_exact_rule_set()
     {
         var current = BatchAnalysisSnapshotStore.CatalogSha256(ValidatedCatalog.Current);
