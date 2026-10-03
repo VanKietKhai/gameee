@@ -136,7 +136,10 @@ internal static class Program
                 "install-steamcmd" => await harness.InstallSteamCmdAsync(),
                 "install-server" => await harness.InstallServerAsync(),
                 "boot" => await harness.BootAsync("boot", HoldSeconds(args), scanMods: false, ObserveSeconds(args)),
-                "mod-boot" => await harness.BootAsync("mod-boot", HoldSeconds(args), scanMods: true, expectAbsent: ExpectAbsent(args)),
+                "mod-boot" => await harness.BootAsync("mod-boot", HoldSeconds(args), scanMods: true, expectAbsent: ExpectAbsent(args),
+                    batchId: OptionValue(args, "--batch")),
+                "analyze-snapshot" => harness.AnalyzeSnapshot(args[1], args.Length > 2 && !args[2].StartsWith("--") ? args[2] : null),
+                "create-snapshot" => harness.CreateSnapshot(args[1], args[2], args[3], args.Skip(4).ToArray()),
                 "analyze-last-boot" => harness.AnalyzeLastBoot(),
                 "analyze-boot" => harness.AnalyzeBoot(args[1], args[2]),
                 "reorder-local" => await harness.ReorderLocalAsync(args[1]),
@@ -183,6 +186,12 @@ internal static class Program
         return index >= 0 && index + 1 < args.Length
             ? args[index + 1].Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
             : [];
+    }
+
+    private static string? OptionValue(string[] args, string name)
+    {
+        var index = Array.IndexOf(args, name);
+        return index >= 0 && index + 1 < args.Length ? args[index + 1] : null;
     }
 
     private static int HoldSeconds(string[] args)
@@ -464,7 +473,8 @@ internal sealed class Harness : IAsyncDisposable
 
     // ------------------------------------------------------------ 4C boot / cycle
 
-    public async Task<int> BootAsync(string step, int holdSeconds, bool scanMods, int observeSeconds = 0, string[]? expectAbsent = null)
+    public async Task<int> BootAsync(string step, int holdSeconds, bool scanMods, int observeSeconds = 0, string[]? expectAbsent = null,
+        string? batchId = null)
     {
         if (!EnsureNoForeignServer(step))
         {
@@ -569,6 +579,10 @@ internal sealed class Harness : IAsyncDisposable
             _log.Write(step, "mod load analysis (complete current-boot log through stop)",
                 finalAnalysis.Ok ? "PASS" : "FAIL", null, finalAnalysis.Facts,
                 finalAnalysis.Evidence, liveFilesChanged: "no");
+            // Pass or fail, keep an immutable record of exactly what was analysed, so the boot can be analysed
+            // again identically after the mod is removed or the server rolled back.
+            var batch = batchId ?? $"modboot-{DateTime.UtcNow:yyyyMMdd-HHmmss}";
+            modLoadOk &= SaveBatchSnapshot(step, batch, expectAbsent ?? [], ServerLog, logOffset);
             singletonsOk = stopped && EnsureNoForeignServer(step) &&
                 RecordWorldIntegrityGate(step, LiveWorldDb) && RecordSingletonActorGates(step);
             ObserveExtractedMods(step);
@@ -631,6 +645,97 @@ internal sealed class Harness : IAsyncDisposable
         return analysis.Ok && integrityOk && singletonsOk ? 0 : 1;
     }
 
+    /// <summary>
+    /// Read-only: analyses a recorded batch from its immutable snapshot (modlist, pak hashes, validated catalog and
+    /// boot-log copy), never from the live catalog. The result is the same after the mod was removed or the server
+    /// rolled back. With a backup id it also runs the integrity and singleton gates on that backup's world.
+    /// </summary>
+    public int AnalyzeSnapshot(string snapshotDirectory, string? backupId)
+    {
+        const string step = "analyze-snapshot";
+        BatchAnalysisSnapshot snapshot;
+        string logPath;
+        try
+        {
+            (snapshot, logPath) = BatchAnalysisSnapshotStore.Load(snapshotDirectory);
+        }
+        catch (Exception ex)
+        {
+            _log.Write(step, "load snapshot", "FAIL", null, Facts(("Snapshot", snapshotDirectory), ("Error", ex.Message)));
+            return 1;
+        }
+
+        var analysis = AnalyzeModLoad(ReadLogFrom(logPath, 0, int.MaxValue), [], snapshot);
+        _log.Write(step, $"mod load analysis (snapshot {snapshot.BatchId}, read-only)", analysis.Ok ? "PASS" : "FAIL", null,
+            analysis.Facts, analysis.Evidence, liveFilesChanged: "no");
+        if (backupId is null)
+        {
+            return analysis.Ok ? 0 : 1;
+        }
+
+        if (!EnsureNoForeignServer(step))
+        {
+            return 1;
+        }
+
+        var db = Path.Combine(_layout.AppData, "backups", Path.GetFileName(backupId), "world",
+            ConanServerControl.Core.Backups.ConanWorldFiles.EnhancedMain);
+        var integrityOk = File.Exists(db) && RecordWorldIntegrityGate(step, db);
+        var singletonsOk = integrityOk && RecordSingletonActorGates(step, db, snapshot);
+        return analysis.Ok && integrityOk && singletonsOk ? 0 : 1;
+    }
+
+    /// <summary>
+    /// Records an immutable snapshot for a boot that already ran (for example one that predates snapshots): the
+    /// modlist is given, each mod's SHA-256 comes from the server Mods folder or a <c>--search &lt;dir&gt;</c> folder
+    /// (recursive; for example the retired-mods archive), and the log copy is taken from <paramref name="logPath"/>.
+    /// </summary>
+    public int CreateSnapshot(string batchId, string logPath, string modListCsv, string[] options)
+    {
+        const string step = "create-snapshot";
+        var names = modListCsv.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        var searchDirs = new List<string> { Path.Combine(_serverDir, "ConanSandbox", "Mods") };
+        for (var i = 0; i + 1 < options.Length; i++)
+        {
+            if (options[i] == "--search")
+            {
+                searchDirs.Add(options[i + 1]);
+            }
+        }
+
+        var mods = new List<SnapshotMod>();
+        foreach (var name in names)
+        {
+            var found = searchDirs.Where(Directory.Exists)
+                .SelectMany(d => Directory.EnumerateFiles(d, name, SearchOption.AllDirectories)).FirstOrDefault();
+            if (found is null)
+            {
+                _log.Write(step, "locate mod file", "FAIL", null, Facts(("Missing", name), ("Searched", string.Join("; ", searchDirs))));
+                return 1;
+            }
+
+            mods.Add(new SnapshotMod(name, CachedSha256(found), new FileInfo(found).Length));
+        }
+
+        var snapshot = new BatchAnalysisSnapshot(batchId, DateTime.UtcNow, names, mods, [], ValidatedCatalog.Current);
+        try
+        {
+            var dir = BatchAnalysisSnapshotStore.Save(SnapshotRoot, snapshot, logPath);
+            var (saved, _) = BatchAnalysisSnapshotStore.Load(dir);
+            _log.Write(step, "immutable batch-analysis snapshot", "PASS", null, Facts(
+                ("BatchId", saved.BatchId), ("Directory", dir), ("ModList", string.Join(" | ", saved.ModList)),
+                ("Mods", string.Join("; ", saved.Mods.Select(m => $"{m.FileName} sha256={m.Sha256} size={m.SizeBytes}"))),
+                ("BootLog", $"sha256={saved.Log!.Sha256} bytes={saved.Log.Bytes} source={saved.Log.SourcePath}")),
+                liveFilesChanged: "no");
+            return 0;
+        }
+        catch (Exception ex)
+        {
+            _log.Write(step, "immutable batch-analysis snapshot", "FAIL", null, Facts(("BatchId", batchId), ("Error", ex.Message)));
+            return 1;
+        }
+    }
+
     private string LiveWorldDb => Path.Combine(Saved, ConanServerControl.Core.Backups.ConanWorldFiles.EnhancedMain);
 
     /// <summary>World integrity gate: SQLite <c>quick_check</c> on the stopped world (opened immutable) must be "ok".</summary>
@@ -664,13 +769,16 @@ internal sealed class Harness : IAsyncDisposable
     /// the stopped world must hold exactly one. These gates are what keep those mods' known warnings
     /// non-blocking: a missing or duplicated persistence object fails the boot.
     /// </summary>
-    private bool RecordSingletonActorGates(string step, string? db = null)
+    private bool RecordSingletonActorGates(string step, string? db = null, BatchAnalysisSnapshot? recorded = null)
     {
         var allPass = true;
-        foreach (var actor in ModBootGates.SingletonActors)
+        foreach (var actor in (recorded?.Catalog.SingletonActors ?? ModBootGates.SingletonActors))
         {
-            var installed = _settings.Current.Mods.Mods.Any(m =>
-                m.Enabled && string.Equals(m.LocalFileName, actor.ModPakFileName, StringComparison.OrdinalIgnoreCase));
+            // A recorded batch decides "installed" from its own mod list, not from the current catalog.
+            var installed = recorded is not null
+                ? recorded.ModList.Contains(actor.ModPakFileName, StringComparer.OrdinalIgnoreCase)
+                : _settings.Current.Mods.Mods.Any(m =>
+                    m.Enabled && string.Equals(m.LocalFileName, actor.ModPakFileName, StringComparison.OrdinalIgnoreCase));
             int? count = null;
             string? error = null;
             if (installed)
@@ -1428,12 +1536,16 @@ internal sealed class Harness : IAsyncDisposable
     /// the IoStore container Order of each extracted mod, "contributes N package(s)", duplicate mounts,
     /// mod-related warnings/errors, and that expected-absent mods are not mentioned at all.
     /// </summary>
-    private (bool Ok, Dictionary<string, string> Facts, string Evidence) AnalyzeModLoad(string log, string[] expectAbsent)
+    private (bool Ok, Dictionary<string, string> Facts, string Evidence) AnalyzeModLoad(string log, string[] expectAbsent,
+        BatchAnalysisSnapshot? recorded = null)
     {
         var modsDir = Path.Combine(_serverDir, "ConanSandbox", "Mods");
-        var modList = ReadModList(modsDir);
-        var expected = _settings.Current.Mods.Mods.Where(m => m.Enabled && !string.IsNullOrWhiteSpace(m.LocalFileName))
-            .OrderBy(m => m.LoadOrder).Select(m => m.LocalFileName!).ToArray();
+        // Live mode reads the current catalog, files and extraction cache (valid only for a batch that is running
+        // now). Snapshot mode reads only the recorded batch, so a historical boot analyses the same later.
+        var context = recorded ?? BuildLiveContext("live", expectAbsent);
+        expectAbsent = [.. context.ExpectAbsent];
+        var modList = recorded is null ? ReadModList(modsDir) : context.ModList.ToArray();
+        var expected = context.ModList.ToArray();
         var lines = log.Split(Environment.NewLine);
         var mountRegex = new System.Text.RegularExpressions.Regex(@"LogModManager: Mounting mod pak file: (?<path>.+?)\s*$");
         var containerRegex = new System.Text.RegularExpressions.Regex(@"Mounted container '[^']*/ExtractedMods/(?<stem>[^/']+)-WindowsServer\.utoc'.*?Order=(?<order>\d+)");
@@ -1449,30 +1561,17 @@ internal sealed class Harness : IAsyncDisposable
             .Select(m => $"{m.Groups["name"].Value}={m.Groups["n"].Value}").Distinct().ToList();
 
         var stems = expected.Concat(expectAbsent).Select(Path.GetFileNameWithoutExtension).Where(s => !string.IsNullOrEmpty(s)).ToArray();
-        var flagged = ModBootGates.SelectProblemLines(lines, stems.Select(s => s!));
 
-        // Only the exact, version-bound known warnings are set aside; every other flagged line still fails.
-        var installedSha256 = ModBootGates.KnownWarnings.Select(w => w.ModPakFileName)
-            .Concat(ModBootGates.LoadErrorBaselines.Select(b => b.ModPakFileName))
-            .Distinct(StringComparer.OrdinalIgnoreCase)
-            .Where(pak => expected.Contains(pak, StringComparer.OrdinalIgnoreCase) && File.Exists(Path.Combine(modsDir, pak)))
-            .ToDictionary(pak => pak, pak => Sha256(Path.Combine(modsDir, pak)), StringComparer.OrdinalIgnoreCase);
-        var (problems, known) = ModBootGates.ClassifyProblems(flagged, installedSha256);
-        var modProblems = problems.ToList();
-
-        // Every LoadErrors line must belong to an installed mod and match that mod's validated set exactly.
-        // "package None" lines name no asset, so they are attributed by the missing package id appearing in the
-        // mod's extracted server container (its import data).
-        var parsedLoadErrors = ModBootGates.ParseLoadErrors(lines);
-        var (loadErrorsByMod, unattributedLoadErrors) = AttributeLoadErrors(parsedLoadErrors.Where(e => e.RawUnparsedLine is null).ToList(), expected);
-        var loadErrorGates = expected
-            .Select(pak => (Pak: pak, Gate: ModBootGates.EvaluateLoadErrors(pak, installedSha256.GetValueOrDefault(pak),
-                loadErrorsByMod.GetValueOrDefault(pak) ?? [])))
-            .ToList();
-        var loadErrorProblems = loadErrorGates.Where(g => !g.Gate.Pass).Select(g => $"{g.Pak}: {g.Gate.Detail}")
-            .Concat(unattributedLoadErrors.Select(e => $"unattributed LoadErrors: {e}"))
-            .Concat(parsedLoadErrors.Where(e => e.RawUnparsedLine is not null).Select(e => $"unparsed LoadErrors: {e.RawUnparsedLine}"))
-            .ToList();
+        // Only the exact, version-bound known warnings are set aside; every other flagged line still fails. Every
+        // LoadErrors line must belong to an installed mod and match that mod's validated set exactly ("package None"
+        // lines are attributed by the missing id in the mod's extracted container). See BootLogAnalyzer.
+        var analysis = BootLogAnalyzer.Analyze(lines, context, ReadExtractedContainer);
+        var known = analysis.Known;
+        var modProblems = analysis.Unknown.ToList();
+        var loadErrorGates = analysis.LoadErrorGates.Select(g => (Pak: g.Key, Gate: g.Value)).ToList();
+        var loadErrorsByMod = analysis.LoadErrorCountsByMod;
+        var unattributedLoadErrors = analysis.UnattributedLoadErrors;
+        var loadErrorProblems = analysis.LoadErrorProblems.ToList();
 
         var perMod = new List<string>();
         var allLoaded = true;
@@ -1507,6 +1606,9 @@ internal sealed class Harness : IAsyncDisposable
                  duplicates.Length == 0 && modListMatchesCatalog;
 
         var facts = Facts(
+            ("AnalysisBasis", recorded is null
+                ? "LIVE CATALOG (current server state; NOT reproducible later: use a batch snapshot for a historical boot)"
+                : $"SNAPSHOT {recorded.BatchId} (recorded modlist, pak hashes and validated catalog; boot log sha256 {recorded.Log?.Sha256})"),
             ("ModListAtBoot", string.Join(" | ", modList)),
             ("CatalogOrder", string.Join(" | ", expected)),
             ("ModListMatchesCatalog", modListMatchesCatalog.ToString()),
@@ -1518,9 +1620,9 @@ internal sealed class Harness : IAsyncDisposable
             ("PerMod", string.Join(" || ", perMod)),
             ("DuplicateMounts", duplicates.Length == 0 ? "none" : string.Join(", ", duplicates)),
             ("ModRelatedProblems", modProblems.Count == 0 ? "none" : modProblems.Count.ToString()),
-            ("BaseGameErrorKindsSuppressed", lines.Select(ModBootGates.MatchBaseGameNoise).Where(id => id is not null)
-                .GroupBy(id => id!).OrderBy(g => g.Key, StringComparer.Ordinal)
-                .Select(g => $"{g.Key} x{g.Count()}").ToArray() is { Length: > 0 } baseNoise ? string.Join("; ", baseNoise) : "none"),
+            ("BaseGameErrorKindsSuppressed", analysis.BaseGameNoiseCounts.Count == 0
+                ? "none"
+                : string.Join("; ", analysis.BaseGameNoiseCounts.OrderBy(kv => kv.Key, StringComparer.Ordinal).Select(kv => $"{kv.Key} x{kv.Value}"))),
             ("KnownNonBlockingWarnings", known.Count == 0
                 ? "none"
                 : string.Join("; ", known.GroupBy(k => k.Warning.Id)
@@ -1544,60 +1646,68 @@ internal sealed class Harness : IAsyncDisposable
         return (ok, facts, string.Join(Environment.NewLine, evidence));
     }
 
-    /// <summary>
-    /// Assigns each LoadErrors entry to an installed mod: by its <c>/Game/Mods/&lt;mod&gt;/</c> package path, or, for
-    /// "package None", by the missing package id's 8 little-endian bytes appearing in that mod's extracted
-    /// <c>-WindowsServer.ucas</c>. Entries that match no installed mod are returned as unattributed.
-    /// </summary>
-    private (Dictionary<string, List<LoadErrorEntry>> ByMod, List<LoadErrorEntry> Unattributed) AttributeLoadErrors(
-        IReadOnlyList<LoadErrorEntry> entries, IReadOnlyList<string> installedPaks)
+    private readonly Dictionary<string, (long Length, DateTime Written, string Sha256)> _pakHashCache = new(StringComparer.OrdinalIgnoreCase);
+
+    /// <summary>SHA-256 of a file, cached by length and last-write time (the large paks are hashed once per run).</summary>
+    private string CachedSha256(string path)
     {
-        var byMod = new Dictionary<string, List<LoadErrorEntry>>(StringComparer.OrdinalIgnoreCase);
-        var unattributed = new List<LoadErrorEntry>();
-        var containers = new Dictionary<string, byte[]?>(StringComparer.OrdinalIgnoreCase);
-        byte[]? Container(string stem)
+        var info = new FileInfo(path);
+        if (_pakHashCache.TryGetValue(path, out var hit) && hit.Length == info.Length && hit.Written == info.LastWriteTimeUtc)
         {
-            if (!containers.TryGetValue(stem, out var bytes))
-            {
-                var path = Path.Combine(Saved, "ExtractedMods", stem + "-WindowsServer.ucas");
-                bytes = File.Exists(path) ? File.ReadAllBytes(path) : null;
-                containers[stem] = bytes;
-            }
-
-            return bytes;
+            return hit.Sha256;
         }
 
-        foreach (var entry in entries)
+        var sha = Sha256(path);
+        _pakHashCache[path] = (info.Length, info.LastWriteTimeUtc, sha);
+        return sha;
+    }
+
+    /// <summary>The mod set the current catalog, files and committed validated catalog describe right now.</summary>
+    private BatchAnalysisSnapshot BuildLiveContext(string batchId, string[] expectAbsent)
+    {
+        var modsDir = Path.Combine(_serverDir, "ConanSandbox", "Mods");
+        var expected = _settings.Current.Mods.Mods.Where(m => m.Enabled && !string.IsNullOrWhiteSpace(m.LocalFileName))
+            .OrderBy(m => m.LoadOrder).Select(m => m.LocalFileName!).ToArray();
+        var mods = expected.Select(pak => Path.Combine(modsDir, pak)).Where(File.Exists)
+            .Select(path => new SnapshotMod(Path.GetFileName(path), CachedSha256(path), new FileInfo(path).Length)).ToList();
+        return new BatchAnalysisSnapshot(batchId, DateTime.UtcNow, expected, mods, expectAbsent, ValidatedCatalog.Current);
+    }
+
+    private byte[]? ReadExtractedContainer(string stem)
+    {
+        var path = Path.Combine(Saved, "ExtractedMods", stem + "-WindowsServer.ucas");
+        return File.Exists(path) ? File.ReadAllBytes(path) : null;
+    }
+
+    private string SnapshotRoot => Path.Combine(_layout.LiveTest, "batch-snapshots");
+
+    /// <summary>
+    /// Records the immutable batch-analysis snapshot of a finished live boot: the modlist at boot, each mod's exact
+    /// file name and SHA-256, the validated catalog, and an immutable copy of the boot log with its hash. Refuses to
+    /// overwrite an existing batch id.
+    /// </summary>
+    private bool SaveBatchSnapshot(string step, string batchId, string[] expectAbsent, string logPath, long logOffset)
+    {
+        try
         {
-            var owner = installedPaks.FirstOrDefault(pak =>
-            {
-                var stem = Path.GetFileNameWithoutExtension(pak);
-                if (!string.Equals(entry.Package, "None", StringComparison.Ordinal))
-                {
-                    return entry.Package.StartsWith($"/Game/Mods/{stem}/", StringComparison.OrdinalIgnoreCase);
-                }
-
-                var idBytes = new byte[8];
-                System.Buffers.Binary.BinaryPrimitives.WriteUInt64LittleEndian(idBytes, Convert.ToUInt64(entry.MissingPackageId, 16));
-                return Container(stem) is { } bytes && bytes.AsSpan().IndexOf(idBytes) >= 0;
-            });
-            if (owner is null)
-            {
-                unattributed.Add(entry);
-            }
-            else
-            {
-                if (!byMod.TryGetValue(owner, out var list))
-                {
-                    list = [];
-                    byMod[owner] = list;
-                }
-
-                list.Add(entry);
-            }
+            var live = BuildLiveContext(batchId, expectAbsent);
+            var snapshot = live with { ModList = ReadModList(Path.Combine(_serverDir, "ConanSandbox", "Mods")) };
+            var dir = BatchAnalysisSnapshotStore.Save(SnapshotRoot, snapshot, logPath, logOffset);
+            var (saved, _) = BatchAnalysisSnapshotStore.Load(dir);
+            _log.Write(step, "immutable batch-analysis snapshot", "PASS", null, Facts(
+                ("BatchId", saved.BatchId), ("Directory", dir),
+                ("ModList", string.Join(" | ", saved.ModList)),
+                ("Mods", string.Join("; ", saved.Mods.Select(m => $"{m.FileName} sha256={m.Sha256} size={m.SizeBytes}"))),
+                ("BootLog", $"{saved.Log!.FileName} sha256={saved.Log.Sha256} bytes={saved.Log.Bytes} source={saved.Log.SourcePath}"),
+                ("Catalog", $"{saved.Catalog.KnownWarnings.Count} known warnings; {saved.Catalog.LoadErrorBaselines.Count} LoadErrors baselines; {saved.Catalog.BaseGameNoise.Count} base-game noise kinds")),
+                liveFilesChanged: "no");
+            return true;
         }
-
-        return (byMod, unattributed);
+        catch (Exception ex)
+        {
+            _log.Write(step, "immutable batch-analysis snapshot", "FAIL", null, Facts(("BatchId", batchId), ("Error", ex.Message)));
+            return false;
+        }
     }
 
     private static string[] ReadModList(string modsDir)

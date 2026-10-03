@@ -226,10 +226,15 @@ public static class ModBootGates
         ["Error", "Warning", "Fatal", "Failed", "missing", "not found", "Could not", "Unable"];
 
     /// <summary>One base-game error kind recorded in every healthy boot before Batch D.</summary>
-    public sealed record BaseGameNoiseKind(string Id, Regex Pattern);
+    public sealed record BaseGameNoiseKind(string Id, string Pattern)
+    {
+        private static readonly System.Collections.Concurrent.ConcurrentDictionary<string, Regex> Cache = new();
 
-    private static BaseGameNoiseKind Noise(string id, string pattern) =>
-        new(id, new Regex(pattern, RegexOptions.Compiled | RegexOptions.CultureInvariant));
+        [System.Text.Json.Serialization.JsonIgnore]
+        public Regex Compiled => Cache.GetOrAdd(Pattern, p => new Regex(p, RegexOptions.CultureInvariant));
+    }
+
+    private static BaseGameNoiseKind Noise(string id, string pattern) => new(id, pattern);
 
     /// <summary>
     /// Error messages the unmodified base game logs on every boot. Derived 2026-10-03 from 11 healthy boot logs
@@ -251,10 +256,13 @@ public static class ModBootGates
     ];
 
     /// <summary>The base-game noise kind a log line matches, or null.</summary>
-    public static string? MatchBaseGameNoise(string line)
+    public static string? MatchBaseGameNoise(string line) => MatchBaseGameNoise(line, BaseGameNoise);
+
+    /// <summary>The kind in <paramref name="noise"/> a log line matches, or null.</summary>
+    public static string? MatchBaseGameNoise(string line, IEnumerable<BaseGameNoiseKind> noise)
     {
         var message = StripLogPrefix(line).TrimEnd();
-        return BaseGameNoise.FirstOrDefault(k => k.Pattern.IsMatch(message))?.Id;
+        return noise.FirstOrDefault(k => k.Compiled.IsMatch(message))?.Id;
     }
 
     /// <summary>
@@ -263,7 +271,11 @@ public static class ModBootGates
     /// LoadErrors have their own mandatory exact-multiset gate. Selection never depends on a generic error naming
     /// the responsible mod.
     /// </summary>
-    public static IReadOnlyList<string> SelectProblemLines(IEnumerable<string> lines, IEnumerable<string> modStems)
+    public static IReadOnlyList<string> SelectProblemLines(IEnumerable<string> lines, IEnumerable<string> modStems) =>
+        SelectProblemLines(lines, modStems, ValidatedCatalog.Current);
+
+    /// <summary>As above, against an explicit (for example recorded) validated catalog.</summary>
+    public static IReadOnlyList<string> SelectProblemLines(IEnumerable<string> lines, IEnumerable<string> modStems, ValidatedCatalog catalog)
     {
         var stems = modStems.Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
         return lines.Where(line =>
@@ -271,10 +283,10 @@ public static class ModBootGates
             var message = StripLogPrefix(line);
             if (message.Contains("LoadErrors:", StringComparison.OrdinalIgnoreCase))
                 return false; // ParseLoadErrors retains malformed lines and the caller gates all entries.
-            if (MatchBaseGameNoise(line) is not null)
+            if (MatchBaseGameNoise(line, catalog.BaseGameNoise) is not null)
                 return false;
             if (ErrorSeverity.IsMatch(message) ||
-                SevereLogMarkers.Any(m => message.Contains(m, StringComparison.OrdinalIgnoreCase)))
+                catalog.SevereLogMarkers.Any(m => message.Contains(m, StringComparison.OrdinalIgnoreCase)))
                 return true;
             return ProblemMarkers.Any(m => message.Contains(m, StringComparison.OrdinalIgnoreCase)) &&
                 (RelevantWarningFamily.IsMatch(message) ||
@@ -310,12 +322,16 @@ public static class ModBootGates
     /// Compares the <c>LoadErrors</c> attributed to one installed mod with its validated baseline. Passes only on
     /// an exact multiset match with the validated file, or when the mod produced none and has no baseline.
     /// </summary>
-    public static BootGateResult EvaluateLoadErrors(string modPakFileName, string? installedSha256, IReadOnlyList<LoadErrorEntry> attributed)
+    public static BootGateResult EvaluateLoadErrors(string modPakFileName, string? installedSha256, IReadOnlyList<LoadErrorEntry> attributed) =>
+        EvaluateLoadErrors(modPakFileName, installedSha256, attributed, ValidatedCatalog.Current);
+
+    /// <summary>As above, against an explicit (for example recorded) validated catalog.</summary>
+    public static BootGateResult EvaluateLoadErrors(string modPakFileName, string? installedSha256, IReadOnlyList<LoadErrorEntry> attributed, ValidatedCatalog catalog)
     {
         ArgumentNullException.ThrowIfNull(attributed);
         if (attributed.Any(e => e.RawUnparsedLine is not null))
             return new BootGateResult(false, "UNKNOWN: unparsed LoadErrors line");
-        var baseline = LoadErrorBaselines.FirstOrDefault(b =>
+        var baseline = catalog.LoadErrorBaselines.FirstOrDefault(b =>
             string.Equals(b.ModPakFileName, modPakFileName, StringComparison.OrdinalIgnoreCase));
         var hashMatches = baseline is not null &&
                           string.Equals(installedSha256, baseline.ValidatedPakSha256, StringComparison.OrdinalIgnoreCase);
@@ -381,10 +397,18 @@ public static class ModBootGates
     /// </summary>
     public static (IReadOnlyList<string> Problems, IReadOnlyList<(KnownBootWarning Warning, string Line)> Known) ClassifyProblems(
         IEnumerable<string> problemLines,
-        IReadOnlyDictionary<string, string> installedPakSha256)
+        IReadOnlyDictionary<string, string> installedPakSha256) =>
+        ClassifyProblems(problemLines, installedPakSha256, ValidatedCatalog.Current);
+
+    /// <summary>As above, against an explicit (for example recorded) validated catalog.</summary>
+    public static (IReadOnlyList<string> Problems, IReadOnlyList<(KnownBootWarning Warning, string Line)> Known) ClassifyProblems(
+        IEnumerable<string> problemLines,
+        IReadOnlyDictionary<string, string> installedPakSha256,
+        ValidatedCatalog catalog)
     {
         ArgumentNullException.ThrowIfNull(problemLines);
         ArgumentNullException.ThrowIfNull(installedPakSha256);
+        ArgumentNullException.ThrowIfNull(catalog);
 
         var problems = new List<string>();
         var known = new List<(KnownBootWarning, string)>();
@@ -392,7 +416,7 @@ public static class ModBootGates
         foreach (var line in problemLines)
         {
             var message = StripLogPrefix(line);
-            var rule = KnownWarnings.FirstOrDefault(w =>
+            var rule = catalog.KnownWarnings.FirstOrDefault(w =>
                 string.Equals(message, w.ExactMessage, StringComparison.Ordinal) &&
                 installedPakSha256.TryGetValue(w.ModPakFileName, out var sha256) &&
                 string.Equals(sha256, w.ValidatedPakSha256, StringComparison.OrdinalIgnoreCase));
