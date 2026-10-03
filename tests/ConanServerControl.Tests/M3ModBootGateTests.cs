@@ -72,9 +72,18 @@ public sealed class M3ModBootGateTests
     }
 
     [Fact]
-    public void Known_warning_rules_are_exactly_the_itqol_mailbox_line_and_the_seven_ancient_realms_lines()
+    public void Known_warning_rules_are_exactly_the_itqol_mailbox_line_the_seven_ancient_realms_lines_and_the_capped_merge_error()
     {
-        Assert.Equal(8, ModBootGates.KnownWarnings.Count);
+        Assert.Equal(9, ModBootGates.KnownWarnings.Count);
+        Assert.Equal(
+            ["ANCIENT-REALMS-DANGLING-REF-1", "ANCIENT-REALMS-DANGLING-REF-2", "ANCIENT-REALMS-DANGLING-REF-3",
+             "ANCIENT-REALMS-DANGLING-REF-4", "ANCIENT-REALMS-DANGLING-REF-5", "ANCIENT-REALMS-DANGLING-REF-6",
+             "ANCIENT-REALMS-DANGLING-REF-7", "ANCIENT-REALMS-MERGE-DATATABLE-NULL", "ITQOL-MAILBOX-HEALTHPOOL"],
+            ModBootGates.KnownWarnings.Select(w => w.Id).OrderBy(id => id, StringComparer.Ordinal));
+        // Only the merge error may repeat, and only twice; every other known line is accepted once per boot at most by its own gate.
+        var merge = Assert.Single(ModBootGates.KnownWarnings, w => w.Id == "ANCIENT-REALMS-MERGE-DATATABLE-NULL");
+        Assert.Equal(2, merge.MaxOccurrences);
+        Assert.Equal(ValidatedAncientRealmsSha256, merge.ValidatedPakSha256);
 
         var mailbox = Assert.Single(ModBootGates.KnownWarnings, w => w.ModPakFileName == "ImprovedThrallsAndQoL.pak");
         Assert.Equal("ITQOL-MAILBOX-HEALTHPOOL", mailbox.Id);
@@ -82,7 +91,8 @@ public sealed class M3ModBootGateTests
         Assert.EndsWith(ModBootGates.ItqolMailboxClassPath, mailbox.ExactMessage, StringComparison.Ordinal);
         Assert.StartsWith("Persistence: Error: Code: UConanBuildingPersistenceComponent::CreateHealthPool", mailbox.ExactMessage, StringComparison.Ordinal);
 
-        var ancientRealms = ModBootGates.KnownWarnings.Where(w => w.ModPakFileName == "Ancient_Realms.pak").ToList();
+        var ancientRealms = ModBootGates.KnownWarnings
+            .Where(w => w.ModPakFileName == "Ancient_Realms.pak" && w.Id.StartsWith("ANCIENT-REALMS-DANGLING-REF-", StringComparison.Ordinal)).ToList();
         Assert.Equal(7, ancientRealms.Count);
         Assert.All(ancientRealms, w => Assert.Equal(ValidatedAncientRealmsSha256, w.ValidatedPakSha256));
         Assert.Equal(AncientRealmsLines.OrderBy(l => l, StringComparer.Ordinal),

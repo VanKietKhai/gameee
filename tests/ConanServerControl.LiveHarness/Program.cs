@@ -562,6 +562,13 @@ internal sealed class Harness : IAsyncDisposable
         var singletonsOk = true;
         if (scanMods)
         {
+            // Read the entire current run again, including hold, save and shutdown. A readiness-time
+            // snapshot is provisional: NPC/stat errors may first appear once the world starts ticking.
+            var finalAnalysis = AnalyzeModLoad(ReadLogFrom(ServerLog, logOffset, int.MaxValue), expectAbsent ?? []);
+            modLoadOk &= finalAnalysis.Ok;
+            _log.Write(step, "mod load analysis (complete current-boot log through stop)",
+                finalAnalysis.Ok ? "PASS" : "FAIL", null, finalAnalysis.Facts,
+                finalAnalysis.Evidence, liveFilesChanged: "no");
             singletonsOk = stopped && EnsureNoForeignServer(step) &&
                 RecordWorldIntegrityGate(step, LiveWorldDb) && RecordSingletonActorGates(step);
             ObserveExtractedMods(step);
@@ -1439,17 +1446,7 @@ internal sealed class Harness : IAsyncDisposable
             .Select(m => $"{m.Groups["name"].Value}={m.Groups["n"].Value}").Distinct().ToList();
 
         var stems = expected.Concat(expectAbsent).Select(Path.GetFileNameWithoutExtension).Where(s => !string.IsNullOrEmpty(s)).ToArray();
-        var problemMarkers = new[] { "Error", "Warning", "Fatal", "Failed", "missing", "not found", "Could not", "Unable" };
-        var flagged = lines
-            .Where(l => problemMarkers.Any(p => l.Contains(p, StringComparison.OrdinalIgnoreCase)))
-            .Where(l => stems.Any(s => l.Contains(s!, StringComparison.OrdinalIgnoreCase)) ||
-                        l.Contains("modlist", StringComparison.OrdinalIgnoreCase) ||
-                        l.Contains("LogModManager", StringComparison.Ordinal) ||
-                        l.Contains("Failed to mount", StringComparison.OrdinalIgnoreCase))
-            // Crash, save and persistence errors fail a boot whichever mod (if any) they name;
-            // only an exact, version-bound known warning is set aside below.
-            .Union(lines.Where(l => ModBootGates.SevereLogMarkers.Any(m => l.Contains(m, StringComparison.Ordinal))))
-            .ToList();
+        var flagged = ModBootGates.SelectProblemLines(lines, stems.Select(s => s!));
 
         // Only the exact, version-bound known warnings are set aside; every other flagged line still fails.
         var installedSha256 = ModBootGates.KnownWarnings.Select(w => w.ModPakFileName)
@@ -1518,6 +1515,9 @@ internal sealed class Harness : IAsyncDisposable
             ("PerMod", string.Join(" || ", perMod)),
             ("DuplicateMounts", duplicates.Length == 0 ? "none" : string.Join(", ", duplicates)),
             ("ModRelatedProblems", modProblems.Count == 0 ? "none" : modProblems.Count.ToString()),
+            ("BaseGameErrorKindsSuppressed", lines.Select(ModBootGates.MatchBaseGameNoise).Where(id => id is not null)
+                .GroupBy(id => id!).OrderBy(g => g.Key, StringComparer.Ordinal)
+                .Select(g => $"{g.Key} x{g.Count()}").ToArray() is { Length: > 0 } baseNoise ? string.Join("; ", baseNoise) : "none"),
             ("KnownNonBlockingWarnings", known.Count == 0
                 ? "none"
                 : string.Join("; ", known.GroupBy(k => k.Warning.Id)
@@ -1532,11 +1532,13 @@ internal sealed class Harness : IAsyncDisposable
         var evidenceLines = lines.Where(l =>
                 mountRegex.IsMatch(l) || containerRegex.IsMatch(l) || pakRegex.IsMatch(l) || contributesRegex.IsMatch(l) ||
                 stems.Any(s => l.Contains(s!, StringComparison.OrdinalIgnoreCase)))
-            .Concat(modProblems.Select(p => "PROBLEM: " + p))
-            .Concat(loadErrorProblems.Select(p => "PROBLEM (LoadErrors): " + p))
-            .Concat(known.Select(k => $"KNOWN NON-BLOCKING ({k.Warning.Id}): {k.Line}"))
             .Take(160);
-        return (ok, facts, string.Join(Environment.NewLine, evidenceLines));
+        // Never truncate the unknown diagnostics behind verbose mount evidence.
+        var evidence = modProblems.Select(p => "UNKNOWN / FAIL: " + p)
+            .Concat(loadErrorProblems.Select(p => "UNKNOWN / FAIL (LoadErrors): " + p))
+            .Concat(known.Select(k => $"KNOWN NON-BLOCKING ({k.Warning.Id}): {k.Line}"))
+            .Concat(evidenceLines);
+        return (ok, facts, string.Join(Environment.NewLine, evidence));
     }
 
     /// <summary>

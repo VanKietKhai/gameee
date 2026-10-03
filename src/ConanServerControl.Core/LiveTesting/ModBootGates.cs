@@ -12,7 +12,11 @@ public sealed record KnownBootWarning(
     string ModPakFileName,
     string ValidatedPakSha256,
     string ExactMessage,
-    string Reason);
+    string Reason)
+{
+    /// <summary>Occurrences per boot beyond which the extra lines fail the boot (unlimited unless set).</summary>
+    public int MaxOccurrences { get; init; } = int.MaxValue;
+}
 
 /// <summary>Result of one live-harness gate.</summary>
 public sealed record BootGateResult(bool Pass, string Detail);
@@ -108,7 +112,19 @@ public static class ModBootGates
         AncientRealmsLoadError(4, "/Game/Mods/Ancient_Realms/Buildings/Brick/brick_03/BP_PL_Water_Well_Fountain", "FE8C96EB21683A73"),
         AncientRealmsLoadError(5, "/Game/Mods/Ancient_Realms/Buildings/Ceramic/ceramic_02_white/BP_PL_Water_Well_Fountain_gold", "FE8C96EB21683A73"),
         AncientRealmsLoadError(6, "/Game/Mods/Ancient_Realms/Buildings/Concrete/concrete_04/BP_PL_Water_Well_Fountain", "FE8C96EB21683A73"),
-        AncientRealmsLoadError(7, "/Game/Mods/Ancient_Realms/Buildings/Stone/stone_05/BP_PL_Water_Well_Fountain", "FE8C96EB21683A73")
+        AncientRealmsLoadError(7, "/Game/Mods/Ancient_Realms/Buildings/Stone/stone_05/BP_PL_Water_Well_Fountain", "FE8C96EB21683A73"),
+        new KnownBootWarning(
+            "ANCIENT-REALMS-MERGE-DATATABLE-NULL",
+            AncientRealmsPakFileName,
+            AncientRealmsValidatedSha256,
+            "LogModController: Error: AModController::MergeDataTables - ToBeAddedDataTable is null",
+            "Surfaced 2026-10-03 when error scanning stopped depending on a mod name (never part of the Batch C set). " +
+            "Exactly 2 lines, printed right after the Ancient Realms controller registers, in every boot that mounts " +
+            "Ancient_Realms.pak (3 of 3) and in none of the 8 boots without it. Passes only at most twice for this exact " +
+            "file; operator confirmation of this addition is pending.")
+        {
+            MaxOccurrences = 2
+        }
     ];
 
     /// <summary>
@@ -194,6 +210,79 @@ public static class ModBootGates
     private static readonly Regex LoadErrorLine = new(
         @"^LoadErrors: While trying to load package (?<pkg>\S+), a dependent package None \((?<id>[0-9A-Fa-f]{1,16})\) was not available\. Additional explanatory information follows:$",
         RegexOptions.Compiled);
+
+    private static readonly Regex ErrorSeverity = new(@"(?:^|:)\s*(?:Error|Fatal)\s*:",
+        RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
+    /// <summary>
+    /// Log categories whose warnings can mean a mod broke NPC, spawn, stat, save or world data. Warnings elsewhere
+    /// (script, data-table lookups, actor attach, streaming) are base-game volume (1,400+ per boot) and are not
+    /// scanned unless they name a mod; every Error and Fatal line of any category is scanned (see below).
+    /// </summary>
+    private static readonly Regex RelevantWarningFamily = new(
+        @"^(?:Log)?(?:NPC\w*|Spawn\w*|Stat\w*|Persistence\w*|Save\w*|Database\w*|SQLite\w*|ModController|ModManager|World\w*|Map\w*)\s*:",
+        RegexOptions.Compiled | RegexOptions.IgnoreCase);
+    private static readonly string[] ProblemMarkers =
+        ["Error", "Warning", "Fatal", "Failed", "missing", "not found", "Could not", "Unable"];
+
+    /// <summary>One base-game error kind recorded in every healthy boot before Batch D.</summary>
+    public sealed record BaseGameNoiseKind(string Id, Regex Pattern);
+
+    private static BaseGameNoiseKind Noise(string id, string pattern) =>
+        new(id, new Regex(pattern, RegexOptions.Compiled | RegexOptions.CultureInvariant));
+
+    /// <summary>
+    /// Error messages the unmodified base game logs on every boot. Derived 2026-10-03 from 11 healthy boot logs
+    /// (no mods through the seven-mod baseline): each kind below appears in at least 10 of the 11, in the same form
+    /// with and without mods. Matching is by message kind, so a changed or new message is never covered; a new kind
+    /// of error from any source (including a mod whose line names no mod) stays an unknown problem and fails the boot.
+    /// </summary>
+    public static readonly IReadOnlyList<BaseGameNoiseKind> BaseGameNoise =
+    [
+        Noise("ITEMINVENTORY-DLC-MISMATCH", @"^ItemInventory: Error: Data: Mismatch \w+ DLCPackage \S+ for item .+$"),
+        Noise("ITEMINVENTORY-FEAT-BLACKLIST", @"^ItemInventory: Error: Data: Map feat blacklist table not found, blacklist will not function\.$"),
+        Noise("BINK-TITLE-MOVIE", @"^LogBinkMoviePlayer: Error: UBinkMediaPlayer::Open: Failed! BinkHLOpen failed\. URL: .+$"),
+        Noise("DEV-ASSETGROUP-STREAMING", @"^LogLevelStreaming: Error: Couldn't find file for package /Game/Developers/MasonRoy/AssetGroups/AG_TEMP_\w+\.$"),
+        Noise("WILDLIFE-AILOD3-MOVEMENT", @"^LogTemp: Error: Character 'BP_NPC_Wildlife_\w+' is in an unsafe movement move \(currently \d+\) while in AILOD3$"),
+        Noise("NPC-SPAWNER-DESPAWN-ENTRY", @"^NPC: Error: Code: UNpcSpawnerComponent::Despawned - Invalid spawn entry supplied, Type: \d+, Index: \d+$"),
+        Noise("SPAWNTABLE-WEIGHTED-TABLE", @"^SpawnTable: Error: Data: USpawnTableLibrary::SpawnNPCFromWeightedTable - could not find weighted table with id: \w+$"),
+        Noise("BASESPAWNER-MODULE", @"^LogBaseSpawner: Error: ABaseSpawner::TickSpawnBase - Failed to spawn module from BP_HL_Build\w+_T2_C\.$"),
+        Noise("BUILDING-STABILITY", @"^building: Error: Code: ABuildingBase::AddModule_Internal - Removing placed module that did not manage to find stability\.$")
+    ];
+
+    /// <summary>The base-game noise kind a log line matches, or null.</summary>
+    public static string? MatchBaseGameNoise(string line)
+    {
+        var message = StripLogPrefix(line).TrimEnd();
+        return BaseGameNoise.FirstOrDefault(k => k.Pattern.IsMatch(message))?.Id;
+    }
+
+    /// <summary>
+    /// Selects every error/fatal line of any category, every severe diagnostic, relevant-category warnings and
+    /// mod-related problems, minus the recorded <see cref="BaseGameNoise"/> kinds. Keeps duplicate occurrences.
+    /// LoadErrors have their own mandatory exact-multiset gate. Selection never depends on a generic error naming
+    /// the responsible mod.
+    /// </summary>
+    public static IReadOnlyList<string> SelectProblemLines(IEnumerable<string> lines, IEnumerable<string> modStems)
+    {
+        var stems = modStems.Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
+        return lines.Where(line =>
+        {
+            var message = StripLogPrefix(line);
+            if (message.Contains("LoadErrors:", StringComparison.OrdinalIgnoreCase))
+                return false; // ParseLoadErrors retains malformed lines and the caller gates all entries.
+            if (MatchBaseGameNoise(line) is not null)
+                return false;
+            if (ErrorSeverity.IsMatch(message) ||
+                SevereLogMarkers.Any(m => message.Contains(m, StringComparison.OrdinalIgnoreCase)))
+                return true;
+            return ProblemMarkers.Any(m => message.Contains(m, StringComparison.OrdinalIgnoreCase)) &&
+                (RelevantWarningFamily.IsMatch(message) ||
+                 stems.Any(s => message.Contains(s, StringComparison.OrdinalIgnoreCase)) ||
+                 message.Contains("modlist", StringComparison.OrdinalIgnoreCase) ||
+                 message.Contains("Failed to mount", StringComparison.OrdinalIgnoreCase));
+        }).ToList();
+    }
 
     private static KnownBootWarning AncientRealmsLoadError(int number, string package, string missingPackageId) =>
         new($"ANCIENT-REALMS-DANGLING-REF-{number}",
@@ -299,6 +388,7 @@ public static class ModBootGates
 
         var problems = new List<string>();
         var known = new List<(KnownBootWarning, string)>();
+        var seen = new Dictionary<string, int>(StringComparer.Ordinal);
         foreach (var line in problemLines)
         {
             var message = StripLogPrefix(line);
@@ -306,6 +396,15 @@ public static class ModBootGates
                 string.Equals(message, w.ExactMessage, StringComparison.Ordinal) &&
                 installedPakSha256.TryGetValue(w.ModPakFileName, out var sha256) &&
                 string.Equals(sha256, w.ValidatedPakSha256, StringComparison.OrdinalIgnoreCase));
+            if (rule is not null)
+            {
+                var count = seen[rule.Id] = seen.GetValueOrDefault(rule.Id) + 1;
+                if (count > rule.MaxOccurrences)
+                {
+                    rule = null; // more occurrences than were validated: the extra lines are unknown problems
+                }
+            }
+
             if (rule is null)
             {
                 problems.Add(line);
