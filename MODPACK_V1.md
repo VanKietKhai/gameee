@@ -2,6 +2,8 @@
 
 Status: **IN PROGRESS. Batch A PASS, Batch B PASS, Batch C PASS (server-side).** Seven mods are installed on staging `depot_443031` (TEST world). Details are in `M3_LIVE_TEST_REPORT.md`.
 
+**2026-10-04 Boss/PvE P3: Thrall Wars Dungeon FAIL / STOP, rolled back.** It mounted and ran stably (readiness 37.5 s, shutdown NORMAL 176.0 s, one new controller) but produced 73 new unvalidated LoadErrors and 7 new errors (3 loot-table `MergeDataTables` row-structure mismatches, 1 null merge target, 3 `LogMaterial` errors); nothing whitelisted. The installed and accepted state is the 10 mods through PvE Plus Ambush (backups pre-P3 `2026-10-04_030240`, latest verified `2026-10-04_031929`). Final 11-mod validation not run; decision pending.
+
 **2026-10-04 Boss/PvE P2: PvE Plus Ambush PASS server-side** (mod 10 on top of Night Terrors; readiness 37.5 s, 660.5 s hold, 0 unknown, LoadErrors 60 vs 60, no new NPC/stat/spawn-table errors, no conflict between the two ambush systems, three controllers one each, shutdown NORMAL 177.0 s; gameplay not verified; backups pre-P2 `2026-10-04_024506`, post-P2 `2026-10-04_030121`). P3 Thrall Wars Dungeon follows.
 
 **2026-10-04 Boss/PvE P1: Night Terrors PASS server-side** (installed as mod 9; readiness 36.4 s, 660.6 s hold, 0 unknown, no new LoadErrors, shutdown NORMAL 177.3 s, one new controller object; gameplay not verified; backups pre-P1 `2026-10-04_022500`, post-P1 `2026-10-04_024312`). P2 PvE Plus Ambush and P3 Thrall Wars Dungeon follow.

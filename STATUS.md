@@ -9,6 +9,10 @@
 - **Ancient Realms `MergeDataTables - ToBeAddedDataTable is null`: ACCEPTED as KNOWN NON-BLOCKING**, only with the exact signature, `Ancient_Realms.pak` SHA-256 `12F7E719…FD1A`, and at most 2 occurrences per boot. A third occurrence, a changed signature or a changed hash fails.
 - **Accepted core (7):** StackMe10K, Savage Paragon, Grit & Grease, Thrall Reputation, Improved Thralls & QoL, WO Riding Thralls, Ancient Realms Enhanced. **Next candidates:** Cannibal Captivity Enhanced (Workshop 3765743138), then Shemite City State Enhanced (3755371705).
 
+## Boss/PvE phase (2026-10-04): P3 Thrall Wars Dungeon FAIL / STOP, rolled back (10 mods installed)
+
+Thrall Wars Dungeon (`SlaveWarsServer.pak`, Workshop 3722829382, SHA-256 `A6238D37…623B`) mounted and ran stably (readiness 37.5 s, 660.6 s hold, shutdown NORMAL 176.0 s, `quick_check` ok, singletons 1/1/1, one new controller) but introduced 73 new unvalidated LoadErrors and 7 new errors (4 loot-table `MergeDataTables` failures, 3 `LogMaterial` errors). Nothing whitelisted; rolled back to the verified PRE-P3 backup `2026-10-04_030240` and verified (10-mod state exact, live DB identical to the post-P2 backup). The final 11-mod validation was not run. Latest verified 10-mod backup `2026-10-04_031929`; post-P3 failed world `2026-10-04_031850`. Server OFFLINE. Production world NOT CREATED. Decision pending: baseline or exclude Thrall Wars Dungeon; details in `M3_LIVE_TEST_REPORT.md`.
+
 ## Boss/PvE phase (2026-10-04): P2 PvE Plus Ambush PASS server-side (10 mods installed)
 
 PvE Plus Ambush (`PvEPlusAmbush.pak`, Workshop 3721274811, SHA-256 `C9C816FA…5B74`) added on top of Night Terrors: readiness 37.5 s, 660.5 s hold, complete-log analysis 0 unknown, no new LoadErrors (60 vs 60), no warning/error naming it, no conflict between the two ambush systems, no new NPC/stat/spawn-table errors, three controllers (one of each in the world, no duplicates), shutdown NORMAL 177.0 s, `quick_check` ok, singletons 1/1/1. Verified backups: pre-P2 `2026-10-04_024506`, post-P2 `2026-10-04_030121`. Gameplay NOT YET VERIFIED. Next: P3 Thrall Wars Dungeon (`SlaveWarsServer.pak`). Production world NOT CREATED.
