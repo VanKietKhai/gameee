@@ -141,6 +141,7 @@ internal static class Program
                 "analyze-snapshot" => harness.AnalyzeSnapshot(args[1], args.Length > 2 && !args[2].StartsWith("--") ? args[2] : null,
                     useCurrentCatalog: args.Contains("--current-catalog")),
                 "create-snapshot" => harness.CreateSnapshot(args[1], args[2], args[3], args.Skip(4).ToArray()),
+                "pre-batch-snapshot" => harness.RecordPreBatchSnapshot(args[1], args[2], args[3], OptionValue(args, "--head") ?? "unknown"),
                 "analyze-last-boot" => harness.AnalyzeLastBoot(),
                 "analyze-boot" => harness.AnalyzeBoot(args[1], args[2]),
                 "reorder-local" => await harness.ReorderLocalAsync(args[1]),
@@ -740,6 +741,72 @@ internal sealed class Harness : IAsyncDisposable
         catch (Exception ex)
         {
             _log.Write(step, "immutable batch-analysis snapshot", "FAIL", null, Facts(("BatchId", batchId), ("Error", ex.Message)));
+            return 1;
+        }
+    }
+
+    /// <summary>
+    /// Records the immutable plan of a batch before it runs: the accepted baseline (modlist, hashes, sizes), the one
+    /// expected new mod (read from <paramref name="newPakPath"/>, never guessed), the expected cumulative order, the
+    /// validated catalog and its SHA-256, the code head, and the verified pre-batch backup to roll back to.
+    /// </summary>
+    public int RecordPreBatchSnapshot(string batchId, string backupId, string newPakPath, string codeHead)
+    {
+        const string step = "pre-batch-snapshot";
+        try
+        {
+            if (Program.ServerProcesses().Count > 0)
+            {
+                throw new InvalidOperationException("A Conan server process is running.");
+            }
+
+            var metadataPath = Path.Combine(_layout.AppData, "backups", Path.GetFileName(backupId), "metadata.json");
+            using (var meta = System.Text.Json.JsonDocument.Parse(File.ReadAllText(metadataPath)))
+            {
+                var root = meta.RootElement;
+                if (!root.GetProperty("HashesVerified").GetBoolean() || !root.GetProperty("SqliteVerified").GetBoolean())
+                {
+                    throw new InvalidOperationException($"Backup {backupId} is not verified (hashes + SQLite quick_check).");
+                }
+            }
+
+            var baseline = BuildLiveContext(batchId, []);
+            var baselineList = ReadModList(Path.Combine(_serverDir, "ConanSandbox", "Mods"));
+            if (!baselineList.SequenceEqual(baseline.ModList, StringComparer.OrdinalIgnoreCase))
+            {
+                throw new InvalidOperationException("modlist.txt and the catalog disagree: " + string.Join(" | ", baselineList));
+            }
+
+            var info = new FileInfo(newPakPath);
+            if (!info.Exists || !info.Extension.Equals(".pak", StringComparison.OrdinalIgnoreCase))
+            {
+                throw new FileNotFoundException("Expected new mod .pak not found", newPakPath);
+            }
+
+            var newMod = new SnapshotMod(info.Name, CachedSha256(info.FullName), info.Length);
+            if (baselineList.Contains(newMod.FileName, StringComparer.OrdinalIgnoreCase))
+            {
+                throw new InvalidOperationException(newMod.FileName + " is already in the baseline modlist.");
+            }
+
+            var plan = new PreBatchSnapshot(batchId, DateTime.UtcNow, backupId, codeHead, BatchAnalysisSnapshotStore.CatalogSha256(ValidatedCatalog.Current),
+                baselineList, baseline.Mods, newMod, info.FullName, [.. baselineList, newMod.FileName], ValidatedCatalog.Current);
+            var dir = BatchAnalysisSnapshotStore.SavePreBatch(SnapshotRoot, plan);
+            var saved = BatchAnalysisSnapshotStore.LoadPreBatch(dir);
+            _log.Write(step, "immutable pre-batch snapshot", "PASS", null, Facts(
+                ("BatchId", saved.BatchId), ("Directory", dir), ("PreBatchBackupId", saved.PreBatchBackupId), ("CodeHead", saved.CodeHead),
+                ("CatalogSha256", saved.CatalogSha256),
+                ("Catalog", $"{saved.Catalog.KnownWarnings.Count} known warnings; {saved.Catalog.PhaseBoundWarnings?.Count ?? 0} phase-bound sets; {saved.Catalog.LoadErrorBaselines.Count} LoadErrors baselines; {saved.Catalog.BaseGameNoise.Count} base-game noise kinds"),
+                ("BaselineModList", string.Join(" | ", saved.BaselineModList)),
+                ("BaselineMods", string.Join("; ", saved.BaselineMods.Select(m => $"{m.FileName} sha256={m.Sha256} size={m.SizeBytes}"))),
+                ("ExpectedNewMod", $"{saved.ExpectedNewMod.FileName} sha256={saved.ExpectedNewMod.Sha256} size={saved.ExpectedNewMod.SizeBytes} source={saved.ExpectedNewModSourcePath}"),
+                ("ExpectedModList", string.Join(" | ", saved.ExpectedModList))),
+                liveFilesChanged: "no");
+            return 0;
+        }
+        catch (Exception ex)
+        {
+            _log.Write(step, "immutable pre-batch snapshot", "FAIL", null, Facts(("BatchId", batchId), ("Error", ex.Message)));
             return 1;
         }
     }

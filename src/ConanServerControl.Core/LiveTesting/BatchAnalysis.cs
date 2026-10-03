@@ -52,6 +52,25 @@ public sealed record BatchAnalysisSnapshot(
         Mods.ToDictionary(m => m.FileName, m => m.Sha256, StringComparer.OrdinalIgnoreCase);
 }
 
+/// <summary>
+/// The plan of a live batch, recorded before anything changes: the accepted baseline, the one expected new mod, the
+/// expected cumulative order, the identity of the validated catalog (its SHA-256) and of the code that judges it,
+/// and the verified pre-batch backup to roll back to.
+/// </summary>
+public sealed record PreBatchSnapshot(
+    string BatchId,
+    DateTime CreatedUtc,
+    string PreBatchBackupId,
+    string CodeHead,
+    string CatalogSha256,
+    IReadOnlyList<string> BaselineModList,
+    IReadOnlyList<SnapshotMod> BaselineMods,
+    SnapshotMod ExpectedNewMod,
+    string ExpectedNewModSourcePath,
+    IReadOnlyList<string> ExpectedModList,
+    ValidatedCatalog Catalog,
+    int SchemaVersion = 1);
+
 /// <summary>Writes snapshots once (create-new, read-only) and loads them with the log hash verified.</summary>
 public static class BatchAnalysisSnapshotStore
 {
@@ -72,10 +91,7 @@ public static class BatchAnalysisSnapshotStore
     public static string Save(string root, BatchAnalysisSnapshot snapshot, string logSourcePath, long logOffset = 0)
     {
         ArgumentNullException.ThrowIfNull(snapshot);
-        if (string.IsNullOrWhiteSpace(snapshot.BatchId) || snapshot.BatchId.Any(c => !(char.IsAsciiLetterOrDigit(c) || c is '-' or '_' or '.')) || snapshot.BatchId.StartsWith('.'))
-        {
-            throw new ArgumentException("BatchId may contain only letters, digits, '-', '_' and '.'.", nameof(snapshot));
-        }
+        ValidateBatchId(snapshot.BatchId);
 
         var dir = Path.Combine(root, snapshot.BatchId);
         if (Directory.Exists(dir))
@@ -112,6 +128,57 @@ public static class BatchAnalysisSnapshotStore
         File.SetAttributes(logCopy, FileAttributes.ReadOnly);
         File.SetAttributes(path, FileAttributes.ReadOnly);
         return dir;
+    }
+
+    public const string PreBatchFileName = "pre-batch.json";
+
+    private static void ValidateBatchId(string batchId)
+    {
+        if (string.IsNullOrWhiteSpace(batchId) || batchId.Any(c => !(char.IsAsciiLetterOrDigit(c) || c is '-' or '_' or '.')) || batchId.StartsWith('.'))
+        {
+            throw new ArgumentException("BatchId may contain only letters, digits, '-', '_' and '.'.", nameof(batchId));
+        }
+    }
+
+    /// <summary>SHA-256 of the catalog's canonical JSON: identifies the exact rule set a batch was judged by.</summary>
+    public static string CatalogSha256(ValidatedCatalog catalog) =>
+        Convert.ToHexString(SHA256.HashData(JsonSerializer.SerializeToUtf8Bytes(catalog, new JsonSerializerOptions
+        {
+            WriteIndented = false,
+            Converters = { new JsonStringEnumConverter() }
+        })));
+
+    /// <summary>
+    /// Saves the plan of a batch before it runs (baseline, expected new mod, expected order, catalog identity,
+    /// pre-batch backup id) under <c>&lt;root&gt;\&lt;BatchId&gt;\pre-batch.json</c>: create-new and read-only, so it
+    /// cannot be edited to match what later happens. Returns the directory.
+    /// </summary>
+    public static string SavePreBatch(string root, PreBatchSnapshot plan)
+    {
+        ArgumentNullException.ThrowIfNull(plan);
+        ValidateBatchId(plan.BatchId);
+        var dir = Path.Combine(root, plan.BatchId);
+        if (Directory.Exists(dir))
+        {
+            throw new IOException($"Batch '{plan.BatchId}' already exists and is immutable: {dir}");
+        }
+
+        Directory.CreateDirectory(dir);
+        var path = Path.Combine(dir, PreBatchFileName);
+        using (var target = new FileStream(path, FileMode.CreateNew, FileAccess.Write, FileShare.None))
+        {
+            JsonSerializer.Serialize(target, plan, Json);
+        }
+
+        File.SetAttributes(path, FileAttributes.ReadOnly);
+        return dir;
+    }
+
+    public static PreBatchSnapshot LoadPreBatch(string directoryOrJson)
+    {
+        var json = Directory.Exists(directoryOrJson) ? Path.Combine(directoryOrJson, PreBatchFileName) : directoryOrJson;
+        return JsonSerializer.Deserialize<PreBatchSnapshot>(File.ReadAllText(json), Json)
+               ?? throw new InvalidDataException("Empty pre-batch snapshot: " + json);
     }
 
     /// <summary>

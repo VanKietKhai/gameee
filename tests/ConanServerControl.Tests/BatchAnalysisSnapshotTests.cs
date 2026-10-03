@@ -203,4 +203,49 @@ public sealed class BatchAnalysisSnapshotTests : IDisposable
 
         Assert.Equal(2, BootLogAnalyzer.Analyze([line, line], changedFile, _ => null).Unknown.Count);
     }
+
+    private static PreBatchSnapshot Plan(string batchId, ValidatedCatalog? catalog = null)
+    {
+        var cat = catalog ?? ValidatedCatalog.Current;
+        var baseline = Context("baseline", SevenMods);
+        var added = new SnapshotMod("Shemite_City_State.pak", Fake("Shemite_City_State.pak"), 2098034644);
+        return new PreBatchSnapshot(batchId, new DateTime(2026, 10, 4, 0, 0, 0, DateTimeKind.Utc), "2026-10-04_001102", "d1c31ff",
+            BatchAnalysisSnapshotStore.CatalogSha256(cat), SevenMods, baseline.Mods, added, @"C:\mods\Shemite_City_State.pak",
+            [.. SevenMods, added.FileName], cat);
+    }
+
+    [Fact]
+    public void A_pre_batch_plan_round_trips_and_is_read_only_and_cannot_be_reused()
+    {
+        var plan = Plan("shemite-pre");
+        var root = Path.Combine(_root, "snapshots");
+
+        var dir = BatchAnalysisSnapshotStore.SavePreBatch(root, plan);
+        var loaded = BatchAnalysisSnapshotStore.LoadPreBatch(dir);
+
+        Assert.Equal(plan.PreBatchBackupId, loaded.PreBatchBackupId);
+        Assert.Equal(plan.CodeHead, loaded.CodeHead);
+        Assert.Equal(plan.CatalogSha256, loaded.CatalogSha256);
+        Assert.Equal(plan.BaselineModList, loaded.BaselineModList);
+        Assert.Equal(plan.BaselineMods, loaded.BaselineMods);
+        Assert.Equal(plan.ExpectedNewMod, loaded.ExpectedNewMod);
+        Assert.Equal([.. SevenMods, "Shemite_City_State.pak"], loaded.ExpectedModList);
+        Assert.Equal(loaded.CatalogSha256, BatchAnalysisSnapshotStore.CatalogSha256(loaded.Catalog));
+        Assert.True(File.GetAttributes(Path.Combine(dir, BatchAnalysisSnapshotStore.PreBatchFileName)).HasFlag(FileAttributes.ReadOnly));
+        Assert.Throws<IOException>(() => BatchAnalysisSnapshotStore.SavePreBatch(root, plan));
+        Assert.Throws<ArgumentException>(() => BatchAnalysisSnapshotStore.SavePreBatch(root, Plan("..")));
+    }
+
+    [Fact]
+    public void The_catalog_hash_identifies_the_exact_rule_set()
+    {
+        var current = BatchAnalysisSnapshotStore.CatalogSha256(ValidatedCatalog.Current);
+
+        Assert.Equal(current, BatchAnalysisSnapshotStore.CatalogSha256(ValidatedCatalog.Current));
+        Assert.NotEqual(current, BatchAnalysisSnapshotStore.CatalogSha256(ValidatedCatalog.Current with { PhaseBoundWarnings = null }));
+        Assert.NotEqual(current, BatchAnalysisSnapshotStore.CatalogSha256(ValidatedCatalog.Current with
+        {
+            KnownWarnings = ValidatedCatalog.Current.KnownWarnings.Skip(1).ToList()
+        }));
+    }
 }
