@@ -1,5 +1,13 @@
 # M3 Task 4 — Live Test Report
 
+## Baseline variance controls — control 2 complete (2026-10-04)
+
+`ctrl11-variance-2`: **PASS**, exact accepted 11-mod pack and unchanged catalog. Readiness 36.3 s; hold 660.7 s; complete-log scan 0 unknown; shutdown **NORMAL 173.0 s**, acknowledged, exit 0, no forced kill/orphan. Pre-run backup `2026-10-04_174655`; verified post-run backup `2026-10-04_180452`. Immutable snapshot and hash-manifested raw evidence retained locally.
+
+Both target priest IDs: **ABSENT (0)** again. Every weighted/spawn-table error: the existing exact missing-weighted-table signature for `WarTestLongLeash` x1 (frame 0) and `Wildlife_Siptah_Firstman_Warrior4` x1 (frame 198). `quick_check=ok`; required singletons 1/1/1; all 30 controller IDs/classes unchanged and unique. Persistence changes limited to runtime/storm clocks, 23 appended events, SQLite statistics and rotation roundoff below 1e-12; no object loss/duplication. No catalog additions.
+
+Server OFFLINE; controls 1 and 2 complete, control 3 next. Accepted count 11. Candidate-mod retests/final 13-mod validation NOT RUN; quest development NOT STARTED; production world NOT CREATED. Branch: `claude/m3-task4-live-windows`; compiled code/catalog unchanged since takeover.
+
 ## Baseline variance controls — control 1 complete (2026-10-04)
 
 `ctrl11-variance-1`: **PASS**, unchanged accepted 11-mod order/hashes and warning catalog. Readiness 37.3 s; hold 660.7 s; complete-log scan 0 unknown; shutdown **NORMAL 167.6 s**, acknowledged, exit 0, no forced kill or orphan. Pre-run backup `2026-10-04_172858`; verified post-run backup `2026-10-04_174435`. Immutable snapshot and hash-manifested raw evidence retained locally.
