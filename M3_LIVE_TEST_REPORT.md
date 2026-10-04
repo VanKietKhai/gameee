@@ -1,5 +1,50 @@
 # M3 Task 4 — Live Test Report
 
+## Phase 3 — Chest Labels PASS; final 13-mod base pack SERVER-SIDE PASS (2026-10-05)
+
+**Source:** `ChestLabels.pak`. Workshop ID 3735258746 was recomputed from the embedded `mainClient` (Enhanced, devkit 1002, WindowsServer payload). Size 1,192,363 bytes. Full SHA-256 `C79C7E00E8B44F7A6F1250D58BF8655BA9FFBDA16FDB7A1884BBD782186D0CD8`, recomputed before import; it is the same file as `p14-chest-1`.
+
+**Preparation:**
+- Base state: the accepted 12-mod pack, with the catalog now including the exact Simple Minimap rule (catalog `A1A51E41…F7E4`).
+- Pre-checks passed: quiet host, no Conan process, the 12 installed hashes exact, live DB equal to `2026-10-05_002520`, and the accepted world gates PASS.
+- Pre-run backup `2026-10-05_003936`, run plan `p3-chest-pre`.
+- Import verified: 13 mods, Chest Labels last, earlier order intact, world unchanged.
+- The pre-run backup for each later boot was the previous boot's verified post-run backup. Before each boot the live DB was confirmed equal to it.
+
+| Boot | Readiness | Hold | Shutdown | Unknown | LoadErrors | Priest ids | `CL_MC_ChestLabels_C` | Integrity / persistence | Post backup |
+|---|---|---|---|---|---|---|---|---|---|
+| `chest-retest-1` | 36.2 s | 660.3 s | NORMAL 166.9 s | 0 | 61 = reference (none extra or missing) | both 0 | registered + spawned once (first boot: +1 `actor_position`, +1 `mod_controllers`) | `quick_check` ok, singletons 1/1/1, no duplicates, +25 `game_events` | `2026-10-05_005520` |
+| `chest-retest-2` | 34.2 s | 660.8 s | NORMAL 168.4 s | 0 | 61, exact | both 0 | registered + loaded once | ok; only +23 `game_events` | `2026-10-05_011115` |
+| `final13-1` (full validation) | 34.2 s | 661.0 s | NORMAL 179.6 s | 0 | 61, exact | both 0 | once | ok; +23 `game_events`, +1 base-game storm property (explained below) | `2026-10-05_012731` |
+| `final13-restart` (clean restart) | 35.2 s | 660.8 s | NORMAL 162.7 s | 0 | 61, exact | both 0 | once | ok; only +25 `game_events` | **`2026-10-05_014347`** |
+
+**Common to all four runs:**
+- RCON shutdown acknowledged, exit 0, no forced kill, no orphan.
+- The complete-log harness analysis passes with every known set exact: ITQoL 23, Ancient Realms 37, Simple Minimap 1 (signature and frame match).
+- Only the two accepted spawn-table ids appear.
+- No Chest Labels LoadErrors and no Warning/Error line naming Chest Labels.
+- No storage, placeable, naming or label persistence errors, and no crash, assertion or fatal markers.
+
+**Diff items reviewed (none is new):**
+- *Thrall spawn warning* (`chest-retest-1`): `ThrallActorClass was not loaded … EntertainerHumanoidNPC`. It appears in 20 of 24 recorded boots, including all three accepted 11-mod controls. Only the reference boot `minimap-retest-2` happened not to log it.
+- *Wildlife movement line* (`chest-retest-2`, `final13-1`): wildlife `Komodo` / `Komodo_Baby` AILOD3 movement lines, covered by the existing exact noise rule `WILDLIFE-AILOD3-MOVEMENT`.
+- *Lamplighter attach warning*: the ITQoL Lamplighter AILOD attach warning count varies 1–5 online across all boots (2–4 in the accepted controls). The runs here logged 1–3.
+
+**Persistence item explained (`final13-1`):** a `properties` row `BP_SiptahStormController_C.SavedStormState` was added to base-game object 121, the Siptah DLC storm controller.
+- Its existing `SavedStormTime` is a countdown that fell by about 630 s per boot: 2909.9 → 2279.9 → 1649.9 → 1019.9 → 389.9.
+- `final13-1` ran past the remaining 389.9 s. The storm advanced to its next state, the timer reset to 719.9, and the new state was persisted.
+- This is elapsed-time base-game behaviour. No mod object was added, removed or duplicated, and the clean restart then changed only `game_events`.
+
+**Final world:** `quick_check` ok; one each of the Simple Minimap, Chest Labels, ITQoL and Ancient Realms controllers and the ITQoL mailbox.
+
+**Status:**
+- CHEST LABELS SERVER-SIDE = **PASS**. No catalog change was needed.
+- **FINAL 13-MOD BASE PACK SERVER-SIDE = PASS**: the 10 original + Player DBNO + Simple Minimap + Chest Labels.
+- Final verified backup **`2026-10-05_014347`**. Server OFFLINE.
+- SAFE TO START CUSTOM MAIN QUESTLINE = **YES**, but it has not been started.
+- Gameplay and client-side rendering (Minimap, Chest Labels UI) NOT YET VERIFIED. Production world NOT CREATED.
+- Raw evidence stays local in `artifacts/` (gitignored) with a SHA-256 manifest.
+
 ## Simple Minimap accepted: signature-bound LoadErrors baseline (2026-10-05)
 
 **Operator decision (2026-10-05):** approve the Simple Minimap LoadError as known non-blocking, but only as a strict hash-bound exact rule.
