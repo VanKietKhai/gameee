@@ -1,5 +1,23 @@
 # Conan Server Control — Current Status
 
+## Baseline variance controls — control 3 complete; Phase 1 conclusion (2026-10-04)
+
+**Takeover:** Codex hit its usage limit during control 3. Claude took exclusive control and inspected read-only first: no Conan or harness process was running, the live log ended with a clean `Exiting` / `Log file closed`, and the world had no WAL. The harness had already completed the run on its own (exit 0), so the **existing run was used**, not restarted. Only Codex's post-run steps were missing; they were completed with the same `control.ps1 -Action Post`, `analyze_control.py` and `persistence_review.py` used for controls 1 and 2.
+
+`ctrl11-variance-3`: **PASS**, exact accepted 11-mod pack and unchanged catalog. Readiness 36.5 s; hold 660.6 s; complete-log scan 0 unknown (readiness scan and full boot/runtime/teardown scan); shutdown **NORMAL 155.3 s** (stop 157.3 s), RCON acknowledged, exit 0, no forced kill, no orphan; `quick_check` ok; ITQoL mailbox, ITQoL controller and Ancient Realms controller 1 each; no Fatal/Assertion lines. Persistence review PASS: only runtime and storm clocks, 24 appended `game_events`, query-planner statistics and sub-1e-12 rotation round-off changed; no object added, removed or duplicated. Verified backups: pre `2026-10-04_180624`, post `2026-10-04_234706` (post backup taken at completion). Host CPU mean 21%, minimum free RAM 908 MB. Spawn-table lines: only the two accepted ids, once each (`WarTestLongLeash` at frame 1, `Wildlife_Siptah_Firstman_Warrior4` at frame 247).
+
+| Control (unchanged 11-mod pack) | Readiness | Hold | Shutdown | Unknown | `Exile_Priest_4_Hyrkanian` | `Exile_OrchidPriest_4_Nordheimer` | Other weighted-table ids |
+|---|---|---|---|---|---|---|---|
+| `ctrl11-variance-1` | 37.3 s | 660.7 s | NORMAL 167.6 s | 0 | absent (0) | absent (0) | `WarTestLongLeash` x1, `Wildlife_Siptah_Firstman_Warrior4` x1 |
+| `ctrl11-variance-2` | 36.3 s | 660.7 s | NORMAL 173.0 s | 0 | absent (0) | absent (0) | same two, once each |
+| `ctrl11-variance-3` | 36.5 s | 660.6 s | NORMAL 155.3 s | 0 | absent (0) | absent (0) | same two, once each |
+
+All three: persistence PASS, `quick_check` ok, controllers and singletons unchanged, no integrity, save or persistence effect.
+
+**Phase 1 conclusion:** neither priest id occurs in the unchanged accepted 11-mod pack (0 of 3 controls), nor in the unchanged 10-mod control (`ctrl10-1`). Across all 20 recorded boots they occur only where a candidate mod was installed: `Exile_Priest_4_Hyrkanian` once in `p12-minimap-1` (Simple Minimap) and once in `p14-chest-restart` (Player DBNO + Chest Labels); `Exile_OrchidPriest_4_Nordheimer` once, only in `p14-chest-restart`. Both appeared at world init (frame 0) as `SpawnTable: Error: Data: USpawnTableLibrary::SpawnNPCFromWeightedTable - could not find weighted table with id: <id>`, with no crash, persistence, save or integrity effect in those runs. Under the baseline-variance policy an id may be proposed only if the unchanged pack supports it; it does not. **Proposed catalog change: NONE.** No scanner rule was weakened; the catalog is unchanged. The ids stay unknown: if a Simple Minimap or Chest Labels retest logs them, that retest fails under the current rule. Raw evidence for all three controls stays local in `artifacts/baseline-controls-20261004/` (gitignored), with a SHA-256 manifest per run.
+
+**Next:** Phase 2 (Simple Minimap retest) is not started; it waits for the operator. Accepted pack: 11 mods. Production world NOT CREATED. Custom Main Questline NOT started.
+
 ## Baseline variance controls — control 2 complete (2026-10-04)
 
 `ctrl11-variance-2`: **PASS**, exact accepted 11-mod pack and unchanged catalog. Readiness 36.3 s; hold 660.7 s; complete-log scan 0 unknown; shutdown **NORMAL 173.0 s**, acknowledged, exit 0, no forced kill/orphan. Pre-run backup `2026-10-04_174655`; verified post-run backup `2026-10-04_180452`. Immutable snapshot and hash-manifested raw evidence retained locally.
