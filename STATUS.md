@@ -1,6 +1,14 @@
-# Conan Server Control — Current Status
+# Conan Server Control â€” Current Status
 
-## Codex takeover preflight — 2026-10-04
+## Baseline variance controls — control 1 complete (2026-10-04)
+
+`ctrl11-variance-1`: **PASS**, unchanged accepted 11-mod order/hashes and warning catalog. Readiness 37.3 s; hold 660.7 s; complete-log scan 0 unknown; shutdown **NORMAL 167.6 s**, acknowledged, exit 0, no forced kill or orphan. Pre-run backup `2026-10-04_172858`; verified post-run backup `2026-10-04_174435`. Immutable snapshot and hash-manifested raw evidence retained locally.
+
+Both `Exile_Priest_4_Hyrkanian` and `Exile_OrchidPriest_4_Nordheimer`: **ABSENT (0)**. Every weighted/spawn-table error: `WarTestLongLeash` x1 (frame 2) and `Wildlife_Siptah_Firstman_Warrior4` x1 (frame 246), both the existing exact `USpawnTableLibrary::SpawnNPCFromWeightedTable - could not find weighted table with id:` signature. No catalog additions. `quick_check=ok`; required singletons 1/1/1; all 30 controller IDs/classes unchanged and unique. Persistence review found only runtime/storm clocks, 24 appended events, SQLite statistics and rotation roundoff below 1e-12; no object loss or duplication.
+
+Server OFFLINE. Next: controls 2 and 3, each with a fresh verified backup and full hold. Accepted count 11; Simple Minimap/Chest Labels retests and final 13-mod validation NOT RUN. Custom Main Questline NOT STARTED; production world NOT CREATED. Branch: `claude/m3-task4-live-windows`; run code checkpoint: `e4be52f`.
+
+## Codex takeover preflight â€” 2026-10-04
 
 Accepted state remains **11 mods**, server **OFFLINE**, production world **NOT CREATED**. Branch `claude/m3-task4-live-windows` at `26f7a1c` matched the remote after fetch. Tracked files were clean; pre-existing untracked work was preserved.
 
@@ -18,16 +26,16 @@ No server or harness process or server-related scheduled task was found; the hos
 ## Operator decision 2026-10-03 (after D1 STOP B)
 
 - **Fantasy Races Of Exiles: EXCLUDED / DEFERRED, no longer part of Modpack V1.** It reached readiness and did not corrupt the world, but produced 15 novel `NPC: Error: Data: No stat templates found for StatModifier template None.` lines, absent from all earlier healthy boots, which may affect NPC stats or spawn behavior. Gameplay impact cannot be ruled out, so it is excluded rather than accepting an unsafe warning. Not re-run, the 15 lines are not whitelisted, and the D1 logs and evidence are preserved for possible future investigation. Historical D1 records are unchanged.
-- **Ancient Realms `MergeDataTables - ToBeAddedDataTable is null`: ACCEPTED as KNOWN NON-BLOCKING**, only with the exact signature, `Ancient_Realms.pak` SHA-256 `12F7E719…FD1A`, and at most 2 occurrences per boot. A third occurrence, a changed signature or a changed hash fails.
+- **Ancient Realms `MergeDataTables - ToBeAddedDataTable is null`: ACCEPTED as KNOWN NON-BLOCKING**, only with the exact signature, `Ancient_Realms.pak` SHA-256 `12F7E719â€¦FD1A`, and at most 2 occurrences per boot. A third occurrence, a changed signature or a changed hash fails.
 - **Accepted core (7):** StackMe10K, Savage Paragon, Grit & Grease, Thrall Reputation, Improved Thralls & QoL, WO Riding Thralls, Ancient Realms Enhanced. **Next candidates:** Cannibal Captivity Enhanced (Workshop 3765743138), then Shemite City State Enhanced (3755371705).
 
 ## #14 Chest Labels (2026-10-04): run 1 clean, restart run showed intermittent spawn-table ids; rolled back (INCONCLUSIVE); accepted pack = 11 mods
 
-Chest Labels (`ChestLabels.pak`, Workshop 3735258746, SHA-256 `C79C7E00…0CD8`): run 1 was clean (readiness 33.1 s, 660.5 s hold, 0 unknown, no new LoadErrors, one controller object, shutdown NORMAL 152.3 s, `quick_check` ok). An extra restart boot of the same state logged two unvalidated weighted-table ids once each (`Exile_Priest_4_Hyrkanian`, `Exile_OrchidPriest_4_Nordheimer`), so per the stop-on-unknown rule it was rolled back to the verified pre-#14 backup `2026-10-04_062824` (11-mod state exact, live DB identical to `2026-10-04_062716`). **`Exile_Priest_4_Hyrkanian` has now also appeared without Simple Minimap installed**, so it is not minimap-specific and looks like intermittent base-game variance; nothing was whitelisted and Simple Minimap stays deferred pending the operator. Accepted pack: the 10 plus Player DBNO (11 mods). Server OFFLINE; gameplay NOT YET VERIFIED; production world NOT CREATED. Details: `M3_LIVE_TEST_REPORT.md`.
+Chest Labels (`ChestLabels.pak`, Workshop 3735258746, SHA-256 `C79C7E00â€¦0CD8`): run 1 was clean (readiness 33.1 s, 660.5 s hold, 0 unknown, no new LoadErrors, one controller object, shutdown NORMAL 152.3 s, `quick_check` ok). An extra restart boot of the same state logged two unvalidated weighted-table ids once each (`Exile_Priest_4_Hyrkanian`, `Exile_OrchidPriest_4_Nordheimer`), so per the stop-on-unknown rule it was rolled back to the verified pre-#14 backup `2026-10-04_062824` (11-mod state exact, live DB identical to `2026-10-04_062716`). **`Exile_Priest_4_Hyrkanian` has now also appeared without Simple Minimap installed**, so it is not minimap-specific and looks like intermittent base-game variance; nothing was whitelisted and Simple Minimap stays deferred pending the operator. Accepted pack: the 10 plus Player DBNO (11 mods). Server OFFLINE; gameplay NOT YET VERIFIED; production world NOT CREATED. Details: `M3_LIVE_TEST_REPORT.md`.
 
 ## #13 Player DBNO (2026-10-04): PASS server-side (11 mods installed)
 
-Player DBNO (`PlayerDBNO.pak`, Workshop 3718882569, SHA-256 `3E7FEEED…FD65`) on the 10-mod baseline: readiness 35.3 s, 660.6 s hold, complete-log analysis 0 unknown, no new LoadErrors (60 vs 60), no warning/error naming it, one new controller object (`PNO_MC_ModController_C`), shutdown NORMAL 177.4 s, `quick_check` ok, singletons 1/1/1. Verified backups: pre-#13 `2026-10-04_061131`, post-#13 `2026-10-04_062716`. Gameplay (down/revive) NOT YET VERIFIED. Next: #14 Chest Labels. Production world NOT CREATED.
+Player DBNO (`PlayerDBNO.pak`, Workshop 3718882569, SHA-256 `3E7FEEEDâ€¦FD65`) on the 10-mod baseline: readiness 35.3 s, 660.6 s hold, complete-log analysis 0 unknown, no new LoadErrors (60 vs 60), no warning/error naming it, one new controller object (`PNO_MC_ModController_C`), shutdown NORMAL 177.4 s, `quick_check` ok, singletons 1/1/1. Verified backups: pre-#13 `2026-10-04_061131`, post-#13 `2026-10-04_062716`. Gameplay (down/revive) NOT YET VERIFIED. Next: #14 Chest Labels. Production world NOT CREATED.
 
 ## Step A control boot (2026-10-04): `Exile_Priest_4_Hyrkanian` ABSENT in the unchanged 10-mod baseline; Simple Minimap stays FAIL / DEFERRED
 
@@ -35,7 +43,7 @@ The control boot of the accepted 10 mods (batch `ctrl10-1`) passed everything (r
 
 ## #12 Simple Minimap (2026-10-04): FAIL / STOP, rolled back; #13 and #14 NOT RUN
 
-Simple Minimap (`Simple_Minimap.pak`, Workshop 3719513784, SHA-256 `04F31A75…6AC9`) loaded and ran stably (readiness 34.2 s, 660.4 s hold, shutdown NORMAL 172.4 s, `quick_check` ok, one new controller) but logged 1 new LoadError (package None -> id `C88E5FE76A79516D`, present only in its container) and 1 new spawn-table error (`Exile_Priest_4_Hyrkanian`, seen in no earlier boot, cause unattributed). Nothing whitelisted; rolled back to the verified pre-#12 backup `2026-10-04_052716` and verified (10-mod state exact, live DB identical to `2026-10-04_035205`). #13 and #14 not run (the stated rule stops the series on an unknown). Failed world: backup `2026-10-04_054302`. Server OFFLINE; accepted pack = the 10 mods; gameplay NOT YET VERIFIED; production world NOT CREATED. Decisions pending; details in `M3_LIVE_TEST_REPORT.md`.
+Simple Minimap (`Simple_Minimap.pak`, Workshop 3719513784, SHA-256 `04F31A75â€¦6AC9`) loaded and ran stably (readiness 34.2 s, 660.4 s hold, shutdown NORMAL 172.4 s, `quick_check` ok, one new controller) but logged 1 new LoadError (package None -> id `C88E5FE76A79516D`, present only in its container) and 1 new spawn-table error (`Exile_Priest_4_Hyrkanian`, seen in no earlier boot, cause unattributed). Nothing whitelisted; rolled back to the verified pre-#12 backup `2026-10-04_052716` and verified (10-mod state exact, live DB identical to `2026-10-04_035205`). #13 and #14 not run (the stated rule stops the series on an unknown). Failed world: backup `2026-10-04_054302`. Server OFFLINE; accepted pack = the 10 mods; gameplay NOT YET VERIFIED; production world NOT CREATED. Decisions pending; details in `M3_LIVE_TEST_REPORT.md`.
 
 ## Operator decision 2026-10-04: #11 WO - Room For One More EXCLUDED / DEFERRED; #12-#14 continue independently
 
@@ -43,7 +51,7 @@ Not whitelisted: its 5 `MergeDataTables - ToBeAddedDataTable is null` errors. Re
 
 ## Mods #11-#14 series (2026-10-04): #11 Room For One More FAIL / STOP, rolled back; #12-#14 NOT RUN
 
-The four packages were verified read-only from their embedded metadata and the public Workshop metadata (`WO_RoomForOneMore.pak` FA608653…52FA, `Simple_Minimap.pak` 04F31A75…6AC9, `PlayerDBNO.pak` 3E7FEEED…FD65, `ChestLabels.pak` C79C7E00…0CD8; all Enhanced, devkit 1002, WindowsServer payload, sizes byte-identical to Workshop; #11 carries no embedded Workshop ID and was accepted on exact name plus size, flagged). #11 loaded cleanly (readiness 34.2 s, 660.3 s hold, no LoadErrors, shutdown NORMAL 154.6 s, `quick_check` ok) but logged 5 new unvalidated `MergeDataTables - ToBeAddedDataTable is null` errors right after its controller registered (7 total vs the 2 allowed for Ancient Realms), and its controller shares the blueprint name `WO_BP_RT_ModController_C` with Riding Thralls. Nothing whitelisted; rolled back to the verified pre-#11 backup `2026-10-04_045203` and verified (10-mod state exact, live DB identical to `2026-10-04_035205`). #12-#14 not run (each mod must pass before the next). Server OFFLINE; gameplay NOT YET VERIFIED; production world NOT CREATED. Failed world: backup `2026-10-04_050719`. Decisions pending; details in `M3_LIVE_TEST_REPORT.md`.
+The four packages were verified read-only from their embedded metadata and the public Workshop metadata (`WO_RoomForOneMore.pak` FA608653â€¦52FA, `Simple_Minimap.pak` 04F31A75â€¦6AC9, `PlayerDBNO.pak` 3E7FEEEDâ€¦FD65, `ChestLabels.pak` C79C7E00â€¦0CD8; all Enhanced, devkit 1002, WindowsServer payload, sizes byte-identical to Workshop; #11 carries no embedded Workshop ID and was accepted on exact name plus size, flagged). #11 loaded cleanly (readiness 34.2 s, 660.3 s hold, no LoadErrors, shutdown NORMAL 154.6 s, `quick_check` ok) but logged 5 new unvalidated `MergeDataTables - ToBeAddedDataTable is null` errors right after its controller registered (7 total vs the 2 allowed for Ancient Realms), and its controller shares the blueprint name `WO_BP_RT_ModController_C` with Riding Thralls. Nothing whitelisted; rolled back to the verified pre-#11 backup `2026-10-04_045203` and verified (10-mod state exact, live DB identical to `2026-10-04_035205`). #12-#14 not run (each mod must pass before the next). Server OFFLINE; gameplay NOT YET VERIFIED; production world NOT CREATED. Failed world: backup `2026-10-04_050719`. Decisions pending; details in `M3_LIVE_TEST_REPORT.md`.
 
 ## (superseded) Room For One More (mod #11, Workshop 3811298984): BLOCKED, source package not found locally (2026-10-04)
 
@@ -59,15 +67,15 @@ Not whitelisted: its 73 LoadErrors, 3 `LogMaterial` errors and 4 `LogModControll
 
 ## Boss/PvE phase (2026-10-04): P3 Thrall Wars Dungeon FAIL / STOP, rolled back (10 mods installed)
 
-Thrall Wars Dungeon (`SlaveWarsServer.pak`, Workshop 3722829382, SHA-256 `A6238D37…623B`) mounted and ran stably (readiness 37.5 s, 660.6 s hold, shutdown NORMAL 176.0 s, `quick_check` ok, singletons 1/1/1, one new controller) but introduced 73 new unvalidated LoadErrors and 7 new errors (4 loot-table `MergeDataTables` failures, 3 `LogMaterial` errors). Nothing whitelisted; rolled back to the verified PRE-P3 backup `2026-10-04_030240` and verified (10-mod state exact, live DB identical to the post-P2 backup). The final 11-mod validation was not run. Latest verified 10-mod backup `2026-10-04_031929`; post-P3 failed world `2026-10-04_031850`. Server OFFLINE. Production world NOT CREATED. Decision pending: baseline or exclude Thrall Wars Dungeon; details in `M3_LIVE_TEST_REPORT.md`.
+Thrall Wars Dungeon (`SlaveWarsServer.pak`, Workshop 3722829382, SHA-256 `A6238D37â€¦623B`) mounted and ran stably (readiness 37.5 s, 660.6 s hold, shutdown NORMAL 176.0 s, `quick_check` ok, singletons 1/1/1, one new controller) but introduced 73 new unvalidated LoadErrors and 7 new errors (4 loot-table `MergeDataTables` failures, 3 `LogMaterial` errors). Nothing whitelisted; rolled back to the verified PRE-P3 backup `2026-10-04_030240` and verified (10-mod state exact, live DB identical to the post-P2 backup). The final 11-mod validation was not run. Latest verified 10-mod backup `2026-10-04_031929`; post-P3 failed world `2026-10-04_031850`. Server OFFLINE. Production world NOT CREATED. Decision pending: baseline or exclude Thrall Wars Dungeon; details in `M3_LIVE_TEST_REPORT.md`.
 
 ## Boss/PvE phase (2026-10-04): P2 PvE Plus Ambush PASS server-side (10 mods installed)
 
-PvE Plus Ambush (`PvEPlusAmbush.pak`, Workshop 3721274811, SHA-256 `C9C816FA…5B74`) added on top of Night Terrors: readiness 37.5 s, 660.5 s hold, complete-log analysis 0 unknown, no new LoadErrors (60 vs 60), no warning/error naming it, no conflict between the two ambush systems, no new NPC/stat/spawn-table errors, three controllers (one of each in the world, no duplicates), shutdown NORMAL 177.0 s, `quick_check` ok, singletons 1/1/1. Verified backups: pre-P2 `2026-10-04_024506`, post-P2 `2026-10-04_030121`. Gameplay NOT YET VERIFIED. Next: P3 Thrall Wars Dungeon (`SlaveWarsServer.pak`). Production world NOT CREATED.
+PvE Plus Ambush (`PvEPlusAmbush.pak`, Workshop 3721274811, SHA-256 `C9C816FAâ€¦5B74`) added on top of Night Terrors: readiness 37.5 s, 660.5 s hold, complete-log analysis 0 unknown, no new LoadErrors (60 vs 60), no warning/error naming it, no conflict between the two ambush systems, no new NPC/stat/spawn-table errors, three controllers (one of each in the world, no duplicates), shutdown NORMAL 177.0 s, `quick_check` ok, singletons 1/1/1. Verified backups: pre-P2 `2026-10-04_024506`, post-P2 `2026-10-04_030121`. Gameplay NOT YET VERIFIED. Next: P3 Thrall Wars Dungeon (`SlaveWarsServer.pak`). Production world NOT CREATED.
 
 ## Boss/PvE phase (2026-10-04): P1 Night Terrors PASS server-side (9 mods installed)
 
-Night Terrors (`NightTerrors.pak`, Workshop 3723538551, SHA-256 `2FE3E7AD…FBE61`) imported and booted cleanly: readiness 36.4 s, 660.6 s hold, complete-log analysis 0 unknown, no new LoadErrors (60 vs 60), no new warnings/errors naming it, one new controller object, shutdown NORMAL 177.3 s, `quick_check` ok, singletons 1/1/1. A scanner defect (a mod name containing "error") was fixed in `af0b25e`. Verified backups: pre-P1 `2026-10-04_022500`, post-P1 `2026-10-04_024312`. Gameplay NOT YET VERIFIED. Next: P2 PvE Plus Ambush, then P3 Thrall Wars Dungeon (`SlaveWarsServer.pak`). Production world NOT CREATED.
+Night Terrors (`NightTerrors.pak`, Workshop 3723538551, SHA-256 `2FE3E7ADâ€¦FBE61`) imported and booted cleanly: readiness 36.4 s, 660.6 s hold, complete-log analysis 0 unknown, no new LoadErrors (60 vs 60), no new warnings/errors naming it, one new controller object, shutdown NORMAL 177.3 s, `quick_check` ok, singletons 1/1/1. A scanner defect (a mod name containing "error") was fixed in `af0b25e`. Verified backups: pre-P1 `2026-10-04_022500`, post-P1 `2026-10-04_024312`. Gameplay NOT YET VERIFIED. Next: P2 PvE Plus Ambush, then P3 Thrall Wars Dungeon (`SlaveWarsServer.pak`). Production world NOT CREATED.
 
 ## CORE MODPACK V1 SERVER-SIDE = PASS (2026-10-04, quiet-host retry)
 
@@ -87,7 +95,7 @@ Imported and booted cleanly (readiness 41.6 s, order 1008, 1,999 packages, contr
 
 ## Cannibal Captivity (2026-10-04): ACCEPTED server-side after a controlled rerun
 
-Kept as the 8th mod. The 99 teardown warnings reproduced exactly (same signature and object-path family, same log positions, all after the main-world teardown began, none online, no other unknown lines, `quick_check` ok, singletons 1/1/1, NORMAL stops 199.2 s / 181.7 s) and are now **KNOWN NON-BLOCKING — SERVER-SIDE TEARDOWN WARNING**, bound to the exact pak hash `DB6E3C29…F04F`, the exact signature/path family, the teardown phase and an exact count of 99; any 100th line, pre-shutdown line, changed path/signature/hash or other unknown fails. In-game behavior NOT verified. Analysis is now reproducible from an immutable per-batch snapshot. Current load order: the seven plus `Cannibal_Captivity.pak`; latest verified backup `2026-10-04_001102`; server OFFLINE; Shemite City State not started. Details: `M3_LIVE_TEST_REPORT.md`.
+Kept as the 8th mod. The 99 teardown warnings reproduced exactly (same signature and object-path family, same log positions, all after the main-world teardown began, none online, no other unknown lines, `quick_check` ok, singletons 1/1/1, NORMAL stops 199.2 s / 181.7 s) and are now **KNOWN NON-BLOCKING â€” SERVER-SIDE TEARDOWN WARNING**, bound to the exact pak hash `DB6E3C29â€¦F04F`, the exact signature/path family, the teardown phase and an exact count of 99; any 100th line, pre-shutdown line, changed path/signature/hash or other unknown fails. In-game behavior NOT verified. Analysis is now reproducible from an immutable per-batch snapshot. Current load order: the seven plus `Cannibal_Captivity.pak`; latest verified backup `2026-10-04_001102`; server OFFLINE; Shemite City State not started. Details: `M3_LIVE_TEST_REPORT.md`.
 
 ## Cannibal Captivity first run (2026-10-03): STOP, rolled back (historical)
 
@@ -98,7 +106,7 @@ Boot (39.6 s), 10-minute hold, graceful stop (199.2 s NORMAL), `quick_check` and
 STOP B: Batch D1 reached readiness but full-log review found 15 new NPC stat-template errors. Rollback to the verified seven-mod world/order completed; server OFFLINE. D2/D3/final ten-mod validation not started. QA-019/020 and the reviewed integration are merged at 09cbf1a; safety and merged builds clean, 410/410 tests passed with zero skipped. Exact SDK 8.0.425 is installed user-locally; global.json unchanged. See FINAL_REPORT.md and AGENT_HANDOFF.md. New live work requires review of the D1 error and the harness scan coverage gap. Production world remains NOT CREATED.
 
 ## Current Milestone
-M3 — Live Windows Integration & Diagnostics, **Task 4 in progress** (guarded live integration). The product is **standalone-first on the server/management side** (see "Terminology").
+M3 â€” Live Windows Integration & Diagnostics, **Task 4 in progress** (guarded live integration). The product is **standalone-first on the server/management side** (see "Terminology").
 
 Checkpoint **4E PASSED** (one real Local `.pak`, `WickProbe.pak`: import, positive server-side mount/load evidence, clean stop, integrity, removal, clean restart). Checkpoint **4C/4D PASSED** on an existing dedicated server: boot, readiness, Start/Stop/Restart, graceful RCON stop, and a verified cold backup of the real Enhanced world. Waiting for review before 4E. See `M3_LIVE_TEST_REPORT.md`.
 
@@ -161,7 +169,7 @@ However, multiplayer clients must use a legitimate Conan client session capable 
 
 ## Implemented and Verified
 
-- Tasks 1–3 (accepted by QA at `0352f40`).
+- Tasks 1â€“3 (accepted by QA at `0352f40`).
 - **Hard server-executable gate**: only `ConanSandboxServer.exe` outside the client folder can start. Everything else is blocked (unit-tested).
 - **QA-018**: normalized path comparison (trailing separator, slash and case).
 - **Live harness and guard**: `CSC_LIVE_TESTS=1` plus the `.csc-live-test` marker; layout overlap validation; destructive-action refusal (unit-tested, and verified live against real paths).
@@ -220,7 +228,7 @@ Unchanged gate / lease / readiness / cold-backup / `ModBatchTransaction`. Additi
 - `IClientModBundleService` + `ClientModSyncPlanner`
 - `DedicatedServerLocator`
 - `IServerShutdownProbe` / `ConanLogShutdownProbe` (server-log shutdown evidence) and `ServerRuntimeState.LastStop`
-- `ProcessTree` (launcher → `-Shipping` child tracking for Stop)
+- `ProcessTree` (launcher â†’ `-Shipping` child tracking for Stop)
 - `NetworkAddressSelector` (physical LAN vs Radmin VPN)
 
 ## Current Blockers
@@ -236,21 +244,21 @@ Unchanged gate / lease / readiness / cold-backup / `ModBatchTransaction`. Additi
 M3 Task 4E (one Local mod) is accepted as PASS.
 
 Next: **Target Modpack V1** (`MODPACK_V1.md`). **Fifteen** mods are planned (the ten originals plus five campaign mods added 2026-10-02), and the metadata and conflict/test matrix are recorded. Nothing is installed yet.
-- Cumulative batches: A (StackMe10K, which replaces WickStacks; Savage Paragon; Grit & Grease) → B → C → D1 / D2 / D3 → E (Sudo + Thrall Wars Utilities) → F1 (Night Terrors + PvE Plus Ambush) → F2 (Thrall Wars Dungeon Mod), then a review of all fifteen.
+- Cumulative batches: A (StackMe10K, which replaces WickStacks; Savage Paragon; Grit & Grease) â†’ B â†’ C â†’ D1 / D2 / D3 â†’ E (Sudo + Thrall Wars Utilities) â†’ F1 (Night Terrors + PvE Plus Ambush) â†’ F2 (Thrall Wars Dungeon Mod), then a review of all fifteen.
 - **Batch A PASS** (2026-10-02, `2aca0cf`; `M3_LIVE_TEST_REPORT.md`): StackMe10K, Savage Paragon and Grit & Grease are installed on `depot_443031` in that order. The runtime mount order and container `Order` follow `modlist.txt` (PROVEN). Final verified backup `2026-10-02_074354`. StackMe10K's 10,000 stacks are not verified in-game.
 - **Batch B accepted** (2026-10-02; `76ce7da` plus the 3-cycle restart test, in `M3_LIVE_TEST_REPORT.md`):
   - **SERVER-SIDE COMPATIBILITY: PASS**
   - **IN-GAME BEHAVIOR: NOT YET VERIFIED**
   - **ITQOL MAILBOX ISSUE: KNOWN NON-BLOCKING WARNING**
 - **The known warning is one exact, version-bound rule** (`Core/LiveTesting/ModBootGates`). It is accepted only while the stopped world holds exactly 1 ITQoL mailbox. Any other ITQoL, BP_PL or mod error still fails.
-- **Current staging order:** StackMe10K → SavageParagon → GritandGrease → ThrallReputation → ImprovedThrallsAndQoL → WO_RidingThralls.
+- **Current staging order:** StackMe10K â†’ SavageParagon â†’ GritandGrease â†’ ThrallReputation â†’ ImprovedThrallsAndQoL â†’ WO_RidingThralls.
 - **Pre-Batch-B restore point `2026-10-02_141009`** is pinned at `E:\CSC-M3-Live\pinned-backups\` (outside retention, read-only, hash-verified).
-- **Shutdown duration is a batch gate.** Batch B measured 177–184 s against a 300 s window. 240 s or more = HIGH RISK: stop before adding another batch.
+- **Shutdown duration is a batch gate.** Batch B measured 177â€“184 s against a 300 s window. 240 s or more = HIGH RISK: stop before adding another batch.
 - **Batch C (Ancient Realms) accepted 2026-10-03** (`M3_LIVE_TEST_REPORT.md` "Batch C"):
   - **BATCH C SERVER-SIDE COMPATIBILITY: PASS**
   - **ANCIENT REALMS GAMEPLAY: NOT YET VERIFIED**
   - **MAP / BUILDING / COLLISION BEHAVIOR: NOT YET VERIFIED**
-  - The exact 7 / 37 AR `LoadErrors` signatures are a **KNOWN NON-BLOCKING WARNING** bound to `Ancient_Realms.pak` SHA-256 `12F7E719…FD1A`.
+  - The exact 7 / 37 AR `LoadErrors` signatures are a **KNOWN NON-BLOCKING WARNING** bound to `Ancient_Realms.pak` SHA-256 `12F7E719â€¦FD1A`.
   - Invalidated by: a new AR signature, a changed hash, a crash, a save/persistence error, a world-integrity failure, or a missing/duplicate AR controller.
   - History: an early forced kill on a loaded host led to a rollback. The quiet-host retest passed 3/3.
   - Staging runs 7 mods with `ThrallDamageToNPCsMultiplier=0.3`.
@@ -265,7 +273,7 @@ Next: **Target Modpack V1** (`MODPACK_V1.md`). **Fifteen** mods are planned (the
 - The final load order is not declared until all fifteen have been tested together with runtime evidence. The proposed starting order is in `CAMPAIGN_V1.md` section 3.
 
 Then: **Chronicler Campaign V1** (`CAMPAIGN_V1.md`). This is design only; "Twelve Legends" is removed from the plan (it never existed on this host).
-- An admin-configured PvE campaign: Acts I–IV, then Thrall Wars Normal and Hard.
+- An admin-configured PvE campaign: Acts Iâ€“IV, then Thrall Wars Normal and Hard.
 - Built from Thrall Wars Utilities and Sudo CharVars. No DevKit.
 - Built and QA'd on staging (`depot_443031`, a test/validation world). The production world is created only after the acceptance criteria and explicit user approval (see "Deployment Model").
 - In-game building and QA are **blocked by 4F** (no authenticated admin client) and by the missing `.pak` files.
