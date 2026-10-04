@@ -39,3 +39,9 @@ ChestLabels.pak
 ```
 
 Rules for this test pack: no mods added or removed, no balance changes, no production world, Custom Main Questline paused. Bundle contents: the 13 `.pak` files, `modlist.txt`, `manifest.json`, `SHA256SUMS.txt`, this manifest, and READMEs only (no executables, DLLs, authentication files, server binaries, backups or secrets).
+
+## Build compatibility
+
+- 2.2.2 / CL-377096: validated 2026-10-05 (final13-1, final13-restart).
+- **2.2.3 / CL-378132 (release-beta): validated 2026-10-05 with the same 13 pak bytes** (v223-smoke-1, v223-final13-1, v223-final13-restart). The current client bundle is the 2.2.3 export; the 2.2.2 export is superseded.
+

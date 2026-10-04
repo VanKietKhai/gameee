@@ -159,7 +159,8 @@ internal static class Program
                 "restore" => await harness.RestoreBackupAsync(args[1]),
                 "set-mods" => await harness.SetModsAsync(args[1]),
                 "cold-backup" => await harness.ColdBackupCommandAsync(),
-                "export-bundle" => await harness.ExportBundleAsync(args.Length > 1 ? args[1] : null),
+                "replace-local" => await harness.ReplaceLocalAsync(args[1]),
+                "export-bundle" =>await harness.ExportBundleAsync(args.Length > 1 ? args[1] : null),
                 "graceful-test" => await harness.GracefulTestAsync(args[1]),
                 _ => Unknown(command)
             };
@@ -1270,6 +1271,46 @@ internal sealed class Harness : IAsyncDisposable
     // ------------------------------------------------------------ 4E Local mod
 
     public async Task<int> ColdBackupCommandAsync() => await ColdBackupAsync("4E-backup", "m3-live-cold-backup") ? 0 : 1;
+
+    /// <summary>
+    /// Installs a catalogued Local mod's file again through the production <see cref="IServerUpdateService.ReplaceLocalModAsync"/>
+    /// (staged hash, verified cold backup, transactional commit). Used to move the same validated bytes to a new server
+    /// install. PASS only when the installed file equals the source and the catalog hash.
+    /// </summary>
+    public async Task<int> ReplaceLocalAsync(string source)
+    {
+        if (Program.ServerProcesses().Count > 0)
+        {
+            _log.Write("replace-local", "precondition: server offline", "FAIL", null, Facts(("Processes", DescribeProcesses())));
+            return 1;
+        }
+
+        var fileName = Path.GetFileName(source);
+        var sourceHash = Sha256(source);
+        var clock = Stopwatch.StartNew();
+        string? error = null;
+        try
+        {
+            await _services.GetRequiredService<IServerUpdateService>().ReplaceLocalModAsync(ModKeys.Local(fileName), source,
+                new Progress<PipelineProgress>(p => Console.WriteLine($"    pipeline> {p.State} {p.StepDescription} {p.Error}")));
+        }
+        catch (Exception ex)
+        {
+            error = ex.Message;
+        }
+
+        var installed = Path.Combine(_serverDir, "ConanSandbox", "Mods", fileName);
+        var installedHash = File.Exists(installed) ? Sha256(installed) : "missing";
+        var mod = _settings.Current.Mods.Mods.FirstOrDefault(m => string.Equals(m.LocalFileName, fileName, StringComparison.OrdinalIgnoreCase));
+        var ok = error is null && mod is not null &&
+                 string.Equals(installedHash, sourceHash, StringComparison.OrdinalIgnoreCase) &&
+                 string.Equals(mod.Sha256, sourceHash, StringComparison.OrdinalIgnoreCase);
+        _log.Write("replace-local", "IServerUpdateService.ReplaceLocalModAsync", ok ? "PASS" : "FAIL", clock.Elapsed,
+            Facts(("Error", error ?? string.Empty), ("File", fileName), ("SourceSha256", sourceHash), ("InstalledSha256", installedHash),
+                ("CatalogSha256", mod?.Sha256 ?? "n/a"), ("LoadOrder", mod?.LoadOrder.ToString() ?? "n/a")),
+            liveFilesChanged: "server Mods (expected)");
+        return ok ? 0 : 1;
+    }
 
     /// <summary>
     /// Exports the Client Mod Bundle through the production <see cref="IClientModBundleService"/> (hash-verified copies,

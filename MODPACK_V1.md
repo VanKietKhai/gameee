@@ -1,5 +1,77 @@
 # Target Modpack V1 — private Radmin Conan server
 
+## Migration to Conan Exiles Enhanced 2.2.3 — 13-MOD STAGING PACK SERVER-SIDE PASS (2026-10-05)
+
+**OLD BUILD:** 2.2.2 / CL-377096 (`++exiles+release-CL-377096`). **OLD ENVIRONMENT: PRESERVED FOR ROLLBACK.** The operator renamed it to the `conan (old)` folder. It was only read, never booted, modified or reused.
+
+**NEW BUILD:** 2.2.3 / **CL-378132**.
+- Executables report `++exiles+release-beta-CL-378132`, which is a **beta-branch** build.
+- The log reports `ProjectVersion 2.2.3`, `Net CL 378132` and engine 5.8.2-378132.
+- Server executables are Authenticode-signed by Funcom Oslo AS (Valid), and its Steam DLLs by Valve. No emulation artifacts in the server.
+
+**NEW ENVIRONMENT: STAGING.**
+
+**Client:**
+- The new client's executables are also Funcom-signed CL-378132, so **client == server** at the changelist level, identified from file metadata only.
+- That client folder contains Steam-emulator configuration (a repack). It was not launched, modified, or prepared with mods.
+- Licensed Steam clients remain the requirement for testers.
+
+**Phase 0:**
+- The old server was already stopped gracefully (session `mp13-session-1`: NORMAL 171.8 s, exit 0, no orphan, 0 unknown).
+- New migration-source cold backup **`2026-10-05_032214`**: DB `F02F179E…FE0D`, no WAL, `quick_check` ok, singletons 1/1/1, no duplicate objects. It is identical to the live old world, which the backup left unchanged.
+- No other server, harness or agent process was active; two idle `codex.exe` processes had no children.
+
+**Phase 2:** an immutable migration plan (`plan.json`, read-only, kept locally) recorded the old and new identities, the source backup, the 13 exact pak hashes, the steps, the never-copy list and the rollback rule.
+
+**Migration:**
+- *RCON config:* only the old `Game.ini` (`[RconPlugin]`) was copied before the first boot, so the harness RCON secret stays valid. The secret is not recorded.
+- *Vanilla identification boot:* readiness 31.3 s, RCON reply 32 s, NORMAL 64.6 s, exit 0, no orphan. Vanilla 2.2.3 itself logs `Exile_Priest_4_Nordheimer` as a missing weighted table; this id did not appear in any modded 2.2.3 boot.
+- *Config comparison:* the 2.2.3 vanilla schema is identical to the old staging config (ServerSettings 219 keys, same Engine/Game/Input keys). The only value difference is `ThrallDamageToNPCsMultiplier` (staging 0.3, 2.2.3 default 0.5). 0.3 is the deliberate campaign/staging value (CAMPAIGN_V1.md), so the old config was kept unchanged.
+- *World restore:* `2026-10-05_032214` was restored through `IBackupService.RestoreAsync`, which took a pre-restore safety backup of the vanilla world. Restored DB equals the source, WAL 0 bytes, `quick_check` ok.
+- *Mods:* the 13 paks were installed through the Local Mod pipeline (new harness command `replace-local` → `ReplaceLocalModAsync`, one verified cold backup and transactional commit each), using the hash-verified bundle as the source. Every destination SHA-256 equals the plan, the order is exact, there are no extra files, and the world was unchanged by the install. **MOD HASH PARITY: PASS.** No old executables, engine binaries, Steam DLLs, caches, logs, ExtractedMods or crash dumps were copied.
+
+**2.2.3 validation** (same 13 pak bytes, new build; compared line-by-line with the accepted 2.2.2 `final13-restart`):
+
+| Run | Readiness | Hold | Shutdown | Unknown | LoadErrors | Post backup |
+|---|---|---|---|---|---|---|
+| `v223-smoke-1` | 35.2 s | 120.5 s | NORMAL 178.7 s | 0 | 61 = 2.2.2 (none extra/missing/unparsed) | `2026-10-05_033640` |
+| `v223-final13-1` (full) | 39.4 s | 661.4 s | NORMAL 194.7 s | 0 | 61, exact | `2026-10-05_035257` |
+| `v223-final13-restart` | 41.6 s | 660.9 s | NORMAL 166.0 s | 0 | 61, exact | `2026-10-05_040847` |
+
+**All three runs:**
+- Mod set and order: the same SHA-256 and order as 2.2.2. Each mod mounted exactly once, and the controller registrations are identical to 2.2.2 (each once).
+- LoadErrors and signatures: exact known baselines only (ITQoL 23, Ancient Realms 37, Simple Minimap 1). The Simple Minimap `C88E5FE76A79516D` two-line signature is byte-identical at frame 0, so no accepted signature changed.
+- Errors and markers: only the two accepted spawn-table ids, no priest ids, no crash, assertion or fatal markers.
+- Shutdown: RCON acknowledged, exit 0, no forced kill, no orphan.
+- World: `quick_check` ok, singletons 1/1/1, no duplicate persistence objects.
+- Persistence diffs: only `game_events`, plus one SQLite query-planner statistics row (`sqlite_stat1`) on the first 2.2.3 boot.
+
+**Diff items reviewed (none is new to the mods):**
+- 12 Bink title-movie lines differ only by install path (existing noise rule `BINK-TITLE-MOVIE`).
+- The EntertainerHumanoidNPC thrall-spawn warning and the wildlife AILOD3 movement lines are known 2.2.2 variance.
+- An in-flight Funcom stats `LogHttp` warning at teardown also occurred in 2.2.2 boots.
+
+**13-MOD PACK ON 2.2.3 = PASS.**
+
+**Conan Server Control:**
+- *Path updated:* the configured server path now points to the new 2.2.3 server, set through the product's `ISettingsService` in the live app data. Product logic has no hard-coded paths. The desktop app has not been configured on this machine yet.
+- *Acceptance PASS:*
+  - `cycle`: Offline → Starting → Online (39 s) → graceful Stop → Offline (exit 0) → Start → Restart (Restarting → Stopping → Offline → Starting → Online) → Stop; no remaining processes.
+  - Backup: verified `2026-10-05_041457`.
+  - Diagnostics: 13 Local mods detected, all 13 paks present, `modlist.txt` matches the app's order, last backup verified.
+  - Diagnostics also showed one false-positive warning: "Workshop ID 0 appears 13 times", the placeholder id of Local mods. It is flagged as a separate fix and is not a migration issue.
+
+**Final verified 2.2.3 backup: `2026-10-05_041457`.** `quick_check` ok; Simple Minimap, Chest Labels, ITQoL controller, Ancient Realms controller and ITQoL mailbox 1 each; no duplicates.
+
+**Client bundle 2.2.3:**
+- Fresh export from the 2.2.3 server: 13/13 hashes equal the server and the accepted pack, `modlist.txt` equal, no forbidden files, no secrets or addresses, README hash check 13/13.
+- The 2.2.2 bundle is marked `SUPERSEDED`.
+- Mods were NOT installed into the new local client folder, because of the emulator configuration above.
+
+**Network (unchanged policy):** Windows created the same Private-profile allow-any firewall rule for the new server executable. RCON (TCP 25575) is therefore reachable from LAN and Radmin peers but not publicly. The recommended TCP 25575 block rule remains the operator's to apply.
+
+**Status:** CONAN 2.2.3 13-MOD STAGING PACK SERVER-SIDE = **PASS**. Server OFFLINE. Production world NOT CREATED. Custom Main Questline PAUSED.
+
 ## Incident: server Mods folder emptied during the multiplayer session; restored (2026-10-05)
 
 **What happened:**
