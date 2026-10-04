@@ -1,5 +1,31 @@
 # Target Modpack V1 — private Radmin Conan server
 
+## Incident: server Mods folder emptied during the multiplayer session; restored (2026-10-05)
+
+**What happened:**
+- At 02:26 local time, while session `mp13-session-1` was ONLINE, the live server's `ConanSandbox\Mods` folder became **empty**. All 13 `.pak` files and `modlist.txt` were gone.
+- The same 13 files, with their original timestamps, appeared in the standalone client's `ConanSandbox\Mods` folder (folder changed at 02:30). This is consistent with the files being **moved** (cut and paste) from the server into the client during a manual client install, instead of copied from the client bundle.
+
+**Impact:**
+- None on the running server: the mods were already mounted at boot from `Saved\ExtractedMods`, and the server, the harness session and the world kept running.
+- Latent risk: had the server restarted with an empty Mods folder, the world would have loaded **without its mods**, risking loss of modded persistence data. No restart happened while the folder was empty.
+
+**Fix (Claude, 2026-10-05, on the operator's request to restore the folder to its earlier state):**
+- The client bundle was verified first: all 13 paks equal the frozen pack's SHA-256 and the bundle `modlist.txt` equals the frozen order.
+- The 13 paks and `modlist.txt` were **copied** from the bundle back into the server Mods folder. The empty folder was checked immediately before copying.
+- Post-check: 13/13 SHA-256 and sizes equal the frozen `final13-restart` snapshot, the `modlist.txt` order is exact, and there are no extra files.
+- The client's copies were left in place.
+- The world database was not touched. The server stayed ONLINE throughout, and session `mp13-session-1` continues.
+
+**Not restored:** the standalone client folder.
+- There was no snapshot of it, since the project backs up only the server world.
+- Its changes at 02:28 are in `Binaries\Win64` and the Steamworks folder. The client had just shown an `OnlineFix64.dll` load error, which belongs to a third-party Steam-authentication workaround.
+- Per the project rules, the client is not modified, and no help is given to restore or repair authentication workarounds. Testers need a licensed Steam client; Steam's "Verify integrity of game files" repairs a licensed install.
+
+**Prevention:**
+- Install client mods only by **copying** from the client bundle (`client-bundles\<bundle>\Mods`). Never take files from, cut from or edit the server's `ConanSandbox\Mods`.
+- Before any server start, the existing pre-start checks (modlist order, 13 exact hashes, no extra files) must pass. They would have blocked a boot with the empty folder.
+
 ## 13-MOD MULTIPLAYER GAMEPLAY TEST MODE — test environment prepared, server ONLINE (2026-10-05)
 
 Custom Main Questline development is **PAUSED**. No mods were added or removed and no settings were changed. The production world is NOT CREATED. The current world is STAGING / TEST ONLY.

@@ -1,5 +1,31 @@
 # Batch D handoff — FINAL 10-MOD CAMPAIGN PACK SERVER-SIDE = PASS
 
+## Incident: server Mods folder emptied during the multiplayer session; restored (2026-10-05)
+
+**What happened:**
+- At 02:26 local time, while session `mp13-session-1` was ONLINE, the live server's `ConanSandbox\Mods` folder became **empty**. All 13 `.pak` files and `modlist.txt` were gone.
+- The same 13 files, with their original timestamps, appeared in the standalone client's `ConanSandbox\Mods` folder (folder changed at 02:30). This is consistent with the files being **moved** (cut and paste) from the server into the client during a manual client install, instead of copied from the client bundle.
+
+**Impact:**
+- None on the running server: the mods were already mounted at boot from `Saved\ExtractedMods`, and the server, the harness session and the world kept running.
+- Latent risk: had the server restarted with an empty Mods folder, the world would have loaded **without its mods**, risking loss of modded persistence data. No restart happened while the folder was empty.
+
+**Fix (Claude, 2026-10-05, on the operator's request to restore the folder to its earlier state):**
+- The client bundle was verified first: all 13 paks equal the frozen pack's SHA-256 and the bundle `modlist.txt` equals the frozen order.
+- The 13 paks and `modlist.txt` were **copied** from the bundle back into the server Mods folder. The empty folder was checked immediately before copying.
+- Post-check: 13/13 SHA-256 and sizes equal the frozen `final13-restart` snapshot, the `modlist.txt` order is exact, and there are no extra files.
+- The client's copies were left in place.
+- The world database was not touched. The server stayed ONLINE throughout, and session `mp13-session-1` continues.
+
+**Not restored:** the standalone client folder.
+- There was no snapshot of it, since the project backs up only the server world.
+- Its changes at 02:28 are in `Binaries\Win64` and the Steamworks folder. The client had just shown an `OnlineFix64.dll` load error, which belongs to a third-party Steam-authentication workaround.
+- Per the project rules, the client is not modified, and no help is given to restore or repair authentication workarounds. Testers need a licensed Steam client; Steam's "Verify integrity of game files" repairs a licensed install.
+
+**Prevention:**
+- Install client mods only by **copying** from the client bundle (`client-bundles\<bundle>\Mods`). Never take files from, cut from or edit the server's `ConanSandbox\Mods`.
+- Before any server start, the existing pre-start checks (modlist order, 13 exact hashes, no extra files) must pass. They would have blocked a boot with the empty folder.
+
 ## 13-MOD MULTIPLAYER GAMEPLAY TEST MODE — test environment prepared, server ONLINE (2026-10-05)
 
 Custom Main Questline development is **PAUSED**. No mods were added or removed and no settings were changed. The production world is NOT CREATED. The current world is STAGING / TEST ONLY.
@@ -201,12 +227,12 @@ No server or harness process or server-related scheduled task was found; the hos
 
 **Next action:** recheck mutable state, then run THREE unchanged 11-mod control boots, each with a verified pre-run backup, immutable evidence, at least 10-minute hold, graceful shutdown and integrity/persistence checks. The warning catalog stays unchanged for all three. Control boots 1/2/3 NOT RUN at this checkpoint; neither priest ID is assessed by new control evidence. No catalog change proposed/applied. Simple Minimap and Chest Labels remain deferred; retests and final 13-mod validation NOT RUN. Latest accepted verified backup: `2026-10-04_062716`. Safe to start Custom Main Questline: NO. Client and source packages unchanged.
 
-- CURRENT LOCAL TIME: 2026-10-05 02:0x +07:00.
+- CURRENT LOCAL TIME: 2026-10-05 02:5x +07:00.
 - CURRENT BRANCH: claude/m3-task4-live-windows (primary checkout E:\github\gameee).
-- CURRENT HEAD: the docs commit after 8dd720f (13-mod staging test pack, client bundle, test docs).
+- CURRENT HEAD: the docs commit after 7e792e4 (13-mod multiplayer gameplay test mode; server online).
 - PRESERVED SAFETY BRANCH: codex/m3-batch-d-safety at abe3875 (original checkpoint 0bb2b2a). Its worktree is E:\github\gameee\.worktrees\batch-d.
 - CURRENT STAGE: 13-MOD MULTIPLAYER GAMEPLAY TEST MODE. Test pack frozen (TEST_PACK_13MOD_STAGING.md), client bundle verified == server, checklist and bug template created, staging test server ONLINE (session mp13-session-1). Custom Main Questline PAUSED. Production world NOT CREATED.
-- LAST COMPLETED CHECKPOINT: mp13-session-1 started: true readiness 37.5 s, RCON listplayers OK (localhost), current-boot analysis PASS (0 unknown, known baselines only).
+- LAST COMPLETED CHECKPOINT: incident fix: server Mods folder found empty (files moved to the client at 02:26) and restored from the verified client bundle; 13/13 hashes and modlist order exact vs final13-restart; server stayed online.
 - CURRENT ACTIVE MODLIST (accepted 13): StackMe10K.pak -> SavageParagon.pak -> GritandGrease.pak -> ThrallReputation.pak -> ImprovedThrallsAndQoL.pak -> WO_RidingThralls.pak -> Ancient_Realms.pak -> Cannibal_Captivity.pak -> NightTerrors.pak -> PvEPlusAmbush.pak -> PlayerDBNO.pak -> Simple_Minimap.pak -> ChestLabels.pak
 - LATEST VERIFIED BACKUP: 2026-10-05_014347 (final 13-mod; the world the multiplayer session started from).
 - SERVER STATE: ONLINE for multiplayer testing (session mp13-session-1: detached harness mod-boot, 72 h maximum hold). End it ONLY via the release-hold file in the live-test folder (graceful RCON stop + full analysis + snapshot). Do not kill the harness/server; no other agent may control the server meanwhile.
@@ -217,7 +243,7 @@ No server or harness process or server-related scheduled task was found; the hos
 - (superseded) ROOM FOR ONE MORE earlier blocked on the source package (now supplied and tested; see the #11 checkpoint above). A read-only search (1,195 candidate .pak files on the profile, D:, E:, F:) found no package with that embedded Workshop ID; the WorkshopDL tool on F: holds none; nothing was downloaded or guessed. Needed: the .pak from the operator (or permission to download). When it arrives: prove it by embedded modinfo (id 3811298984, Enhanced, WindowsServer content, size, SHA-256, dependencies), then run the same fail-closed cycle (phase_prep.ps1 with BaseSnap final10-restart and BaseBackup 2026-10-04_035205, phase_boot.ps1, phase_post.ps1), keeping WO_RidingThralls installed, and check specifically for new mount/rider/passenger/attachment/seat/controller lines against the accepted 10-mod boot.
 - NEXT ACTION: operator + friends run MULTIPLAYER_TEST_CHECKLIST.md. After the session: release-hold, review the complete-log analysis (classify, never auto-whitelist), quick_check/persistence/controller checks, verified post-session backup. Operator decision pending on the RCON firewall block rule.
 - OPERATOR DECISION 2026-10-04: #11 WO - Room For One More EXCLUDED / DEFERRED (do not whitelist its 5 merge errors; do not revisit in this phase; keep evidence and failed-world backup 2026-10-04_050719). #12 Simple Minimap, #13 Player DBNO and #14 Chest Labels continue independently, cumulatively on the 10-mod baseline (expected 13 mods), then a final 13-mod validation with a clean restart; stop before the custom quest mod and report first.
-- OPEN BLOCKERS: none for testing. Findings: RCON reachable from LAN/Radmin peers through the pre-existing ConanSandboxServer firewall rule (not public; fix is the operator's); local host client still blocked by client authentication (testers need licensed Steam clients).
+- OPEN BLOCKERS: none for testing. Findings: RCON reachable from LAN/Radmin peers through the pre-existing ConanSandboxServer firewall rule (not public; fix is the operator's); the local host client is blocked by client authentication and was modified outside the project (OnlineFix64.dll error; not restorable, not repaired by policy); install client mods only by COPYING from the bundle, never from the server Mods folder.
 
 ## History (newest first; kept for evidence)
 
