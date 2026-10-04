@@ -1,5 +1,49 @@
 # Target Modpack V1 — private Radmin Conan server
 
+## 13-MOD MULTIPLAYER GAMEPLAY TEST MODE — test environment prepared, server ONLINE (2026-10-05)
+
+Custom Main Questline development is **PAUSED**. No mods were added or removed and no settings were changed. The production world is NOT CREATED. The current world is STAGING / TEST ONLY.
+
+**Step 1, test pack frozen:** `TEST_PACK_13MOD_STAGING.md`, the **13-MOD STAGING GAMEPLAY TEST PACK** (not production).
+- The installed `modlist.txt` equals the validated `final13-restart` order.
+- All 13 installed pak hashes equal the validated snapshot, and the Mods folder has no extra files.
+- Each mod is recorded with display name, pak file, size, SHA-256, load order and Workshop ID. The Workshop ID is the `mainClient` embedded in the pak and was recomputed for all 13.
+
+**Step 2, client bundle:** built with the new harness command `export-bundle`, which uses the production `ClientModBundleService`.
+- The service hash-verifies each copy and renames the folder into place atomically. The harness then re-hashes every bundled pak against the installed server pak, checks the bundle `modlist.txt` against the server's, and rejects unexpected files. Result: PASS, 13/13 equal, **CLIENT MOD PACK == SERVER MOD PACK**.
+- Contents: the 13 `.pak` files, `modlist.txt`, `manifest.json`, `SHA256SUMS.txt`, `TEST_PACK_MANIFEST.txt`, `README.txt` (service) and `README_VI.txt`.
+- No exe, DLL, emulator, authentication file, server binary, backup, address or secret (scanned). Size 0.88 GB. It stays outside the repo.
+- The README's own hash-check command returns 13 × `OK` against the bundle.
+
+**Steps 3–5:**
+- `docs/multiplayer-test/README_VI.txt`: Vietnamese guide covering install location, load order, hash check, a normal Steam launch, Radmin + Direct Connect (IP and passwords shared privately, never written), the test-world warning and bug reporting.
+- `MULTIPLAYER_TEST_CHECKLIST.md`.
+- `BUG_REPORT_TEMPLATE.md`.
+
+**Step 6, test server started.**
+
+Pre-start checks:
+- Staging DB equal to the verified backup `2026-10-05_014347`, with no WAL.
+- 13 hashes and the order exact.
+- `quick_check` ok and the singletons 1/1/1.
+- Quiet host, no Conan process.
+
+Session `mp13-session-1`:
+- **Readiness:** true readiness in 37.5 s. Game port 7777 is bound and the world is ticking; UDP 7777, 7778 and 27015 are bound.
+- **RCON:** TCP 25575 is listening. A localhost RCON `listplayers` authenticated and returned the player table (0 players).
+- **Current-boot analysis:** PASS. 0 unknown; LoadErrors are only the exact known baselines (ITQoL 23, Ancient Realms 37, Simple Minimap 1 with signature and frame); no crash, assertion or fatal markers; no priest ids; only accepted spawn-table ids.
+- **Operation:** the session runs detached as a harness `mod-boot` with a 72 h maximum hold.
+- **Ending it:** create the `release-hold` file in the live-test folder. The harness then stops through graceful RCON, runs the complete-log analysis and records the immutable snapshot `mp13-session-1`. Do not kill the harness or the server process. Session files live under `live-test/sessions/mp13-session-1/` on the live root.
+
+**Network:** private Radmin VPN and Direct Connect only. No UPnP, no port forwarding and no public listing were configured.
+
+**Open findings (operator):**
+1. *RCON reachability.* RCON listens on `0.0.0.0:25575`. A pre-existing Windows Firewall rule, `ConanSandboxServer` (Private profile, TCP+UDP any port, server executable, created by Windows on the server's first run), allows inbound connections on both Private networks, Ethernet and Radmin VPN.
+   - RCON is therefore reachable from the LAN and from Radmin peers. It is password-protected, and it is not publicly reachable: the LAN address is RFC1918 behind NAT, there is no global IPv6 and there is no port forwarding.
+   - Firewall changes are the operator's to make. The recommended fix is an inbound **block** rule for TCP 25575 on all profiles, run from an elevated prompt. Loopback is not filtered, so local management keeps working.
+2. *Client authentication.* The observed local client on the host machine is still **blocked by client authentication** (4F; Steam-emulation artifacts, untouched). Testers need their own licensed Steam client.
+3. *Harness wiring.* `--observe` is wired only to the plain `boot` command, not `mod-boot`. RCON was therefore confirmed with a separate localhost probe; a later harness fix can wire it.
+
 ## Phase 3 — Chest Labels PASS; final 13-mod base pack SERVER-SIDE PASS (2026-10-05)
 
 **Source:** `ChestLabels.pak`. Workshop ID 3735258746 was recomputed from the embedded `mainClient` (Enhanced, devkit 1002, WindowsServer payload). Size 1,192,363 bytes. Full SHA-256 `C79C7E00E8B44F7A6F1250D58BF8655BA9FFBDA16FDB7A1884BBD782186D0CD8`, recomputed before import; it is the same file as `p14-chest-1`.

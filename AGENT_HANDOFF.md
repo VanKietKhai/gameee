@@ -1,5 +1,49 @@
 # Batch D handoff — FINAL 10-MOD CAMPAIGN PACK SERVER-SIDE = PASS
 
+## 13-MOD MULTIPLAYER GAMEPLAY TEST MODE — test environment prepared, server ONLINE (2026-10-05)
+
+Custom Main Questline development is **PAUSED**. No mods were added or removed and no settings were changed. The production world is NOT CREATED. The current world is STAGING / TEST ONLY.
+
+**Step 1, test pack frozen:** `TEST_PACK_13MOD_STAGING.md`, the **13-MOD STAGING GAMEPLAY TEST PACK** (not production).
+- The installed `modlist.txt` equals the validated `final13-restart` order.
+- All 13 installed pak hashes equal the validated snapshot, and the Mods folder has no extra files.
+- Each mod is recorded with display name, pak file, size, SHA-256, load order and Workshop ID. The Workshop ID is the `mainClient` embedded in the pak and was recomputed for all 13.
+
+**Step 2, client bundle:** built with the new harness command `export-bundle`, which uses the production `ClientModBundleService`.
+- The service hash-verifies each copy and renames the folder into place atomically. The harness then re-hashes every bundled pak against the installed server pak, checks the bundle `modlist.txt` against the server's, and rejects unexpected files. Result: PASS, 13/13 equal, **CLIENT MOD PACK == SERVER MOD PACK**.
+- Contents: the 13 `.pak` files, `modlist.txt`, `manifest.json`, `SHA256SUMS.txt`, `TEST_PACK_MANIFEST.txt`, `README.txt` (service) and `README_VI.txt`.
+- No exe, DLL, emulator, authentication file, server binary, backup, address or secret (scanned). Size 0.88 GB. It stays outside the repo.
+- The README's own hash-check command returns 13 × `OK` against the bundle.
+
+**Steps 3–5:**
+- `docs/multiplayer-test/README_VI.txt`: Vietnamese guide covering install location, load order, hash check, a normal Steam launch, Radmin + Direct Connect (IP and passwords shared privately, never written), the test-world warning and bug reporting.
+- `MULTIPLAYER_TEST_CHECKLIST.md`.
+- `BUG_REPORT_TEMPLATE.md`.
+
+**Step 6, test server started.**
+
+Pre-start checks:
+- Staging DB equal to the verified backup `2026-10-05_014347`, with no WAL.
+- 13 hashes and the order exact.
+- `quick_check` ok and the singletons 1/1/1.
+- Quiet host, no Conan process.
+
+Session `mp13-session-1`:
+- **Readiness:** true readiness in 37.5 s. Game port 7777 is bound and the world is ticking; UDP 7777, 7778 and 27015 are bound.
+- **RCON:** TCP 25575 is listening. A localhost RCON `listplayers` authenticated and returned the player table (0 players).
+- **Current-boot analysis:** PASS. 0 unknown; LoadErrors are only the exact known baselines (ITQoL 23, Ancient Realms 37, Simple Minimap 1 with signature and frame); no crash, assertion or fatal markers; no priest ids; only accepted spawn-table ids.
+- **Operation:** the session runs detached as a harness `mod-boot` with a 72 h maximum hold.
+- **Ending it:** create the `release-hold` file in the live-test folder. The harness then stops through graceful RCON, runs the complete-log analysis and records the immutable snapshot `mp13-session-1`. Do not kill the harness or the server process. Session files live under `live-test/sessions/mp13-session-1/` on the live root.
+
+**Network:** private Radmin VPN and Direct Connect only. No UPnP, no port forwarding and no public listing were configured.
+
+**Open findings (operator):**
+1. *RCON reachability.* RCON listens on `0.0.0.0:25575`. A pre-existing Windows Firewall rule, `ConanSandboxServer` (Private profile, TCP+UDP any port, server executable, created by Windows on the server's first run), allows inbound connections on both Private networks, Ethernet and Radmin VPN.
+   - RCON is therefore reachable from the LAN and from Radmin peers. It is password-protected, and it is not publicly reachable: the LAN address is RFC1918 behind NAT, there is no global IPv6 and there is no port forwarding.
+   - Firewall changes are the operator's to make. The recommended fix is an inbound **block** rule for TCP 25575 on all profiles, run from an elevated prompt. Loopback is not filtered, so local management keeps working.
+2. *Client authentication.* The observed local client on the host machine is still **blocked by client authentication** (4F; Steam-emulation artifacts, untouched). Testers need their own licensed Steam client.
+3. *Harness wiring.* `--observe` is wired only to the plain `boot` command, not `mod-boot`. RCON was therefore confirmed with a separate localhost probe; a later harness fix can wire it.
+
 ## Phase 3 — Chest Labels PASS; final 13-mod base pack SERVER-SIDE PASS (2026-10-05)
 
 **Source:** `ChestLabels.pak`. Workshop ID 3735258746 was recomputed from the embedded `mainClient` (Enhanced, devkit 1002, WindowsServer payload). Size 1,192,363 bytes. Full SHA-256 `C79C7E00E8B44F7A6F1250D58BF8655BA9FFBDA16FDB7A1884BBD782186D0CD8`, recomputed before import; it is the same file as `p14-chest-1`.
@@ -157,23 +201,23 @@ No server or harness process or server-related scheduled task was found; the hos
 
 **Next action:** recheck mutable state, then run THREE unchanged 11-mod control boots, each with a verified pre-run backup, immutable evidence, at least 10-minute hold, graceful shutdown and integrity/persistence checks. The warning catalog stays unchanged for all three. Control boots 1/2/3 NOT RUN at this checkpoint; neither priest ID is assessed by new control evidence. No catalog change proposed/applied. Simple Minimap and Chest Labels remain deferred; retests and final 13-mod validation NOT RUN. Latest accepted verified backup: `2026-10-04_062716`. Safe to start Custom Main Questline: NO. Client and source packages unchanged.
 
-- CURRENT LOCAL TIME: 2026-10-05 01:5x +07:00.
+- CURRENT LOCAL TIME: 2026-10-05 02:0x +07:00.
 - CURRENT BRANCH: claude/m3-task4-live-windows (primary checkout E:\github\gameee).
-- CURRENT HEAD: the docs commit after 5f0f77c (signature-bound LoadErrorBaseline + exact Simple Minimap rule).
+- CURRENT HEAD: the docs commit after 8dd720f (13-mod staging test pack, client bundle, test docs).
 - PRESERVED SAFETY BRANCH: codex/m3-batch-d-safety at abe3875 (original checkpoint 0bb2b2a). Its worktree is E:\github\gameee\.worktrees\batch-d.
-- CURRENT STAGE: FINAL 13-MOD BASE PACK SERVER-SIDE = PASS (Chest Labels PASS on two boots; full validation and clean restart PASS). SAFE TO START CUSTOM MAIN QUESTLINE = YES, NOT started. Gameplay and client-side rendering NOT YET VERIFIED. Production world NOT CREATED.
-- LAST COMPLETED CHECKPOINT: final13-restart: readiness 35.2 s, hold 660.8 s, shutdown NORMAL 162.7 s, 0 unknown, LoadErrors 61 exact, quick_check ok, all controllers/singletons 1, only game_events changed.
+- CURRENT STAGE: 13-MOD MULTIPLAYER GAMEPLAY TEST MODE. Test pack frozen (TEST_PACK_13MOD_STAGING.md), client bundle verified == server, checklist and bug template created, staging test server ONLINE (session mp13-session-1). Custom Main Questline PAUSED. Production world NOT CREATED.
+- LAST COMPLETED CHECKPOINT: mp13-session-1 started: true readiness 37.5 s, RCON listplayers OK (localhost), current-boot analysis PASS (0 unknown, known baselines only).
 - CURRENT ACTIVE MODLIST (accepted 13): StackMe10K.pak -> SavageParagon.pak -> GritandGrease.pak -> ThrallReputation.pak -> ImprovedThrallsAndQoL.pak -> WO_RidingThralls.pak -> Ancient_Realms.pak -> Cannibal_Captivity.pak -> NightTerrors.pak -> PvEPlusAmbush.pak -> PlayerDBNO.pak -> Simple_Minimap.pak -> ChestLabels.pak
-- LATEST VERIFIED BACKUP: 2026-10-05_014347 (final 13-mod, after the clean restart; live DB identical). Phase 3 chain: pre 2026-10-05_003936, 2026-10-05_005520, 2026-10-05_011115, 2026-10-05_012731. Accepted 12-mod: 2026-10-05_002520.
-- SERVER STATE: OFFLINE, no Conan or harness process.
-- LAST SHUTDOWN CLASS: NORMAL, 162.7 s (final13-restart; acknowledged, exit 0, forced kill NO, orphan NO).
+- LATEST VERIFIED BACKUP: 2026-10-05_014347 (final 13-mod; the world the multiplayer session started from).
+- SERVER STATE: ONLINE for multiplayer testing (session mp13-session-1: detached harness mod-boot, 72 h maximum hold). End it ONLY via the release-hold file in the live-test folder (graceful RCON stop + full analysis + snapshot). Do not kill the harness/server; no other agent may control the server meanwhile.
+- LAST SHUTDOWN CLASS: NORMAL, 162.7 s (final13-restart). Current session still running.
 - ACCEPTED WARNING GATES (ModBootGates): ITQoL mailbox x1; 7 Ancient Realms dangling refs; Ancient Realms MergeDataTables-null (exact, AR hash, max 2); Cannibal teardown set CANNIBAL-CAPTIVITY-TEARDOWN-NO-WORLD (exact hash, exact message and path family, after main-world teardown only, exactly 99, all-or-nothing); base-game noise kinds incl. the two healthy spawn-table ids only. Nothing for Night Terrors or PvE Plus Ambush was needed (no new LoadErrors or errors). Fantasy Races, Shemite and Thrall Wars errors are NOT whitelisted.
 - ANALYSIS: every mod-boot writes an immutable snapshot (E:\CSC-M3-Live\live-test\batch-snapshots\<batch>, read-only, log hash-verified); pre-batch plans are pre-batch.json there too. Replay with `analyze-snapshot <dir> [backupId] [--current-catalog]`. Snapshots: cannibal-run-1/2, core8-final-*, shemite-run-1(-pre), p1-nightterrors-*, p2-pveambush-*, p3-thrallwars-*. Helper scripts are in the session scratchpad (phase_prep.ps1, phase_boot.ps1, phase_post.ps1, light_sampler.ps1).
 - OPERATOR DECISION 2026-10-04: Thrall Wars Dungeon EXCLUDED / DEFERRED (do not whitelist the 73 LoadErrors, 3 LogMaterial or 4 LogModController merge errors; the loot-table row-structure mismatches are NOT accepted as harmless; keep all evidence, snapshots and the failed-world backup 2026-10-04_031850). Accepted pack = the 10 mods; Fantasy Races, Shemite and Thrall Wars excluded.
 - (superseded) ROOM FOR ONE MORE earlier blocked on the source package (now supplied and tested; see the #11 checkpoint above). A read-only search (1,195 candidate .pak files on the profile, D:, E:, F:) found no package with that embedded Workshop ID; the WorkshopDL tool on F: holds none; nothing was downloaded or guessed. Needed: the .pak from the operator (or permission to download). When it arrives: prove it by embedded modinfo (id 3811298984, Enhanced, WindowsServer content, size, SHA-256, dependencies), then run the same fail-closed cycle (phase_prep.ps1 with BaseSnap final10-restart and BaseBackup 2026-10-04_035205, phase_boot.ps1, phase_post.ps1), keeping WO_RidingThralls installed, and check specifically for new mount/rider/passenger/attachment/seat/controller lines against the accepted 10-mod boot.
-- NEXT ACTION: stop and await the operator. Custom Main Questline development is allowed by the gate but NOT started; do not create the production world.
+- NEXT ACTION: operator + friends run MULTIPLAYER_TEST_CHECKLIST.md. After the session: release-hold, review the complete-log analysis (classify, never auto-whitelist), quick_check/persistence/controller checks, verified post-session backup. Operator decision pending on the RCON firewall block rule.
 - OPERATOR DECISION 2026-10-04: #11 WO - Room For One More EXCLUDED / DEFERRED (do not whitelist its 5 merge errors; do not revisit in this phase; keep evidence and failed-world backup 2026-10-04_050719). #12 Simple Minimap, #13 Player DBNO and #14 Chest Labels continue independently, cumulatively on the 10-mod baseline (expected 13 mods), then a final 13-mod validation with a clean restart; stop before the custom quest mod and report first.
-- OPEN BLOCKERS: none for the accepted 13-mod base pack.
+- OPEN BLOCKERS: none for testing. Findings: RCON reachable from LAN/Radmin peers through the pre-existing ConanSandboxServer firewall rule (not public; fix is the operator's); local host client still blocked by client authentication (testers need licensed Steam clients).
 
 ## History (newest first; kept for evidence)
 
