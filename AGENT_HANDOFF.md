@@ -1,5 +1,13 @@
 # Batch D handoff — FINAL 10-MOD CAMPAIGN PACK SERVER-SIDE = PASS
 
+## Baseline variance controls — control 1 complete (2026-10-04)
+
+`ctrl11-variance-1`: **PASS**, unchanged accepted 11-mod order/hashes and warning catalog. Readiness 37.3 s; hold 660.7 s; complete-log scan 0 unknown; shutdown **NORMAL 167.6 s**, acknowledged, exit 0, no forced kill or orphan. Pre-run backup `2026-10-04_172858`; verified post-run backup `2026-10-04_174435`. Immutable snapshot and hash-manifested raw evidence retained locally.
+
+Both `Exile_Priest_4_Hyrkanian` and `Exile_OrchidPriest_4_Nordheimer`: **ABSENT (0)**. Every weighted/spawn-table error: `WarTestLongLeash` x1 (frame 2) and `Wildlife_Siptah_Firstman_Warrior4` x1 (frame 246), both the existing exact `USpawnTableLibrary::SpawnNPCFromWeightedTable - could not find weighted table with id:` signature. No catalog additions. `quick_check=ok`; required singletons 1/1/1; all 30 controller IDs/classes unchanged and unique. Persistence review found only runtime/storm clocks, 24 appended events, SQLite statistics and rotation roundoff below 1e-12; no object loss or duplication.
+
+Server OFFLINE. Next: controls 2 and 3, each with a fresh verified backup and full hold. Accepted count 11; Simple Minimap/Chest Labels retests and final 13-mod validation NOT RUN. Custom Main Questline NOT STARTED; production world NOT CREATED. Branch: `claude/m3-task4-live-windows`; run code checkpoint: `e4be52f`.
+
 ## Codex takeover preflight — 2026-10-04
 
 Accepted state remains **11 mods**, server **OFFLINE**, production world **NOT CREATED**. Branch `claude/m3-task4-live-windows` at `26f7a1c` matched the remote after fetch. Tracked files were clean; pre-existing untracked work was preserved.
