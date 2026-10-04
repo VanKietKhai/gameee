@@ -1,5 +1,41 @@
 # Target Modpack V1 — private Radmin Conan server
 
+## Simple Minimap accepted: signature-bound LoadErrors baseline (2026-10-05)
+
+**Operator decision (2026-10-05):** approve the Simple Minimap LoadError as known non-blocking, but only as a strict hash-bound exact rule.
+
+**Model extension (minimal, backward compatible):**
+- `LoadErrorBaseline` gains an optional `Signatures` map from each `Expected` key to a `LoadErrorSignature`. The signature holds the exact `LoadErrors:` message without its prefix, the exact explanatory line that follows it, and an optional required engine frame. All comparisons are ordinal and exact.
+- `ParseLoadErrors` now records each entry's message, the following log line and its frame.
+- A signature-bound entry fails if its message, its explanatory line or its frame differs, or if any of them is missing. The existing key/count/hash checks run first and are unchanged: wrong hash, extra, missing and unparsed entries all still fail.
+- Baselines without signatures behave exactly as before. A null `Signatures` is not serialized, so the catalog without the new rule still hashes to the recorded `767B4BCD…7818`, which a test proves.
+- No wildcard, substring, generic frame-0 or "Minimap warnings are safe" logic was added.
+
+**Rule added (the only catalog change):**
+- `Simple_Minimap.pak`, SHA-256 `04F31A75559665C1A949D7A9A632F9A777CE7D79E926032CFC9FD101B1626AC9`.
+- `None -> C88E5FE76A79516D` exactly ×1, at frame 0, `KnownNonBlocking`.
+- The message and explanatory line are taken byte-for-byte from the preserved snapshots: `LoadErrors: While trying to load package None, a dependent package None (C88E5FE76A79516D) was not available. Additional explanatory information follows:` / `FPackageName: Unable to identify a valid mount point associated with skipped package None. The package root is unknown.`
+
+**Tests:** 22 new `LoadErrorSignatureTests`. The exact-match case passes. These cases fail: wrong hash, wrong reference, count 0, count 2, message drift, explanatory-line drift (four variants), missing line, frame drift (1, 46), no prefix, extra LoadError, and malformed/unparsed lines. Further tests check backward compatibility, the JSON round-trip and that the committed rule is exactly the approved one. Build 0 warnings / 0 errors. Full suite **513/513**, 0 skipped.
+
+**Snapshot re-analysis** (recorded catalog vs current catalog, full output diff):
+
+| Snapshot | Changed lines | Result |
+|---|---|---|
+| `p12-minimap-1` | only the Simple Minimap LoadError gate (now `KNOWN NON-BLOCKING … 1 exact signature(s) and frame(s) match`) and the LoadError problem count | still FAIL: the `Exile_Priest_4_Hyrkanian` line stays UNKNOWN, as required |
+| `minimap-retest-1` | same and nothing else | **PASS**, 0 unknown, both priest ids absent |
+| `minimap-retest-2` | same and nothing else | **PASS**, 0 unknown, both priest ids absent |
+
+- The ITQoL (23) and Ancient Realms (37) LoadError results are byte-identical in all three snapshots.
+- Regression under the current catalog:
+  - `ctrl10-1`, `ctrl11-variance-1/2/3`, `final10-1`, `p13-dbno-1` and `p14-chest-1` all PASS with 0 unknown.
+  - `p14-chest-restart` is unchanged: it still fails on its two priest lines.
+
+**SIMPLE MINIMAP SERVER-SIDE = PASS.**
+- Accepted pack: **12 mods** (the 10 original + Player DBNO + Simple Minimap), kept as the stopped 12-mod install.
+- Accepted verified backup `2026-10-05_002520`.
+- Client-side Minimap rendering is NOT YET VERIFIED.
+
 ## Phase 2 — Simple Minimap retest: PASS CANDIDATE, catalog rule proposed (not applied) (2026-10-05)
 
 **Source:** `Simple_Minimap.pak`, Workshop ID 3719513784 (recomputed from the embedded `mainClient` metadata; Enhanced, devkit 1002, WindowsServer payload), 4,835,375 bytes, full SHA-256 `04F31A75559665C1A949D7A9A632F9A777CE7D79E926032CFC9FD101B1626AC9` (recomputed before import; identical to the `p12-minimap-1` file). Imported through the production Local Mod pipeline as mod #12 on top of the accepted 11-mod pack; catalog unchanged (`767B4BCD…7818`).

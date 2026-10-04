@@ -38,8 +38,25 @@ public sealed record BootGateResult(bool Pass, string Detail);
 public sealed record LoadErrorEntry(string Package, string MissingPackageId)
 {
     public string? RawUnparsedLine { get; init; }
+
+    /// <summary>The line without its <c>[timestamp][frame]</c> prefix, as logged (set by <see cref="ModBootGates.ParseLoadErrors"/>).</summary>
+    public string? Message { get; init; }
+
+    /// <summary>The next log line (the engine's explanatory line), without its line ending; null at the end of the log.</summary>
+    public string? DetailLine { get; init; }
+
+    /// <summary>The engine frame from the line's prefix; null when the line has no prefix.</summary>
+    public int? Frame { get; init; }
+
     public override string ToString() => $"{Package} -> {MissingPackageId}";
 }
+
+/// <summary>
+/// The exact two-line form one validated <c>LoadErrors</c> entry must have: the <c>LoadErrors:</c> message (without
+/// its prefix), the explanatory line that follows it, and, when set, the engine frame it must be logged in.
+/// All comparisons are ordinal and exact.
+/// </summary>
+public sealed record LoadErrorSignature(string ExactMessage, string ExactDetailLine, int? RequiredFrame);
 
 public enum LoadErrorBaselineStatus
 {
@@ -59,7 +76,16 @@ public sealed record LoadErrorBaseline(
     string ValidatedPakSha256,
     LoadErrorBaselineStatus Status,
     IReadOnlyDictionary<string, int> Expected,
-    string Reason);
+    string Reason)
+{
+    /// <summary>
+    /// Optional, per <see cref="Expected"/> key: the exact two-line form (and frame) every occurrence of that entry
+    /// must have. Null (the default) keeps the key-and-count comparison only, as for the earlier baselines; it is not
+    /// written to JSON, so catalogs without signatures keep their recorded SHA-256.
+    /// </summary>
+    [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public IReadOnlyDictionary<string, LoadErrorSignature>? Signatures { get; init; }
+}
 
 /// <summary>A mod object that must exist exactly once in a stopped world while its mod is installed.</summary>
 public sealed record SingletonActor(string Label, string ModPakFileName, string ClassPath);
@@ -195,8 +221,34 @@ public static class ModBootGates
             "Batch B (2026-10-02): 23 dangling-reference LoadErrors per boot, found after acceptance (cc13afa). Attributed " +
             "(2026-10-03) to 17 ITQoL packages (realm templates, a material instance, FollowerDNA altar and door, a mailbox UI " +
             "widget, the humanoid-NPC component); identical in all 12 boots; operator-accepted as a known non-blocking warning " +
-            "for this file only.")
+            "for this file only."),
+        new LoadErrorBaseline(
+            SimpleMinimapPakFileName,
+            SimpleMinimapValidatedSha256,
+            LoadErrorBaselineStatus.KnownNonBlocking,
+            new Dictionary<string, int>(StringComparer.Ordinal)
+            {
+                ["None -> C88E5FE76A79516D"] = 1
+            },
+            "Phase 2 (2026-10-05): one dangling dependent-package reference at world init (frame 0), byte-identical in " +
+            "p12-minimap-1, minimap-retest-1 and minimap-retest-2, with no integrity, persistence or controller effect; " +
+            "operator-accepted 2026-10-05 as a known non-blocking warning for this exact file, message and frame only.")
+        {
+            Signatures = new Dictionary<string, LoadErrorSignature>(StringComparer.Ordinal)
+            {
+                ["None -> C88E5FE76A79516D"] = new LoadErrorSignature(
+                    "LoadErrors: While trying to load package None, a dependent package None (C88E5FE76A79516D) was not available. " +
+                    "Additional explanatory information follows:",
+                    "FPackageName: Unable to identify a valid mount point associated with skipped package None. The package root is unknown.",
+                    0)
+            }
+        }
     ];
+
+    public const string SimpleMinimapPakFileName = "Simple_Minimap.pak";
+
+    /// <summary>The Simple Minimap file validated in Phase 2 (Workshop 3719513784; three boots).</summary>
+    public const string SimpleMinimapValidatedSha256 = "04F31A75559665C1A949D7A9A632F9A777CE7D79E926032CFC9FD101B1626AC9";
 
     /// <summary>Mod objects that must exist exactly once in a stopped world while their mod is installed.</summary>
     public static readonly IReadOnlyList<SingletonActor> SingletonActors =
@@ -396,14 +448,35 @@ public static class ModBootGates
     public static IReadOnlyList<LoadErrorEntry> ParseLoadErrors(IEnumerable<string> lines)
     {
         ArgumentNullException.ThrowIfNull(lines);
-        return lines.Where(l => l.Contains("LoadErrors:", StringComparison.OrdinalIgnoreCase))
-            .Select(l =>
+        var all = lines as IReadOnlyList<string> ?? lines.ToList();
+        var entries = new List<LoadErrorEntry>();
+        for (var i = 0; i < all.Count; i++)
+        {
+            var l = all[i];
+            if (!l.Contains("LoadErrors:", StringComparison.OrdinalIgnoreCase))
             {
-                var match = LoadErrorLine.Match(StripLogPrefix(l));
-                return match.Success
-                    ? new LoadErrorEntry(match.Groups["pkg"].Value, match.Groups["id"].Value.ToUpperInvariant())
-                    : new LoadErrorEntry("<unparsed>", "") { RawUnparsedLine = l };
-            }).ToList();
+                continue;
+            }
+
+            var message = StripLogPrefix(l);
+            var match = LoadErrorLine.Match(message);
+            entries.Add(match.Success
+                ? new LoadErrorEntry(match.Groups["pkg"].Value, match.Groups["id"].Value.ToUpperInvariant())
+                {
+                    Message = message,
+                    DetailLine = i + 1 < all.Count ? all[i + 1].TrimEnd('\r', '\n') : null,
+                    Frame = LogFrame(l)
+                }
+                : new LoadErrorEntry("<unparsed>", "") { RawUnparsedLine = l });
+        }
+
+        return entries;
+    }
+
+    private static int? LogFrame(string line)
+    {
+        var match = LogPrefix.Match(line);
+        return match.Success ? int.Parse(match.Groups["frame"].Value, System.Globalization.CultureInfo.InvariantCulture) : null;
     }
 
     /// <summary>
@@ -446,10 +519,25 @@ public static class ModBootGates
         var status = baseline.Status == LoadErrorBaselineStatus.KnownNonBlocking
             ? "KNOWN NON-BLOCKING"
             : "PENDING OPERATOR CLASSIFICATION (monitored, not accepted)";
-        return extra.Count == 0 && missing.Count == 0
-            ? new BootGateResult(true, $"{status}: {attributed.Count} LoadErrors = validated set (exact)")
-            : new BootGateResult(false,
+        if (extra.Count != 0 || missing.Count != 0)
+        {
+            return new BootGateResult(false,
                 $"differs from the validated set: new/extra [{string.Join("; ", extra)}] missing [{string.Join("; ", missing)}]");
+        }
+
+        // Signature-bound entries must also match their exact two-line form and frame (fail closed when unknown).
+        var drift = baseline.Signatures is null
+            ? []
+            : attributed.Where(e => baseline.Signatures.TryGetValue(e.ToString(), out var sig) &&
+                                    !(string.Equals(e.Message, sig.ExactMessage, StringComparison.Ordinal) &&
+                                      string.Equals(e.DetailLine, sig.ExactDetailLine, StringComparison.Ordinal) &&
+                                      (sig.RequiredFrame is null || e.Frame == sig.RequiredFrame)))
+                .Select(e => $"{e} (frame {e.Frame?.ToString(System.Globalization.CultureInfo.InvariantCulture) ?? "?"})")
+                .ToList();
+        return drift.Count == 0
+            ? new BootGateResult(true, $"{status}: {attributed.Count} LoadErrors = validated set (exact)" +
+                                       (baseline.Signatures is null ? "" : $"; {baseline.Signatures.Count} exact signature(s) and frame(s) match"))
+            : new BootGateResult(false, $"validated set matches but the exact message, explanatory line or frame drifted: [{string.Join("; ", drift)}]");
     }
 
     /// <summary>
@@ -473,7 +561,7 @@ public static class ModBootGates
         };
     }
 
-    private static readonly Regex LogPrefix = new(@"^\[[^\]]*\]\[\s*\d+\]", RegexOptions.Compiled);
+    private static readonly Regex LogPrefix = new(@"^\[[^\]]*\]\[\s*(?<frame>\d+)\]", RegexOptions.Compiled);
 
     /// <summary>The log line without its <c>[timestamp][frame]</c> prefix.</summary>
     public static string StripLogPrefix(string line) =>

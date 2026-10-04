@@ -1,5 +1,41 @@
 # Batch D handoff — FINAL 10-MOD CAMPAIGN PACK SERVER-SIDE = PASS
 
+## Simple Minimap accepted: signature-bound LoadErrors baseline (2026-10-05)
+
+**Operator decision (2026-10-05):** approve the Simple Minimap LoadError as known non-blocking, but only as a strict hash-bound exact rule.
+
+**Model extension (minimal, backward compatible):**
+- `LoadErrorBaseline` gains an optional `Signatures` map from each `Expected` key to a `LoadErrorSignature`. The signature holds the exact `LoadErrors:` message without its prefix, the exact explanatory line that follows it, and an optional required engine frame. All comparisons are ordinal and exact.
+- `ParseLoadErrors` now records each entry's message, the following log line and its frame.
+- A signature-bound entry fails if its message, its explanatory line or its frame differs, or if any of them is missing. The existing key/count/hash checks run first and are unchanged: wrong hash, extra, missing and unparsed entries all still fail.
+- Baselines without signatures behave exactly as before. A null `Signatures` is not serialized, so the catalog without the new rule still hashes to the recorded `767B4BCD…7818`, which a test proves.
+- No wildcard, substring, generic frame-0 or "Minimap warnings are safe" logic was added.
+
+**Rule added (the only catalog change):**
+- `Simple_Minimap.pak`, SHA-256 `04F31A75559665C1A949D7A9A632F9A777CE7D79E926032CFC9FD101B1626AC9`.
+- `None -> C88E5FE76A79516D` exactly ×1, at frame 0, `KnownNonBlocking`.
+- The message and explanatory line are taken byte-for-byte from the preserved snapshots: `LoadErrors: While trying to load package None, a dependent package None (C88E5FE76A79516D) was not available. Additional explanatory information follows:` / `FPackageName: Unable to identify a valid mount point associated with skipped package None. The package root is unknown.`
+
+**Tests:** 22 new `LoadErrorSignatureTests`. The exact-match case passes. These cases fail: wrong hash, wrong reference, count 0, count 2, message drift, explanatory-line drift (four variants), missing line, frame drift (1, 46), no prefix, extra LoadError, and malformed/unparsed lines. Further tests check backward compatibility, the JSON round-trip and that the committed rule is exactly the approved one. Build 0 warnings / 0 errors. Full suite **513/513**, 0 skipped.
+
+**Snapshot re-analysis** (recorded catalog vs current catalog, full output diff):
+
+| Snapshot | Changed lines | Result |
+|---|---|---|
+| `p12-minimap-1` | only the Simple Minimap LoadError gate (now `KNOWN NON-BLOCKING … 1 exact signature(s) and frame(s) match`) and the LoadError problem count | still FAIL: the `Exile_Priest_4_Hyrkanian` line stays UNKNOWN, as required |
+| `minimap-retest-1` | same and nothing else | **PASS**, 0 unknown, both priest ids absent |
+| `minimap-retest-2` | same and nothing else | **PASS**, 0 unknown, both priest ids absent |
+
+- The ITQoL (23) and Ancient Realms (37) LoadError results are byte-identical in all three snapshots.
+- Regression under the current catalog:
+  - `ctrl10-1`, `ctrl11-variance-1/2/3`, `final10-1`, `p13-dbno-1` and `p14-chest-1` all PASS with 0 unknown.
+  - `p14-chest-restart` is unchanged: it still fails on its two priest lines.
+
+**SIMPLE MINIMAP SERVER-SIDE = PASS.**
+- Accepted pack: **12 mods** (the 10 original + Player DBNO + Simple Minimap), kept as the stopped 12-mod install.
+- Accepted verified backup `2026-10-05_002520`.
+- Client-side Minimap rendering is NOT YET VERIFIED.
+
 ## Phase 2 — Simple Minimap retest: PASS CANDIDATE, catalog rule proposed (not applied) (2026-10-05)
 
 **Source:** `Simple_Minimap.pak`, Workshop ID 3719513784 (recomputed from the embedded `mainClient` metadata; Enhanced, devkit 1002, WindowsServer payload), 4,835,375 bytes, full SHA-256 `04F31A75559665C1A949D7A9A632F9A777CE7D79E926032CFC9FD101B1626AC9` (recomputed before import; identical to the `p12-minimap-1` file). Imported through the production Local Mod pipeline as mod #12 on top of the accepted 11-mod pack; catalog unchanged (`767B4BCD…7818`).
@@ -76,23 +112,23 @@ No server or harness process or server-related scheduled task was found; the hos
 
 **Next action:** recheck mutable state, then run THREE unchanged 11-mod control boots, each with a verified pre-run backup, immutable evidence, at least 10-minute hold, graceful shutdown and integrity/persistence checks. The warning catalog stays unchanged for all three. Control boots 1/2/3 NOT RUN at this checkpoint; neither priest ID is assessed by new control evidence. No catalog change proposed/applied. Simple Minimap and Chest Labels remain deferred; retests and final 13-mod validation NOT RUN. Latest accepted verified backup: `2026-10-04_062716`. Safe to start Custom Main Questline: NO. Client and source packages unchanged.
 
-- CURRENT LOCAL TIME: 2026-10-05 00:4x +07:00.
+- CURRENT LOCAL TIME: 2026-10-05 01:xx +07:00.
 - CURRENT BRANCH: claude/m3-task4-live-windows (primary checkout E:\github\gameee).
-- CURRENT HEAD: the docs commit after 18e0ab2 (docs: third 11-mod variance control and the Phase 1 conclusion).
+- CURRENT HEAD: the commit after a602be9 (signature-bound LoadErrorBaseline + exact Simple Minimap rule).
 - PRESERVED SAFETY BRANCH: codex/m3-batch-d-safety at abe3875 (original checkpoint 0bb2b2a). Its worktree is E:\github\gameee\.worktrees\batch-d.
-- CURRENT STAGE: Phase 2 complete: Simple Minimap SERVER-SIDE = PASS CANDIDATE (two boots, exact C88E5FE76A79516D recurrence, priest ids absent). Exact catalog rule PROPOSED, NOT applied (awaiting operator review). Accepted pack = 11 mods; the 12-mod install (Minimap #12) is left on the stopped server. Chest Labels NOT started. Gameplay NOT YET VERIFIED. Production world NOT CREATED. Custom Main Questline NOT started.
-- LAST COMPLETED CHECKPOINT: minimap-retest-2: readiness 34.2 s, hold 660.4 s, shutdown NORMAL 160.2 s, only unknown = the Minimap C88 LoadError (count 1, identical signature), quick_check ok, singletons 1/1/1, SM controller once. Boot 1 (minimap-retest-1): NORMAL 166.5 s, same result.
-- CURRENT ACTIVE MODLIST (installed 12; accepted 11 + Simple_Minimap pass candidate): StackMe10K.pak -> SavageParagon.pak -> GritandGrease.pak -> ThrallReputation.pak -> ImprovedThrallsAndQoL.pak -> WO_RidingThralls.pak -> Ancient_Realms.pak -> Cannibal_Captivity.pak -> NightTerrors.pak -> PvEPlusAmbush.pak -> PlayerDBNO.pak -> Simple_Minimap.pak
-- LATEST VERIFIED BACKUP: 2026-10-05_002520 (12-mod, after Minimap Boot 2; live DB identical). Boot 1 post 2026-10-05_000756; pre-Minimap 2026-10-04_235212; accepted 11-mod baseline 2026-10-04_234706 (rollback target if the rule is rejected).
+- CURRENT STAGE: Simple Minimap SERVER-SIDE = PASS (exact signature-bound rule applied after operator approval; snapshots re-analysed exactly). Accepted pack = 12 mods. Next: Phase 3 Chest Labels (two boots on the accepted 12-mod pack). Gameplay and client-side Minimap rendering NOT YET VERIFIED. Production world NOT CREATED. Custom Main Questline NOT started.
+- LAST COMPLETED CHECKPOINT: Simple Minimap accepted: 513/513 tests; minimap-retest-1/-2 PASS 0 unknown under the current catalog; p12-minimap-1 changes only in the Minimap gate (priest line stays unknown).
+- CURRENT ACTIVE MODLIST (accepted 12): StackMe10K.pak -> SavageParagon.pak -> GritandGrease.pak -> ThrallReputation.pak -> ImprovedThrallsAndQoL.pak -> WO_RidingThralls.pak -> Ancient_Realms.pak -> Cannibal_Captivity.pak -> NightTerrors.pak -> PvEPlusAmbush.pak -> PlayerDBNO.pak -> Simple_Minimap.pak
+- LATEST VERIFIED BACKUP: 2026-10-05_002520 (accepted 12-mod state, after Minimap Boot 2; live DB identical). Earlier: 2026-10-05_000756 (Minimap Boot 1 post), 2026-10-04_235212 (pre-Minimap), 2026-10-04_234706 (accepted 11-mod).
 - SERVER STATE: OFFLINE, no Conan or harness process.
 - LAST SHUTDOWN CLASS: NORMAL, 160.2 s (Minimap Boot 2; acknowledged, exit 0, forced kill NO, orphan NO).
 - ACCEPTED WARNING GATES (ModBootGates): ITQoL mailbox x1; 7 Ancient Realms dangling refs; Ancient Realms MergeDataTables-null (exact, AR hash, max 2); Cannibal teardown set CANNIBAL-CAPTIVITY-TEARDOWN-NO-WORLD (exact hash, exact message and path family, after main-world teardown only, exactly 99, all-or-nothing); base-game noise kinds incl. the two healthy spawn-table ids only. Nothing for Night Terrors or PvE Plus Ambush was needed (no new LoadErrors or errors). Fantasy Races, Shemite and Thrall Wars errors are NOT whitelisted.
 - ANALYSIS: every mod-boot writes an immutable snapshot (E:\CSC-M3-Live\live-test\batch-snapshots\<batch>, read-only, log hash-verified); pre-batch plans are pre-batch.json there too. Replay with `analyze-snapshot <dir> [backupId] [--current-catalog]`. Snapshots: cannibal-run-1/2, core8-final-*, shemite-run-1(-pre), p1-nightterrors-*, p2-pveambush-*, p3-thrallwars-*. Helper scripts are in the session scratchpad (phase_prep.ps1, phase_boot.ps1, phase_post.ps1, light_sampler.ps1).
 - OPERATOR DECISION 2026-10-04: Thrall Wars Dungeon EXCLUDED / DEFERRED (do not whitelist the 73 LoadErrors, 3 LogMaterial or 4 LogModController merge errors; the loot-table row-structure mismatches are NOT accepted as harmless; keep all evidence, snapshots and the failed-world backup 2026-10-04_031850). Accepted pack = the 10 mods; Fantasy Races, Shemite and Thrall Wars excluded.
 - (superseded) ROOM FOR ONE MORE earlier blocked on the source package (now supplied and tested; see the #11 checkpoint above). A read-only search (1,195 candidate .pak files on the profile, D:, E:, F:) found no package with that embedded Workshop ID; the WorkshopDL tool on F: holds none; nothing was downloaded or guessed. Needed: the .pak from the operator (or permission to download). When it arrives: prove it by embedded modinfo (id 3811298984, Enhanced, WindowsServer content, size, SHA-256, dependencies), then run the same fail-closed cycle (phase_prep.ps1 with BaseSnap final10-restart and BaseBackup 2026-10-04_035205, phase_boot.ps1, phase_post.ps1), keeping WO_RidingThralls installed, and check specifically for new mount/rider/passenger/attachment/seat/controller lines against the accepted 10-mod boot.
-- NEXT ACTION: operator review of the proposed exact Simple Minimap LoadErrorBaseline rule (and the optional signature/frame binding). On approval: apply only that rule, re-analyse minimap-retest-1/-2 with --current-catalog, prove nothing else is hidden, accept Minimap as #12. On rejection: verified rollback to 2026-10-04_234706, Minimap DEFERRED. Do not start Chest Labels until then.
+- NEXT ACTION: Phase 3 Chest Labels (Workshop 3735258746): two independent boots on the accepted 12-mod pack; any priest id or other unknown = rollback to 2026-10-05_002520 and stop. If both pass: 13-mod full validation + clean restart.
 - OPERATOR DECISION 2026-10-04: #11 WO - Room For One More EXCLUDED / DEFERRED (do not whitelist its 5 merge errors; do not revisit in this phase; keep evidence and failed-world backup 2026-10-04_050719). #12 Simple Minimap, #13 Player DBNO and #14 Chest Labels continue independently, cumulatively on the 10-mod baseline (expected 13 mods), then a final 13-mod validation with a clean restart; stop before the custom quest mod and report first.
-- OPEN BLOCKERS: operator approval of the Simple Minimap catalog rule (no catalog change approved yet).
+- OPEN BLOCKERS: none for the accepted 12-mod pack.
 
 ## History (newest first; kept for evidence)
 
