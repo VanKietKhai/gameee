@@ -159,6 +159,7 @@ internal static class Program
                 "restore" => await harness.RestoreBackupAsync(args[1]),
                 "set-mods" => await harness.SetModsAsync(args[1]),
                 "cold-backup" => await harness.ColdBackupCommandAsync(),
+                "export-bundle" => await harness.ExportBundleAsync(args.Length > 1 ? args[1] : null),
                 "graceful-test" => await harness.GracefulTestAsync(args[1]),
                 _ => Unknown(command)
             };
@@ -1269,6 +1270,64 @@ internal sealed class Harness : IAsyncDisposable
     // ------------------------------------------------------------ 4E Local mod
 
     public async Task<int> ColdBackupCommandAsync() => await ColdBackupAsync("4E-backup", "m3-live-cold-backup") ? 0 : 1;
+
+    /// <summary>
+    /// Exports the Client Mod Bundle through the production <see cref="IClientModBundleService"/> (hash-verified copies,
+    /// atomic rename), then independently re-hashes every bundled pak against the server's installed pak and checks the
+    /// bundle's modlist equals the server's. Read-only for the server; the server must be offline.
+    /// </summary>
+    public async Task<int> ExportBundleAsync(string? parent)
+    {
+        if (Program.ServerProcesses().Count > 0)
+        {
+            _log.Write("bundle", "precondition: server offline", "FAIL", null, Facts(("Processes", DescribeProcesses())));
+            return 1;
+        }
+
+        var clock = Stopwatch.StartNew();
+        ClientModBundleExport export;
+        try
+        {
+            export = await _services.GetRequiredService<IClientModBundleService>().ExportAsync(parent);
+        }
+        catch (Exception ex)
+        {
+            _log.Write("bundle", "IClientModBundleService.ExportAsync", "FAIL", clock.Elapsed, Facts(("Error", ex.Message)));
+            return 1;
+        }
+
+        var modsDir = Path.Combine(_serverDir, "ConanSandbox", "Mods");
+        var serverOrder = File.ReadAllLines(Path.Combine(modsDir, AppConstants.ModListFileName)).Where(l => l.Trim().Length > 0).Select(l => l.Trim()).ToArray();
+        var bundleOrder = File.ReadAllLines(export.ModListPath).Where(l => l.Trim().Length > 0).Select(l => l.Trim()).ToArray();
+        var rows = new List<string>();
+        var ok = serverOrder.SequenceEqual(bundleOrder, StringComparer.Ordinal) && export.Manifest.Mods.Count == serverOrder.Length;
+        foreach (var entry in export.Manifest.Mods.OrderBy(m => m.LoadOrder))
+        {
+            var bundled = Sha256(Path.Combine(export.BundleDirectory, "Mods", entry.FileName));
+            var server = Sha256(Path.Combine(modsDir, entry.FileName));
+            var match = string.Equals(bundled, server, StringComparison.OrdinalIgnoreCase) &&
+                        string.Equals(bundled, entry.Sha256, StringComparison.OrdinalIgnoreCase);
+            ok &= match;
+            rows.Add($"{entry.LoadOrder}. {entry.FileName} {entry.SizeBytes} B {bundled} {(match ? "== server" : "MISMATCH")}");
+        }
+
+        var extra = Directory.EnumerateFiles(export.BundleDirectory, "*", SearchOption.AllDirectories)
+            .Select(f => Path.GetRelativePath(export.BundleDirectory, f))
+            .Where(f => !(f.StartsWith("Mods" + Path.DirectorySeparatorChar, StringComparison.Ordinal) &&
+                          (f.EndsWith(".pak", StringComparison.OrdinalIgnoreCase) || f.EndsWith(AppConstants.ModListFileName, StringComparison.OrdinalIgnoreCase))) &&
+                        f is not Infrastructure.Mods.ClientModBundleService.ManifestFileName and not Infrastructure.Mods.ClientModBundleService.ReadmeFileName)
+            .ToArray();
+        ok &= extra.Length == 0;
+        _log.Write("bundle", "IClientModBundleService.ExportAsync + independent hash check", ok ? "PASS" : "FAIL", clock.Elapsed,
+            Facts(
+                ("BundleDirectory", export.BundleDirectory),
+                ("PakCount", export.Manifest.Mods.Count.ToString()),
+                ("ModListEqualsServer", serverOrder.SequenceEqual(bundleOrder, StringComparer.Ordinal).ToString()),
+                ("UnexpectedFiles", extra.Length == 0 ? "none" : string.Join(", ", extra)),
+                ("Paks", string.Join(" || ", rows))),
+            liveFilesChanged: "no");
+        return ok ? 0 : 1;
+    }
 
     public async Task<int> ImportLocalAsync(string source)
     {
