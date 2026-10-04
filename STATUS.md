@@ -1,5 +1,35 @@
 # Conan Server Control — Current Status
 
+## Phase 2 — Simple Minimap retest: PASS CANDIDATE, catalog rule proposed (not applied) (2026-10-05)
+
+**Source:** `Simple_Minimap.pak`, Workshop ID 3719513784 (recomputed from the embedded `mainClient` metadata; Enhanced, devkit 1002, WindowsServer payload), 4,835,375 bytes, full SHA-256 `04F31A75559665C1A949D7A9A632F9A777CE7D79E926032CFC9FD101B1626AC9` (recomputed before import; identical to the `p12-minimap-1` file). Imported through the production Local Mod pipeline as mod #12 on top of the accepted 11-mod pack; catalog unchanged (`767B4BCD…7818`).
+
+**Pre-batch:** safety checks passed (server offline, no orphan, quiet host). Fresh verified pre-Minimap backup `2026-10-04_235212`; immutable run plan `m12r-minimap-pre`; import verified 12 mods, Minimap last, world unchanged by the import.
+
+| Boot | Readiness | Hold | Shutdown | C88E5FE76A79516D | Priest ids | Other unknowns | `SM_BP_ModController` | Integrity / persistence |
+|---|---|---|---|---|---|---|---|---|
+| `minimap-retest-1` | 37.4 s | 660.2 s | NORMAL 166.5 s (stop 168.6 s), acknowledged, exit 0, no forced kill, no orphan | 1 (frame 0, 60th of 61 LoadErrors) | both 0 | none | registered once, spawned once (first boot: +1 `actor_position`, +1 `mod_controllers`) | `quick_check` ok, singletons 1/1/1, no duplicate ids; only +23 `game_events` otherwise |
+| `minimap-retest-2` | 34.2 s | 660.4 s | NORMAL 160.2 s (stop 162.3 s), acknowledged, exit 0, no forced kill, no orphan | 1 (frame 0, 60th of 61 LoadErrors) | both 0 | none | registered once, loaded once (no new row) | `quick_check` ok, singletons 1/1/1, no duplicate ids; only +24 `game_events` |
+
+In both boots the only harness UNKNOWN was `Simple_Minimap.pak: 1 LoadErrors and no validated set for this mod`, which was expected. LoadErrors versus `ctrl11-variance-3`: +1 (C88), none missing, none unparsed. Spawn-table lines: only the two accepted ids, once each. No map/POI/UI warnings, no Warning/Error line naming Simple Minimap, no Fatal/Assertion/crash markers. In Boot 2 the independent kind-diff reported one wildlife AILOD3 movement line (`Komodo` rather than `Komodo_Baby`). It is covered by the existing exact noise rule `WILDLIFE-AILOD3-MOVEMENT`, and every recorded boot has 5–7 such lines, so it is not new. Post-run verified backups: `2026-10-05_000756` (Boot 1) and `2026-10-05_002520` (Boot 2); live DB identical to each.
+
+**LoadError recurrence: EXACT.** Package/reference `None -> C88E5FE76A79516D`; count 1 in each boot. The full two-line signature is byte-identical in Boot 1, Boot 2 and `p12-minimap-1`: `LoadErrors: While trying to load package None, a dependent package None (C88E5FE76A79516D) was not available. Additional explanatory information follows:` / `FPackageName: Unable to identify a valid mount point associated with skipped package None. The package root is unknown.`. Source pak hash is the same in all three. Phase is the same in all three (world init, frame 0, 60th LoadError). No drift.
+
+**Proposed exact catalog rule (NOT applied — no catalog change is approved):**
+
+```
+new LoadErrorBaseline(
+    "Simple_Minimap.pak",
+    "04F31A75559665C1A949D7A9A632F9A777CE7D79E926032CFC9FD101B1626AC9",
+    LoadErrorBaselineStatus.KnownNonBlocking,
+    new Dictionary<string, int>(StringComparer.Ordinal) { ["None -> C88E5FE76A79516D"] = 1 },
+    "Simple Minimap: one unresolved dependent package, identical in p12-minimap-1, minimap-retest-1 and -2; no integrity or persistence effect.")
+```
+
+A `LoadErrorBaseline` already enforces the exact pak SHA-256 and the exact set of keys and counts: any extra or missing key fails, and so does any LoadError line that doesn't parse. It does not store the message text or the boot frame. To bind those as well, the operator would also need to approve a small extension: an optional exact two-line signature, and a frame-0 / world-init constraint on the baseline. After approval: add the rule and re-analyse both immutable snapshots with `--current-catalog`. Then confirm the only change is that the C88 line moves to KNOWN, and that the unknown count, all other lines and every other gate are unchanged.
+
+**Status:** Simple Minimap SERVER-SIDE = **PASS CANDIDATE**, pending operator review of the rule. The accepted pack remains **11 mods** until the rule is approved and applied. The 12-mod install (Minimap as #12) is left in place on the stopped server, and the latest verified backup `2026-10-05_002520` covers it. If the rule is rejected, roll back to the 11-mod baseline backup `2026-10-04_234706`. Chest Labels NOT started. Production world NOT CREATED. Custom Main Questline NOT started. Raw evidence stays local in `artifacts/` (gitignored).
+
 ## Baseline variance controls — control 3 complete; Phase 1 conclusion (2026-10-04)
 
 **Takeover:** Codex hit its usage limit during control 3. Claude took exclusive control and inspected read-only first: no Conan or harness process was running, the live log ended with a clean `Exiting` / `Log file closed`, and the world had no WAL. The harness had already completed the run on its own (exit 0), so the **existing run was used**, not restarted. Only Codex's post-run steps were missing; they were completed with the same `control.ps1 -Action Post`, `analyze_control.py` and `persistence_review.py` used for controls 1 and 2.
