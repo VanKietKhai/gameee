@@ -1,5 +1,17 @@
 # Target Modpack V1 — private Radmin Conan server
 
+## Codex takeover preflight — 2026-10-04
+
+Accepted state remains **11 mods**, server **OFFLINE**, production world **NOT CREATED**. Branch `claude/m3-task4-live-windows` at `26f7a1c` matched the remote after fetch. Tracked files were clean; pre-existing untracked work was preserved.
+
+The accepted 11-mod order, every package hash and size match snapshot `p13-dbno-1`, with no extra installed packages. The live database is byte-identical to accepted backup `2026-10-04_062716`; WAL is empty. A hash-verified copy returned `quick_check=ok`, with live files rechecked unchanged. Required mailbox/controller singleton counts are 1/1/1; Player DBNO has one controller, and all 30 persisted controller IDs are unique. The inherited WickProbe actor is unchanged baseline state. Server log build: CL-377096. Detailed hashes and operational evidence remain local.
+
+No server or harness process or server-related scheduled task was found; the host was reasonably quiet. Build PASS, no warnings/errors. Initial sandboxed tests: 489 passed and 2 failed in web-admin/process inspection checks. With required process/network access, all **491 tests passed**, none failed/skipped; the test report is retained locally.
+
+**Exclusive control confirmed by the operator:** the prior validation session is paused/finished; only Codex may operate the server and publish validation results during this phase. The initial preflight waited for this confirmation because the application's action gate coordinates only within one process.
+
+**Next action:** recheck mutable state, then run THREE unchanged 11-mod control boots, each with a verified pre-run backup, immutable evidence, at least 10-minute hold, graceful shutdown and integrity/persistence checks. The warning catalog stays unchanged for all three. Control boots 1/2/3 NOT RUN at this checkpoint; neither priest ID is assessed by new control evidence. No catalog change proposed/applied. Simple Minimap and Chest Labels remain deferred; retests and final 13-mod validation NOT RUN. Latest accepted verified backup: `2026-10-04_062716`. Safe to start Custom Main Questline: NO. Client and source packages unchanged.
+
 Status: **IN PROGRESS. Batch A PASS, Batch B PASS, Batch C PASS (server-side).** Seven mods are installed on staging `depot_443031` (TEST world). Details are in `M3_LIVE_TEST_REPORT.md`.
 
 **2026-10-04 #14 Chest Labels: run 1 clean, restart run showed intermittent base-game spawn-table ids (`Exile_Priest_4_Hyrkanian`, `Exile_OrchidPriest_4_Nordheimer`); rolled back per the stop-on-unknown rule (INCONCLUSIVE).** `Exile_Priest_4_Hyrkanian` also appeared in a boot without Simple Minimap, so it is not minimap-specific and looks like base-game variance; nothing whitelisted, Simple Minimap stays deferred. The accepted pack is the 10 plus Player DBNO (11 mods); backups pre-#14 `2026-10-04_062824`, failed-state `2026-10-04_065439`.
