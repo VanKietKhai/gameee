@@ -1,5 +1,31 @@
 # Batch D handoff — FINAL 10-MOD CAMPAIGN PACK SERVER-SIDE = PASS
 
+## Desktop app prepared for daily use (2026-10-05)
+
+**What was built and where it lives:**
+- The real desktop UI is `src/ConanServerControl.App` (WPF, net8.0-windows). Release build: 0 warnings, 0 errors; tests 513/513.
+- It is published **self-contained** for win-x64. A framework-dependent build could not start, because the app embeds the Web Admin host and needs the ASP.NET Core 8 runtime, which is not installed machine-wide on this host. The self-contained publish carries the .NET, Desktop and ASP.NET Core 8 runtimes.
+- The app lives in a dedicated folder outside the repo and outside the live-test root. A desktop shortcut named **Conan Server Control** points to it.
+
+**Daily data directory:**
+- The app uses its own data directory, selected with the app's supported override variable `CONAN_SERVER_CONTROL_DATA` (user scope). The default ProgramData location is on a nearly full system drive.
+- The directory is kept separate from the live-test harness data on purpose, because the harness rewrites its settings on every run.
+- It was seeded with **copies** of the validated `settings.json` and `secrets.bin` (DPAPI, current user) and of the two key validated backups: final 2.2.3 `2026-10-05_041457` and migration source `2026-10-05_032214`. All copies were verified hash-identical.
+- All 152 original backups and the live-test data stay untouched.
+
+**What the settings carry over:**
+- Server path: the validated 2.2.3 dedicated server.
+- RCON: enabled on TCP 25575 with the validated secret.
+- The 13 Local mods in the validated order.
+- Auto-start of the server: off. Web Admin: off.
+
+**Verification (read-only, server never started):**
+- The app was opened through the desktop shortcut. It opened and responded, logged the intended data directory, and Kestrel did not listen.
+- The dashboard shows **OFFLINE**, `13 installed, 0 updates`, ports 7777/27015 and RCON 25575.
+- Cosmetic follow-ups: the server name is still the test label, and the dashboard says "Last backup: Never" because the new app's activity history is empty. The copied backups are in its backup folder.
+
+The live-test harness remains a test tool only; never run it while the daily app controls the server.
+
 ## Migration to Conan Exiles Enhanced 2.2.3 — 13-MOD STAGING PACK SERVER-SIDE PASS (2026-10-05)
 
 **OLD BUILD:** 2.2.2 / CL-377096 (`++exiles+release-CL-377096`). **OLD ENVIRONMENT: PRESERVED FOR ROLLBACK.** The operator renamed it to the `conan (old)` folder. It was only read, never booted, modified or reused.
@@ -299,21 +325,21 @@ No server or harness process or server-related scheduled task was found; the hos
 
 **Next action:** recheck mutable state, then run THREE unchanged 11-mod control boots, each with a verified pre-run backup, immutable evidence, at least 10-minute hold, graceful shutdown and integrity/persistence checks. The warning catalog stays unchanged for all three. Control boots 1/2/3 NOT RUN at this checkpoint; neither priest ID is assessed by new control evidence. No catalog change proposed/applied. Simple Minimap and Chest Labels remain deferred; retests and final 13-mod validation NOT RUN. Latest accepted verified backup: `2026-10-04_062716`. Safe to start Custom Main Questline: NO. Client and source packages unchanged.
 
-- CURRENT LOCAL TIME: 2026-10-05 04:2x +07:00.
+- CURRENT LOCAL TIME: 2026-10-05 13:1x +07:00.
 - CURRENT BRANCH: claude/m3-task4-live-windows (primary checkout of the repo).
-- CURRENT HEAD: the migration commit after 28e9f62 (docs: server Mods incident).
+- CURRENT HEAD: the docs commit after a4beabb (2.2.3 migration).
 - PRESERVED SAFETY BRANCH: codex/m3-batch-d-safety at abe3875 (original checkpoint 0bb2b2a). Its worktree is E:\github\gameee\.worktrees\batch-d.
 - CURRENT STAGE: MIGRATED TO CONAN EXILES ENHANCED 2.2.3 (CL-378132, release-beta). 13-MOD STAGING PACK SERVER-SIDE = PASS on 2.2.3 (smoke, 660 s full validation, clean restart). Conan Server Control points at the new 2.2.3 server; acceptance PASS. 2.2.3 client bundle READY. Old 2.2.2 environment PRESERVED FOR ROLLBACK (renamed folder, untouched). Custom Main Questline PAUSED. Production world NOT CREATED.
-- LAST COMPLETED CHECKPOINT: v223-final13-restart PASS (readiness 41.6 s, hold 660.9 s, NORMAL 166.0 s, 0 unknown, LoadErrors 61 exact, C88 signature exact) + app acceptance cycle/diagnostics/backup PASS.
+- LAST COMPLETED CHECKPOINT: desktop app published self-contained, daily data directory seeded from verified copies (settings, RCON secret, 13-mod catalog, backups 041457/032214), desktop shortcut created; app opens and shows OFFLINE with 13 mods.
 - CURRENT ACTIVE MODLIST (accepted 13, on 2.2.3): StackMe10K.pak -> SavageParagon.pak -> GritandGrease.pak -> ThrallReputation.pak -> ImprovedThrallsAndQoL.pak -> WO_RidingThralls.pak -> Ancient_Realms.pak -> Cannibal_Captivity.pak -> NightTerrors.pak -> PvEPlusAmbush.pak -> PlayerDBNO.pak -> Simple_Minimap.pak -> ChestLabels.pak
 - LATEST VERIFIED BACKUP: 2026-10-05_041457 (final 2.2.3, after the acceptance cycle). 2.2.3 chain: 040847 (restart), 035257 (full), 033640 (smoke). Migration source (last 2.2.2 world): 2026-10-05_032214. 2.2.2 validated: 2026-10-05_014347.
-- SERVER STATE: OFFLINE (2.2.3 server; no Conan or harness process). The 2.2.2 server is never to be started from the renamed folder except for an explicit rollback.
+- SERVER STATE: OFFLINE. The daily desktop app (Conan Server Control) is now the intended controller; do not run the live-test harness while it controls the server.
 - LAST SHUTDOWN CLASS: NORMAL (acceptance cycle final stop, exit 0; v223-final13-restart NORMAL 166.0 s).
 - ACCEPTED WARNING GATES (ModBootGates): ITQoL mailbox x1; 7 Ancient Realms dangling refs; Ancient Realms MergeDataTables-null (exact, AR hash, max 2); Cannibal teardown set CANNIBAL-CAPTIVITY-TEARDOWN-NO-WORLD (exact hash, exact message and path family, after main-world teardown only, exactly 99, all-or-nothing); base-game noise kinds incl. the two healthy spawn-table ids only. Nothing for Night Terrors or PvE Plus Ambush was needed (no new LoadErrors or errors). Fantasy Races, Shemite and Thrall Wars errors are NOT whitelisted.
 - ANALYSIS: every mod-boot writes an immutable snapshot (E:\CSC-M3-Live\live-test\batch-snapshots\<batch>, read-only, log hash-verified); pre-batch plans are pre-batch.json there too. Replay with `analyze-snapshot <dir> [backupId] [--current-catalog]`. Snapshots: cannibal-run-1/2, core8-final-*, shemite-run-1(-pre), p1-nightterrors-*, p2-pveambush-*, p3-thrallwars-*. Helper scripts are in the session scratchpad (phase_prep.ps1, phase_boot.ps1, phase_post.ps1, light_sampler.ps1).
 - OPERATOR DECISION 2026-10-04: Thrall Wars Dungeon EXCLUDED / DEFERRED (do not whitelist the 73 LoadErrors, 3 LogMaterial or 4 LogModController merge errors; the loot-table row-structure mismatches are NOT accepted as harmless; keep all evidence, snapshots and the failed-world backup 2026-10-04_031850). Accepted pack = the 10 mods; Fantasy Races, Shemite and Thrall Wars excluded.
 - (superseded) ROOM FOR ONE MORE earlier blocked on the source package (now supplied and tested; see the #11 checkpoint above). A read-only search (1,195 candidate .pak files on the profile, D:, E:, F:) found no package with that embedded Workshop ID; the WorkshopDL tool on F: holds none; nothing was downloaded or guessed. Needed: the .pak from the operator (or permission to download). When it arrives: prove it by embedded modinfo (id 3811298984, Enhanced, WindowsServer content, size, SHA-256, dependencies), then run the same fail-closed cycle (phase_prep.ps1 with BaseSnap final10-restart and BaseBackup 2026-10-04_035205, phase_boot.ps1, phase_post.ps1), keeping WO_RidingThralls installed, and check specifically for new mount/rider/passenger/attachment/seat/controller lines against the accepted 10-mod boot.
-- NEXT ACTION: operator review. Multiplayer testing on 2.2.3 needs testers with licensed Steam clients (bundle ConanClientModBundle-20261005-041519). Optional: apply the RCON TCP 25575 block rule; fix the Local-mod duplicate-diagnostic false positive (separate task). Do not start the Main Questline or create the production world.
+- NEXT ACTION: operator uses the desktop app for daily start/stop/backup. Optional: rename the server from the test label in Settings; apply the RCON TCP 25575 block rule; fix the Local-mod duplicate-diagnostic false positive (separate task). Do not start the Main Questline or create the production world.
 - OPERATOR DECISION 2026-10-04: #11 WO - Room For One More EXCLUDED / DEFERRED (do not whitelist its 5 merge errors; do not revisit in this phase; keep evidence and failed-world backup 2026-10-04_050719). #12 Simple Minimap, #13 Player DBNO and #14 Chest Labels continue independently, cumulatively on the 10-mod baseline (expected 13 mods), then a final 13-mod validation with a clean restart; stop before the custom quest mod and report first.
 - OPEN BLOCKERS: none server-side. The new local client folder contains Steam-emulator configuration and was not prepared (licensed clients required). RCON reachable from LAN/Radmin through the Windows-created Private allow rule (not public).
 

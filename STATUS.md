@@ -1,5 +1,31 @@
 # Conan Server Control — Current Status
 
+## Desktop app prepared for daily use (2026-10-05)
+
+**What was built and where it lives:**
+- The real desktop UI is `src/ConanServerControl.App` (WPF, net8.0-windows). Release build: 0 warnings, 0 errors; tests 513/513.
+- It is published **self-contained** for win-x64. A framework-dependent build could not start, because the app embeds the Web Admin host and needs the ASP.NET Core 8 runtime, which is not installed machine-wide on this host. The self-contained publish carries the .NET, Desktop and ASP.NET Core 8 runtimes.
+- The app lives in a dedicated folder outside the repo and outside the live-test root. A desktop shortcut named **Conan Server Control** points to it.
+
+**Daily data directory:**
+- The app uses its own data directory, selected with the app's supported override variable `CONAN_SERVER_CONTROL_DATA` (user scope). The default ProgramData location is on a nearly full system drive.
+- The directory is kept separate from the live-test harness data on purpose, because the harness rewrites its settings on every run.
+- It was seeded with **copies** of the validated `settings.json` and `secrets.bin` (DPAPI, current user) and of the two key validated backups: final 2.2.3 `2026-10-05_041457` and migration source `2026-10-05_032214`. All copies were verified hash-identical.
+- All 152 original backups and the live-test data stay untouched.
+
+**What the settings carry over:**
+- Server path: the validated 2.2.3 dedicated server.
+- RCON: enabled on TCP 25575 with the validated secret.
+- The 13 Local mods in the validated order.
+- Auto-start of the server: off. Web Admin: off.
+
+**Verification (read-only, server never started):**
+- The app was opened through the desktop shortcut. It opened and responded, logged the intended data directory, and Kestrel did not listen.
+- The dashboard shows **OFFLINE**, `13 installed, 0 updates`, ports 7777/27015 and RCON 25575.
+- Cosmetic follow-ups: the server name is still the test label, and the dashboard says "Last backup: Never" because the new app's activity history is empty. The copied backups are in its backup folder.
+
+The live-test harness remains a test tool only; never run it while the daily app controls the server.
+
 ## Migration to Conan Exiles Enhanced 2.2.3 — 13-MOD STAGING PACK SERVER-SIDE PASS (2026-10-05)
 
 **OLD BUILD:** 2.2.2 / CL-377096 (`++exiles+release-CL-377096`). **OLD ENVIRONMENT: PRESERVED FOR ROLLBACK.** The operator renamed it to the `conan (old)` folder. It was only read, never booted, modified or reused.
