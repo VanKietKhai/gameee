@@ -53,3 +53,24 @@ Method: the GUI Dev Kit editor ran a read-only Python script (`-ExecutePythonScr
 
 `UnrealEditor-Cmd.exe … -run=pythonscript` crashed twice with **`EXCEPTION_STACK_OVERFLOW` in `UnrealEditor-AssetRegistry.dll`** about 8 minutes after start, during the commandlet's own asset-registry scan (before any script ran; no asset written). No junctions/symlink loops; max content depth 14. The Dev Kit binaries were not modified. The **GUI editor works**: first start 26 min (14,111 shaders compiled locally; shared DDC unreachable), asset gather ~129 s CPU, no overflow; second start 7.5 min. The read-only trace above ran there. Raw extract: [`quest01-trace-extract-2026-10-05.json`](quest01-trace-extract-2026-10-05.json).
 Risk still open: `BuildMod -Cook` runs a commandlet and may hit the same overflow (retest in progress).
+
+## A4–A7: compatibility probe on 2.2.3 / CL-378132 — **FAIL (STOP)** (2026-10-06)
+
+| Step | Result |
+|---|---|
+| A4 build | Mod `MQ14CompatProbe` was created in the Dev Kit UI. Its only content is `BP_MQ14CompatProbeController`, an empty child of `/Script/DreamworldMods.ModController`. Built with the official `RunUAT BuildMod -Cook -Pak -Compress -FinalPak` (the same command the "Build mod" button runs; the cook commandlet now passes its registry scan): BUILD SUCCESSFUL, 9.3 min. |
+| A5 inspect | `MQ14CompatProbe.pak` 271,512 B, SHA-256 `051c7543…6876`. Layout identical to accepted mods: Windows/WindowsServer/LinuxServer pak+ucas+utoc, plus `manifest.json` and `modinfo.json`. Embedded modinfo: `devkitRevisionNumber 1002`, `devkitSnapshotId 0`, `minimumVersion Enhanced`. The Dev Kit itself wrote 1002 at Build time (a new mod starts at 0). **No metadata edited.** **PASS** |
+| A6 pre-checks | Quiet host, no `release-hold`, no WAL. Pre-probe cold backup **`2026-10-06_020925`**: hashes, SQLite and manifest verified, live world unchanged. Probe imported as #14 through the Local mod pipeline (source = installed SHA, load order 14, 13 mods unchanged, world unchanged). |
+| A6 boot `mq14-probe-1` | The server mounted the probe and logged `Persistence: Spawning mod controller: BP_MQ14CompatProbeController_C` after the 32 existing controllers, then `MatchStarting`. **The log then stopped after the 2nd NavData warning (02:10:32), during world load.** The baseline continues for ~15 s and reaches readiness. No crash dump. No readiness; the harness **force-stopped** the process tree after ~10 min (exit 1). The forced kill left a non-empty WAL (766,352 B). **FAIL — unexplained hang** |
+| Evidence | `E:\CSC-M3-Live\live-test\mq14-probe\evidence-forced-kill\` (read-only): server log, `game_0.db`, `-wal`, `-shm`. Forced-kill world also kept as backup `2026-10-06_022151`. Harness outputs `01`–`06` are in the same folder. |
+| A7 recovery | `remove-local MQ14CompatProbe.pak`: PASS, 13 mods exact. `restore 2026-10-06_020925`: PASS; world equals the pre-probe backup (`43a2c2d1…`), WAL 0. |
+| A7 control boot `mq14-baseline-after-probe` (13 mods, no probe) | Readiness OK; load analysis PASS, with only the exact known LoadErrors (ITQoL 23, Ancient Realms 37, Simple Minimap 1) and no unattributed ones; graceful RCON stop NORMAL 189.3 s, exit 0, no orphan; quick_check PASS; ITQoL mailbox/controller and Ancient Realms controller gates PASS. **Environment healthy.** |
+
+**Conclusion:** the hang appears **only with the probe** (one run each, same host and session conditions; 6.1 GB RAM free before the control boot). The most likely cause is the Dev Kit/build gap: a ModController child cooked by Dev Kit CL-377800 (`++exiles+release`) spawning on server CL-378132 (`++exiles+release-beta`). This is not proven. Per the operator rule, **STOP: Quest 01 is not started.**
+
+Possible next steps (operator decision):
+1. Re-run the probe once more to rule out a one-off hang (same pre-probe backup and restore procedure).
+2. Wait for a Dev Kit matching the 2.2.3 beta, or move staging to the live release that matches Dev Kit 377800.
+3. Probe variant without a ModController (e.g., a single DataTable), to isolate whether the hang is specific to the controller spawn.
+
+Stale files to note: `Saved\ExtractedMods\MQ14CompatProbe-WindowsServer.*` may remain (like the earlier WickProbe). They are not mounted without the pak.

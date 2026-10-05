@@ -379,6 +379,15 @@ No server or harness process or server-related scheduled task was found; the hos
   - UI text is Vietnamese (MainQuestText.cs; data v2).
 - RESUME POINT: Build mod in the Dev Kit → inspect modinfo (revision must be written by the Dev Kit; never edited) → DEVKIT_CHECKLIST A5–A7.
 - 2026-10-06 00:01 SERVER CONTROL BACK TO OPERATOR: the operator started the staging server through the desktop app (ConanServerControl.exe, server PID 29376) for the overall play test. No pre-start cold backup was taken by the main session. The main session does not run the harness, backups or start/stop while the app controls the server. Connect: Direct Connect over Radmin VPN or LAN, port 7777 (IPs shared privately). After the session: graceful Stop in the app, then the main session reviews the session log and shutdown classification.
+- 2026-10-06 02:05–02:30 MOD #14 RESUMED, then STOPPED at the compatibility gate (evidence/devkit-results-2026-10-05.md, section A4–A7):
+  - Probe built (Dev Kit 377800, modinfo revision 1002 written by the Dev Kit, layout PASS). Pre-probe backup 2026-10-06_020925. Imported as #14.
+  - Boot mq14-probe-1: the controller spawned, then the server **hung at world load**; harness FORCE STOP after ~10 min (exit 1).
+  - Evidence kept: live-test/mq14-probe/evidence-forced-kill + backup 2026-10-06_022151.
+  - Recovery: probe removed, pre-probe backup restored (world = 43a2c2d1…, WAL 0).
+  - Control boot with the 13 mods only: PASS, NORMAL 189.3 s, exit 0, no orphan, quick_check ok.
+  - BLOCKER: the probe hangs CL-378132 (likely the Dev Kit 377800 vs server 378132 gap; unproven). Quest 01 NOT started. Server OFFLINE with the 13-mod pack.
+  - Latest verified backup: 2026-10-06_020925. Last shutdown: NORMAL (control boot).
+  - Operator decision needed: re-run the probe / wait for a matching Dev Kit or move to the live release / non-controller probe variant.
 - NEXT ACTION: probe mod `MQ14CompatProbe` created in the Dev Kit UI → main session adds an empty ModController Blueprint child via editor Python → BuildMod → inspect modinfo → backup → append #14 → boot → restore the pre-probe backup. Mod #14 not built; 13-mod pack unchanged; production world NOT CREATED.
 - OPERATOR DECISION 2026-10-04: #11 WO - Room For One More EXCLUDED / DEFERRED (do not whitelist its 5 merge errors; do not revisit in this phase; keep evidence and failed-world backup 2026-10-04_050719). #12 Simple Minimap, #13 Player DBNO and #14 Chest Labels continue independently, cumulatively on the 10-mod baseline (expected 13 mods), then a final 13-mod validation with a clean restart; stop before the custom quest mod and report first.
 
