@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <RootNamespace>MainQuestline.Reference</RootNamespace>
+    <Description>Executable reference model (specification) of the Custom Main Questline (mod #14) quest rules. Not the mod itself: the in-game implementation is Blueprint/DataTable work in the Conan Exiles Enhanced DevKit and must match these rules and tests.</Description>
+  </PropertyGroup>
+
+</Project>

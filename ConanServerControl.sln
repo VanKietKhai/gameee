@@ -19,6 +19,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConanServerControl.Tests", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConanServerControl.LiveHarness", "tests\ConanServerControl.LiveHarness\ConanServerControl.LiveHarness.csproj", "{8B0AEBDD-1477-48AC-AF82-176C0527B90F}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "mods", "mods", "{196497E2-637F-434A-96A5-1DE0506E00A6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MainQuestline.Reference", "mods\CustomMainQuestline\src\MainQuestline.Reference\MainQuestline.Reference.csproj", "{08F1AFF6-A703-441D-B250-74EB770AD93A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MainQuestline.Reference.Tests", "mods\CustomMainQuestline\tests\MainQuestline.Reference.Tests\MainQuestline.Reference.Tests.csproj", "{C6407F6B-D9C6-4DFF-B798-0F4B2D68E385}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -52,6 +58,14 @@ Global
 		{8B0AEBDD-1477-48AC-AF82-176C0527B90F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8B0AEBDD-1477-48AC-AF82-176C0527B90F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8B0AEBDD-1477-48AC-AF82-176C0527B90F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{08F1AFF6-A703-441D-B250-74EB770AD93A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{08F1AFF6-A703-441D-B250-74EB770AD93A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{08F1AFF6-A703-441D-B250-74EB770AD93A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{08F1AFF6-A703-441D-B250-74EB770AD93A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6407F6B-D9C6-4DFF-B798-0F4B2D68E385}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6407F6B-D9C6-4DFF-B798-0F4B2D68E385}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6407F6B-D9C6-4DFF-B798-0F4B2D68E385}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6407F6B-D9C6-4DFF-B798-0F4B2D68E385}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{2434EACF-3705-414C-8544-D6B68EC5C6DB} = {D0251A37-9FC5-4F8E-9E5E-DFEC89C9F964}
@@ -60,5 +74,7 @@ Global
 		{0E1E907D-B303-4E8B-874A-29A7393202D6} = {D0251A37-9FC5-4F8E-9E5E-DFEC89C9F964}
 		{A809A65C-3750-41EE-A918-4B7DCB73B3EB} = {DA99054F-9475-476F-AA06-CF6C21BB4DA1}
 		{8B0AEBDD-1477-48AC-AF82-176C0527B90F} = {DA99054F-9475-476F-AA06-CF6C21BB4DA1}
+		{08F1AFF6-A703-441D-B250-74EB770AD93A} = {196497E2-637F-434A-96A5-1DE0506E00A6}
+		{C6407F6B-D9C6-4DFF-B798-0F4B2D68E385} = {196497E2-637F-434A-96A5-1DE0506E00A6}
 	EndGlobalSection
 EndGlobal

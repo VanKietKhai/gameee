@@ -1,0 +1,404 @@
+{
+  "dataSchemaVersion": 1,
+  "status": "PROVISIONAL - design targets only; no target is verified; rewards are placeholders",
+  "quests": [
+    {
+      "questId": "MQ01",
+      "actId": "ACT_I_SURVIVAL",
+      "sequence": 10,
+      "displayName": "Into the Dregs",
+      "description": "Defeat Abysmal Remnant at The Dregs.",
+      "target": {
+        "type": "BossKill",
+        "displayName": "Abysmal Remnant",
+        "targetClassPath": null,
+        "verification": "Unverified",
+        "verificationNote": "Unresolved. 2.2.3 server asset indexes show the Abysmal/Abyssal Remnant VFX, weapons, trophy and icons (content set A3C1, Darkened Dregs). Ranked candidates below; the exact class must be confirmed from a staged kill (server log KillCharacterWithRagdoll Name/CharacterName) or DevKit before enabling credit.",
+        "candidates": [
+          "BP_NPC_Wildlife_SewerAbomination (creature; acid puke/spit kit matches NS_AbysmalRemnant_* VFX; trophy BP_PL_W_Trophy_DarkDregs_Abomination)",
+          "Nahjef encounter (HumanoidNPCCharacter_20percentbigger_boss_Nahjef / DT_NPC_Nahjef, spawned by BP_BossDarkDregs_Nahjef_SpawnRequest; a separate Dregs boss)"
+        ]
+      },
+      "nextQuestId": "MQ02",
+      "minimumLevel": 15,
+      "recommendedLevelMin": 15,
+      "recommendedLevelMax": 25,
+      "recommendedPartyMin": 1,
+      "recommendedPartyMax": 3,
+      "locationName": "The Dregs",
+      "reward": {
+        "rewardId": "RW_MQ01_PLACEHOLDER",
+        "entries": [
+          {
+            "type": "Xp",
+            "id": "xp",
+            "amount": 1000
+          }
+        ],
+        "placeholder": true
+      },
+      "completionCreditRadius": 5000,
+      "campaignWeight": 1,
+      "enabled": true
+    },
+    {
+      "questId": "MQ02",
+      "actId": "ACT_II_ANCIENT_BLOOD",
+      "sequence": 20,
+      "displayName": "The Witch Queen",
+      "description": "Defeat Witch Queen at Witch Queen encounter (to be verified).",
+      "target": {
+        "type": "BossKill",
+        "displayName": "Witch Queen",
+        "targetClassPath": null,
+        "verification": "Unverified",
+        "verificationNote": "Design target only; exact 2.2.3 identity not yet resolved."
+      },
+      "previousQuestId": "MQ01",
+      "nextQuestId": "MQ03",
+      "minimumLevel": 25,
+      "recommendedLevelMin": 25,
+      "recommendedLevelMax": 35,
+      "recommendedPartyMin": 2,
+      "recommendedPartyMax": 4,
+      "locationName": "Witch Queen encounter (to be verified)",
+      "reward": {
+        "rewardId": "RW_MQ02_PLACEHOLDER",
+        "entries": [
+          {
+            "type": "Xp",
+            "id": "xp",
+            "amount": 1000
+          }
+        ],
+        "placeholder": true
+      },
+      "completionCreditRadius": 5000,
+      "campaignWeight": 1,
+      "enabled": true
+    },
+    {
+      "questId": "MQ03",
+      "actId": "ACT_II_ANCIENT_BLOOD",
+      "sequence": 30,
+      "displayName": "The Barrow King",
+      "description": "Defeat Barrow King at Barrow King encounter (to be verified).",
+      "target": {
+        "type": "BossKill",
+        "displayName": "Barrow King",
+        "targetClassPath": null,
+        "verification": "Unverified",
+        "verificationNote": "Design target only; exact 2.2.3 identity not yet resolved."
+      },
+      "previousQuestId": "MQ02",
+      "nextQuestId": "MQ04",
+      "minimumLevel": 25,
+      "recommendedLevelMin": 28,
+      "recommendedLevelMax": 35,
+      "recommendedPartyMin": 2,
+      "recommendedPartyMax": 4,
+      "locationName": "Barrow King encounter (to be verified)",
+      "reward": {
+        "rewardId": "RW_MQ03_PLACEHOLDER",
+        "entries": [
+          {
+            "type": "Xp",
+            "id": "xp",
+            "amount": 1000
+          }
+        ],
+        "placeholder": true
+      },
+      "completionCreditRadius": 5000,
+      "campaignWeight": 1,
+      "enabled": true
+    },
+    {
+      "questId": "MQ04",
+      "actId": "ACT_III_FROZEN_NORTH",
+      "sequence": 40,
+      "displayName": "Temple of Frost",
+      "description": "Defeat Temple of Frost boss at Temple of Frost.",
+      "target": {
+        "type": "BossKill",
+        "displayName": "Temple of Frost boss",
+        "targetClassPath": null,
+        "verification": "Unverified",
+        "verificationNote": "Design target only; exact 2.2.3 identity not yet resolved."
+      },
+      "previousQuestId": "MQ03",
+      "nextQuestId": "MQ05",
+      "minimumLevel": 35,
+      "recommendedLevelMin": 35,
+      "recommendedLevelMax": 45,
+      "recommendedPartyMin": 2,
+      "recommendedPartyMax": 4,
+      "locationName": "Temple of Frost",
+      "reward": {
+        "rewardId": "RW_MQ04_PLACEHOLDER",
+        "entries": [
+          {
+            "type": "Xp",
+            "id": "xp",
+            "amount": 1000
+          }
+        ],
+        "placeholder": true
+      },
+      "completionCreditRadius": 5000,
+      "campaignWeight": 1,
+      "enabled": true
+    },
+    {
+      "questId": "MQ05",
+      "actId": "ACT_III_FROZEN_NORTH",
+      "sequence": 50,
+      "displayName": "The Black Keep",
+      "description": "Defeat Kinscourge at The Black Keep.",
+      "target": {
+        "type": "BossKill",
+        "displayName": "Kinscourge",
+        "targetClassPath": null,
+        "verification": "Unverified",
+        "verificationNote": "Design target only; exact 2.2.3 identity not yet resolved."
+      },
+      "previousQuestId": "MQ04",
+      "nextQuestId": "MQ06",
+      "minimumLevel": 35,
+      "recommendedLevelMin": 40,
+      "recommendedLevelMax": 50,
+      "recommendedPartyMin": 2,
+      "recommendedPartyMax": 5,
+      "locationName": "The Black Keep",
+      "reward": {
+        "rewardId": "RW_MQ05_PLACEHOLDER",
+        "entries": [
+          {
+            "type": "Xp",
+            "id": "xp",
+            "amount": 1000
+          }
+        ],
+        "placeholder": true
+      },
+      "completionCreditRadius": 5000,
+      "campaignWeight": 1,
+      "enabled": true
+    },
+    {
+      "questId": "MQ06",
+      "actId": "ACT_IV_DARK_POWERS",
+      "sequence": 60,
+      "displayName": "Midnight Grove",
+      "description": "Defeat Midnight Grove boss at The Midnight Grove.",
+      "target": {
+        "type": "BossKill",
+        "displayName": "Midnight Grove boss",
+        "targetClassPath": null,
+        "verification": "Unverified",
+        "verificationNote": "Design target only; exact 2.2.3 identity not yet resolved."
+      },
+      "previousQuestId": "MQ05",
+      "nextQuestId": "MQ07",
+      "minimumLevel": 50,
+      "recommendedLevelMin": 50,
+      "recommendedLevelMax": 55,
+      "recommendedPartyMin": 3,
+      "recommendedPartyMax": 5,
+      "locationName": "The Midnight Grove",
+      "reward": {
+        "rewardId": "RW_MQ06_PLACEHOLDER",
+        "entries": [
+          {
+            "type": "Xp",
+            "id": "xp",
+            "amount": 1000
+          }
+        ],
+        "placeholder": true
+      },
+      "completionCreditRadius": 5000,
+      "campaignWeight": 1,
+      "enabled": true
+    },
+    {
+      "questId": "MQ07",
+      "actId": "ACT_IV_DARK_POWERS",
+      "sequence": 70,
+      "displayName": "Well of Skelos",
+      "description": "Defeat Well of Skelos boss at The Well of Skelos.",
+      "target": {
+        "type": "BossKill",
+        "displayName": "Well of Skelos boss",
+        "targetClassPath": null,
+        "verification": "Unverified",
+        "verificationNote": "Design target only; exact 2.2.3 identity not yet resolved."
+      },
+      "previousQuestId": "MQ06",
+      "nextQuestId": "MQ08",
+      "minimumLevel": 50,
+      "recommendedLevelMin": 52,
+      "recommendedLevelMax": 58,
+      "recommendedPartyMin": 3,
+      "recommendedPartyMax": 5,
+      "locationName": "The Well of Skelos",
+      "reward": {
+        "rewardId": "RW_MQ07_PLACEHOLDER",
+        "entries": [
+          {
+            "type": "Xp",
+            "id": "xp",
+            "amount": 1000
+          }
+        ],
+        "placeholder": true
+      },
+      "completionCreditRadius": 5000,
+      "campaignWeight": 1,
+      "enabled": true
+    },
+    {
+      "questId": "MQ08",
+      "actId": "ACT_IV_DARK_POWERS",
+      "sequence": 80,
+      "displayName": "The Sunken City",
+      "description": "Defeat Sunken City boss at The Sunken City.",
+      "target": {
+        "type": "BossKill",
+        "displayName": "Sunken City boss",
+        "targetClassPath": null,
+        "verification": "Unverified",
+        "verificationNote": "Design target only; exact 2.2.3 identity not yet resolved."
+      },
+      "previousQuestId": "MQ07",
+      "nextQuestId": "MQ09",
+      "minimumLevel": 50,
+      "recommendedLevelMin": 55,
+      "recommendedLevelMax": 60,
+      "recommendedPartyMin": 3,
+      "recommendedPartyMax": 5,
+      "locationName": "The Sunken City",
+      "reward": {
+        "rewardId": "RW_MQ08_PLACEHOLDER",
+        "entries": [
+          {
+            "type": "Xp",
+            "id": "xp",
+            "amount": 1000
+          }
+        ],
+        "placeholder": true
+      },
+      "completionCreditRadius": 5000,
+      "campaignWeight": 1,
+      "enabled": true
+    },
+    {
+      "questId": "MQ09",
+      "actId": "ACT_V_ENDGAME",
+      "sequence": 90,
+      "displayName": "The Wine Cellar",
+      "description": "Defeat Wine Cellar boss at The Wine Cellar.",
+      "target": {
+        "type": "BossKill",
+        "displayName": "Wine Cellar boss",
+        "targetClassPath": null,
+        "verification": "Unverified",
+        "verificationNote": "Design target only; exact 2.2.3 identity not yet resolved."
+      },
+      "previousQuestId": "MQ08",
+      "nextQuestId": "MQ10",
+      "minimumLevel": 60,
+      "recommendedLevelMin": 60,
+      "recommendedLevelMax": 60,
+      "recommendedPartyMin": 3,
+      "recommendedPartyMax": 5,
+      "locationName": "The Wine Cellar",
+      "reward": {
+        "rewardId": "RW_MQ09_PLACEHOLDER",
+        "entries": [
+          {
+            "type": "Xp",
+            "id": "xp",
+            "amount": 1000
+          }
+        ],
+        "placeholder": true
+      },
+      "completionCreditRadius": 5000,
+      "campaignWeight": 1,
+      "enabled": true
+    },
+    {
+      "questId": "MQ10",
+      "actId": "ACT_V_ENDGAME",
+      "sequence": 100,
+      "displayName": "Warmaker's Sanctuary",
+      "description": "Defeat The Champion at Warmaker's Sanctuary.",
+      "target": {
+        "type": "BossKill",
+        "displayName": "The Champion",
+        "targetClassPath": null,
+        "verification": "Unverified",
+        "verificationNote": "Design target only; exact 2.2.3 identity not yet resolved."
+      },
+      "previousQuestId": "MQ09",
+      "nextQuestId": "MQ11",
+      "minimumLevel": 60,
+      "recommendedLevelMin": 60,
+      "recommendedLevelMax": 60,
+      "recommendedPartyMin": 4,
+      "recommendedPartyMax": 5,
+      "locationName": "Warmaker's Sanctuary",
+      "reward": {
+        "rewardId": "RW_MQ10_PLACEHOLDER",
+        "entries": [
+          {
+            "type": "Xp",
+            "id": "xp",
+            "amount": 1000
+          }
+        ],
+        "placeholder": true
+      },
+      "completionCreditRadius": 5000,
+      "campaignWeight": 1,
+      "enabled": true
+    },
+    {
+      "questId": "MQ11",
+      "actId": "EPILOGUE",
+      "sequence": 110,
+      "displayName": "Legacy",
+      "description": "Defeat Cyclopean Halls candidate at Cyclopean Halls (candidate).",
+      "target": {
+        "type": "BossKill",
+        "displayName": "Cyclopean Halls candidate",
+        "targetClassPath": null,
+        "verification": "Unverified",
+        "verificationNote": "Design target only; exact 2.2.3 identity not yet resolved."
+      },
+      "previousQuestId": "MQ10",
+      "minimumLevel": 60,
+      "recommendedLevelMin": 60,
+      "recommendedLevelMax": 60,
+      "recommendedPartyMin": 4,
+      "recommendedPartyMax": 5,
+      "locationName": "Cyclopean Halls (candidate)",
+      "reward": {
+        "rewardId": "RW_MQ11_PLACEHOLDER",
+        "entries": [
+          {
+            "type": "Xp",
+            "id": "xp",
+            "amount": 1000
+          }
+        ],
+        "placeholder": true
+      },
+      "completionCreditRadius": 5000,
+      "campaignWeight": 1,
+      "enabled": true
+    }
+  ]
+}
