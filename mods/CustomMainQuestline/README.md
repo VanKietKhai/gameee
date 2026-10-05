@@ -16,7 +16,10 @@ Baseline: Conan Exiles Enhanced **2.2.3 / CL-378132** (release-beta), dedicated 
 
   Version metadata is never edited or faked. **If the server rejects the package for a Dev Kit/build mismatch: STOP and report.**
 - **Abysmal Remnant identity:** Dev Kit asset references are the PRIMARY method (§3). A licensed-client kill is secondary runtime confirmation.
-- **Main Quest tab:** a dedicated campaign tab, plus separate lightweight banners. Design-only until the Dev Kit exists: [`MAIN_QUEST_UI.md`](MAIN_QUEST_UI.md).
+- **Main Quest tab:** a dedicated campaign tab, plus separate lightweight banners. Design-only until the Dev Kit exists: [`MAIN_QUEST_UI.md`](MAIN_QUEST_UI.md) and the [visual mockup](https://claude.ai/artifact/LqogeEnkUB7EyX7WyHzBmb).
+  - Locked quests default to `Partial`; nothing hidden on the client counts as secret.
+  - The tab opens from a supported Enhanced menu hook if one exists, otherwise from a standalone panel on a configurable hotkey. The hotkey is chosen only after the input check ([`INPUT_CONFLICT_AUDIT.md`](INPUT_CONFLICT_AUDIT.md)).
+- **Dev Kit work** follows [`DEVKIT_CHECKLIST.md`](DEVKIT_CHECKLIST.md): Part A is the compatibility gate, Part B the Quest 01 identity trace, Part C the UI entry point and input.
 - The live 13-mod server is not modified while the operator is using it.
 
 ## 1. Authoring toolchain audit (read-only) — BLOCKED
@@ -80,12 +83,20 @@ Steps 2–8 (project, Remnant verification through Dev Kit references, Quest 01,
 
 The 2.2.3 asset names prove the content exists:
 - the `AbysmalRemnant` VFX folder (`NS_AbysmalRemnant_VomitCone/_Projectile/_Splash/…`);
-- Abyssal Remnant weapons, `trophy_abyssal_remnant` and `icon_a03c1_head_abyssalremnant` (content set **A3C1**, Darkened Dregs);
+- Abyssal Remnant weapons (`SM_A3C1_Dark_Dregs_Abyssal_Remnant_Shield`, `…_2H_Spear_Weapon`, `…_1h_sword`), `trophy_abyssal_remnant` and `icon_a03c1_head_abyssalremnant`.
+  - *Correction (2026-10-05):* `A3C1` is a broad content-set code; it also covers pets, emotes and props. It is **not** a Dregs-only marker.
 - the Dregs dungeon controller `BP_DarkDregsDungeonController` and the boss-fight buff `BP_AC_Buff_AcidBath_DarkDregsBossFight`.
 
 No Blueprint is named after the Remnant. Ranked candidates, **not verified**:
 1. `BP_NPC_Wildlife_SewerAbomination`. Its acid puke and spit attack kit matches the Remnant VFX, and there is a matching `BP_PL_W_Trophy_DarkDregs_Abomination`.
 2. The **Nahjef** encounter (`HumanoidNPCCharacter_20percentbigger_boss_Nahjef`, `DT_NPC_Nahjef`, `BP_NahjefAIController`, spawned by `BP_BossDarkDregs_Nahjef_SpawnRequest`). This looks like a *separate* humanoid Dregs boss.
+
+More name-level evidence (2026-10-05, [`evidence/dregs-asset-paths-2.2.3.txt`](evidence/dregs-asset-paths-2.2.3.txt)); none of it is verification:
+- `P_sewerboss_acidtrail` and `large_slam_sewerboss_Cue` suggest a "sewer boss" with an acid kit.
+- The Dregs gameplay sublevels are `Gameplay_Dungeon_Sewer` and `Gameplay_Dungeon_Sewer_Blackout`.
+- `BP_NPC_Wildlife_LavaWurm` shares the `sewer_abomination` folder, so inheritance and uniqueness must be checked.
+
+The exact trace steps are [`DEVKIT_CHECKLIST.md`](DEVKIT_CHECKLIST.md) Part B, B1–B9.
 
 To verify (operator decision 2026-10-05):
 1. **Primary, in the Dev Kit:** trace the references.
@@ -162,7 +173,7 @@ The tab is a read-only projection (`MainQuestView.cs`); it never decides progres
 
 `Inspect`, `SetCurrentQuest`, `CompleteCurrentQuest`, `ResetProgress` and the progress printout require an admin caller. Normal players get an authorization error. In-game, they are to be bound to the server's admin check, never to an unrestricted chat command.
 
-## 10. Automated tests — `tests/MainQuestline.Reference.Tests` (80 passing)
+## 10. Automated tests — `tests/MainQuestline.Reference.Tests` (81 passing)
 
 - **Credit rules:** previous-quest gate, level gate, correct boss, wrong boss, exact (not substring or case-folded) class match, future boss cannot skip, multiple eligible nearby players without a killing blow, ineligible and out-of-radius players, the participation rule, duplicate death event, a player listed twice, unverified targets never crediting, and the final quest completing the campaign.
 - **Progress:** weighted campaign %, 10 quests with 5 done = 50%, and removed quests kept but not counted.

@@ -141,8 +141,8 @@ public static class MainQuestViews
         var q = engine.Catalog.Find(questId) ?? throw new ArgumentException($"unknown or disabled quest {questId}", nameof(questId));
         var act = engine.Catalog.Act(q.ActId);
         var status = StatusOf(state, q);
-        var level = $"{q.RecommendedLevelMin}–{q.RecommendedLevelMax}";
-        var party = q.RecommendedPartyMin == q.RecommendedPartyMax ? $"{q.RecommendedPartyMin}" : $"{q.RecommendedPartyMin}–{q.RecommendedPartyMax}";
+        var level = Range(q.RecommendedLevelMin, q.RecommendedLevelMax);
+        var party = Range(q.RecommendedPartyMin, q.RecommendedPartyMax);
         var reward = q.Reward.Entries.Select(FormatReward).ToList();
         var objective = q.Objective ?? $"Defeat {q.Target.DisplayName}.";
 
@@ -197,6 +197,8 @@ public static class MainQuestViews
     /// <summary>Percent is floored, so 100% shows only when every weighted quest is complete.</summary>
     private static (double Ratio, int Percent) Ratio(int done, int total) =>
         total <= 0 ? (0, 0) : ((double)done / total, done * 100 / total);
+
+    private static string Range(int min, int max) => min == max ? $"{min}" : $"{min}–{max}";
 
     private static string FormatReward(RewardEntry e) => e.Type switch
     {

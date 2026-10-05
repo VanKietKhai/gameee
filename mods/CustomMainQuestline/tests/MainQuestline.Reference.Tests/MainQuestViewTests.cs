@@ -356,5 +356,17 @@ public sealed class ProvisionalMainQuestTabTests
         Assert.Equal([100, 100, 50, 0, 0, 0], v.Acts.Select(a => a.ProgressPercent));
         Assert.False(v.Current.CreditEnabled);                              // provisional targets are unverified
         Assert.Equal(["MQ01", "MQ02", "MQ03", "MQ04"], v.History.Select(h => h.QuestId));
+        Assert.False(v.Tracking.MarkerVisible);                             // provisional quests carry no marker coordinates yet
+        Assert.Equal("This quest has no map marker", v.Tracking.MarkerHiddenReason);
+    }
+
+    [Fact]
+    public void Equal_range_ends_render_as_one_number()
+    {
+        var (_, catalog) = Load();
+        var engine = new CampaignEngine(catalog);
+        var d = engine.Detail(engine.NewPlayer("p1"), 60, "MQ09");
+
+        Assert.Equal(("60", "3–5"), (d.RecommendedLevel, d.RecommendedParty));
     }
 }

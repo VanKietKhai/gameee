@@ -21,6 +21,11 @@ All of this is covered by `tests/MainQuestline.Reference.Tests/MainQuestViewTest
 
 ## 2. Wireframe
 
+**Visual mockup:** [Main Quest Tab Mockup](https://claude.ai/artifact/LqogeEnkUB7EyX7WyHzBmb) (private until shared). Its source is in [`mockup/`](mockup/).
+- The boards: the interactive tab with an ACTIVE quest; a LOCKED quest (Partial); a COMPLETED quest; and the HUD banner queue.
+- Every value comes from `data/main-quests.provisional.v2.json`, with the player at MQ05 and level 48.
+- The marker line reads "no map marker": the provisional quests carry no verified marker coordinates, which is the projection's real output.
+
 ```
 +----------------------------------------------------------------------------------------------+
 |  MAIN QUEST                                                        Campaign Progress  36%    |
@@ -91,7 +96,10 @@ Act headers are never hidden.
 
 Hidden fields are `null` in the view model, not just visually hidden, so a widget binding cannot leak them by accident.
 
-**Limit:** the DataTable ships inside the client `.pak`, so disclosure is a *presentation* choice, not a secret from someone who extracts the pak. If real secrecy is wanted later, the server would replicate a masked view instead of the client building it. **Operator decision pending:** the default for the real campaign (currently `Partial`).
+**Limit:** the DataTable ships inside the client `.pak`, so disclosure is a *presentation* choice, not a secret from someone who extracts the pak. If real secrecy is wanted later, the server would replicate a masked view instead of the client building it. **Operator decision (2026-10-05): default `Partial`.**
+- The act and the quest slot may be visible; the boss, location and reward stay hidden until the quest unlocks.
+- No hidden data on the client is treated as secret.
+- The server-authoritative quest state remains the source of truth.
 
 ## 4. Progress
 
@@ -178,15 +186,18 @@ Tracking only drives the marker and never affects progression. On completion:
 - The quest system owns its marker. A Simple Minimap adapter is **optional**: it is disabled if Simple Minimap is absent or its interface changes, and Simple Minimap itself is never patched.
 - Without the adapter, the tab still shows the location and the marker state.
 
-## 9. Opening the tab (decide once the Dev Kit is available)
+## 9. Opening the tab (operator decision 2026-10-05; the entry point is confirmed in the Dev Kit)
 
 1. **Preferred:** a tab in the Conan Enhanced menu, if the Dev Kit exposes a **supported** registration hook. To investigate: the Enhanced menu widgets and any mod-facing extension points.
 2. **Fallback:** a standalone UMG panel opened by a **configurable** key binding.
 3. **Not allowed:** patching vanilla widgets directly, unless it is proven unavoidable and approved first.
 
-**Hotkey not chosen yet.** Before choosing one, list the input bindings each of the 13 staging mods adds, read through the Dev Kit or the mods' input config. Then confirm in a licensed client.
+**Hotkey not chosen yet.** The pre-Dev Kit audit of the 13 mods is in [`INPUT_CONFLICT_AUDIT.md`](INPUT_CONFLICT_AUDIT.md):
+- Simple Minimap holds F1, and uses Shift+click on the map.
+- The console uses `~` and Insert.
+- Improved Thralls & QoL has its own rebindable hotkey system with unknown defaults.
 
-The 13 mods are StackMe10K, Savage Paragon, Grit & Grease, Thrall Reputation, Improved Thralls & QoL, WO Riding Thralls, Ancient Realms, Cannibal Captivity, Night Terrors, PvE Plus Ambush, Player DBNO, Simple Minimap and Chest Labels. Improved Thralls & QoL, Simple Minimap and Player DBNO are the most likely to bind keys.
+Candidates are recorded there. The final choice waits for Dev Kit steps C1–C3 ([`DEVKIT_CHECKLIST.md`](DEVKIT_CHECKLIST.md)) and a licensed-client check.
 
 ## 10. Planned Unreal assets (names only; NOT created)
 
@@ -202,7 +213,7 @@ The 13 mods are StackMe10K, Savage Paragon, Grit & Grease, Thrall Reputation, Im
 
 ## 11. Open decisions
 
-- The default `LockedDisclosure` for the real campaign, and whether real secrecy (a server-masked view) is needed.
-- The tab entry point, once the Dev Kit investigation is done (§9).
+- ~~The default `LockedDisclosure`~~: decided, `Partial`, not treated as secrecy (§3).
+- The tab entry point: decided as preference order (§9); confirm the supported hook in the Dev Kit (checklist C1).
 - The key binding, after the conflict check (§9).
 - The banner duration and stacking limit. This is a cosmetic choice, to make in-game.

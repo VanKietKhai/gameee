@@ -1,0 +1,18 @@
+{
+  "v": 3,
+  "createdOnFiles": { "v": 1, "at": "2026-10-05T19:05:00Z" },
+  "title": "Main Quest Tab Mockup",
+  "launch": { "view": "canvas" },
+  "pages": [],
+  "boards": {
+    "Main.dc.html": { "x": 0, "y": 0, "w": 1440, "h": 900, "title": "Tab — ACTIVE quest selected (interactive)", "is_interactive": true },
+    "Locked.dc.html": { "x": 1520, "y": 0, "w": 1440, "h": 900, "title": "Tab — LOCKED quest selected (Partial disclosure)" },
+    "Completed.dc.html": { "x": 3040, "y": 0, "w": 1440, "h": 900, "title": "Tab — COMPLETED quest selected" },
+    "Banners.dc.html": { "x": 0, "y": 1020, "w": 1440, "h": 560, "title": "HUD banners — completing The Barrow King (tab closed)" }
+  },
+  "order": ["Main.dc.html", "Locked.dc.html", "Completed.dc.html", "Banners.dc.html"],
+  "notes": {
+    "heading": { "x": 0, "y": -300, "text": "Mod #14 Main Quest tab — provisional campaign, player at MQ05, level 48", "kind": "title1", "maxW": 4480 }
+  },
+  "designSystems": []
+}

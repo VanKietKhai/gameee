@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Main Quest tab</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&amp;family=Alegreya+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#e0b867}a:hover{color:#f3d08a}
+button{font:inherit}
+</style>
+</helmet>
+<div style="width: 1440px; height: 900px; box-sizing: border-box; background: #120f0c; color: #e9e0cf; font-family: 'Alegreya Sans', Georgia, serif; display: flex; flex-direction: column; padding: 28px 32px; gap: 20px">
+
+  <header style="display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; border-bottom: 1px solid #3b3127; padding-bottom: 18px">
+    <div style="display: flex; flex-direction: column; gap: 4px">
+      <div style="font-family: Cinzel, Georgia, serif; font-size: 34px; font-weight: 700; letter-spacing: 6px; color: #e9c983">MAIN QUEST</div>
+      <div style="font-size: 15px; color: #b3a690">The Exiled Lands campaign · Level 48</div>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 8px; width: 420px">
+      <div style="display: flex; justify-content: space-between; align-items: baseline">
+        <span style="font-family: Cinzel, Georgia, serif; font-size: 15px; letter-spacing: 2px; color: #cdbfa8">CAMPAIGN PROGRESS</span>
+        <span style="font-family: Cinzel, Georgia, serif; font-size: 30px; font-weight: 700; color: #f0c46a">{{campaignPct}}%</span>
+      </div>
+      <div style="height: 10px; background: #2a231c; border: 1px solid #4a3d2f; border-radius: 2px; overflow: hidden">
+        <div style="height: 100%; width: {{campaignWidth}}; background: #c9953f"></div>
+      </div>
+      <div style="font-size: 14px; color: #b3a690; text-align: right">{{doneCount}} of {{totalCount}} main quests complete</div>
+    </div>
+  </header>
+
+  <div style="flex-grow: 1; min-height: 0; display: grid; grid-template-columns: 360px minmax(0, 1fr) 300px; gap: 20px">
+
+    <nav aria-label="Acts" style="display: flex; flex-direction: column; gap: 8px; overflow-y: auto; min-height: 0; padding-right: 4px">
+      <sc-for list="{{acts}}" as="act" hint-placeholder-count="6">
+        <section style="background: #1b1611; border: 1px solid {{act.border}}; border-radius: 4px; padding: 8px 12px; display: flex; flex-direction: column; gap: 5px">
+          <div style="display: flex; align-items: center; gap: 10px">
+            <sc-if value="{{act.isDone}}" hint-placeholder-val="{{false}}">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9fcfae" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"></path></svg>
+            </sc-if>
+            <sc-if value="{{act.isActive}}" hint-placeholder-val="{{false}}">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f0c46a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg>
+            </sc-if>
+            <sc-if value="{{act.isLocked}}" hint-placeholder-val="{{true}}">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a39a8e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="1"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>
+            </sc-if>
+            <span style="flex-grow: 1; font-family: Cinzel, Georgia, serif; font-size: 15px; font-weight: 700; letter-spacing: 1px; color: {{act.nameColor}}">{{act.name}}</span>
+            <span style="font-size: 15px; font-weight: 700; color: {{act.nameColor}}">{{act.pct}}%</span>
+          </div>
+          <div style="height: 4px; background: #2a231c; border-radius: 2px; overflow: hidden">
+            <div style="height: 100%; width: {{act.pctWidth}}; background: {{act.barColor}}"></div>
+          </div>
+          <sc-for list="{{act.quests}}" as="q" hint-placeholder-count="2">
+            <button type="button" onClick="{{q.pick}}" aria-pressed="{{q.isSelected}}" style="display: flex; align-items: center; gap: 8px; min-height: 32px; padding: 3px 8px; background: {{q.rowBg}}; border: 1px solid {{q.rowBorder}}; border-radius: 3px; color: {{q.titleColor}}; text-align: left; cursor: pointer">
+              <span style="flex-grow: 1; font-size: 15px">{{q.title}}</span>
+              <sc-if value="{{q.isTracked}}" hint-placeholder-val="{{false}}">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f0c46a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-label="Tracked"><circle cx="12" cy="12" r="8"></circle><circle cx="12" cy="12" r="2"></circle></svg>
+              </sc-if>
+              <span style="font-size: 12px; font-weight: 700; letter-spacing: 1px; color: {{q.statusColor}}">{{q.statusLabel}}</span>
+            </button>
+          </sc-for>
+        </section>
+      </sc-for>
+    </nav>
+
+    <main style="background: #1b1611; border: 1px solid #4a3d2f; border-radius: 4px; padding: 30px 34px; display: flex; flex-direction: column; gap: 22px; min-width: 0">
+      <div style="display: flex; justify-content: space-between; align-items: center; gap: 16px">
+        <div style="font-family: Cinzel, Georgia, serif; font-size: 18px; font-weight: 700; letter-spacing: 3px; color: #cdbfa8">{{d.actUpper}}</div>
+        <span style="padding: 5px 14px; border-radius: 2px; font-size: 13px; font-weight: 700; letter-spacing: 2px; background: {{d.pillBg}}; color: {{d.pillColor}}">{{d.statusLabel}}</span>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <div style="font-size: 14px; letter-spacing: 2px; color: #b3a690">{{d.questLabel}}</div>
+        <div style="font-family: Cinzel, Georgia, serif; font-size: 40px; font-weight: 700; color: #f2e7d2">{{d.title}}</div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 170px minmax(0, 1fr); row-gap: 12px; column-gap: 16px; font-size: 18px; align-items: baseline">
+        <span style="color: #b3a690">Boss</span><span style="font-weight: 700; color: {{d.valueColor}}">{{d.boss}}</span>
+        <span style="color: #b3a690">Objective</span><span style="color: {{d.valueColor}}">{{d.objective}}</span>
+        <span style="color: #b3a690">Location</span><span style="color: {{d.valueColor}}">{{d.location}}</span>
+        <span style="color: #b3a690">Recommended level</span><span>{{d.level}}</span>
+        <span style="color: #b3a690">Recommended party</span><span>{{d.party}}</span>
+        <span style="color: #b3a690">Reward</span>
+        <span style="display: flex; gap: 10px; align-items: baseline; color: {{d.valueColor}}">{{d.reward}}
+          <sc-if value="{{d.rewardPh}}" hint-placeholder-val="{{true}}"><span style="font-size: 13px; color: #b3a690; border: 1px solid #4a3d2f; padding: 1px 8px; border-radius: 2px">placeholder</span></sc-if>
+        </span>
+      </div>
+
+      <p style="margin: 0; font-size: 17px; line-height: 1.5; color: #cdbfa8; max-width: 640px">{{d.description}}</p>
+
+      <sc-if value="{{d.hasNote}}" hint-placeholder-val="{{false}}">
+        <div style="display: flex; gap: 12px; align-items: center; padding: 14px 16px; background: #221c16; border: 1px dashed #5b4b39; border-radius: 3px; font-size: 16px; color: #e0d3bb">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#cdbfa8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="1"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>
+          {{d.note}}
+        </div>
+      </sc-if>
+
+      <div style="margin-top: auto; display: flex; align-items: center; gap: 20px; flex-wrap: wrap; border-top: 1px solid #3b3127; padding-top: 20px">
+        <sc-if value="{{d.canTrack}}" hint-placeholder-val="{{true}}">
+          <button type="button" onClick="{{toggleTrack}}" aria-pressed="{{tracked}}" style="min-height: 48px; padding: 0 26px; font-family: Cinzel, Georgia, serif; font-size: 16px; font-weight: 700; letter-spacing: 3px; border-radius: 3px; cursor: pointer; background: {{trackBg}}; color: {{trackColor}}; border: 1px solid #c9953f">{{trackLabel}}</button>
+        </sc-if>
+        <div style="display: flex; flex-direction: column; gap: 2px">
+          <span style="font-size: 13px; letter-spacing: 1px; color: #b3a690">MAP MARKER</span>
+          <span style="font-size: 16px; color: #e0d3bb">{{markerText}}</span>
+        </div>
+        <span style="margin-left: auto; font-size: 13px; letter-spacing: 1px; color: #e8a58a; border: 1px solid #6b3f2f; padding: 4px 10px; border-radius: 2px">STAGING · TARGET UNVERIFIED · NO CREDIT</span>
+      </div>
+    </main>
+
+    <aside aria-label="Completed main quests" style="background: #1b1611; border: 1px solid #3b3127; border-radius: 4px; padding: 18px 18px; display: flex; flex-direction: column; gap: 12px">
+      <div style="font-family: Cinzel, Georgia, serif; font-size: 15px; font-weight: 700; letter-spacing: 2px; color: #cdbfa8">COMPLETED · HISTORY</div>
+      <sc-for list="{{history}}" as="h" hint-placeholder-count="4">
+        <div style="display: flex; gap: 10px; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid #2c241c">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9fcfae" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="margin-top: 3px; flex-shrink: 0"><path d="M5 12l5 5 9-10"></path></svg>
+          <div style="display: flex; flex-direction: column; gap: 2px">
+            <span style="font-size: 16px; font-weight: 700; color: #e9e0cf">{{h.boss}}</span>
+            <span style="font-size: 14px; color: #b3a690">{{h.title}} · {{h.act}}</span>
+          </div>
+        </div>
+      </sc-for>
+      <div style="margin-top: auto; font-size: 13px; color: #b3a690">Open/close: [HOTKEY — not chosen yet]</div>
+    </aside>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"initial":{"editor":"enum","options":["MQ05","MQ06","MQ04","MQ01","MQ11"],"default":"MQ05","section":"Mockup"},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { selected: null, tracked: true };
+  }
+  renderVals() {
+    // Provisional campaign data (data/main-quests.provisional.v2.json). Player state: MQ01–MQ04 complete, MQ05 current, level 48.
+    const ACTS = [
+      ['ACT_I_SURVIVAL', 'Act I — Survival'], ['ACT_II_ANCIENT_BLOOD', 'Act II — Ancient Blood'], ['ACT_III_FROZEN_NORTH', 'Act III — Frozen North'],
+      ['ACT_IV_DARK_POWERS', 'Act IV — Dark Powers'], ['ACT_V_ENDGAME', 'Act V — Endgame'], ['EPILOGUE', 'Epilogue']
+    ];
+    const Q = [
+      ['MQ01', 'ACT_I_SURVIVAL', 'Into the Dregs', 'Abysmal Remnant', 'Defeat the Abysmal Remnant.', 'Defeat Abysmal Remnant at The Dregs.', 'The Dregs', 15, 25, 1, 3],
+      ['MQ02', 'ACT_II_ANCIENT_BLOOD', 'The Witch Queen', 'Witch Queen', 'Defeat the Witch Queen.', 'Defeat Witch Queen at Witch Queen encounter (to be verified).', 'Witch Queen encounter (to be verified)', 25, 35, 2, 4],
+      ['MQ03', 'ACT_II_ANCIENT_BLOOD', 'The Barrow King', 'Barrow King', 'Defeat the Barrow King.', 'Defeat Barrow King at Barrow King encounter (to be verified).', 'Barrow King encounter (to be verified)', 28, 35, 2, 4],
+      ['MQ04', 'ACT_III_FROZEN_NORTH', 'Temple of Frost', 'Temple of Frost boss', 'Defeat the Temple of Frost boss.', 'Defeat Temple of Frost boss at Temple of Frost.', 'Temple of Frost', 35, 45, 2, 4],
+      ['MQ05', 'ACT_III_FROZEN_NORTH', 'The Black Keep', 'Kinscourge', 'Defeat the Kinscourge.', 'Defeat Kinscourge at The Black Keep.', 'The Black Keep', 40, 50, 2, 5],
+      ['MQ06', 'ACT_IV_DARK_POWERS', 'Midnight Grove', 'Midnight Grove boss', 'Defeat the Midnight Grove boss.', 'Defeat Midnight Grove boss at The Midnight Grove.', 'The Midnight Grove', 50, 55, 3, 5],
+      ['MQ07', 'ACT_IV_DARK_POWERS', 'Well of Skelos', 'Well of Skelos boss', 'Defeat the Well of Skelos boss.', 'Defeat Well of Skelos boss at The Well of Skelos.', 'The Well of Skelos', 52, 58, 3, 5],
+      ['MQ08', 'ACT_IV_DARK_POWERS', 'The Sunken City', 'Sunken City boss', 'Defeat the Sunken City boss.', 'Defeat Sunken City boss at The Sunken City.', 'The Sunken City', 55, 60, 3, 5],
+      ['MQ09', 'ACT_V_ENDGAME', 'The Wine Cellar', 'Wine Cellar boss', 'Defeat the Wine Cellar boss.', 'Defeat Wine Cellar boss at The Wine Cellar.', 'The Wine Cellar', 60, 60, 3, 5],
+      ['MQ10', 'ACT_V_ENDGAME', "Warmaker's Sanctuary", 'The Champion', 'Defeat the Champion.', "Defeat The Champion at Warmaker's Sanctuary.", "Warmaker's Sanctuary", 60, 60, 4, 5],
+      ['MQ11', 'EPILOGUE', 'Legacy', 'Cyclopean Halls candidate', 'Defeat the Cyclopean Halls boss (candidate).', 'Defeat Cyclopean Halls candidate at Cyclopean Halls (candidate).', 'Cyclopean Halls (candidate)', 60, 60, 4, 5]
+    ].map(r => ({ id: r[0], act: r[1], title: r[2], boss: r[3], objective: r[4], description: r[5], location: r[6], lmin: r[7], lmax: r[8], pmin: r[9], pmax: r[10] }));
+    const done = new Set(['MQ01', 'MQ02', 'MQ03', 'MQ04']);
+    const current = 'MQ05';
+    const tracked = this.state.tracked;
+    const selected = this.state.selected ?? this.props.initial ?? 'MQ05';
+    const range = (a, b) => a === b ? String(a) : a + '–' + b;
+    const status = q => done.has(q.id) ? 'COMPLETED' : q.id === current ? 'ACTIVE' : 'LOCKED';
+    const actName = id => ACTS.find(a => a[0] === id)[1];
+    const STATUS = {
+      ACTIVE: { color: '#f0c46a', pillBg: '#3a2c12', label: 'ACTIVE' },
+      COMPLETED: { color: '#9fcfae', pillBg: '#1f2e24', label: 'COMPLETED' },
+      LOCKED: { color: '#a39a8e', pillBg: '#2a2622', label: 'LOCKED' }
+    };
+
+    const acts = ACTS.map(([id, name]) => {
+      const qs = Q.filter(q => q.act === id);
+      const n = qs.filter(q => done.has(q.id)).length;
+      const pct = Math.floor(n * 100 / qs.length);
+      const isDone = n === qs.length;
+      const isActive = !isDone && (n > 0 || qs.some(q => q.id === current));
+      return {
+        name, pct, pctWidth: pct + '%', isDone, isActive, isLocked: !isDone && !isActive,
+        nameColor: isDone ? '#9fcfae' : isActive ? '#f0c46a' : '#a39a8e',
+        barColor: isDone ? '#6f9e7d' : '#c9953f',
+        border: isActive ? '#6a5333' : '#3b3127',
+        quests: qs.map(q => {
+          const s = status(q);
+          const isSel = q.id === selected;
+          return {
+            title: q.title, statusLabel: s, statusColor: STATUS[s].color,
+            isTracked: s === 'ACTIVE' && tracked, isSelected: isSel,
+            rowBg: isSel ? '#2e2519' : 'transparent', rowBorder: isSel ? '#c9953f' : 'transparent',
+            titleColor: s === 'LOCKED' ? '#bfb3a2' : '#e9e0cf',
+            pick: () => this.setState({ selected: q.id })
+          };
+        })
+      };
+    });
+
+    const sq = Q.find(q => q.id === selected) || Q[4];
+    const s = status(sq);
+    const locked = s === 'LOCKED'; // Partial disclosure: title, act, recommended level and party only
+    const d = {
+      actUpper: actName(sq.act).toUpperCase(), statusLabel: s, pillBg: STATUS[s].pillBg, pillColor: STATUS[s].color,
+      questLabel: s === 'ACTIVE' ? 'CURRENT QUEST' : 'QUEST',
+      title: sq.title,
+      boss: locked ? '???' : sq.boss,
+      objective: locked ? '???' : sq.objective,
+      location: locked ? '???' : sq.location,
+      description: locked ? '' : sq.description,
+      level: range(sq.lmin, sq.lmax), party: range(sq.pmin, sq.pmax),
+      reward: locked ? '???' : '1000 XP', rewardPh: !locked,
+      valueColor: locked ? '#a39a8e' : '#e9e0cf',
+      hasNote: locked, note: 'Complete the previous Main Quest to unlock this objective.',
+      canTrack: s === 'ACTIVE'
+    };
+
+    const n = done.size;
+    const campaignPct = Math.floor(n * 100 / Q.length);
+    return {
+      campaignPct, campaignWidth: campaignPct + '%', doneCount: n, totalCount: Q.length,
+      acts, d, tracked,
+      history: Q.filter(q => done.has(q.id)).map(q => ({ boss: q.boss, title: q.title, act: actName(q.act) })),
+      trackLabel: tracked ? 'TRACKING ✓' : 'TRACK QUEST',
+      trackBg: tracked ? '#c9953f' : 'transparent', trackColor: tracked ? '#1a130b' : '#f0c46a',
+      markerText: tracked ? 'This quest has no map marker yet (coordinates not verified)' : 'Quest not tracked',
+      toggleTrack: () => this.setState({ tracked: !this.state.tracked })
+    };
+  }
+}
+</script>
+</body>
+</html>

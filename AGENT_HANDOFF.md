@@ -353,7 +353,19 @@ No server or harness process or server-related scheduled task was found; the hos
   - Mod tests 80/80. Solution Release build: 0 warnings, 0 errors.
   - ConanServerControl.Tests 512/513: `Real_process_tree_is_tracked_after_the_launcher_exits_and_killed_as_a_whole` is intermittent (2 of 4 isolated reruns pass). It is unrelated to Mod #14 (no reference). Likely cause: the test counts cmd's conhost.exe child before ping.exe starts. Flagged as a separate task.
 - STATE 18:41: Dev Kit ~78.5 GB of ~182 GB staged. Live server ONLINE under the desktop app, restarted by the operator at 18:29 (PID 20804). Not touched by the main session.
-- NEXT ACTION: when the Dev Kit install completes, run the compatibility gate (above). Then trace the Abysmal Remnant in the Dev Kit, investigate the Enhanced menu hook and list the 13 mods' key bindings. Open decisions: default LockedDisclosure; tab entry point; hotkey. Licensed client still needed for secondary confirmation and QA. Mod #14 not built; 13-mod pack unchanged; production world NOT CREATED.
+- OPERATOR DECISIONS 2026-10-05 (2):
+  - LockedDisclosure default = Partial, not treated as secrecy.
+  - Tab entry: a supported Enhanced menu hook is preferred; otherwise a standalone UMG panel on a configurable hotkey. No vanilla widget patching if a supported hook exists.
+  - The hotkey waits for the input-conflict check.
+- DESIGN-ONLY DONE (2):
+  - Visual mockup https://claude.ai/artifact/LqogeEnkUB7EyX7WyHzBmb (private; source in mods/CustomMainQuestline/mockup/), on real provisional values.
+  - INPUT_CONFLICT_AUDIT.md: read-only scan of client bundle 041519, 13/13 SHA ok, no mod changed. Taken: F1 hold and Shift+click on the map (Simple Minimap); ~ and Insert (console). Improved Thralls & QoL has its own hotkey system with unknown defaults. Candidate keys recorded; none chosen.
+  - DEVKIT_CHECKLIST.md: Part A compatibility gate A1–A7; Part B Quest 01 trace B1–B9; Part C UI entry and input.
+  - evidence/dregs-asset-paths-2.2.3.txt: names read from the server .utoc indexes, read-only.
+  - A3C1 corrected: a broad content-set code, not Dregs-only.
+  - Projection fix: equal level ranges print as one number.
+  - Mod tests 81/81.
+- NEXT ACTION: when the Dev Kit install completes, run DEVKIT_CHECKLIST Part A. A6/A7 need the operator to hand over the staging server (offline, no orphans, fresh verified backup). Then Part B (Remnant stays Unverified until B9) and Part C. Licensed client still needed for secondary confirmation and QA. Mod #14 not built; 13-mod pack unchanged; production world NOT CREATED.
 - OPERATOR DECISION 2026-10-04: #11 WO - Room For One More EXCLUDED / DEFERRED (do not whitelist its 5 merge errors; do not revisit in this phase; keep evidence and failed-world backup 2026-10-04_050719). #12 Simple Minimap, #13 Player DBNO and #14 Chest Labels continue independently, cumulatively on the 10-mod baseline (expected 13 mods), then a final 13-mod validation with a clean restart; stop before the custom quest mod and report first.
 - OPEN BLOCKERS: none server-side. The new local client folder contains Steam-emulator configuration and was not prepared (licensed clients required). RCON reachable from LAN/Radmin through the Windows-created Private allow rule (not public).
 
