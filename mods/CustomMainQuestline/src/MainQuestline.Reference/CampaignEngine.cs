@@ -18,14 +18,36 @@ public enum CreditRule
     ProximityAndParticipation
 }
 
+/// <summary>The three lightweight banner types. They are shown by the HUD whether or not the Main Quest tab is open.</summary>
 public enum NotificationKind
 {
     QuestComplete,
     NewBossUnlocked,
+    CampaignMilestone
+}
+
+public enum MilestoneKind
+{
+    ActComplete,
     CampaignComplete
 }
 
-public sealed record QuestNotification(string PlayerId, NotificationKind Kind, string QuestId, string Text);
+/// <summary>
+/// One banner for one player (server → owning client). <see cref="NotificationId"/> is deterministic per completion,
+/// so a client can drop a duplicate delivery. Banners are not persisted or replayed: the quest state is the record.
+/// </summary>
+public sealed record QuestNotification(
+    string NotificationId,
+    string PlayerId,
+    NotificationKind Kind,
+    MilestoneKind? Milestone,
+    string QuestId,
+    string ActId,
+    string Title,
+    string Subtitle);
+
+/// <summary>Result of a Track Quest request. A rejected request leaves the state unchanged.</summary>
+public sealed record TrackingChange(bool Accepted, bool Changed, string Reason);
 
 public sealed record CreditDecision(string PlayerId, bool Credited, string Reason);
 
@@ -84,6 +106,28 @@ public sealed class CampaignEngine
         return total == 0 ? 0 : (double)done / total;
     }
 
+    /// <summary>
+    /// Server handler for the Track Quest toggle. Only the player's current, not-yet-completed quest can be tracked;
+    /// null untracks. Tracking only drives the marker and never affects progression. The caller persists on Changed.
+    /// </summary>
+    public TrackingChange SetTrackedQuest(PlayerQuestState state, string? questId)
+    {
+        ArgumentNullException.ThrowIfNull(state);
+        if (questId is null)
+        {
+            var had = state.TrackedQuestId is not null;
+            state.TrackedQuestId = null;
+            return new TrackingChange(true, had, "untracked");
+        }
+
+        if (!string.Equals(questId, state.CurrentQuestId, StringComparison.Ordinal) || _catalog.Find(questId) is null)
+            return new TrackingChange(false, false, $"{questId} is not the current quest");
+        if (state.IsCompleted(questId)) return new TrackingChange(false, false, $"{questId} is already completed");
+        var changed = !string.Equals(state.TrackedQuestId, questId, StringComparison.Ordinal);
+        state.TrackedQuestId = questId;
+        return new TrackingChange(true, changed, "tracked");
+    }
+
     public BossDeathResult OnBossDeath(BossDeathEvent death, Func<string, PlayerQuestState?> loadState)
     {
         ArgumentNullException.ThrowIfNull(death);
@@ -139,16 +183,32 @@ public sealed class CampaignEngine
     private static bool PreviousSatisfied(PlayerQuestState state, QuestDefinition q) =>
         q.PreviousQuestId is null || state.IsCompleted(q.PreviousQuestId);
 
+    /// <summary>
+    /// Banner order: QUEST COMPLETE, then CAMPAIGN MILESTONE (act complete) if the act just finished, then NEW BOSS
+    /// UNLOCKED. The final quest emits a single CAMPAIGN MILESTONE (campaign complete) instead of the last two.
+    /// </summary>
     private void Complete(PlayerQuestState state, QuestDefinition quest, string source, List<QuestNotification> notes)
     {
         state.Completed.Add(new CompletedQuest(quest.QuestId, DateTimeOffset.UtcNow, source));
-        notes.Add(new QuestNotification(state.PlayerId, NotificationKind.QuestComplete, quest.QuestId, $"QUEST COMPLETE: {quest.DisplayName}"));
         var next = _catalog.Find(quest.NextQuestId);
         state.CurrentQuestId = next?.QuestId;
         if (string.Equals(state.TrackedQuestId, quest.QuestId, StringComparison.Ordinal)) state.TrackedQuestId = next?.QuestId;
-        notes.Add(next is null
-            ? new QuestNotification(state.PlayerId, NotificationKind.CampaignComplete, quest.QuestId, "CAMPAIGN COMPLETE")
-            : new QuestNotification(state.PlayerId, NotificationKind.NewBossUnlocked, next.QuestId, $"NEW BOSS UNLOCKED: {next.Target.DisplayName}"));
+
+        QuestNotification Note(NotificationKind kind, MilestoneKind? milestone, QuestDefinition q, string title, string subtitle) =>
+            new($"{source}|{state.PlayerId}|{kind}{(milestone is null ? "" : ":" + milestone)}|{q.QuestId}",
+                state.PlayerId, kind, milestone, q.QuestId, q.ActId, title, subtitle);
+
+        notes.Add(Note(NotificationKind.QuestComplete, null, quest, "QUEST COMPLETE", quest.DisplayName));
+        if (next is null)
+        {
+            notes.Add(Note(NotificationKind.CampaignMilestone, MilestoneKind.CampaignComplete, quest, "CAMPAIGN MILESTONE", "Campaign complete"));
+            return;
+        }
+
+        var act = _catalog.Act(quest.ActId);
+        if (_catalog.QuestsInAct(act.ActId).All(q => state.IsCompleted(q.QuestId)))
+            notes.Add(Note(NotificationKind.CampaignMilestone, MilestoneKind.ActComplete, quest, "CAMPAIGN MILESTONE", $"{act.DisplayName} complete"));
+        notes.Add(Note(NotificationKind.NewBossUnlocked, null, next, "NEW BOSS UNLOCKED", next.Target.DisplayName));
     }
 
     private void Remember(string eventId)

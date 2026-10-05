@@ -342,7 +342,18 @@ No server or harness process or server-related scheduled task was found; the hos
 - MAIN SESSION 2026-10-05 18:21: this Claude session is the canonical MAIN session for Mod #14 (other tabs read-only). Branch claude/m3-task4-live-windows, HEAD 522f61b before this update.
 - LIVE SERVER: ONLINE, operator-owned through the desktop app (ConanServerControl started 18:10, server PID 17884 started 18:11). The main session does NOT control or inspect it while it runs.
 - DEV KIT INSTALL IN PROGRESS (operator-started 17:36 in the Epic launcher): 'Conan Exiles Enhanced Dev Kit', AppVersion **377800** (CL-377800: newer than 2.2.2 CL-377096, older than the 2.2.3 beta CL-378132), target `D:\epic\CEUE5Devkit` (D:, not E:), full size ~182 GB (D: had 280 GB free), ~65.5 GB staged at 18:21, still marked incomplete.
-- NEXT ACTION: wait for the Dev Kit install to finish. Then, read-only: confirm the editor engine version, and that a BuildMod package writes `devkitRevisionNumber` (expected 1002 or newer). Operator still to decide the target build (beta CL-378132 vs live) and to provide a licensed client for Abysmal Remnant verification and QA. Mod #14 not built; 13-mod pack unchanged; production world NOT CREATED.
+- OPERATOR DECISIONS 2026-10-05:
+  - Mod #14 targets 2.2.3 / CL-378132 (no move back to 2.2.2).
+  - Dev Kit 377800 is allowed for a STAGING vertical-slice attempt only.
+  - Compatibility gate: identify the exact revision → cook a minimal Mod #14 test → inspect its metadata → prove the 2.2.3 server accepts it. Never fake metadata. If the server rejects it for a build mismatch, STOP and report. No full campaign build before this passes.
+  - Abysmal Remnant: Dev Kit reference tracing (Dregs → controller → spawn request → NPC class → inheritance/DataTable/display name) is primary; a licensed-client kill is secondary. SewerAbomination is not accepted on its name alone.
+  - New feature: a Main Quest tab.
+- DESIGN DONE (no Unreal assets): `mods/CustomMainQuestline/MAIN_QUEST_UI.md`.
+  - Reference projection `MainQuestView.cs`, `CampaignEngine.SetTrackedQuest`, banner contract (QuestComplete / NewBossUnlocked / CampaignMilestone), data schema v2 (`main-quests.provisional.v2.json`: acts, objective, lockedDisclosure).
+  - Mod tests 80/80. Solution Release build: 0 warnings, 0 errors.
+  - ConanServerControl.Tests 512/513: `Real_process_tree_is_tracked_after_the_launcher_exits_and_killed_as_a_whole` is intermittent (2 of 4 isolated reruns pass). It is unrelated to Mod #14 (no reference). Likely cause: the test counts cmd's conhost.exe child before ping.exe starts. Flagged as a separate task.
+- STATE 18:41: Dev Kit ~78.5 GB of ~182 GB staged. Live server ONLINE under the desktop app, restarted by the operator at 18:29 (PID 20804). Not touched by the main session.
+- NEXT ACTION: when the Dev Kit install completes, run the compatibility gate (above). Then trace the Abysmal Remnant in the Dev Kit, investigate the Enhanced menu hook and list the 13 mods' key bindings. Open decisions: default LockedDisclosure; tab entry point; hotkey. Licensed client still needed for secondary confirmation and QA. Mod #14 not built; 13-mod pack unchanged; production world NOT CREATED.
 - OPERATOR DECISION 2026-10-04: #11 WO - Room For One More EXCLUDED / DEFERRED (do not whitelist its 5 merge errors; do not revisit in this phase; keep evidence and failed-world backup 2026-10-04_050719). #12 Simple Minimap, #13 Player DBNO and #14 Chest Labels continue independently, cumulatively on the 10-mod baseline (expected 13 mods), then a final 13-mod validation with a clean restart; stop before the custom quest mod and report first.
 - OPEN BLOCKERS: none server-side. The new local client folder contains Steam-emulator configuration and was not prepared (licensed clients required). RCON reachable from LAN/Radmin through the Windows-created Private allow rule (not public).
 

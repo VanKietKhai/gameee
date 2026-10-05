@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\..\data\main-quests.provisional.v1.json" Link="data\main-quests.provisional.v1.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\data\main-quests.provisional.v2.json" Link="data\main-quests.provisional.v2.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>

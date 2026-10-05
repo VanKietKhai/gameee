@@ -4,6 +4,21 @@ Status: **design + tested reference engine only. No `.pak` exists and none was f
 
 Baseline: Conan Exiles Enhanced **2.2.3 / CL-378132** (release-beta), dedicated server `ProjectVersion 2.2.3`, engine 5.8.2-378132.
 
+## 0. Operator decisions (main session, 2026-10-05)
+
+- **Target build:** Mod #14 targets the current validated staging build, **Conan Exiles Enhanced 2.2.3 / CL-378132**. The project does not move back to 2.2.2.
+- **Toolchain:** Dev Kit **377800** is allowed as the nearest official authoring toolchain, **for a staging vertical-slice attempt only**. Compatibility is NOT assumed.
+- **Compatibility gate** (it must pass before any campaign build):
+  1. Identify the Dev Kit's exact engine, project and build revision.
+  2. Cook and package a *minimal* Mod #14 test.
+  3. Inspect the produced mod metadata.
+  4. Prove that the 2.2.3 / CL-378132 server accepts it.
+
+  Version metadata is never edited or faked. **If the server rejects the package for a Dev Kit/build mismatch: STOP and report.**
+- **Abysmal Remnant identity:** Dev Kit asset references are the PRIMARY method (§3). A licensed-client kill is secondary runtime confirmation.
+- **Main Quest tab:** a dedicated campaign tab, plus separate lightweight banners. Design-only until the Dev Kit exists: [`MAIN_QUEST_UI.md`](MAIN_QUEST_UI.md).
+- The live 13-mod server is not modified while the operator is using it.
+
 ## 1. Authoring toolchain audit (read-only) — BLOCKED
 
 | Needed | Found on this host |
@@ -72,14 +87,30 @@ No Blueprint is named after the Remnant. Ranked candidates, **not verified**:
 1. `BP_NPC_Wildlife_SewerAbomination`. Its acid puke and spit attack kit matches the Remnant VFX, and there is a matching `BP_PL_W_Trophy_DarkDregs_Abomination`.
 2. The **Nahjef** encounter (`HumanoidNPCCharacter_20percentbigger_boss_Nahjef`, `DT_NPC_Nahjef`, `BP_NahjefAIController`, spawned by `BP_BossDarkDregs_Nahjef_SpawnRequest`). This looks like a *separate* humanoid Dregs boss.
 
-To verify: one staged kill on staging (licensed client), then read the server log line `Name:`/`CharacterName:`, then record the exact class path. Until then the Quest 01 target stays `Unverified` and **cannot grant credit**; the engine enforces this.
+To verify (operator decision 2026-10-05):
+1. **Primary, in the Dev Kit:** trace the references.
+   - The Dregs
+   - → the encounter/dungeon controller (`BP_DarkDregsDungeonController`)
+   - → the spawn request
+   - → the spawned NPC class
+   - → its inheritance and DataTable/display-name mapping, ending at the "Abysmal Remnant" display name.
+
+   `BP_NPC_Wildlife_SewerAbomination` is **not** accepted on its name alone.
+2. **Secondary, at runtime:** one staged kill on staging (licensed client). Read the server log line `Name:`/`CharacterName:` and confirm it matches the traced class path. Until then the Quest 01 target stays `Unverified` and **cannot grant credit**; the engine enforces this.
 
 ## 4. Quest data model (data-driven)
 
-There is one record per main quest (maps 1:1 to a DataTable row): `QuestId, ActId, Sequence, DisplayName, Description, Target{Type, DisplayName, TargetClassPath, Verification, Candidates}, PreviousQuestId, NextQuestId, MinimumLevel, RecommendedLevelMin/Max, RecommendedPartyMin/Max, LocationName, Marker{Label,X,Y,Z,AreaRadius}, Reward{RewardId, Entries[Type,Id,Amount], Placeholder}, CompletionCreditRadius, CampaignWeight, Enabled`.
+Data schema **v2** adds:
+- `acts[]`: `ActId, Order, DisplayName`, which becomes `DT_MQ_Acts`;
+- quest `Objective`;
+- quest `LockedDisclosure` (`Full | Partial | Hidden`, default `Partial`).
 
-- Provisional campaign: [`data/main-quests.provisional.v1.json`](data/main-quests.provisional.v1.json). It has 11 quests across Act I–V and the Epilogue, with **every target `Unverified`, no class paths, placeholder XP rewards** and a 5,000-unit (50 m) default credit radius.
-- The catalog **fails closed**. Any malformed record rejects the whole catalog: duplicate id or sequence, dangling, asymmetric or cyclic links, unreachable quests, zero or negative weight, credit radius out of range (0 < r ≤ 200 m), bad level or party ranges, a verified target without a class, an invalid reward, unknown JSON fields, or the wrong data schema version.
+The v1 file never shipped in a mod; the loader now reads v2 only.
+
+There is one record per main quest (maps 1:1 to a DataTable row): `QuestId, ActId, Sequence, DisplayName, Description, Objective, Target{Type, DisplayName, TargetClassPath, Verification, Candidates}, PreviousQuestId, NextQuestId, MinimumLevel, RecommendedLevelMin/Max, RecommendedPartyMin/Max, LocationName, Marker{Label,X,Y,Z,AreaRadius}, Reward{RewardId, Entries[Type,Id,Amount], Placeholder}, CompletionCreditRadius, CampaignWeight, Enabled, LockedDisclosure`.
+
+- Provisional campaign: [`data/main-quests.provisional.v2.json`](data/main-quests.provisional.v2.json). It has 6 acts (Act I — Survival … Act V — Endgame, Epilogue) and 11 quests, with **every target `Unverified`, no class paths, placeholder XP rewards** and a 5,000-unit (50 m) default credit radius.
+- The catalog **fails closed**. Any malformed record rejects the whole catalog: duplicate id or sequence, dangling, asymmetric or cyclic links, unreachable quests, zero or negative weight, credit radius out of range (0 < r ≤ 200 m), bad level or party ranges, a verified target without a class, an invalid reward, unknown JSON fields, or the wrong data schema version. Acts are validated the same way: unknown, duplicate or blank acts, duplicate order, an empty act, or acts interleaved along the chain.
 
 ## 5. Persistence model
 
@@ -106,11 +137,19 @@ Guarantees:
 - A second kill of the same boss cannot complete the quest again.
 - Progress is per player, never per clan.
 
-## 7. UI plan (after the engine is in-game and tested)
+## 7. Main Quest tab — see [`MAIN_QUEST_UI.md`](MAIN_QUEST_UI.md)
 
-- **Main Quest panel:** Act, current quest, target/boss name, description, location, recommended level and party, reward, overall campaign % (completed weight ÷ total enabled weight, never level-based), status, and a **Track Quest** toggle.
-- **Banners:** `QUEST COMPLETE`, `NEW BOSS UNLOCKED`, `CAMPAIGN COMPLETE`.
-- The panel reads only the replicated quest state; it never decides progression.
+The design covers:
+- the wireframe;
+- ACTIVE / COMPLETED / LOCKED states, with a per-quest locked disclosure;
+- per-act and overall weighted %;
+- Completed / History;
+- server-validated **Track Quest**;
+- the banner contract (`QUEST COMPLETE`, `NEW BOSS UNLOCKED`, `CAMPAIGN MILESTONE`), which works with the tab closed;
+- data bindings;
+- the plan for opening the tab (an Enhanced menu hook if one is supported, otherwise a configurable hotkey, not chosen yet).
+
+The tab is a read-only projection (`MainQuestView.cs`); it never decides progression.
 
 ## 8. Marker plan
 
@@ -123,14 +162,23 @@ Guarantees:
 
 `Inspect`, `SetCurrentQuest`, `CompleteCurrentQuest`, `ResetProgress` and the progress printout require an admin caller. Normal players get an authorization error. In-game, they are to be bound to the server's admin check, never to an unrestricted chat command.
 
-## 10. Automated tests — `tests/MainQuestline.Reference.Tests` (53 passing)
+## 10. Automated tests — `tests/MainQuestline.Reference.Tests` (80 passing)
 
 - **Credit rules:** previous-quest gate, level gate, correct boss, wrong boss, exact (not substring or case-folded) class match, future boss cannot skip, multiple eligible nearby players without a killing blow, ineligible and out-of-radius players, the participation rule, duplicate death event, a player listed twice, unverified targets never crediting, and the final quest completing the campaign.
 - **Progress:** weighted campaign %, 10 quests with 5 done = 50%, and removed quests kept but not counted.
 - **Markers:** marker show/hide/restore.
 - **Admin tools:** rejected for players, working for admins.
 - **Persistence:** reconcile without data loss, 16 malformed-catalog cases, save round trip with schema version 1, rejected unreadable or incomplete saves, newer schema refused, and foreign schema writes refused.
-- **Provisional data:** the provisional data file loads and has no verified targets, and malformed data files fail closed.
+- **Provisional data:** the provisional data file loads and has no verified targets, and malformed data files fail closed (v1, a newer schema, missing acts, unknown fields).
+- **Main Quest tab** (`MainQuestViewTests`):
+  - quest and act states, and the three disclosure levels;
+  - completed quests always shown in full, and the level-gated active quest;
+  - weighted, floored act and campaign %, and History ordering with retired quests;
+  - Track Quest accept/reject/idempotence, and an untracked player staying untracked;
+  - banner order, act/campaign milestones, unique and stable notification ids, no banners on a duplicate event;
+  - building the view never mutates state;
+  - malformed and interleaved acts;
+  - the provisional "Black Keep" example.
 
 The engine is the **executable specification** for the Blueprint/DataTable implementation. It does not run inside Conan.
 

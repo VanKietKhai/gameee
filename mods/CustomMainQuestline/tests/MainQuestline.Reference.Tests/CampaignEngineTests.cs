@@ -209,7 +209,7 @@ public sealed class CampaignEngineTests
         var r = engine.OnBossDeath(Death("e1", BossC, At("p1", 40)), id => store.GetValueOrDefault(id));
 
         Assert.Null(p.CurrentQuestId);
-        Assert.Contains(r.Notifications, n => n.Kind == NotificationKind.CampaignComplete);
+        Assert.Contains(r.Notifications, n => n.Kind == NotificationKind.CampaignMilestone && n.Milestone == MilestoneKind.CampaignComplete);
         Assert.Equal(1.0, engine.Progress(p));
     }
 

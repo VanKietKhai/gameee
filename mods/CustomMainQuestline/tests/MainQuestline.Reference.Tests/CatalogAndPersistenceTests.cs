@@ -102,7 +102,7 @@ public sealed class CatalogAndPersistenceTests
 
 public sealed class ProvisionalDataTests
 {
-    private static string DataJson() => File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "data", "main-quests.provisional.v1.json"));
+    private static string DataJson() => File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "data", "main-quests.provisional.v2.json"));
 
     [Fact]
     public void Provisional_campaign_loads_and_is_a_valid_chain()
@@ -148,8 +148,10 @@ public sealed class ProvisionalDataTests
     }
 
     [Theory]
-    [InlineData("{\"dataSchemaVersion\":2,\"status\":\"x\",\"quests\":[]}")]
-    [InlineData("{\"dataSchemaVersion\":1,\"status\":\"x\",\"quests\":[],\"surprise\":1}")]
+    [InlineData("{\"dataSchemaVersion\":1,\"status\":\"x\",\"quests\":[]}")]                               // v1 (no acts) is no longer read
+    [InlineData("{\"dataSchemaVersion\":3,\"status\":\"x\",\"acts\":[],\"quests\":[]}")]                  // newer than this build
+    [InlineData("{\"dataSchemaVersion\":2,\"status\":\"x\",\"quests\":[]}")]                               // acts missing
+    [InlineData("{\"dataSchemaVersion\":2,\"status\":\"x\",\"acts\":[],\"quests\":[],\"surprise\":1}")] // unknown field
     [InlineData("{ broken")]
     public void Malformed_data_files_fail_closed(string json)
     {

@@ -1,6 +1,38 @@
 {
-  "dataSchemaVersion": 1,
+  "dataSchemaVersion": 2,
   "status": "PROVISIONAL - design targets only; no target is verified; rewards are placeholders",
+  "acts": [
+    {
+      "actId": "ACT_I_SURVIVAL",
+      "order": 1,
+      "displayName": "Act I — Survival"
+    },
+    {
+      "actId": "ACT_II_ANCIENT_BLOOD",
+      "order": 2,
+      "displayName": "Act II — Ancient Blood"
+    },
+    {
+      "actId": "ACT_III_FROZEN_NORTH",
+      "order": 3,
+      "displayName": "Act III — Frozen North"
+    },
+    {
+      "actId": "ACT_IV_DARK_POWERS",
+      "order": 4,
+      "displayName": "Act IV — Dark Powers"
+    },
+    {
+      "actId": "ACT_V_ENDGAME",
+      "order": 5,
+      "displayName": "Act V — Endgame"
+    },
+    {
+      "actId": "EPILOGUE",
+      "order": 6,
+      "displayName": "Epilogue"
+    }
+  ],
   "quests": [
     {
       "questId": "MQ01",
@@ -8,6 +40,7 @@
       "sequence": 10,
       "displayName": "Into the Dregs",
       "description": "Defeat Abysmal Remnant at The Dregs.",
+      "objective": "Defeat the Abysmal Remnant.",
       "target": {
         "type": "BossKill",
         "displayName": "Abysmal Remnant",
@@ -47,6 +80,7 @@
       "sequence": 20,
       "displayName": "The Witch Queen",
       "description": "Defeat Witch Queen at Witch Queen encounter (to be verified).",
+      "objective": "Defeat the Witch Queen.",
       "target": {
         "type": "BossKill",
         "displayName": "Witch Queen",
@@ -83,6 +117,7 @@
       "sequence": 30,
       "displayName": "The Barrow King",
       "description": "Defeat Barrow King at Barrow King encounter (to be verified).",
+      "objective": "Defeat the Barrow King.",
       "target": {
         "type": "BossKill",
         "displayName": "Barrow King",
@@ -119,6 +154,7 @@
       "sequence": 40,
       "displayName": "Temple of Frost",
       "description": "Defeat Temple of Frost boss at Temple of Frost.",
+      "objective": "Defeat the Temple of Frost boss.",
       "target": {
         "type": "BossKill",
         "displayName": "Temple of Frost boss",
@@ -155,6 +191,7 @@
       "sequence": 50,
       "displayName": "The Black Keep",
       "description": "Defeat Kinscourge at The Black Keep.",
+      "objective": "Defeat the Kinscourge.",
       "target": {
         "type": "BossKill",
         "displayName": "Kinscourge",
@@ -191,6 +228,7 @@
       "sequence": 60,
       "displayName": "Midnight Grove",
       "description": "Defeat Midnight Grove boss at The Midnight Grove.",
+      "objective": "Defeat the Midnight Grove boss.",
       "target": {
         "type": "BossKill",
         "displayName": "Midnight Grove boss",
@@ -227,6 +265,7 @@
       "sequence": 70,
       "displayName": "Well of Skelos",
       "description": "Defeat Well of Skelos boss at The Well of Skelos.",
+      "objective": "Defeat the Well of Skelos boss.",
       "target": {
         "type": "BossKill",
         "displayName": "Well of Skelos boss",
@@ -263,6 +302,7 @@
       "sequence": 80,
       "displayName": "The Sunken City",
       "description": "Defeat Sunken City boss at The Sunken City.",
+      "objective": "Defeat the Sunken City boss.",
       "target": {
         "type": "BossKill",
         "displayName": "Sunken City boss",
@@ -299,6 +339,7 @@
       "sequence": 90,
       "displayName": "The Wine Cellar",
       "description": "Defeat Wine Cellar boss at The Wine Cellar.",
+      "objective": "Defeat the Wine Cellar boss.",
       "target": {
         "type": "BossKill",
         "displayName": "Wine Cellar boss",
@@ -335,6 +376,7 @@
       "sequence": 100,
       "displayName": "Warmaker's Sanctuary",
       "description": "Defeat The Champion at Warmaker's Sanctuary.",
+      "objective": "Defeat the Champion.",
       "target": {
         "type": "BossKill",
         "displayName": "The Champion",
@@ -371,6 +413,7 @@
       "sequence": 110,
       "displayName": "Legacy",
       "description": "Defeat Cyclopean Halls candidate at Cyclopean Halls (candidate).",
+      "objective": "Defeat the Cyclopean Halls boss (candidate).",
       "target": {
         "type": "BossKill",
         "displayName": "Cyclopean Halls candidate",

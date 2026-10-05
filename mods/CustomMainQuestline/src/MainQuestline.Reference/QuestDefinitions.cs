@@ -48,6 +48,25 @@ public sealed record RewardEntry(RewardType Type, string Id, int Amount);
 
 public sealed record RewardDefinition(string RewardId, IReadOnlyList<RewardEntry> Entries, bool Placeholder);
 
+/// <summary>
+/// One campaign act (left column of the Main Quest tab). <see cref="Order"/> must follow quest sequence: the quests of
+/// an act are contiguous in the chain, so act progress is meaningful.
+/// </summary>
+public sealed record ActDefinition(string ActId, int Order, string DisplayName);
+
+/// <summary>How much of a LOCKED quest the Main Quest tab may show (keeps optional discovery/mystery).</summary>
+public enum LockedDisclosure
+{
+    /// <summary>Everything except the tracking control.</summary>
+    Full,
+
+    /// <summary>Quest title and recommended level/party only; boss, location, description and reward are hidden.</summary>
+    Partial,
+
+    /// <summary>Nothing but the act and the "complete the previous Main Quest" hint.</summary>
+    Hidden
+}
+
 /// <summary>One main-quest record (maps 1:1 to a DataTable row in the mod).</summary>
 public sealed record QuestDefinition
 {
@@ -56,6 +75,10 @@ public sealed record QuestDefinition
     public required int Sequence { get; init; }
     public required string DisplayName { get; init; }
     public required string Description { get; init; }
+
+    /// <summary>Short objective line for the panel. Null falls back to "Defeat &lt;target&gt;."</summary>
+    public string? Objective { get; init; }
+
     public required QuestTarget Target { get; init; }
     public string? PreviousQuestId { get; init; }
     public string? NextQuestId { get; init; }
@@ -73,6 +96,9 @@ public sealed record QuestDefinition
 
     public required int CampaignWeight { get; init; }
     public bool Enabled { get; init; } = true;
+
+    /// <summary>What the Main Quest tab reveals while this quest is LOCKED. Completed/active quests are always shown in full.</summary>
+    public LockedDisclosure LockedDisclosure { get; init; } = LockedDisclosure.Partial;
 }
 
 public sealed class QuestCatalogException(IReadOnlyList<string> errors)
@@ -90,12 +116,18 @@ public sealed class QuestCatalog
     public const double MaxCreditRadius = 20_000; // 200 m
 
     private readonly Dictionary<string, QuestDefinition> _byId;
+    private readonly Dictionary<string, ActDefinition> _actsById;
 
-    public QuestCatalog(IEnumerable<QuestDefinition> definitions)
+    /// <param name="acts">Act definitions. Null derives one act per distinct ActId (display name = id), in quest order.</param>
+    public QuestCatalog(IEnumerable<QuestDefinition> definitions, IEnumerable<ActDefinition>? acts = null)
     {
         ArgumentNullException.ThrowIfNull(definitions);
         var all = definitions.ToList();
+        var actList = acts?.ToList() ?? all.Where(q => q.Enabled).OrderBy(q => q.Sequence).Select(q => q.ActId)
+            .Where(id => !string.IsNullOrWhiteSpace(id)).Distinct(StringComparer.Ordinal)
+            .Select((id, i) => new ActDefinition(id, i + 1, id)).ToList();
         var errors = Validate(all);
+        if (errors.Count == 0) errors.AddRange(ValidateActs(all, actList));
         if (errors.Count > 0)
         {
             throw new QuestCatalogException(errors);
@@ -104,9 +136,23 @@ public sealed class QuestCatalog
         _byId = all.ToDictionary(q => q.QuestId, StringComparer.Ordinal);
         Enabled = all.Where(q => q.Enabled).OrderBy(q => q.Sequence).ToList();
         First = Enabled.Single(q => q.PreviousQuestId is null);
+        Acts = actList.OrderBy(a => a.Order).ToList();
+        _actsById = Acts.ToDictionary(a => a.ActId, StringComparer.Ordinal);
     }
 
     public IReadOnlyList<QuestDefinition> Enabled { get; }
+
+    /// <summary>All acts, in display order. Every act holds at least one enabled quest.</summary>
+    public IReadOnlyList<ActDefinition> Acts { get; }
+
+    public ActDefinition Act(string actId) => _actsById[actId];
+
+    public IReadOnlyList<QuestDefinition> QuestsInAct(string actId) =>
+        Enabled.Where(q => string.Equals(q.ActId, actId, StringComparison.Ordinal)).ToList();
+
+    /// <summary>Any known definition, including disabled ones (for history display only; never for progression).</summary>
+    public QuestDefinition? Lookup(string? questId) =>
+        questId is not null && _byId.TryGetValue(questId, out var q) ? q : null;
 
     public QuestDefinition First { get; }
 
@@ -114,6 +160,38 @@ public sealed class QuestCatalog
         questId is not null && _byId.TryGetValue(questId, out var q) && q.Enabled ? q : null;
 
     public int TotalWeight => Enabled.Sum(q => q.CampaignWeight);
+
+    private static List<string> ValidateActs(List<QuestDefinition> all, List<ActDefinition> acts)
+    {
+        var errors = new List<string>();
+        if (acts.Count == 0) errors.Add("no acts defined");
+        foreach (var a in acts)
+        {
+            if (a is null || string.IsNullOrWhiteSpace(a.ActId) || a.ActId.Any(char.IsWhiteSpace)) errors.Add("invalid ActId");
+            else if (string.IsNullOrWhiteSpace(a.DisplayName)) errors.Add($"act {a.ActId}: missing DisplayName");
+        }
+
+        if (errors.Count > 0) return errors;
+        foreach (var g in acts.GroupBy(a => a.ActId, StringComparer.Ordinal).Where(g => g.Count() > 1)) errors.Add($"duplicate ActId {g.Key}");
+        foreach (var g in acts.GroupBy(a => a.Order).Where(g => g.Count() > 1)) errors.Add($"duplicate act Order {g.Key}");
+        var known = acts.Select(a => a.ActId).ToHashSet(StringComparer.Ordinal);
+        foreach (var q in all.Where(q => !known.Contains(q.ActId))) errors.Add($"{q.QuestId}: unknown ActId {q.ActId}");
+        if (errors.Count > 0) return errors;
+
+        var enabled = all.Where(q => q.Enabled).OrderBy(q => q.Sequence).ToList();
+        foreach (var a in acts.Where(a => !enabled.Any(q => string.Equals(q.ActId, a.ActId, StringComparison.Ordinal))))
+            errors.Add($"act {a.ActId} has no enabled quests");
+
+        // act order must never go backwards along the quest chain (keeps each act's quests contiguous)
+        var order = acts.ToDictionary(a => a.ActId, a => a.Order, StringComparer.Ordinal);
+        for (var i = 1; i < enabled.Count; i++)
+        {
+            if (order[enabled[i].ActId] < order[enabled[i - 1].ActId])
+                errors.Add($"{enabled[i].QuestId}: act {enabled[i].ActId} comes before {enabled[i - 1].ActId} in act order but after it in the chain");
+        }
+
+        return errors;
+    }
 
     private static List<string> Validate(List<QuestDefinition> all)
     {
