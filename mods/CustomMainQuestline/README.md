@@ -47,6 +47,13 @@ Until then, hook/class names for NPC death, player identity, party/proximity, UI
 
 Steps 2–8 (project, Remnant verification through Dev Kit references, Quest 01, packaging, persistence, server validation) are **NOT RUN**.
 
+**Update (2026-10-05 18:21): install started by the operator.**
+- The operator started the official Epic install of **Conan Exiles Enhanced Dev Kit**, AppVersion **377800**.
+- The target is `D:\epic\CEUE5Devkit` (D:, not the recommended E:; D: had ~280 GB free). The full install is ~182 GB.
+- At 18:21, ~65.5 GB was staged and the install was still incomplete.
+- CL-377800 sits between the 2.2.2 server (CL-377096) and the 2.2.3 beta (CL-378132). So it is the nearest official Dev Kit, but it is **not** an exact match for the staging build. Compatibility will be judged by the mod's embedded `devkitRevisionNumber` and a staging boot, not assumed.
+- Step 2 starts only after the launcher reports the install as complete.
+
 ## 2. Evidence gathered from the 2.2.3 build (read-only)
 
 - **Asset names.** The server's IoStore `.utoc` directory indexes are readable, so asset *names* can be listed. Asset *contents* (DataTables, Blueprint graphs, localization) sit compressed in `.ucas` and need the DevKit or proper tooling.
