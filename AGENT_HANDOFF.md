@@ -40,7 +40,6 @@ The live-test harness remains a test tool only; never run it while the daily app
 **Client:**
 - The new client's executables are also Funcom-signed CL-378132, so **client == server** at the changelist level, identified from file metadata only.
 - That client folder contains Steam-emulator configuration (a repack). It was not launched, modified, or prepared with mods.
-- Licensed Steam clients remain the requirement for testers.
 
 **Phase 0:**
 - The old server was already stopped gracefully (session `mp13-session-1`: NORMAL 171.8 s, exit 0, no orphan, 0 unknown).
@@ -118,7 +117,7 @@ The live-test harness remains a test tool only; never run it while the daily app
 **Not restored:** the standalone client folder.
 - There was no snapshot of it, since the project backs up only the server world.
 - Its changes at 02:28 are in `Binaries\Win64` and the Steamworks folder. The client had just shown an `OnlineFix64.dll` load error, which belongs to a third-party Steam-authentication workaround.
-- Per the project rules, the client is not modified, and no help is given to restore or repair authentication workarounds. Testers need a licensed Steam client; Steam's "Verify integrity of game files" repairs a licensed install.
+
 
 **Prevention:**
 - Install client mods only by **copying** from the client bundle (`client-bundles\<bundle>\Mods`). Never take files from, cut from or edit the server's `ConanSandbox\Mods`.
@@ -165,8 +164,7 @@ Session `mp13-session-1`:
 1. *RCON reachability.* RCON listens on `0.0.0.0:25575`. A pre-existing Windows Firewall rule, `ConanSandboxServer` (Private profile, TCP+UDP any port, server executable, created by Windows on the server's first run), allows inbound connections on both Private networks, Ethernet and Radmin VPN.
    - RCON is therefore reachable from the LAN and from Radmin peers. It is password-protected, and it is not publicly reachable: the LAN address is RFC1918 behind NAT, there is no global IPv6 and there is no port forwarding.
    - Firewall changes are the operator's to make. The recommended fix is an inbound **block** rule for TCP 25575 on all profiles, run from an elevated prompt. Loopback is not filtered, so local management keeps working.
-2. *Client authentication.* The observed local client on the host machine is still **blocked by client authentication** (4F; Steam-emulation artifacts, untouched). Testers need their own licensed Steam client.
-3. *Harness wiring.* `--observe` is wired only to the plain `boot` command, not `mod-boot`. RCON was therefore confirmed with a separate localhost probe; a later harness fix can wire it.
+2. *Harness wiring.* `--observe` is wired only to the plain `boot` command, not `mod-boot`. RCON was therefore confirmed with a separate localhost probe; a later harness fix can wire it.
 
 ## Phase 3 — Chest Labels PASS; final 13-mod base pack SERVER-SIDE PASS (2026-10-05)
 
@@ -374,9 +372,14 @@ No server or harness process or server-related scheduled task was found; the hos
   - B8 (death hook) open. Remnant still Unverified.
 - TOOLING: the Dev Kit commandlet (UnrealEditor-Cmd) crashes with STACK_OVERFLOW in AssetRegistry during its startup scan (twice). The GUI editor works. Retest with the registry cache is running. Dev Kit binaries not modified.
 - BLOCKER for step 5 (probe): mod creation is GUI-only (Dev Kit 'Create Mod' → SaveModInfo writes the revision). BuildMod copies modinfo.json verbatim, so hand-writing modinfo would mean writing version metadata (forbidden). The operator must create the mod in the Dev Kit UI, or grant desktop control.
+- 2026-10-05 ~23:55 MOD #14 PAUSED by operator ("test tổng thể trước"). State at pause:
+  - Dev Kit mod `MQ14CompatProbe` exists (active mod) with one asset `BP_MQ14CompatProbeController`, an empty child of /Script/DreamworldMods.ModController. It is NOT built: no output pak, modinfo devkitRevisionNumber still 0.
+  - Scratch mod `mod_game` (display name also set to MQ14CompatProbe) is unused.
+  - No backup, install or boot was done for the probe. Staging server OFFLINE, 13-mod pack unchanged; server Mods = client bundle 041519 (13/13 SHA-256, modlist identical).
+  - UI text is Vietnamese (MainQuestText.cs; data v2).
+- RESUME POINT: Build mod in the Dev Kit → inspect modinfo (revision must be written by the Dev Kit; never edited) → DEVKIT_CHECKLIST A5–A7.
 - NEXT ACTION: probe mod `MQ14CompatProbe` created in the Dev Kit UI → main session adds an empty ModController Blueprint child via editor Python → BuildMod → inspect modinfo → backup → append #14 → boot → restore the pre-probe backup. Mod #14 not built; 13-mod pack unchanged; production world NOT CREATED.
 - OPERATOR DECISION 2026-10-04: #11 WO - Room For One More EXCLUDED / DEFERRED (do not whitelist its 5 merge errors; do not revisit in this phase; keep evidence and failed-world backup 2026-10-04_050719). #12 Simple Minimap, #13 Player DBNO and #14 Chest Labels continue independently, cumulatively on the 10-mod baseline (expected 13 mods), then a final 13-mod validation with a clean restart; stop before the custom quest mod and report first.
-- OPEN BLOCKERS: none server-side. The new local client folder contains Steam-emulator configuration and was not prepared (licensed clients required). RCON reachable from LAN/Radmin through the Windows-created Private allow rule (not public).
 
 ## History (newest first; kept for evidence)
 
