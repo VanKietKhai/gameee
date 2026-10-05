@@ -20,6 +20,33 @@ Baseline: Conan Exiles Enhanced **2.2.3 / CL-378132** (release-beta), dedicated 
 
 Until then, hook/class names for NPC death, player identity, party/proximity, UI widgets and map markers **cannot be resolved inside the editor** and are not guessed here.
 
+### Phase 14B, Step 1: DevKit availability (2026-10-05) — STOPPED before install
+
+**Official source:**
+- **Conan Exiles Enhanced Dev Kit** (Funcom), free, distributed **only through the Epic Games Store / Epic Games Launcher**. It needs an Epic account sign-in and a free "Get".
+- The store page could not be read automatically (HTTP 403), so the current build or revision was **not** confirmed from an official page.
+
+**Version vs. the target build:**
+- A third-party build guide (not authoritative) reports the Dev Kit engine as `UE 5.6.1-366792 (++exiles+release)`.
+- The staging game and server are `5.8.2-378132 (++exiles+release-beta)`.
+- **No evidence was found of a Dev Kit for the 2.2.3 release-beta CL-378132 build.** Funcom's public patch notes describe Dev Kit updates without revision numbers, and they do not mention a 2.2.3 Dev Kit.
+
+**Nearest compatible revision:**
+- All 13 accepted mods embed `devkitRevisionNumber 1002`, and all 13 load cleanly on the 2.2.3 / CL-378132 server (the v223 smoke, full and restart runs).
+- So revision-1002 Dev Kit output is *empirically accepted* by this server.
+- An exact Dev Kit match for 2.2.3 beta is **unproven**; compatibility is not assumed.
+
+**Size, drive and packaging:**
+- Install size is reported as ~24 GB (store requirement) up to ~160–250 GB once installed with shader and derived-data caches.
+- Recommended drive: **E:**, which has the most free space. C: is nearly full.
+- The official packaging path is the Dev Kit's own `RunUAT BuildMod` (cook + pak to IoStore for the Windows, WindowsServer and LinuxServer platforms). Third-party "headless" pipelines are **not** used.
+
+**Decision needed (operator):**
+1. Install the official Epic Dev Kit on E: (a large install, so it needs approval), and confirm in the launcher that its revision writes `devkitRevisionNumber 1002` (or note a newer one).
+2. Decide whether mod #14 targets the beta CL-378132 build (Dev Kit match unproven) or the matching live release.
+
+Steps 2–8 (project, Remnant verification through Dev Kit references, Quest 01, packaging, persistence, server validation) are **NOT RUN**.
+
 ## 2. Evidence gathered from the 2.2.3 build (read-only)
 
 - **Asset names.** The server's IoStore `.utoc` directory indexes are readable, so asset *names* can be listed. Asset *contents* (DataTables, Blueprint graphs, localization) sit compressed in `.ucas` and need the DevKit or proper tooling.
