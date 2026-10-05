@@ -1,0 +1,220 @@
+{
+ "source": "Dev Kit 5.8.2-377800 editor, read-only export 2026-10-05",
+ "engine": "5.8.2-377800+++exiles+release",
+ "spawnDataTableRows": [
+  {
+   "Name": "Nahjef",
+   "NPCClass": "/Game/Characters/NPCs/Humanoid/HumanoidNPCCharacter_20percentbigger_boss_Nahjef.HumanoidNPCCharacter_20percentbigger_boss_Nahjef_C",
+   "StatTemplate": "All Thralls Base No Knockout",
+   "NpcTags": {
+    "GameplayTags": [
+     {
+      "TagName": "Npc.Boss"
+     },
+     {
+      "TagName": "Npc.Dungeon"
+     },
+     {
+      "TagName": "Npc.Dungeon.Dregs"
+     }
+    ],
+    "ParentTags": [
+     {
+      "TagName": "Npc"
+     },
+     {
+      "TagName": "Npc.Dungeon"
+     }
+    ]
+   },
+   "LootTable": {
+    "DataTable": "/Script/Engine.DataTable'/Game/Systems/Loot/New/Specific/Boss/DT_NPC_NahjefKey.DT_NPC_NahjefKey'",
+    "RowName": "None"
+   },
+   "LevelCurveID": "Slow"
+  },
+  {
+   "Name": "Wildlife_LarvalHorror_Bossroom",
+   "NPCClass": "/Game/Characters/NPCs/Doel/Blueprints/BP_NPC_Siptah_Wildlife_Doel_WhiteDregs_Bossroom.BP_NPC_Siptah_Wildlife_Doel_WhiteDregs_Bossroom_C",
+   "StatTemplate": "Animal Base",
+   "NpcTags": {
+    "GameplayTags": [
+     {
+      "TagName": "Npc.Undead"
+     },
+     {
+      "TagName": "Npc.Unique.LarvalHorror"
+     },
+     {
+      "TagName": "Npc.LuredBy.Fire"
+     }
+    ],
+    "ParentTags": [
+     {
+      "TagName": "Npc"
+     },
+     {
+      "TagName": "Npc.Unique"
+     },
+     {
+      "TagName": "Npc.LuredBy"
+     }
+    ]
+   },
+   "LootTable": {
+    "DataTable": "None",
+    "RowName": "None"
+   },
+   "LevelCurveID": "Normal"
+  },
+  {
+   "Name": "Wildlife_LarvalHorror",
+   "NPCClass": "/Game/Characters/NPCs/Doel/Blueprints/BP_NPC_Siptah_Wildlife_Doel_WhiteDregs.BP_NPC_Siptah_Wildlife_Doel_WhiteDregs_C",
+   "StatTemplate": "Animal Base",
+   "NpcTags": {
+    "GameplayTags": [
+     {
+      "TagName": "Npc.Undead"
+     },
+     {
+      "TagName": "Npc.Unique.LarvalHorror"
+     },
+     {
+      "TagName": "Npc.LuredBy.Fire"
+     }
+    ],
+    "ParentTags": [
+     {
+      "TagName": "Npc"
+     },
+     {
+      "TagName": "Npc.Unique"
+     },
+     {
+      "TagName": "Npc.LuredBy"
+     }
+    ]
+   },
+   "LootTable": {
+    "DataTable": "None",
+    "RowName": "None"
+   },
+   "LevelCurveID": "Normal"
+  },
+  {
+   "Name": "Wildlife_LavaWorm",
+   "NPCClass": "/Game/Characters/NPCs/sewer_abomination/blueprints/BP_NPC_Wildlife_LavaWurm.BP_NPC_Wildlife_LavaWurm_C",
+   "StatTemplate": "Animal Base",
+   "NpcTags": {
+    "GameplayTags": [
+     {
+      "TagName": "Npc.Boss.Miniboss"
+     }
+    ],
+    "ParentTags": [
+     {
+      "TagName": "Npc.Boss"
+     },
+     {
+      "TagName": "Npc"
+     }
+    ]
+   },
+   "LootTable": {
+    "DataTable": "None",
+    "RowName": "None"
+   },
+   "LevelCurveID": "Normal"
+  },
+  {
+   "Name": "Wildlife_SewerAbomination",
+   "NPCClass": "/Game/Characters/NPCs/sewer_abomination/blueprints/BP_NPC_Wildlife_SewerAbomination.BP_NPC_Wildlife_SewerAbomination_C",
+   "StatTemplate": "Animal No Knockback",
+   "NpcTags": {
+    "GameplayTags": [
+     {
+      "TagName": "Npc.Boss"
+     },
+     {
+      "TagName": "Npc.Dungeon"
+     },
+     {
+      "TagName": "Npc.Dungeon.Dregs"
+     }
+    ],
+    "ParentTags": [
+     {
+      "TagName": "Npc"
+     },
+     {
+      "TagName": "Npc.Dungeon"
+     }
+    ]
+   },
+   "LootTable": {
+    "DataTable": "None",
+    "RowName": "None"
+   },
+   "LevelCurveID": "Normal"
+  }
+ ],
+ "journey": [
+  {
+   "Name": "DestroyAbyssalRemnant",
+   "Chapter": "ChapterV",
+   "Description": "NSLOCTEXT(\"[5A3B5A50460D6FBAFA27A8AAD9FB1728]\", \"B0DC8E8E4F6E551D19CF8096ACEDEC39\", \"You’ve heard rumors of something in the darkest depths of the Dregs. Something that lives beneath the city and devours all that dare to face it.\\r\\nThe rumors set you afire with curiosity. What could that creature be guarding? Where did it come from? Why is it there?\\r\\n\\r\\nYou decide that you want to test yourself. You have survived the Exiled Lands thus far, but you have not ventured into the darkness. You wish to try.\\r\\n\\r\\n<LoreBold>The Dregs dungeon can be found on the western end of the river in the south. </>\\r\\n\\r\\n\")",
+   "DescriptionDiscovered": "NSLOCTEXT(\"[5A3B5A50460D6FBAFA27A8AAD9FB1728]\", \"A6226C3D4B324B99C85AE78456292821\", \"You have overcome the Abysmal Remnant and won through The Dregs. Your confidence in yourself grows along with your ability.\\r\\n\")",
+   "Icon": "/Game/UI/Textures/GUIs/ExilesJourney/icon_exilesJourney_dominate.icon_exilesJourney_dominate",
+   "IconLayers": [],
+   "AchievementName": "",
+   "JourneyXP": 0,
+   "MapRestriction": [
+    "/Game/Maps/ConanSandbox/ConanSandbox.ConanSandbox"
+   ]
+  }
+ ],
+ "dregsMapActors": {
+  "/Game/Maps/ConanSandbox/Gameplay/Gameplay_Dungeon_Sewer": [
+   {
+    "label": "D_S_SewerBoss1_1",
+    "class": "/Game/Systems/Spawning/NPCTerritorySpawner.NPCTerritorySpawner_C",
+    "loc": "<Struct 'Vector' (0x000001E045CE0100) {x: -137111.734375, y: 375790.812500, z: -21557.427734}>",
+    "Spawnpoints": "[]"
+   },
+   {
+    "label": "D_S_SewerBoss_CampOwner1",
+    "class": "/Game/Systems/Camps/BP_CampOwner.BP_CampOwner_C",
+    "loc": "<Struct 'Vector' (0x000001E045CE01A0) {x: -137373.500000, y: 375497.218750, z: -21514.414062}>"
+   },
+   {
+    "label": "D_S_SewerBoss_ManualSpawnPoint1_1",
+    "class": "/Game/Systems/AI/Navigation/BP_ManualSpawnPoint.BP_ManualSpawnPoint_C",
+    "loc": "<Struct 'Vector' (0x000001E045CE0970) {x: -137225.296875, y: 375803.968750, z: -22280.476562}>"
+   },
+   {
+    "label": "BP_DungeonController",
+    "class": "/Game/Systems/EncounterControllers/BP_JhabbalSagDungeonController.BP_JhabbalSagDungeonController_C",
+    "loc": "<Struct 'Vector' (0x000001E045CE0E70) {x: -141153.046875, y: 349252.968750, z: -20096.000000}>",
+    "BossController": "[]"
+   }
+  ],
+  "/Game/Maps/ConanSandbox/Gameplay/Gameplay_Dungeon_Sewer_Blackout": [
+   {
+    "label": "DarkDregsDungeonController",
+    "class": "/Game/Systems/EncounterControllers/BP_DarkDregsDungeonController.BP_DarkDregsDungeonController_C",
+    "loc": "<Struct 'Vector' (0x000001E045CE36C0) {x: -38534.140625, y: 371941.437500, z: -23519.294922}>",
+    "BossController": "[\"/Game/Systems/EncounterControllers/BP_BossDarkDregsNahjef_Controller.BP_BossDarkDregsNahjef_Controller_C'/Game/Maps/ConanSandbox/Gameplay/Gameplay_Dungeon_Sewer_Blackout.Gameplay_Dungeon_Sewer_Blackout:PersistentLevel.BP_BossDarkDregsNahjef_Controller_1730'\"]"
+   },
+   {
+    "label": "BP_NahjefBossLootChest",
+    "class": "/Game/Systems/Loot/New/BP_NahjefBossLootChest.BP_NahjefBossLootChest_C",
+    "loc": "<Struct 'Vector' (0x000001E045CE3F30) {x: -37833.437500, y: 371667.312500, z: -22435.414062}>"
+   },
+   {
+    "label": "BP_BossDarkDregsNahjef_Controller",
+    "class": "/Game/Systems/EncounterControllers/BP_BossDarkDregsNahjef_Controller.BP_BossDarkDregsNahjef_Controller_C",
+    "loc": "<Struct 'Vector' (0x000001E131732130) {x: -38250.734375, y: 371967.843750, z: -22345.115234}>"
+   }
+  ]
+ }
+}

@@ -1,4 +1,10 @@
-# Mod #14 — Input conflict audit of the 13-mod staging pack (2026-10-05, pre-Dev Kit)
+# Mod #14 — Input conflict audit of the 13-mod staging pack (2026-10-05)
+
+> **Dev Kit update (2026-10-05 evening):**
+> - Vanilla bindings (`DefaultInput.ini`, legacy mappings only) use **F2 (Feedback)** and **Insert (AdminPanel)** but **no F6–F9**.
+> - Improved Thralls & QoL has **19 player-bindable functions**; its packages contain the key names **F2** and **Enter** and the text **"F9"**.
+> - **F7 and F8 are free everywhere checked.** Still not chosen: confirm in a licensed client with all 13 mods.
+> - Details: [`evidence/devkit-results-2026-10-05.md`](evidence/devkit-results-2026-10-05.md).
 
 **Result: no hotkey chosen.** Some candidate keys are recorded below, but the vanilla bindings and Improved Thralls & QoL's default keys still need the Dev Kit (DEVKIT_CHECKLIST.md, Part C).
 

@@ -365,7 +365,16 @@ No server or harness process or server-related scheduled task was found; the hos
   - A3C1 corrected: a broad content-set code, not Dregs-only.
   - Projection fix: equal level ranges print as one number.
   - Mod tests 81/81.
-- NEXT ACTION: when the Dev Kit install completes, run DEVKIT_CHECKLIST Part A. A6/A7 need the operator to hand over the staging server (offline, no orphans, fresh verified backup). Then Part B (Remnant stays Unverified until B9) and Part C. Licensed client still needed for secondary confirmation and QA. Mod #14 not built; 13-mod pack unchanged; production world NOT CREATED.
+- 2026-10-05 ~22:15 STAGING TAKEOVER by main session (operator granted). Server OFFLINE, untouched so far; no backup or install made yet.
+- DEV KIT RESULTS (evidence/devkit-results-2026-10-05.md):
+  - A1/A2 PASS: 5.8.2-377800 ++exiles+release, ModVersion=1002. The server log declares compatible devkit revisions [1002].
+  - C1: no supported Enhanced-menu hook, so the fallback applies (standalone UMG panel + configurable key).
+  - C2/C3: F7/F8 free in vanilla and the observed ITQoL keys.
+  - B1–B7 resolved statically: The Dregs (Gameplay_Dungeon_Sewer, separate from the Darkened Dregs/Nahjef) → D_S_SewerBoss1 → Wildlife_SewerAbomination ("Abyssal Remnant", Npc.Boss, Npc.Dungeon.Dregs) → BP_NPC_Wildlife_SewerAbomination_C → BaseBPWildlife_C → ConanCharacter.
+  - B8 (death hook) open. Remnant still Unverified.
+- TOOLING: the Dev Kit commandlet (UnrealEditor-Cmd) crashes with STACK_OVERFLOW in AssetRegistry during its startup scan (twice). The GUI editor works. Retest with the registry cache is running. Dev Kit binaries not modified.
+- BLOCKER for step 5 (probe): mod creation is GUI-only (Dev Kit 'Create Mod' → SaveModInfo writes the revision). BuildMod copies modinfo.json verbatim, so hand-writing modinfo would mean writing version metadata (forbidden). The operator must create the mod in the Dev Kit UI, or grant desktop control.
+- NEXT ACTION: probe mod `MQ14CompatProbe` created in the Dev Kit UI → main session adds an empty ModController Blueprint child via editor Python → BuildMod → inspect modinfo → backup → append #14 → boot → restore the pre-probe backup. Mod #14 not built; 13-mod pack unchanged; production world NOT CREATED.
 - OPERATOR DECISION 2026-10-04: #11 WO - Room For One More EXCLUDED / DEFERRED (do not whitelist its 5 merge errors; do not revisit in this phase; keep evidence and failed-world backup 2026-10-04_050719). #12 Simple Minimap, #13 Player DBNO and #14 Chest Labels continue independently, cumulatively on the 10-mod baseline (expected 13 mods), then a final 13-mod validation with a clean restart; stop before the custom quest mod and report first.
 - OPEN BLOCKERS: none server-side. The new local client folder contains Steam-emulator configuration and was not prepared (licensed clients required). RCON reachable from LAN/Radmin through the Windows-created Private allow rule (not public).
 

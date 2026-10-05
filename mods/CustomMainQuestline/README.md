@@ -19,6 +19,10 @@ Baseline: Conan Exiles Enhanced **2.2.3 / CL-378132** (release-beta), dedicated 
 - **Main Quest tab:** a dedicated campaign tab, plus separate lightweight banners. Design-only until the Dev Kit exists: [`MAIN_QUEST_UI.md`](MAIN_QUEST_UI.md) and the [visual mockup](https://claude.ai/artifact/LqogeEnkUB7EyX7WyHzBmb).
   - Locked quests default to `Partial`; nothing hidden on the client counts as secret.
   - The tab opens from a supported Enhanced menu hook if one exists, otherwise from a standalone panel on a configurable hotkey. The hotkey is chosen only after the input check ([`INPUT_CONFLICT_AUDIT.md`](INPUT_CONFLICT_AUDIT.md)).
+- **Dev Kit results (2026-10-05):** [`evidence/devkit-results-2026-10-05.md`](evidence/devkit-results-2026-10-05.md).
+  - Dev Kit 5.8.2-377800, `ModVersion=1002`; the server accepts revision `[1002]`.
+  - There is no supported Enhanced-menu hook, so the tab uses the fallback: a standalone panel on a configurable key.
+  - Remnant trace: The Dregs → spawner `D_S_SewerBoss1` → row `Wildlife_SewerAbomination` ("Abyssal Remnant") → `BP_NPC_Wildlife_SewerAbomination_C`. Still Unverified until the death hook (B8) and a runtime kill.
 - **Dev Kit work** follows [`DEVKIT_CHECKLIST.md`](DEVKIT_CHECKLIST.md): Part A is the compatibility gate, Part B the Quest 01 identity trace, Part C the UI entry point and input.
 - The live 13-mod server is not modified while the operator is using it.
 

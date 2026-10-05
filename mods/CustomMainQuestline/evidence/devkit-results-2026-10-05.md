@@ -1,0 +1,55 @@
+# Dev Kit results — 2026-10-05 (main session, staging takeover)
+
+All work below is read-only against Funcom content and third-party mods; mod paks were read from copies in the session scratchpad. No game, server or mod file was changed.
+
+## A1–A3: Dev Kit identity (PASS for A1/A2; A3 recorded)
+
+| Item | Value |
+|---|---|
+| Launcher manifest | "Conan Exiles Enhanced Dev Kit", AppVersion **377800**, `D:\epic\CEUE5Devkit`, `bIsIncompleteInstall=false`, 182,287,132,076 B |
+| `Engine/Build/Build.version` | **5.8.2**, Changelist **377800**, CompatibleChangelist 377800, BranchName `++exiles+release`, licensee + promoted build |
+| Launcher | `RunDevKit.bat` → `UnrealEditor.exe UE4\ConanSandbox.uproject -ModDevKit` |
+| Project mod revision | `UE4/Config/DefaultGame.ini`: **`ModVersion=1002`** |
+| Mod tooling | Plugin `DreamworldMods` (Funcom Oslo AS) + automation `UE4/Build/ModDevKit.Automation/BuildMod.cs` (cook → per-platform pak + IoStore for Windows, WindowsServer, LinuxServer → outer `<Mod>.pak` with `modinfo.json` + `manifest.json`) |
+| Target server | `5.8.2-378132+++exiles+release-beta` |
+
+**A3 difference:** same engine version (5.8.2); Dev Kit CL 377800 (`release`) vs server CL 378132 (`release-beta`), 332 changelists apart.
+
+**Server-side compatibility rule (found):** the mod runtime has an explicit check (`GetModCompatibilityStatusFromRevisionSnapshot`, statuses Verified / OutOfDate / Incompatible / Unknown). The accepted 2.2.3 boots log `SetCompatibleDevkitVersions: set 1 version(s) from 1 input string(s): [1002]`. All accepted mods carry `devkitRevisionNumber 1002`, `devkitSnapshotId 0`, `minimumVersion Enhanced`. So a Dev Kit that writes revision 1002 matches what this server declares compatible; this is **confirmed only when A5 shows the probe's real modinfo** and A6 shows the server mounting it.
+
+## C2/C3: input bindings
+
+- **Vanilla** (`DefaultInput.ini`, legacy Action/Axis mappings; no Enhanced Input assets in vanilla content): keyboard keys used include E, R, Q, X, F, C, W/A/S/D, V, T, O, M, J, Z, Y, P, N, L, K, H, G, B, number row 1–8, Tab, Escape, Enter, BackSpace, SpaceBar, LeftShift/LeftControl/LeftAlt, arrows, PageUp/PageDown (message pages), **Insert (AdminPanel)**, **F2 (Feedback)**, NumLock, numpad +/−/×. **No F6, F7, F8 or F9.**
+- **Improved Thralls & QoL** (client container decompressed from a copy): a "Hotkey Bindings" settings section with **19 bindable functions**: ThrallUseMelee, ThrallUseRange, ThrallUseTruncheon, ThrallUseHealing, AdminSettingsUI, UserSettingsUI, ThrallManagementUI, ThrallBehaviourToPassive/Defensive/Aggressive, InventoryBlacklistUI, ThrallWhistle, ThrallSendHome, FollowerUIScrollUP/DOWN, PartyUIScrollUP/DOWN, SearchInNearbyContainers. Players bind them in-game ("Press any key to bind / ESC to cancel"). Key names present in its packages: **F2** and **Enter** (player-controller component) and the text **"F9"** (settings view). Which function owns which default cannot be read from cooked data without a schema.
+- **Result:** **F7 and F8** are unused by vanilla and by every binding observed in the 13 mods. Still not chosen; a licensed-client check with all 13 mods is required.
+
+## C1: Conan Enhanced menu hook
+
+- No supported "add a tab to the Enhanced menu" API was found. The game module exposes `UI/ModMenu/ModDetailsWidgetBase` and `/Game/UI/Widgets/Mods/WBP_ModMenu`, which is the **mod browser** (list/install mods), not an extension point.
+- Improved Thralls & QoL's `WBP_ENHANCED_*` widgets are its own widget kit (buttons, checkboxes, item icons…), opened through its own hotkeys and radial menu — **not** an Enhanced-menu registration.
+- Supported extension mechanisms that do exist: `ModController` ("Inherit from this class to have your own ModController", with a persistence component that saves/loads it) and mod/DLC component classes (`FDreamworldMods::RegisterModAndDLCComponentClasses`; e.g. ITQoL's `AC_…_FunCombatPlayerController`). Chest Labels adds a toggle to the radial menu, so the radial menu may be a second supported entry point (to inspect).
+- **Decision per operator rule:** no supported Enhanced-menu tab hook → **fallback: standalone UMG panel on a configurable key** (radial-menu entry to be evaluated as an extra way in). No vanilla widget patching.
+
+## B: Quest 01 trace (Dev Kit editor + asset files, read-only)
+
+Method: the GUI Dev Kit editor ran a read-only Python script (`-ExecutePythonScript`, Python enabled by command line only; no asset saved). It exported the DataTable rows and the placed actors of both Dregs sublevels. Map name tables and the localization manifest were read from the uncooked `.umap`/`.uasset` files.
+
+| Step | Finding | Status |
+|---|---|---|
+| B1 Dregs level | **Two separate dungeons, about 990 m apart.** `Gameplay_Dungeon_Sewer` = **The Dregs** (boss-room spawner at x≈−137,112, y≈375,791, z≈−21,557). `Gameplay_Dungeon_Sewer_Blackout` = the **Darkened Dregs** (Nahjef boss room at x≈−38,251, y≈371,968). Nahjef does not replace the Remnant; they are different encounters. Vanilla Journey: "The Dregs dungeon can be found on the western end of the river in the south." | resolved (static); runtime confirmation pending |
+| B2 Controller | The Dregs places `BP_DungeonController` (class `BP_JhabbalSagDungeonController_C`, empty `BossController`). The Darkened Dregs places `BP_DarkDregsDungeonController` → `BossController` = `BP_BossDarkDregsNahjef_Controller`. The Remnant is **not** behind an encounter controller. | resolved |
+| B3 Spawn source | The Dregs boss room: `NPCTerritorySpawner` **`D_S_SewerBoss1_1`** + `BP_ManualSpawnPoint` **`D_S_SewerBoss_ManualSpawnPoint1_1`** + `BP_CampOwner` **`D_S_SewerBoss_CampOwner1`**, territory `Territories/Dungeons/Sewer/BossRoom`. The level references the spawn row **`Wildlife_SewerAbomination`** (also a row in `WeightedSpawnTableRow`). Among Maps/Systems/DLC, **only** `Gameplay_Dungeon_Sewer` references that row. | resolved (row on spawner component not yet read property-by-property) |
+| B4 Class | `SpawnDataTable` row `Wildlife_SewerAbomination` → `NPCClass` = **`/Game/Characters/NPCs/sewer_abomination/blueprints/BP_NPC_Wildlife_SewerAbomination.BP_NPC_Wildlife_SewerAbomination_C`**, `StatTemplate` "Animal No Knockback", `NpcTags` **`Npc.Boss`, `Npc.Dungeon`, `Npc.Dungeon.Dregs`**. | resolved |
+| B5 Inheritance / uniqueness | `BP_NPC_Wildlife_SewerAbomination_C` → `/Game/Characters/BaseBPWildlife.BaseBPWildlife_C` → native `/Script/ConanSandbox.ConanCharacter`. It is the only `SpawnDataTable` row with this class. `BP_NPC_Wildlife_LavaWurm` (same folder) is a different class, row `Wildlife_LavaWorm`, tag `Npc.Boss.Miniboss`. Note: the path string uses lowercase `blueprints` in the DataTable and `Blueprints` on disk; the runtime class path must be taken from the server log (case-sensitive compare in the engine spec). | resolved (static) |
+| B6 Display name | `SpawnDataTable.Wildlife_SewerAbomination.Name` = **"Abyssal Remnant"**. Journey `DT_ExilesJourney.DestroyAbyssalRemnant` ("Destroy the Abysmal Remnant", Chapter V, `MapRestriction` ConanSandbox). Items and trophy say "Abysmal Remnant". **The nameplate the server logs as `CharacterName` should be "Abyssal Remnant".** | resolved |
+| B7 Cross-check | The class references `ACH_DefeatSewerAbomination` and Journey row `DestroyAbyssalRemnant`; battle pass `DUNGEON_DREGS` = "Defeat the Abyssal Remnant". | agrees |
+| B8 Death source | Vanilla credits the Journey step from this class. Mod-side hook not chosen yet (candidates: death event on the character via a mod component, or the existing kill path that logs `KillCharacterWithRagdoll_Implementation`). | OPEN |
+
+**Status: strong static evidence; still `Unverified`.** Needed before `Verified`: B8 hook, and secondary runtime confirmation (one staged kill, server log `Name:`/`CharacterName:` = the B4 class and "Abyssal Remnant").
+
+**Spec impact:** the quest's target display name should be "Abyssal Remnant" (what players see on the boss); "Abysmal Remnant" is the item/journey spelling. Operator to confirm which spelling the UI shows.
+
+## Tooling incident (Dev Kit)
+
+`UnrealEditor-Cmd.exe … -run=pythonscript` crashed twice with **`EXCEPTION_STACK_OVERFLOW` in `UnrealEditor-AssetRegistry.dll`** about 8 minutes after start, during the commandlet's own asset-registry scan (before any script ran; no asset written). No junctions/symlink loops; max content depth 14. The Dev Kit binaries were not modified. The **GUI editor works**: first start 26 min (14,111 shaders compiled locally; shared DDC unreachable), asset gather ~129 s CPU, no overflow; second start 7.5 min. The read-only trace above ran there. Raw extract: [`quest01-trace-extract-2026-10-05.json`](quest01-trace-extract-2026-10-05.json).
+Risk still open: `BuildMod -Cook` runs a commandlet and may hit the same overflow (retest in progress).
