@@ -1,36 +1,36 @@
 {
   "dataSchemaVersion": 2,
-  "status": "PROVISIONAL - design targets only; no target is verified; rewards are placeholders",
+  "status": "PROVISIONAL - design targets only; no target is verified; rewards are placeholders; player-facing text in Vietnamese (in-game proper names kept)",
   "acts": [
     {
       "actId": "ACT_I_SURVIVAL",
       "order": 1,
-      "displayName": "Act I — Survival"
+      "displayName": "Hồi I — Sinh Tồn"
     },
     {
       "actId": "ACT_II_ANCIENT_BLOOD",
       "order": 2,
-      "displayName": "Act II — Ancient Blood"
+      "displayName": "Hồi II — Huyết Mạch Cổ Xưa"
     },
     {
       "actId": "ACT_III_FROZEN_NORTH",
       "order": 3,
-      "displayName": "Act III — Frozen North"
+      "displayName": "Hồi III — Phương Bắc Băng Giá"
     },
     {
       "actId": "ACT_IV_DARK_POWERS",
       "order": 4,
-      "displayName": "Act IV — Dark Powers"
+      "displayName": "Hồi IV — Thế Lực Hắc Ám"
     },
     {
       "actId": "ACT_V_ENDGAME",
       "order": 5,
-      "displayName": "Act V — Endgame"
+      "displayName": "Hồi V — Trận Chung Kết"
     },
     {
       "actId": "EPILOGUE",
       "order": 6,
-      "displayName": "Epilogue"
+      "displayName": "Vĩ Thanh"
     }
   ],
   "quests": [
@@ -38,9 +38,9 @@
       "questId": "MQ01",
       "actId": "ACT_I_SURVIVAL",
       "sequence": 10,
-      "displayName": "Into the Dregs",
-      "description": "Defeat Abysmal Remnant at The Dregs.",
-      "objective": "Defeat the Abysmal Remnant.",
+      "displayName": "Xuống The Dregs",
+      "description": "Hạ gục Abysmal Remnant tại The Dregs.",
+      "objective": "Hạ gục Abysmal Remnant.",
       "target": {
         "type": "BossKill",
         "displayName": "Abysmal Remnant",
@@ -78,9 +78,9 @@
       "questId": "MQ02",
       "actId": "ACT_II_ANCIENT_BLOOD",
       "sequence": 20,
-      "displayName": "The Witch Queen",
-      "description": "Defeat Witch Queen at Witch Queen encounter (to be verified).",
-      "objective": "Defeat the Witch Queen.",
+      "displayName": "Nữ Hoàng Phù Thủy",
+      "description": "Hạ gục Witch Queen tại Khu vực Witch Queen (chưa xác minh).",
+      "objective": "Hạ gục Witch Queen.",
       "target": {
         "type": "BossKill",
         "displayName": "Witch Queen",
@@ -95,7 +95,7 @@
       "recommendedLevelMax": 35,
       "recommendedPartyMin": 2,
       "recommendedPartyMax": 4,
-      "locationName": "Witch Queen encounter (to be verified)",
+      "locationName": "Khu vực Witch Queen (chưa xác minh)",
       "reward": {
         "rewardId": "RW_MQ02_PLACEHOLDER",
         "entries": [
@@ -115,9 +115,9 @@
       "questId": "MQ03",
       "actId": "ACT_II_ANCIENT_BLOOD",
       "sequence": 30,
-      "displayName": "The Barrow King",
-      "description": "Defeat Barrow King at Barrow King encounter (to be verified).",
-      "objective": "Defeat the Barrow King.",
+      "displayName": "Vua Hầm Mộ",
+      "description": "Hạ gục Barrow King tại Khu vực Barrow King (chưa xác minh).",
+      "objective": "Hạ gục Barrow King.",
       "target": {
         "type": "BossKill",
         "displayName": "Barrow King",
@@ -132,7 +132,7 @@
       "recommendedLevelMax": 35,
       "recommendedPartyMin": 2,
       "recommendedPartyMax": 4,
-      "locationName": "Barrow King encounter (to be verified)",
+      "locationName": "Khu vực Barrow King (chưa xác minh)",
       "reward": {
         "rewardId": "RW_MQ03_PLACEHOLDER",
         "entries": [
@@ -152,12 +152,12 @@
       "questId": "MQ04",
       "actId": "ACT_III_FROZEN_NORTH",
       "sequence": 40,
-      "displayName": "Temple of Frost",
-      "description": "Defeat Temple of Frost boss at Temple of Frost.",
-      "objective": "Defeat the Temple of Frost boss.",
+      "displayName": "Đền Băng Giá",
+      "description": "Hạ gục trùm Temple of Frost tại Temple of Frost.",
+      "objective": "Hạ gục trùm Temple of Frost.",
       "target": {
         "type": "BossKill",
-        "displayName": "Temple of Frost boss",
+        "displayName": "Trùm Temple of Frost",
         "targetClassPath": null,
         "verification": "Unverified",
         "verificationNote": "Design target only; exact 2.2.3 identity not yet resolved."
@@ -189,9 +189,9 @@
       "questId": "MQ05",
       "actId": "ACT_III_FROZEN_NORTH",
       "sequence": 50,
-      "displayName": "The Black Keep",
-      "description": "Defeat Kinscourge at The Black Keep.",
-      "objective": "Defeat the Kinscourge.",
+      "displayName": "Pháo Đài Đen",
+      "description": "Hạ gục Kinscourge tại The Black Keep.",
+      "objective": "Hạ gục Kinscourge.",
       "target": {
         "type": "BossKill",
         "displayName": "Kinscourge",
@@ -226,12 +226,12 @@
       "questId": "MQ06",
       "actId": "ACT_IV_DARK_POWERS",
       "sequence": 60,
-      "displayName": "Midnight Grove",
-      "description": "Defeat Midnight Grove boss at The Midnight Grove.",
-      "objective": "Defeat the Midnight Grove boss.",
+      "displayName": "Khu Rừng Nửa Đêm",
+      "description": "Hạ gục trùm Midnight Grove tại The Midnight Grove.",
+      "objective": "Hạ gục trùm Midnight Grove.",
       "target": {
         "type": "BossKill",
-        "displayName": "Midnight Grove boss",
+        "displayName": "Trùm Midnight Grove",
         "targetClassPath": null,
         "verification": "Unverified",
         "verificationNote": "Design target only; exact 2.2.3 identity not yet resolved."
@@ -263,12 +263,12 @@
       "questId": "MQ07",
       "actId": "ACT_IV_DARK_POWERS",
       "sequence": 70,
-      "displayName": "Well of Skelos",
-      "description": "Defeat Well of Skelos boss at The Well of Skelos.",
-      "objective": "Defeat the Well of Skelos boss.",
+      "displayName": "Giếng Skelos",
+      "description": "Hạ gục trùm Well of Skelos tại The Well of Skelos.",
+      "objective": "Hạ gục trùm Well of Skelos.",
       "target": {
         "type": "BossKill",
-        "displayName": "Well of Skelos boss",
+        "displayName": "Trùm Well of Skelos",
         "targetClassPath": null,
         "verification": "Unverified",
         "verificationNote": "Design target only; exact 2.2.3 identity not yet resolved."
@@ -300,12 +300,12 @@
       "questId": "MQ08",
       "actId": "ACT_IV_DARK_POWERS",
       "sequence": 80,
-      "displayName": "The Sunken City",
-      "description": "Defeat Sunken City boss at The Sunken City.",
-      "objective": "Defeat the Sunken City boss.",
+      "displayName": "Thành Phố Chìm",
+      "description": "Hạ gục trùm Sunken City tại The Sunken City.",
+      "objective": "Hạ gục trùm Sunken City.",
       "target": {
         "type": "BossKill",
-        "displayName": "Sunken City boss",
+        "displayName": "Trùm Sunken City",
         "targetClassPath": null,
         "verification": "Unverified",
         "verificationNote": "Design target only; exact 2.2.3 identity not yet resolved."
@@ -337,12 +337,12 @@
       "questId": "MQ09",
       "actId": "ACT_V_ENDGAME",
       "sequence": 90,
-      "displayName": "The Wine Cellar",
-      "description": "Defeat Wine Cellar boss at The Wine Cellar.",
-      "objective": "Defeat the Wine Cellar boss.",
+      "displayName": "Hầm Rượu",
+      "description": "Hạ gục trùm Wine Cellar tại The Wine Cellar.",
+      "objective": "Hạ gục trùm Wine Cellar.",
       "target": {
         "type": "BossKill",
-        "displayName": "Wine Cellar boss",
+        "displayName": "Trùm Wine Cellar",
         "targetClassPath": null,
         "verification": "Unverified",
         "verificationNote": "Design target only; exact 2.2.3 identity not yet resolved."
@@ -374,9 +374,9 @@
       "questId": "MQ10",
       "actId": "ACT_V_ENDGAME",
       "sequence": 100,
-      "displayName": "Warmaker's Sanctuary",
-      "description": "Defeat The Champion at Warmaker's Sanctuary.",
-      "objective": "Defeat the Champion.",
+      "displayName": "Thánh Địa Warmaker",
+      "description": "Hạ gục The Champion tại Warmaker's Sanctuary.",
+      "objective": "Hạ gục The Champion.",
       "target": {
         "type": "BossKill",
         "displayName": "The Champion",
@@ -411,12 +411,12 @@
       "questId": "MQ11",
       "actId": "EPILOGUE",
       "sequence": 110,
-      "displayName": "Legacy",
-      "description": "Defeat Cyclopean Halls candidate at Cyclopean Halls (candidate).",
-      "objective": "Defeat the Cyclopean Halls boss (candidate).",
+      "displayName": "Di Sản",
+      "description": "Hạ gục trùm Cyclopean Halls (dự kiến) tại Cyclopean Halls (dự kiến).",
+      "objective": "Hạ gục trùm Cyclopean Halls (dự kiến).",
       "target": {
         "type": "BossKill",
-        "displayName": "Cyclopean Halls candidate",
+        "displayName": "Trùm Cyclopean Halls (dự kiến)",
         "targetClassPath": null,
         "verification": "Unverified",
         "verificationNote": "Design target only; exact 2.2.3 identity not yet resolved."
@@ -427,7 +427,7 @@
       "recommendedLevelMax": 60,
       "recommendedPartyMin": 4,
       "recommendedPartyMax": 5,
-      "locationName": "Cyclopean Halls (candidate)",
+      "locationName": "Cyclopean Halls (dự kiến)",
       "reward": {
         "rewardId": "RW_MQ11_PLACEHOLDER",
         "entries": [

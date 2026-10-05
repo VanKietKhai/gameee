@@ -51,7 +51,7 @@ public sealed class MainQuestViewTests
 
         var cur = v.Current!;
         Assert.Equal(("Q01", "Title Q01", "Boss Q01", "Place Q01"), (cur.QuestId, cur.Title, cur.BossName, cur.Location));
-        Assert.Equal(("15–20", "1–3", "Defeat Boss Q01."), (cur.RecommendedLevel, cur.RecommendedParty, cur.Objective));
+        Assert.Equal(("15–20", "1–3", "Hạ gục Boss Q01."), (cur.RecommendedLevel, cur.RecommendedParty, cur.Objective));
         Assert.Equal(["10 XP"], cur.Reward!);
         Assert.True(cur.Available && cur.IsTracked && cur.CanTrack && cur.CreditEnabled);
         Assert.True(v.Tracking.MarkerVisible);
@@ -122,9 +122,9 @@ public sealed class MainQuestViewTests
 
         Assert.Equal(QuestStatus.Active, v.Current!.Status);
         Assert.False(v.Current.Available);
-        Assert.Equal("Reach level 15 to begin.", v.Current.StatusNote);
+        Assert.Equal("Đạt cấp 15 để bắt đầu.", v.Current.StatusNote);
         Assert.False(v.Tracking.MarkerVisible);
-        Assert.Equal("Requires level 15", v.Tracking.MarkerHiddenReason);
+        Assert.Equal("Cần đạt cấp 15", v.Tracking.MarkerHiddenReason);
     }
 
     [Fact]
@@ -163,8 +163,8 @@ public sealed class MainQuestViewTests
 
         Assert.Equal([NotificationKind.QuestComplete, NotificationKind.CampaignMilestone, NotificationKind.NewBossUnlocked], r.Notifications.Select(n => n.Kind));
         var m = r.Notifications[1];
-        Assert.Equal((MilestoneKind.ActComplete, "A1", "CAMPAIGN MILESTONE", "Act I — Test complete"), (m.Milestone!.Value, m.ActId, m.Title, m.Subtitle));
-        Assert.Equal(("NEW BOSS UNLOCKED", "Boss Q03", "Q03", "A2"), (r.Notifications[2].Title, r.Notifications[2].Subtitle, r.Notifications[2].QuestId, r.Notifications[2].ActId));
+        Assert.Equal((MilestoneKind.ActComplete, "A1", "CỘT MỐC CHIẾN DỊCH", "Hoàn thành Act I — Test"), (m.Milestone!.Value, m.ActId, m.Title, m.Subtitle));
+        Assert.Equal(("MỞ KHÓA TRÙM MỚI", "Boss Q03", "Q03", "A2"), (r.Notifications[2].Title, r.Notifications[2].Subtitle, r.Notifications[2].QuestId, r.Notifications[2].ActId));
     }
 
     [Fact]
@@ -196,7 +196,7 @@ public sealed class MainQuestViewTests
         Assert.Equal(100, v.CampaignProgressPercent);
         Assert.Null(v.Current);
         Assert.All(v.Acts, a => Assert.Equal(ActStatus.Completed, a.Status));
-        Assert.Equal("No active Main Quest", v.Tracking.MarkerHiddenReason);
+        Assert.Equal("Không có nhiệm vụ chính đang làm", v.Tracking.MarkerHiddenReason);
     }
 
     [Fact]
@@ -239,7 +239,7 @@ public sealed class MainQuestViewTests
         Assert.True(off.Accepted && off.Changed);
         var v = engine.BuildView(p, 20);
         Assert.False(v.Current!.IsTracked);
-        Assert.Equal("Quest not tracked", v.Tracking.MarkerHiddenReason);
+        Assert.Equal("Chưa theo dõi nhiệm vụ", v.Tracking.MarkerHiddenReason);
 
         Assert.False(engine.SetTrackedQuest(p, "Q02").Accepted);   // locked future quest
         Assert.False(engine.SetTrackedQuest(p, "Q99").Accepted);   // unknown
@@ -330,7 +330,7 @@ public sealed class ProvisionalMainQuestTabTests
     {
         var (_, catalog) = Load();
 
-        Assert.Equal(["Act I — Survival", "Act II — Ancient Blood", "Act III — Frozen North", "Act IV — Dark Powers", "Act V — Endgame", "Epilogue"],
+        Assert.Equal(["Hồi I — Sinh Tồn", "Hồi II — Huyết Mạch Cổ Xưa", "Hồi III — Phương Bắc Băng Giá", "Hồi IV — Thế Lực Hắc Ám", "Hồi V — Trận Chung Kết", "Vĩ Thanh"],
             catalog.Acts.Select(a => a.DisplayName));
         Assert.All(catalog.Enabled, q => Assert.False(string.IsNullOrWhiteSpace(q.Objective)));
     }
@@ -346,18 +346,33 @@ public sealed class ProvisionalMainQuestTabTests
 
         var v = engine.BuildView(p, 48);
 
-        Assert.Equal(("Act III — Frozen North", "The Black Keep", "Kinscourge", "The Black Keep"),
+        Assert.Equal(("Hồi III — Phương Bắc Băng Giá", "Pháo Đài Đen", "Kinscourge", "The Black Keep"),
             (v.Current!.ActDisplayName, v.Current.Title, v.Current.BossName, v.Current.Location));
-        Assert.Equal(("Defeat the Kinscourge.", "40–50", "2–5", true), (v.Current.Objective, v.Current.RecommendedLevel, v.Current.RecommendedParty, v.Current.Available));
+        Assert.Equal(("Hạ gục Kinscourge.", "40–50", "2–5", true), (v.Current.Objective, v.Current.RecommendedLevel, v.Current.RecommendedParty, v.Current.Available));
         Assert.Equal(["1000 XP"], v.Current.Reward!);
         Assert.Equal(36, v.CampaignProgressPercent);                        // 4 of 11 equal weights
         var locked = engine.Detail(p, 48, "MQ06");
-        Assert.Equal((QuestStatus.Locked, "Midnight Grove", "50–55", "3–5", (string?)null), (locked.Status, locked.Title, locked.RecommendedLevel, locked.RecommendedParty, locked.BossName));
+        Assert.Equal((QuestStatus.Locked, "Khu Rừng Nửa Đêm", "50–55", "3–5", (string?)null), (locked.Status, locked.Title, locked.RecommendedLevel, locked.RecommendedParty, locked.BossName));
         Assert.Equal([100, 100, 50, 0, 0, 0], v.Acts.Select(a => a.ProgressPercent));
         Assert.False(v.Current.CreditEnabled);                              // provisional targets are unverified
         Assert.Equal(["MQ01", "MQ02", "MQ03", "MQ04"], v.History.Select(h => h.QuestId));
         Assert.False(v.Tracking.MarkerVisible);                             // provisional quests carry no marker coordinates yet
-        Assert.Equal("This quest has no map marker", v.Tracking.MarkerHiddenReason);
+        Assert.Equal("Nhiệm vụ này chưa có điểm đánh dấu trên bản đồ", v.Tracking.MarkerHiddenReason);
+    }
+
+    [Fact]
+    public void Banners_and_locked_hint_are_vietnamese()
+    {
+        var (_, catalog) = Load();
+        var engine = new CampaignEngine(catalog);
+        var p = engine.NewPlayer("p1");
+        var notes = engine.CompleteCurrentQuest(new AdminContext("qa", IsAdmin: true), p);
+
+        Assert.Equal(["HOÀN THÀNH NHIỆM VỤ", "CỘT MỐC CHIẾN DỊCH", "MỞ KHÓA TRÙM MỚI"], notes.Select(n => n.Title));
+        Assert.Equal(["Xuống The Dregs", "Hoàn thành Hồi I — Sinh Tồn", "Witch Queen"], notes.Select(n => n.Subtitle));
+        Assert.Equal("Hoàn thành nhiệm vụ chính trước đó để mở khóa mục tiêu này.", engine.Detail(p, 30, "MQ03").StatusNote);
+        Assert.Equal(["ĐANG LÀM", "ĐÃ HOÀN THÀNH", "CHƯA MỞ KHÓA"],
+            new[] { QuestStatus.Active, QuestStatus.Completed, QuestStatus.Locked }.Select(MainQuestText.Status));
     }
 
     [Fact]

@@ -51,7 +51,7 @@ public sealed record QuestDetailView(
     bool RewardIsPlaceholder,
     // Active only: the player meets the quest's minimum level and the previous quest is done.
     bool Available,
-    // Why an active quest is not yet available (e.g. "Reach level 25"), or the locked hint.
+    // Why an active quest is not yet available (e.g. "Đạt cấp 25 để bắt đầu."), or the locked hint.
     string? StatusNote,
     // False while the target is unverified: the boss cannot grant credit yet (staging/QA display).
     bool CreditEnabled,
@@ -83,7 +83,7 @@ public sealed record MainQuestView(
 /// </summary>
 public static class MainQuestViews
 {
-    public const string LockedHint = "Complete the previous Main Quest to unlock this objective.";
+    public const string LockedHint = MainQuestText.LockedHint;
     public const string Unknown = "???";
 
     public static MainQuestView BuildView(this CampaignEngine engine, PlayerQuestState state, int playerLevel)
@@ -144,7 +144,7 @@ public static class MainQuestViews
         var level = Range(q.RecommendedLevelMin, q.RecommendedLevelMax);
         var party = Range(q.RecommendedPartyMin, q.RecommendedPartyMax);
         var reward = q.Reward.Entries.Select(FormatReward).ToList();
-        var objective = q.Objective ?? $"Defeat {q.Target.DisplayName}.";
+        var objective = q.Objective ?? string.Format(MainQuestText.DefeatFormat, q.Target.DisplayName);
 
         if (status == QuestStatus.Locked)
         {
@@ -163,7 +163,7 @@ public static class MainQuestViews
         var active = status == QuestStatus.Active;
         var available = active && engine.IsCurrentQuestAvailable(state, playerLevel);
         string? note = !active || available ? null
-            : playerLevel < q.MinimumLevel ? $"Reach level {q.MinimumLevel} to begin."
+            : playerLevel < q.MinimumLevel ? string.Format(MainQuestText.ReachLevelFormat, q.MinimumLevel)
             : LockedHint;
         return new QuestDetailView(q.QuestId, q.ActId, act.DisplayName, status, q.DisplayName, q.Target.DisplayName, q.Description,
             objective, q.LocationName, level, party, reward, q.Reward.Placeholder, available, note, q.Target.CanGrantCredit,
@@ -175,11 +175,11 @@ public static class MainQuestViews
         var marker = engine.ActiveMarker(state, playerLevel);
         if (marker is not null) return new TrackingView(state.TrackedQuestId, true, marker, null);
         var cur = engine.Catalog.Find(state.CurrentQuestId);
-        var reason = cur is null || state.IsCompleted(cur.QuestId) ? "No active Main Quest"
-            : !string.Equals(state.TrackedQuestId, cur.QuestId, StringComparison.Ordinal) ? "Quest not tracked"
-            : playerLevel < cur.MinimumLevel ? $"Requires level {cur.MinimumLevel}"
-            : !engine.IsCurrentQuestAvailable(state, playerLevel) ? "Previous quest not completed"
-            : "This quest has no map marker";
+        var reason = cur is null || state.IsCompleted(cur.QuestId) ? MainQuestText.MarkerNoActiveQuest
+            : !string.Equals(state.TrackedQuestId, cur.QuestId, StringComparison.Ordinal) ? MainQuestText.MarkerNotTracked
+            : playerLevel < cur.MinimumLevel ? string.Format(MainQuestText.MarkerRequiresLevelFormat, cur.MinimumLevel)
+            : !engine.IsCurrentQuestAvailable(state, playerLevel) ? MainQuestText.MarkerPreviousNotDone
+            : MainQuestText.MarkerNone;
         return new TrackingView(state.TrackedQuestId, false, null, reason);
     }
 
@@ -202,7 +202,7 @@ public static class MainQuestViews
 
     private static string FormatReward(RewardEntry e) => e.Type switch
     {
-        RewardType.Xp => $"{e.Amount} XP",
+        RewardType.Xp => string.Format(MainQuestText.XpFormat, e.Amount),
         _ => e.Amount == 1 ? $"{e.Type}: {e.Id}" : $"{e.Type}: {e.Id} x{e.Amount}"
     };
 }

@@ -198,17 +198,17 @@ public sealed class CampaignEngine
             new($"{source}|{state.PlayerId}|{kind}{(milestone is null ? "" : ":" + milestone)}|{q.QuestId}",
                 state.PlayerId, kind, milestone, q.QuestId, q.ActId, title, subtitle);
 
-        notes.Add(Note(NotificationKind.QuestComplete, null, quest, "QUEST COMPLETE", quest.DisplayName));
+        notes.Add(Note(NotificationKind.QuestComplete, null, quest, MainQuestText.BannerQuestComplete, quest.DisplayName));
         if (next is null)
         {
-            notes.Add(Note(NotificationKind.CampaignMilestone, MilestoneKind.CampaignComplete, quest, "CAMPAIGN MILESTONE", "Campaign complete"));
+            notes.Add(Note(NotificationKind.CampaignMilestone, MilestoneKind.CampaignComplete, quest, MainQuestText.BannerMilestone, MainQuestText.CampaignComplete));
             return;
         }
 
         var act = _catalog.Act(quest.ActId);
         if (_catalog.QuestsInAct(act.ActId).All(q => state.IsCompleted(q.QuestId)))
-            notes.Add(Note(NotificationKind.CampaignMilestone, MilestoneKind.ActComplete, quest, "CAMPAIGN MILESTONE", $"{act.DisplayName} complete"));
-        notes.Add(Note(NotificationKind.NewBossUnlocked, null, next, "NEW BOSS UNLOCKED", next.Target.DisplayName));
+            notes.Add(Note(NotificationKind.CampaignMilestone, MilestoneKind.ActComplete, quest, MainQuestText.BannerMilestone, string.Format(MainQuestText.ActCompleteFormat, act.DisplayName)));
+        notes.Add(Note(NotificationKind.NewBossUnlocked, null, next, MainQuestText.BannerNewBoss, next.Target.DisplayName));
     }
 
     private void Remember(string eventId)

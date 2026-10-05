@@ -1,21 +1,21 @@
 <!doctype html>
-<html lang="en">
+<html lang="vi">
 <head>
 <meta charset="utf-8">
-<title>Main Quest banners</title>
+<title>Banner nhiệm vụ chính</title>
 <script src="./support.js"></script>
 </head>
 <body>
 <x-dc>
 <helmet>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&amp;family=Alegreya+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+SC:wght@600;700&amp;family=Alegreya+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet">
 <style>body{margin:0}</style>
 </helmet>
 <div style="width: 1440px; height: 560px; box-sizing: border-box; background: #0d0b09; color: #e9e0cf; font-family: 'Alegreya Sans', Georgia, serif; padding: 36px 48px; display: flex; flex-direction: column; gap: 28px">
   <div style="display: flex; justify-content: space-between; align-items: baseline">
-    <div style="font-family: Cinzel, Georgia, serif; font-size: 18px; font-weight: 700; letter-spacing: 3px; color: #cdbfa8">HUD BANNER QUEUE — shown in order, Main Quest tab closed</div>
-    <div style="font-size: 15px; color: #b3a690">Event: The Barrow King defeated (MQ03, last quest of Act II)</div>
+    <div style="font-family: 'Cormorant SC', Georgia, serif; font-size: 18px; font-weight: 700; letter-spacing: 3px; color: #cdbfa8">HÀNG ĐỢI BANNER HUD — hiện lần lượt, khi tab Nhiệm vụ chính đang đóng</div>
+    <div style="font-size: 15px; color: #b3a690">Sự kiện: hạ gục Barrow King (MQ03, nhiệm vụ cuối của Hồi II)</div>
   </div>
 
   <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; flex-grow: 1">
@@ -24,9 +24,9 @@
         <div style="font-size: 14px; letter-spacing: 2px; color: #b3a690">{{b.step}}</div>
         <div style="flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 30px 24px; background: #17120d; border-top: 2px solid {{b.accent}}; border-bottom: 2px solid {{b.accent}}; text-align: center">
           <div style="font-size: 13px; letter-spacing: 3px; color: #b3a690">{{b.kicker}}</div>
-          <div style="font-family: Cinzel, Georgia, serif; font-size: 30px; font-weight: 700; letter-spacing: 4px; color: {{b.accent}}">{{b.title}}</div>
+          <div style="font-family: 'Cormorant SC', Georgia, serif; font-size: 30px; font-weight: 700; letter-spacing: 4px; color: {{b.accent}}">{{b.title}}</div>
           <div style="width: 120px; height: 1px; background: #4a3d2f"></div>
-          <div style="font-family: Cinzel, Georgia, serif; font-size: 22px; color: #f2e7d2">{{b.subtitle}}</div>
+          <div style="font-family: 'Cormorant SC', Georgia, serif; font-size: 22px; color: #f2e7d2">{{b.subtitle}}</div>
         </div>
         <div style="font-size: 13px; color: #b3a690; font-family: Consolas, 'Courier New', monospace">{{b.kind}}</div>
       </div>
@@ -39,9 +39,9 @@ class Component extends DCLogic {
   renderVals() {
     return {
       banners: [
-        { step: '1 OF 3', kicker: 'MAIN QUEST', title: 'QUEST COMPLETE', subtitle: 'The Barrow King', accent: '#9fcfae', kind: 'QuestComplete · MQ03' },
-        { step: '2 OF 3', kicker: 'ACT II — ANCIENT BLOOD', title: 'CAMPAIGN MILESTONE', subtitle: 'Act II — Ancient Blood complete', accent: '#e9c983', kind: 'CampaignMilestone:ActComplete · MQ03' },
-        { step: '3 OF 3', kicker: 'ACT III — FROZEN NORTH', title: 'NEW BOSS UNLOCKED', subtitle: 'Temple of Frost boss', accent: '#e8a58a', kind: 'NewBossUnlocked · MQ04' }
+        { step: 'BƯỚC 1/3', kicker: 'NHIỆM VỤ CHÍNH', title: 'HOÀN THÀNH NHIỆM VỤ', subtitle: 'Vua Hầm Mộ', accent: '#9fcfae', kind: 'QuestComplete · MQ03' },
+        { step: 'BƯỚC 2/3', kicker: 'HỒI II — HUYẾT MẠCH CỔ XƯA', title: 'CỘT MỐC CHIẾN DỊCH', subtitle: 'Hoàn thành Hồi II — Huyết Mạch Cổ Xưa', accent: '#e9c983', kind: 'CampaignMilestone:ActComplete · MQ03' },
+        { step: 'BƯỚC 3/3', kicker: 'HỒI III — PHƯƠNG BẮC BĂNG GIÁ', title: 'MỞ KHÓA TRÙM MỚI', subtitle: 'Trùm Temple of Frost', accent: '#e8a58a', kind: 'NewBossUnlocked · MQ04' }
       ]
     };
   }

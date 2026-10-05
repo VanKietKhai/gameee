@@ -19,6 +19,14 @@ All of this is covered by `tests/MainQuestline.Reference.Tests/MainQuestViewTest
 3. **No fragile vanilla patching.** Integration goes through a supported hook, or a standalone widget (§7).
 4. **The UI works without Simple Minimap.** The minimap adapter is optional (§8).
 
+## 1b. Language: Vietnamese (operator decision 2026-10-05)
+
+- **All player-facing text is Vietnamese**: tab chrome, states, hints, marker reasons, banners, act names, quest titles, descriptions and objectives.
+- **In-game proper names stay as the game shows them**: boss nameplates (Kinscourge, Witch Queen, Abyssal/Abysmal Remnant…) and map places (The Dregs, The Black Keep…). Conan has no Vietnamese localization, so this keeps the tab consistent with what players see on nameplates and the map. Generic placeholders are translated (e.g. "Trùm Temple of Frost", "(chưa xác minh)").
+- **Single source:** `src/MainQuestline.Reference/MainQuestText.cs` holds every UI string; the data file holds the Vietnamese act/quest text. The mod's UI string table (`ST_MQ_UI`) is generated from these. Admin/QA output and server logs stay English.
+- **Font requirement:** the UMG widgets must use a font that covers Vietnamese diacritics (ă â đ ê ô ơ ư and the tone marks). Conan's own UI fonts are not assumed to cover them; check in the Dev Kit and, if they do not, bundle a font with Vietnamese coverage in the mod. Verify in a licensed client that no glyph falls back or shows as a box.
+- Open: Quest 01's target spelling ("Abyssal Remnant" on the nameplate vs "Abysmal Remnant" in Journey/items).
+
 ## 2. Wireframe
 
 **Visual mockup:** [Main Quest Tab Mockup](https://claude.ai/artifact/LqogeEnkUB7EyX7WyHzBmb) (private until shared). Its source is in [`mockup/`](mockup/).

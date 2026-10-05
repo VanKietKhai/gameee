@@ -1,18 +1,61 @@
 {
   "v": 3,
-  "createdOnFiles": { "v": 1, "at": "2026-10-05T19:05:00Z" },
-  "title": "Main Quest Tab Mockup",
-  "launch": { "view": "canvas" },
-  "pages": [],
+  "attachments": {},
   "boards": {
-    "Main.dc.html": { "x": 0, "y": 0, "w": 1440, "h": 900, "title": "Tab — ACTIVE quest selected (interactive)", "is_interactive": true },
-    "Locked.dc.html": { "x": 1520, "y": 0, "w": 1440, "h": 900, "title": "Tab — LOCKED quest selected (Partial disclosure)" },
-    "Completed.dc.html": { "x": 3040, "y": 0, "w": 1440, "h": 900, "title": "Tab — COMPLETED quest selected" },
-    "Banners.dc.html": { "x": 0, "y": 1020, "w": 1440, "h": 560, "title": "HUD banners — completing The Barrow King (tab closed)" }
+    "Banners.dc.html": {
+      "h": 560,
+      "title": "Banner HUD — hạ gục Barrow King (tab đang đóng)",
+      "w": 1440,
+      "x": 0,
+      "y": 1020
+    },
+    "Completed.dc.html": {
+      "h": 900,
+      "title": "Tab — nhiệm vụ ĐÃ HOÀN THÀNH",
+      "w": 1440,
+      "x": 3040,
+      "y": 0
+    },
+    "Locked.dc.html": {
+      "h": 900,
+      "title": "Tab — nhiệm vụ CHƯA MỞ KHÓA (hiện một phần)",
+      "w": 1440,
+      "x": 1520,
+      "y": 0
+    },
+    "Main.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "Tab — nhiệm vụ ĐANG LÀM (tương tác được)",
+      "w": 1440,
+      "x": 0,
+      "y": 0
+    }
   },
-  "order": ["Main.dc.html", "Locked.dc.html", "Completed.dc.html", "Banners.dc.html"],
+  "createdOnFiles": {
+    "at": "2026-10-05T19:05:00Z",
+    "v": 1
+  },
+  "designSystems": [],
+  "launch": {
+    "view": "canvas"
+  },
   "notes": {
-    "heading": { "x": 0, "y": -300, "text": "Mod #14 Main Quest tab — provisional campaign, player at MQ05, level 48", "kind": "title1", "maxW": 4480 }
+    "heading": {
+      "kind": "title1",
+      "maxW": 4480,
+      "text": "Mod #14 · Tab Nhiệm vụ chính — chiến dịch tạm thời, người chơi ở MQ05, cấp 48",
+      "w": 240,
+      "x": 0,
+      "y": -300
+    }
   },
-  "designSystems": []
+  "order": [
+    "Main.dc.html",
+    "Locked.dc.html",
+    "Completed.dc.html",
+    "Banners.dc.html"
+  ],
+  "pages": [],
+  "title": "Main Quest Tab Mockup"
 }
