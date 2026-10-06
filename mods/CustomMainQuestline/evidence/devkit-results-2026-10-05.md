@@ -98,4 +98,20 @@ FAILED CONTROLLER PROBE #1 evidence is labelled and preserved (`live-test/mq14-p
 
 **Meaning:** the Dev Kit 377800 package and toolchain (and a missing Workshop ID) are accepted by CL-378132. The failing layer of probe #1 is controller-related (B/C/D), not generic package compatibility.
 
+### PROBE B — EMPTY MODCONTROLLER: **PASS**
+
+| Item | Value |
+|---|---|
+| Definition (before packaging) | `tools/devkit/probeB_definition.json` (`probeB_doc.py`, read-only). `BP_MQ14ProbeBController`, parent `/Script/DreamworldMods.ModController`; only inherited components (`Sprite` BillboardComponent, `PersistenceComponent` ActorPersistenceComponent); no own components; CDO replication flags equal the base CDO (replicates, always relevant, net load on client). No graph logic added. |
+| Package | `MQ14ProbeB.pak` 271,245 B, SHA-256 `0E63F87FB16B49AC495703A5A29C67C1E1BF977893C8D14AD3ACDF582D34AF29`; built 2026-10-06 22:49–23:09 with the Dev Kit GUI "Build mod" (operated through Computer use) |
+| Metadata | `devkitRevisionNumber 1002` (written by the Dev Kit), snapshot 0, `minimumVersion Enhanced`, no Workshop ID; standard 11-file layout. Not edited. |
+| Pre-probe backup | `2026-10-06_232037` (verified) |
+| Boot `mq14-probeB-1` | Mounted as #14 (order 1013). `AddActiveModControllerClass … BP_MQ14ProbeBController_C`, then `Persistence: Spawning mod controller: BP_MQ14ProbeBController_C`. **Readiness 42.2 s** (port bound, world ticking). Hold 180.7 s. |
+| Unknowns | none (load analysis PASS on the current and complete log; no unattributed LoadErrors). The 35 `FPackageName … skipped package None` lines equal Probe A's count (base-game noise). |
+| Shutdown | RCON graceful, acknowledged; **NORMAL 183.2 s**, exit 0, no forced kill, no orphan |
+| Integrity | quick_check PASS; ITQoL mailbox/controller and Ancient Realms controller gates PASS |
+| Rollback | probe removed, `2026-10-06_232037` restored (WAL 0), exact 13-mod baseline |
+
+**Meaning:** an empty ModController child built by Dev Kit 377800 spawns and runs on CL-378132. So the probe #1 hang was not caused by the controller class or its spawn alone. Probe #1 had the same content type and nearly the same size (271,512 B); it ran on the old server folder. Next isolation step: Probe C (Probe B + exactly one BeginPlay log node).
+
 Comparison with accepted controllers (metadata only, no decompiling): Ancient Realms' `AR_BP_ModController` has nearly the same name map as probe #1 (PersistenceComponent, DefaultSceneRoot, SimpleConstructionScript, ModDataTableOperations). Chest Labels and Simple Minimap add `AdditionalClassComponents`. Every accepted mod has the same inner layout (`AssetRegistry.bin` + `ModCompat.bin`).

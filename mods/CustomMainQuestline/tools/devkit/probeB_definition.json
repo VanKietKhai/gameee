@@ -1,0 +1,39 @@
+{
+ "asset": "/Game/Mods/MQ14ProbeB/BP_MQ14ProbeBController",
+ "errors": [
+  "implemented_interfaces: Blueprint: Failed to find property 'implemented_interfaces' for attribute 'implemented_interfaces' on 'Blueprint'",
+  "event_graph_nodes: EdGraph: Property 'Nodes' for attribute 'nodes' on 'EdGraph' is protected and cannot be read"
+ ],
+ "generated_class": "/Game/Mods/MQ14ProbeB/BP_MQ14ProbeBController.BP_MQ14ProbeBController_C",
+ "parent_class": "/Script/DreamworldMods.ModController",
+ "parent_class_tag": "/Script/CoreUObject.Class'/Script/DreamworldMods.ModController'",
+ "cdo.replicates": "True",
+ "cdo.always_relevant": "True",
+ "cdo.only_relevant_to_owner": "False",
+ "cdo.net_load_on_client": "True",
+ "cdo.net_dormancy": "<NetDormancy.DORM_AWAKE: 1>",
+ "cdo.replicate_movement": "False",
+ "cdo.hidden": "True",
+ "cdo.initial_life_span": "0.0",
+ "cdo.auto_receive_input": "<AutoReceiveInput.DISABLED: 0>",
+ "tick": {
+  "can_ever_tick": "n/a",
+  "start_with_tick_enabled": "True",
+  "tick_interval": "0.0"
+ },
+ "components_on_cdo": [
+  "/Script/Engine.BillboardComponent : Sprite",
+  "/Script/UE4Dreamworld.ActorPersistenceComponent : PersistenceComponent"
+ ],
+ "subobjects": [
+  "BP_MQ14ProbeBController_C : ? (inherited=False)",
+  "BillboardComponent : ? (inherited=True)",
+  "ActorPersistenceComponent : ? (inherited=True)"
+ ],
+ "base_cdo": {
+  "replicates": "True",
+  "always_relevant": "True",
+  "net_load_on_client": "True"
+ },
+ "official_dlc_controllers": {}
+}
