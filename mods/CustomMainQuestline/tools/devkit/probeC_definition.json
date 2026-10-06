@@ -1,0 +1,37 @@
+{
+ "asset": "/Game/Mods/MQ14ProbeC/BP_MQ14ProbeCController",
+ "parent_class": "/Script/DreamworldMods.ModController",
+ "event_graph_nodes": [
+  {
+   "title": "Event BeginPlay",
+   "class": "K2Node_Event",
+   "pins": {},
+   "links": [
+    "then->PrintString"
+   ]
+  },
+  {
+   "title": "Event Tick",
+   "class": "K2Node_Event",
+   "pins": {},
+   "links": []
+  },
+  {
+   "title": "PrintString",
+   "class": "K2Node_CallFunction",
+   "pins": {
+    "execute": "",
+    "InString": "MQ14ProbeC BeginPlay",
+    "bPrintToScreen": "false",
+    "bPrintToLog": "true",
+    "TextColor": "(R=0.000000,G=0.660000,B=1.000000,A=1.000000)",
+    "Duration": "2.000000",
+    "Key": "None"
+   },
+   "links": []
+  }
+ ],
+ "errors": [],
+ "warnings": [],
+ "member_variables": []
+}

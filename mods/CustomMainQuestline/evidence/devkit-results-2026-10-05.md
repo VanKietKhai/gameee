@@ -114,4 +114,20 @@ FAILED CONTROLLER PROBE #1 evidence is labelled and preserved (`live-test/mq14-p
 
 **Meaning:** an empty ModController child built by Dev Kit 377800 spawns and runs on CL-378132. So the probe #1 hang was not caused by the controller class or its spawn alone. Probe #1 had the same content type and nearly the same size (271,512 B); it ran on the old server folder. Next isolation step: Probe C (Probe B + exactly one BeginPlay log node).
 
+### PROBE C — MODCONTROLLER + ONE BEGINPLAY LOG NODE: **PASS**
+
+| Item | Value |
+|---|---|
+| Definition | `tools/devkit/probeC_definition.json`. `BP_MQ14ProbeCController` (parent `/Script/DreamworldMods.ModController`), created by `probeC_create.py` exactly like Probe B, then `probeC_logic.py` added exactly one node: `Event BeginPlay → KismetSystemLibrary::PrintString("MQ14ProbeC BeginPlay", PrintToScreen=false, PrintToLog=true)`. The default `Event Tick` ghost node stays unconnected. No variables. Compile: 0 errors, 0 warnings. Graph built with the Dev Kit's editor Python API (`BlueprintGraphEditor`), which is the editor's own Blueprint authoring path. |
+| Package | `MQ14ProbeC.pak` 272,817 B, SHA-256 `32670603922D10F282B9336F956EDC590E4A61EF818E600AD13449B9115F7963`; GUI "Build mod" 2026-10-06 23:56–00:06 |
+| Metadata | `devkitRevisionNumber 1002` (Dev Kit), snapshot 0, `minimumVersion Enhanced`; standard 11-file layout. Not edited. |
+| Pre-probe backup | `2026-10-07_000719` (verified) |
+| Boot `mq14-probeC-1` | Controller spawned once, then `LogBlueprintUserMessages: [BP_MQ14ProbeCController_C_…] MQ14ProbeC BeginPlay` (20 s later, during world load). Readiness 43.1 s. Hold 181.4 s. |
+| Unknowns | none (current and complete log); 35 `FPackageName` noise lines, same as A and B |
+| Shutdown | NORMAL 217.1 s, exit 0, no forced kill, no orphan (the idle Dev Kit editor stayed open during this run) |
+| Integrity | quick_check PASS; ITQoL and Ancient Realms gates PASS |
+| Rollback | probe removed, `2026-10-07_000719` restored, exact 13-mod baseline |
+
+**Meaning:** Blueprint logic in a Dev Kit 377800 ModController executes on CL-378132. **Compatibility gate A4–A7 is PASS** through the differential probes A (data), B (empty controller) and C (controller + logic). FAILED CONTROLLER PROBE #1 stays an unexplained one-off on the old server folder; it is kept as evidence and not rerun.
+
 Comparison with accepted controllers (metadata only, no decompiling): Ancient Realms' `AR_BP_ModController` has nearly the same name map as probe #1 (PersistenceComponent, DefaultSceneRoot, SimpleConstructionScript, ModDataTableOperations). Chest Labels and Simple Minimap add `AdditionalClassComponents`. Every accepted mod has the same inner layout (`AssetRegistry.bin` + `ModCompat.bin`).
