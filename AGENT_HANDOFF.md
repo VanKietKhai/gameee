@@ -388,6 +388,22 @@ No server or harness process or server-related scheduled task was found; the hos
   - BLOCKER: the probe hangs CL-378132 (likely the Dev Kit 377800 vs server 378132 gap; unproven). Quest 01 NOT started. Server OFFLINE with the 13-mod pack.
   - Latest verified backup: 2026-10-06_020925. Last shutdown: NORMAL (control boot).
   - Operator decision needed: re-run the probe / wait for a matching Dev Kit or move to the live release / non-controller probe variant.
+- 2026-10-06 ~14:50–16:40 DIFFERENTIAL PROBE ISOLATION (operator plan A/B/C) + STAGING REBUILT ON A NEW STEAM INSTALL:
+  - Old server folder `D:\Conan Exiless` disappeared (not in the recycle bin; the operator reinstalled from Steam). New licensed installs: server `D:\steamnew\steamapps\common\Conan Exiles Dedicated Server` (appmanifest 443030 buildid 25639945) and client `D:\steamnew\steamapps\common\Conan Exiles` (440900 buildid 25639639). Both are `++exiles+release-beta-CL-378132`, the same CL as validated staging; no version change.
+  - Old failed probe: labelled FAILED CONTROLLER PROBE #1 in live-test/mq14-probe/evidence-forced-kill (pak SHA 051C…6876, log, DB/WAL, LABEL file). Backup 2026-10-06_022151 kept.
+  - Probe mods created in the Dev Kit UI: MQ14ProbeA/B/C. PROBE A built via the GUI Build mod: `MQ14ProbeA.pak` 38,297 B, SHA 525e94e1…e818, one CurveFloat with no dependencies, modinfo revision 1002 (written by the Dev Kit), standard 11-file layout. Not yet tested (the precheck stopped the first attempt because the old server folder was gone; nothing touched).
+  - Rebuild (harness, CSC_SERVER_DIR = new server):
+    1. Game.ini [RconPlugin] taken from backup 2026-10-06_020925.
+    2. Vanilla boot: ready 34.5 s, NORMAL 127 s, exit 0.
+    3. restore 2026-10-06_020925: world + config + modlist, world matches backup, WAL 0. Vanilla world saved as 2026-10-06_162554.
+    4. replace-local ×13 from bundle 041519: 13/13 SHA, modlist identical.
+  - VALIDATION BOOT steamnew-13mod-validation = **NOT PASS**:
+    - readiness 36.3 s; LoadErrors exact baselines, no unattributed;
+    - **1 UNKNOWN**: `SpawnTable: Error: ... could not find weighted table with id: Exile_Priest_4_Nordheimer`, a vanilla 2.2.3 data line already seen in the vanilla identification boot during the migration; not mod-attributed; NOT whitelisted;
+    - shutdown **DEGRADED 394.4 s** (graceful, acknowledged, exit 0, no forced kill, no orphan; previous runs 166–195 s).
+    - Post-check on a DB copy: quick_check ok, 32 mod_controllers, no duplicate actor ids, no WAL.
+  - STOPPED before Probe A per the batch rules. Server OFFLINE on the new install with the exact 13-mod pack. Latest verified backup: 2026-10-06_020925 (+ replace-local backups). Last shutdown: DEGRADED.
+  - Operator decision needed: (a) accept `Exile_Priest_4_Nordheimer` as a known vanilla warning gate (commit), (b) re-run the validation boot once to see whether the slow shutdown repeats. Then Probe A.
 - NEXT ACTION: probe mod `MQ14CompatProbe` created in the Dev Kit UI → main session adds an empty ModController Blueprint child via editor Python → BuildMod → inspect modinfo → backup → append #14 → boot → restore the pre-probe backup. Mod #14 not built; 13-mod pack unchanged; production world NOT CREATED.
 - OPERATOR DECISION 2026-10-04: #11 WO - Room For One More EXCLUDED / DEFERRED (do not whitelist its 5 merge errors; do not revisit in this phase; keep evidence and failed-world backup 2026-10-04_050719). #12 Simple Minimap, #13 Player DBNO and #14 Chest Labels continue independently, cumulatively on the 10-mod baseline (expected 13 mods), then a final 13-mod validation with a clean restart; stop before the custom quest mod and report first.
 
