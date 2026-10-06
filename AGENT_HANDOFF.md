@@ -409,6 +409,18 @@ No server or harness process or server-related scheduled task was found; the hos
   - rolled back to 2026-10-06_165631; baseline-after PASS (NORMAL 167.7 s).
   - Toolchain/package compatibility: SUPPORTED (empirically).
   - NEXT: PROBE B (empty ModController in MQ14ProbeB, definition documented before packaging). Server OFFLINE, exact 13 mods, latest verified backup 2026-10-06_165631.
+- 2026-10-06 ~17:40 HANDOVER TO A NEW SESSION (operator: continue in a new session with Computer use enabled; this session had no desktop-control tools):
+  - Tooling now in repo: `mods/CustomMainQuestline/tools/devkit/` (see its README): probe creation/doc scripts, `probe_cycle.ps1` (staging cycle through the harness on the Steam install), read-only pak/IoStore inspectors.
+  - Staging = `D:\steamnew\steamapps\common\Conan Exiles Dedicated Server` (CL-378132), OFFLINE, exact 13 mods, latest verified backup 2026-10-06_165631. Harness env: CSC_LIVE_TESTS=1, CSC_LIVE_ROOT=E:\CSC-M3-Live, CSC_SERVER_DIR=<server above>, CSC_CLIENT_ROOT=`D:\steamnew\steamapps\common\Conan Exiles`. Harness exe: tests/ConanServerControl.LiveHarness/bin/Release/net8.0.
+  - Licensed client `D:\steamnew\steamapps\common\Conan Exiles` has the 13 mods (copied from bundle 041519, 13/13 SHA).
+  - PROBE B state: mod MQ14ProbeB is ACTIVE in the Dev Kit; asset `/Game/Mods/MQ14ProbeB/BP_MQ14ProbeBController` (empty child of /Script/DreamworldMods.ModController) is created and saved; NOT documented, NOT built. A Dev Kit editor may still be open (opened 17:10).
+  - RESUME STEPS:
+    1. In the open editor, run `py "E:\github\gameee\mods\CustomMainQuestline	ools\devkit\probeB_doc.py"` in the Cmd box; this writes probeB_definition.json next to the script.
+    2. Use the Dev Kit window (yellow-sparkle toolbar button) → Build mod (active mod MQ14ProbeB) → OK. The GUI build writes revision 1002.
+    3. Inspect Saved/Mods/MQ14ProbeB/Output/MQ14ProbeB.pak: modinfo revision 1002, 11-file layout, SHA.
+    4. Close the editor (RAM), then run `tools/devkit/probe_cycle.ps1 -Name MQ14ProbeB -Pak <pak> -Batch mq14-probeB-1`.
+    5. Baseline boot after; then Probe C (MQ14ProbeC: Probe B + exactly one BeginPlay log node, added in the editor GUI).
+  - Do NOT rerun FAILED CONTROLLER PROBE #1. Quest 01 NOT started. Production world NOT CREATED.
 - NEXT ACTION: probe mod `MQ14CompatProbe` created in the Dev Kit UI → main session adds an empty ModController Blueprint child via editor Python → BuildMod → inspect modinfo → backup → append #14 → boot → restore the pre-probe backup. Mod #14 not built; 13-mod pack unchanged; production world NOT CREATED.
 - OPERATOR DECISION 2026-10-04: #11 WO - Room For One More EXCLUDED / DEFERRED (do not whitelist its 5 merge errors; do not revisit in this phase; keep evidence and failed-world backup 2026-10-04_050719). #12 Simple Minimap, #13 Player DBNO and #14 Chest Labels continue independently, cumulatively on the 10-mod baseline (expected 13 mods), then a final 13-mod validation with a clean restart; stop before the custom quest mod and report first.
 
