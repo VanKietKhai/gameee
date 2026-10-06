@@ -54,11 +54,12 @@
       },
       "nextQuestId": "MQ02",
       "minimumLevel": 15,
-      "recommendedLevelMin": 15,
+      "recommendedLevelMin": 20,
       "recommendedLevelMax": 25,
       "recommendedPartyMin": 1,
       "recommendedPartyMax": 3,
       "locationName": "The Dregs",
+      "mapGrid": "D4",
       "reward": {
         "rewardId": "RW_MQ01_PLACEHOLDER",
         "entries": [
@@ -244,6 +245,16 @@
       "recommendedPartyMin": 3,
       "recommendedPartyMax": 5,
       "locationName": "The Midnight Grove",
+      "mapGrid": "D8",
+      "hints": [
+        "Vào bằng Potion of Midnight: học hoặc mua từ Child of Jhebbal Sag (Intelligent Hyena Demon gần The Den), giá 5 Feral Flesh.",
+        "Mang Sandstorm Mask cho vài đoạn trong rừng; nên mặc giáp Steel trở lên.",
+        "Chết trong dungeon sẽ hồi sinh ở lối vào, còn xác bị khóa sau các cửa đã mở: mang sẵn vũ khí và giáp dự phòng.",
+        "Hạ Werewolf Impisi rồi ăn Flesh of Remembrance (hỏng rất nhanh) để học bàn thờ và vật phẩm của Jhebbal Sag.",
+        "Pet chống choáng tốt hơn thrall ở trận boss thứ ba.",
+        "Sau boss cuối, lùi lại và thoát qua cổng ở giữa để tránh bị kẹt; khi ra sẽ xuất hiện trên đảo ở Waterside.",
+        "Nếu dungeon tối đen, thử tắt DLSS. Thrall bị kẹt: đăng xuất rồi vào lại để chúng chuyển sang Scouting và tự về nhà."
+      ],
       "reward": {
         "rewardId": "RW_MQ06_PLACEHOLDER",
         "entries": [

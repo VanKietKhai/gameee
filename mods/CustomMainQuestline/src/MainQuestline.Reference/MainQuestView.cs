@@ -45,6 +45,10 @@ public sealed record QuestDetailView(
     string? Description,
     string? Objective,
     string? Location,
+    // In-game map grid cell of the entrance (e.g. "D4"); hidden together with Location.
+    string? MapGrid,
+    // Player tips (how to enter, what to bring); null while a locked quest hides them.
+    IReadOnlyList<string>? Hints,
     string? RecommendedLevel,
     string? RecommendedParty,
     IReadOnlyList<string>? Reward,
@@ -151,12 +155,12 @@ public static class MainQuestViews
             return q.LockedDisclosure switch
             {
                 LockedDisclosure.Full => new QuestDetailView(q.QuestId, q.ActId, act.DisplayName, status, q.DisplayName, q.Target.DisplayName,
-                    q.Description, objective, q.LocationName, level, party, reward, q.Reward.Placeholder, false, LockedHint,
+                    q.Description, objective, q.LocationName, q.MapGrid, q.Hints, level, party, reward, q.Reward.Placeholder, false, LockedHint,
                     q.Target.CanGrantCredit, false, false),
                 LockedDisclosure.Partial => new QuestDetailView(q.QuestId, q.ActId, act.DisplayName, status, q.DisplayName, null,
-                    null, null, null, level, party, null, false, false, LockedHint, q.Target.CanGrantCredit, false, false),
+                    null, null, null, null, null, level, party, null, false, false, LockedHint, q.Target.CanGrantCredit, false, false),
                 _ => new QuestDetailView(q.QuestId, q.ActId, act.DisplayName, status, Unknown, null,
-                    null, null, null, null, null, null, false, false, LockedHint, q.Target.CanGrantCredit, false, false)
+                    null, null, null, null, null, null, null, null, false, false, LockedHint, q.Target.CanGrantCredit, false, false)
             };
         }
 
@@ -166,7 +170,7 @@ public static class MainQuestViews
             : playerLevel < q.MinimumLevel ? string.Format(MainQuestText.ReachLevelFormat, q.MinimumLevel)
             : LockedHint;
         return new QuestDetailView(q.QuestId, q.ActId, act.DisplayName, status, q.DisplayName, q.Target.DisplayName, q.Description,
-            objective, q.LocationName, level, party, reward, q.Reward.Placeholder, available, note, q.Target.CanGrantCredit,
+            objective, q.LocationName, q.MapGrid, q.Hints, level, party, reward, q.Reward.Placeholder, available, note, q.Target.CanGrantCredit,
             active && IsTracked(state, q), active);
     }
 

@@ -88,6 +88,13 @@ public sealed record QuestDefinition
     public required int RecommendedPartyMin { get; init; }
     public required int RecommendedPartyMax { get; init; }
     public required string LocationName { get; init; }
+
+    /// <summary>In-game map grid cell of the entrance (column A–P, row 1–17), e.g. "D4". Shown with the location.</summary>
+    public string? MapGrid { get; init; }
+
+    /// <summary>Player tips shown on the quest panel (how to enter, what to bring). Hidden while a locked quest's disclosure is not Full.</summary>
+    public IReadOnlyList<string> Hints { get; init; } = [];
+
     public MapMarker? Marker { get; init; }
     public required RewardDefinition Reward { get; init; }
 
@@ -111,9 +118,14 @@ public sealed class QuestCatalogException(IReadOnlyList<string> errors)
 /// A validated, immutable main-quest catalog. Construction fails closed: any malformed definition rejects the whole
 /// catalog (the mod must then refuse to grant progression rather than run on partial data).
 /// </summary>
-public sealed class QuestCatalog
+public sealed partial class QuestCatalog
 {
+    [System.Text.RegularExpressions.GeneratedRegex("^[A-P](1[0-7]|[1-9])$")]
+    private static partial System.Text.RegularExpressions.Regex MapGridPattern();
+
     public const double MaxCreditRadius = 20_000; // 200 m
+    public const int MaxHints = 8;
+    public const int MaxHintLength = 240;
 
     private readonly Dictionary<string, QuestDefinition> _byId;
     private readonly Dictionary<string, ActDefinition> _actsById;
@@ -232,6 +244,9 @@ public sealed class QuestCatalog
             if (q.Reward is null || string.IsNullOrWhiteSpace(q.Reward.RewardId)) errors.Add($"{p} missing reward");
             else if (q.Reward.Entries.Any(e => e.Amount < 1 || string.IsNullOrWhiteSpace(e.Id))) errors.Add($"{p} bad reward entry");
             if (q.Marker is { AreaRadius: <= 0 }) errors.Add($"{p} marker radius <= 0");
+            if (q.MapGrid is not null && !MapGridPattern().IsMatch(q.MapGrid)) errors.Add($"{p} bad MapGrid {q.MapGrid} (expected A–P + 1–17, e.g. D4)");
+            if (q.Hints is null || q.Hints.Count > MaxHints || q.Hints.Any(h => string.IsNullOrWhiteSpace(h) || h.Length > MaxHintLength))
+                errors.Add($"{p} bad hints (max {MaxHints}, each non-blank and at most {MaxHintLength} characters)");
             if (!q.Enabled) continue;
             if (q.PreviousQuestId is not null && !ids.Contains(q.PreviousQuestId)) errors.Add($"{p} PreviousQuestId {q.PreviousQuestId} is not an enabled quest");
             if (q.NextQuestId is not null && !ids.Contains(q.NextQuestId)) errors.Add($"{p} NextQuestId {q.NextQuestId} is not an enabled quest");

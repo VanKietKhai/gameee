@@ -29,6 +29,12 @@ public sealed class CatalogAndPersistenceTests
         { "bad reward", [Q("Q1", 1, null, null) with { Reward = new RewardDefinition("R", [new RewardEntry(RewardType.Xp, "xp", 0)], true) }] },
         { "next lower sequence", [Q("Q1", 5, null, "Q2"), Q("Q2", 1, "Q1", null)] },
         { "whitespace id", [Q("Q 1", 1, null, null)] },
+        { "blank hint", [Q("Q1", 1, null, null) with { Hints = ["ok", " "] }] },
+        { "too many hints", [Q("Q1", 1, null, null) with { Hints = Enumerable.Repeat("h", QuestCatalog.MaxHints + 1).ToList() }] },
+        { "hint too long", [Q("Q1", 1, null, null) with { Hints = [new string('x', QuestCatalog.MaxHintLength + 1)] }] },
+        { "bad map grid column", [Q("Q1", 1, null, null) with { MapGrid = "Z4" }] },
+        { "bad map grid row", [Q("Q1", 1, null, null) with { MapGrid = "D18" }] },
+        { "lowercase map grid", [Q("Q1", 1, null, null) with { MapGrid = "d4" }] },
     };
 
     [Theory]
@@ -145,6 +151,20 @@ public sealed class ProvisionalDataTests
             0, 0, 0, [new PlayerSnapshot("p1", 30, 0, 0, 0)]), _ => p);
         Assert.Null(r.QuestId);
         Assert.Empty(p.Completed);
+    }
+
+    [Fact]
+    public void Midnight_Grove_carries_entry_hints_and_map_cells_are_set()
+    {
+        var (_, catalog) = QuestDataLoader.Load(DataJson());
+        var grove = catalog.Enabled.Single(q => q.LocationName == "The Midnight Grove");
+
+        Assert.Equal("D4", catalog.First.MapGrid);
+        Assert.Equal(20, catalog.First.RecommendedLevelMin);
+        Assert.Equal("D8", grove.MapGrid);
+        Assert.InRange(grove.Hints.Count, 3, QuestCatalog.MaxHints);
+        Assert.Contains(grove.Hints, h => h.Contains("Potion of Midnight", StringComparison.Ordinal));
+        Assert.Contains(grove.Hints, h => h.Contains("Sandstorm Mask", StringComparison.Ordinal));
     }
 
     [Theory]

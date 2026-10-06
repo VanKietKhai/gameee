@@ -28,22 +28,20 @@ CREDIT_RADIUS = 5000.0     # 50 m, data: completionCreditRadius
 TICK_SECONDS = 5.0
 MACROS = "/Engine/EditorBlueprintResources/StandardMacros.StandardMacros:"
 
-T_BANNER = "NHIỆM VỤ CHÍNH HOÀN THÀNH: Xuống The Dregs. Đã mở khóa: Nữ Hoàng Phù Thủy"
+T_BANNER = "NHIỆM VỤ CHÍNH HOÀN THÀNH: Xuống The Dregs. Tiếp theo: Tower of Bats"
 T_TITLE = "NHIỆM VỤ CHÍNH"
 T_PANEL_ACTIVE = ("Hồi I — Sinh Tồn\n"
                   "▶ ĐANG LÀM: Xuống The Dregs\n"
                   "   Mục tiêu: Hạ gục Abysmal Remnant\n"
-                  "   Khu vực: The Dregs · Khuyến nghị cấp 15–25 · 1–3 người\n"
+                  "   Khu vực: The Dregs (bản đồ D4) · Khuyến nghị cấp 20–25 · 1–3 người\n"
+                  "   Mang cung và tên. Vào dungeon: theo bóng ma và làm nghi lễ hiến máu.\n"
                   "   (Người chơi trong bán kính 50 m khi boss chết đều được tính)\n\n"
-                  "Hồi II — Huyết Mạch Cổ Xưa\n"
-                  "🔒 Nữ Hoàng Phù Thủy (mở khi xong Hồi I)\n\n"
-                  "Tiến độ chiến dịch: 0%")
+                  "🔒 Tiếp theo: Tower of Bats (mở khi xong The Dregs)")
 T_PANEL_DONE = ("Hồi I — Sinh Tồn\n"
                 "✔ HOÀN THÀNH: Xuống The Dregs (Abysmal Remnant)\n\n"
-                "Hồi II — Huyết Mạch Cổ Xưa\n"
-                "▶ TIẾP THEO: Nữ Hoàng Phù Thủy · cấp 25–35 · 2–4 người\n"
-                "   (Mục tiêu đang chờ xác minh trong bản cập nhật sau)\n\n"
-                "Tiến độ chiến dịch: 1/11")
+                "▶ TIẾP THEO: Tower of Bats (bản đồ F5) · cấp 25–30\n"
+                "   Mang theo Staff of the Triumvirate; hạ Albino Bat Demon\n"
+                "   (Nhiệm vụ này sẽ được bật trong bản cập nhật sau)")
 
 BEL = unreal.BlueprintEditorLibrary
 BGE = unreal.BlueprintGraphEditor

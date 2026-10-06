@@ -353,6 +353,15 @@ public sealed class ProvisionalMainQuestTabTests
         Assert.Equal(36, v.CampaignProgressPercent);                        // 4 of 11 equal weights
         var locked = engine.Detail(p, 48, "MQ06");
         Assert.Equal((QuestStatus.Locked, "Khu Rừng Nửa Đêm", "50–55", "3–5", (string?)null), (locked.Status, locked.Title, locked.RecommendedLevel, locked.RecommendedParty, locked.BossName));
+        Assert.Null(locked.Hints);                                          // Partial disclosure hides the tips and the map cell
+        Assert.Null(locked.MapGrid);
+        p.Completed.Add(new CompletedQuest("MQ05", DateTimeOffset.UnixEpoch, "t"));
+        p.CurrentQuestId = "MQ06";
+        var grove = engine.Detail(p, 52, "MQ06");
+        Assert.Equal(("D8", QuestStatus.Active), (grove.MapGrid, grove.Status));
+        Assert.Contains(grove.Hints!, h => h.Contains("Potion of Midnight", StringComparison.Ordinal));
+        p.Completed.RemoveAt(p.Completed.Count - 1);
+        p.CurrentQuestId = "MQ05";
         Assert.Equal([100, 100, 50, 0, 0, 0], v.Acts.Select(a => a.ProgressPercent));
         Assert.False(v.Current.CreditEnabled);                              // provisional targets are unverified
         Assert.Equal(["MQ01", "MQ02", "MQ03", "MQ04"], v.History.Select(h => h.QuestId));
