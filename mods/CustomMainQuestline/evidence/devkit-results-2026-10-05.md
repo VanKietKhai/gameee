@@ -74,3 +74,28 @@ Possible next steps (operator decision):
 3. Probe variant without a ModController (e.g., a single DataTable), to isolate whether the hang is specific to the controller spawn.
 
 Stale files to note: `Saved\ExtractedMods\MQ14CompatProbe-WindowsServer.*` may remain (like the earlier WickProbe). They are not mounted without the pak.
+
+## Differential probe isolation (operator plan, 2026-10-06)
+
+Staging moved to the operator's new licensed Steam install: server `D:\steamnew\steamapps\common\Conan Exiles Dedicated Server` (CL-378132, same build). It was rebuilt through the harness (RCON config → vanilla boot → restore 2026-10-06_020925 → 13 × replace-local) and validated: `steamnew-13mod-validation-2` PASS, NORMAL 180.9 s. The first validation run showed one vanilla `Exile_Priest_4_Nordheimer` spawn-table line and a DEGRADED 394 s stop; neither repeated, and nothing was whitelisted.
+
+FAILED CONTROLLER PROBE #1 evidence is labelled and preserved (`live-test/mq14-probe/evidence-forced-kill`, backup 2026-10-06_022151). Do not rerun it before isolation is complete.
+
+### PROBE A — DATA ONLY: **PASS**
+
+| Item | Value |
+|---|---|
+| Package | `MQ14ProbeA.pak` 38,297 B, SHA-256 `525e94e1…e818`; built via the Dev Kit GUI "Build mod" |
+| Content | One `CurveFloat` (`MQ14ProbeA_InertCurve`), no dependencies; no controller, Blueprint, hook, persistence, UI or NPC reference |
+| Metadata | `devkitRevisionNumber 1002` (written by the Dev Kit), snapshot 0, `minimumVersion Enhanced`, no Workshop ID; standard 11-file layout |
+| Pre-probe backup | `2026-10-06_165631` (verified) |
+| Readiness | 36.3 s (`mq14-probeA-1`), mounted as #14, asset registry loaded |
+| Unknowns | none (load analysis PASS, current and complete log; no unattributed LoadErrors) |
+| Shutdown | NORMAL 179.3 s, exit 0, no forced kill, no orphan |
+| Integrity | quick_check PASS; ITQoL mailbox/controller and Ancient Realms controller gates PASS |
+| Rollback | probe removed, `2026-10-06_165631` restored, exact 13-mod baseline |
+| Baseline after | `mq14-baseline-after-probeA` PASS, NORMAL 167.7 s |
+
+**Meaning:** the Dev Kit 377800 package and toolchain (and a missing Workshop ID) are accepted by CL-378132. The failing layer of probe #1 is controller-related (B/C/D), not generic package compatibility.
+
+Comparison with accepted controllers (metadata only, no decompiling): Ancient Realms' `AR_BP_ModController` has nearly the same name map as probe #1 (PersistenceComponent, DefaultSceneRoot, SimpleConstructionScript, ModDataTableOperations). Chest Labels and Simple Minimap add `AdditionalClassComponents`. Every accepted mod has the same inner layout (`AssetRegistry.bin` + `ModCompat.bin`).

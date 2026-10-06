@@ -404,6 +404,11 @@ No server or harness process or server-related scheduled task was found; the hos
     - Post-check on a DB copy: quick_check ok, 32 mod_controllers, no duplicate actor ids, no WAL.
   - STOPPED before Probe A per the batch rules. Server OFFLINE on the new install with the exact 13-mod pack. Latest verified backup: 2026-10-06_020925 (+ replace-local backups). Last shutdown: DEGRADED.
   - Operator decision needed: (a) accept `Exile_Priest_4_Nordheimer` as a known vanilla warning gate (commit), (b) re-run the validation boot once to see whether the slow shutdown repeats. Then Probe A.
+- 2026-10-06 17:10 VALIDATION-2 PASS (NORMAL 180.9 s; Nordheimer line did not repeat, not whitelisted). PROBE A (data only) PASS:
+  - mounted as #14, readiness 36.3 s, 0 unknowns, NORMAL 179.3 s, integrity gates PASS;
+  - rolled back to 2026-10-06_165631; baseline-after PASS (NORMAL 167.7 s).
+  - Toolchain/package compatibility: SUPPORTED (empirically).
+  - NEXT: PROBE B (empty ModController in MQ14ProbeB, definition documented before packaging). Server OFFLINE, exact 13 mods, latest verified backup 2026-10-06_165631.
 - NEXT ACTION: probe mod `MQ14CompatProbe` created in the Dev Kit UI → main session adds an empty ModController Blueprint child via editor Python → BuildMod → inspect modinfo → backup → append #14 → boot → restore the pre-probe backup. Mod #14 not built; 13-mod pack unchanged; production world NOT CREATED.
 - OPERATOR DECISION 2026-10-04: #11 WO - Room For One More EXCLUDED / DEFERRED (do not whitelist its 5 merge errors; do not revisit in this phase; keep evidence and failed-world backup 2026-10-04_050719). #12 Simple Minimap, #13 Player DBNO and #14 Chest Labels continue independently, cumulatively on the 10-mod baseline (expected 13 mods), then a final 13-mod validation with a clean restart; stop before the custom quest mod and report first.
 
