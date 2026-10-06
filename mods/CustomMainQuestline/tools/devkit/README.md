@@ -12,3 +12,15 @@ Helper scripts used for the Mod #14 compatibility gate. They are read-only, apar
 
 Active mod switching: `RunUAT.bat -NoCompile SetActiveMod -Mod=<Mod> -Project=D:/epic/CEUE5Devkit/UE4/ConanSandbox.uproject -ScriptDir=D:/epic/CEUE5Devkit/UE4/`.
 Builds must use the Dev Kit GUI **Build mod** button: that step writes `devkitRevisionNumber` 1002. A command-line `BuildMod` copies `modinfo.json` verbatim.
+
+## Mod #14 controller build (2026-10-07)
+
+`mq14_build_controller.py` builds `/Game/Mods/MQ14MainQuest/BP_MQ14MainQuestController` with the editor's `BlueprintGraphEditor` API and writes `mq14_controller_definition.json`. Run it **once per editor session**, headless:
+
+```
+UnrealEditor.exe "D:\epic\CEUE5Devkit\UE4\ConanSandbox.uproject" -ModDevKit -ExecutePythonScript="E:/github/gameee/mods/CustomMainQuestline/tools/devkit/mq14_build_controller.py"
+```
+
+The Dev Kit exits by itself when the script ends, discarding anything unsaved. The script saves only after a clean compile. To rebuild, delete `UE4\Content\Mods\MQ14MainQuest\Local\BP_MQ14MainQuestController.uasset` first. Running the builder twice in one session, or rebuilding in place, crashed the editor inside `BlueprintEditorLibrary`. Python remote execution does not start in this Dev Kit build.
+
+Facts found while building: the persistence call is `Dreamworld|Persistence|Setdirtyflag` (ActorPersistenceComponent); the death hook is `State|BindEventtoSignalonKilled` (ConanCharacter `SignalOnKilled(Character, Killer)`); const-ref string/text parameters (`ClientHUDShowNotification`, `ClientShowRichMessageBox`) need `MakeLiteralString`/`MakeLiteralText`; `GetAllActorsOfClass` and `GetActorStableId` are impure and must sit in the exec chain. The variable SaveGame flag cannot be set from Python; it is set in the Blueprint editor's variable Details panel.

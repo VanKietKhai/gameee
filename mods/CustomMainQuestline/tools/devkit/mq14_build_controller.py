@@ -15,10 +15,12 @@ import unreal
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 STATUS = os.path.join(HERE, "mq14_build_status.txt")
+DOC_SUFFIX = ""
 DOC = os.path.join(HERE, "mq14_controller_definition.json")
 MOD = "MQ14MainQuest"
 PATH = "/Game/Mods/" + MOD
-NAME = "BP_MQ14MainQuestController"
+NAME = globals().get("MQ14_NAME_OVERRIDE") or "BP_MQ14MainQuestController"
+SCRATCH = NAME != "BP_MQ14MainQuestController"   # scratch builds are never saved (and never packaged)
 FULL = PATH + "/" + NAME
 
 BOSS_CLASS = "/Game/Characters/NPCs/sewer_abomination/blueprints/BP_NPC_Wildlife_SewerAbomination.BP_NPC_Wildlife_SewerAbomination_C"
@@ -111,6 +113,16 @@ def getvar(ge, name, x, y, class_path=""):
     return n
 
 
+def literal(ge, node, pin_name, value, x, y):
+    """Feeds a const-ref string/text parameter through MakeLiteralString/MakeLiteralText (literals are refused)."""
+    target = pin(node, pin_name)
+    kind = str(target.get_pin_type_display_string()).lower()
+    fname = "MakeLiteralText" if "text" in kind and "string" not in kind else "MakeLiteralString"
+    lit = call(ge, "/Script/Engine.KismetSystemLibrary:" + fname, x, y)
+    setv(lit, "Value", value)
+    link(lit, "ReturnValue", node, target)
+
+
 def vec(node, name, xyz):
     setv(node, name, "%f,%f,%f" % xyz)
 
@@ -132,6 +144,69 @@ def save_flag(bp, var_name):
         if str(v.get_editor_property("var_name")) == var_name:
             return bool(int(v.get_editor_property("property_flags")) & cpf_save_game)
     return False
+
+
+def build_panel(ge, GS, KAL, CPC):
+    key_names = [n for n in ge.list_available_nodes([]) if n.endswith("|F7")]
+    log("F7 key candidates: %s" % key_names[:8])
+    kb = [n for n in key_names if "Keyboard" in n] or key_names
+    if not kb:
+        raise RuntimeError("no F7 key node available")
+    jkey = ge.create_node_from_name(kb[0], unreal.Vector2D(0, 700), [])
+    lpcs = call(ge, fn(GS, "GetAllActorsOfClass"), 300, 900)
+    setv(lpcs, "ActorClass", cls_path(CPC))
+    jloop = macro(ge, "ForEachLoop", 300, 700)
+    link(jkey, "Pressed", lpcs, "execute")
+    link(lpcs, "then", jloop, "Exec")
+    link(lpcs, "OutActors", jloop, "Array")
+    isloc = call(ge, fn(unreal.Controller, "IsLocalController"), 600, 900)
+    link(jloop, "Array Element", isloc, "self")
+    br_l = ge.add_branch_node(); br_l.set_node_pos(unreal.IntPoint(600, 700))
+    link(jloop, "LoopBody", br_l, "execute")
+    link(isloc, "ReturnValue", br_l, "Condition")
+    ps3 = getvar(ge, "PlayerState", 850, 900, cls_path(unreal.Controller))
+    link(jloop, "Array Element", ps3, "self")
+    pl3 = getvar(ge, "MQ01_CompletedPlayers", 850, 1050)
+    has3 = call(ge, fn(KAL, "Array_Contains"), 1100, 900)
+    link(pl3, "MQ01_CompletedPlayers", has3, "TargetArray")
+    link(ps3, "PlayerState", has3, "ItemToFind")
+    br_d = ge.add_branch_node(); br_d.set_node_pos(unreal.IntPoint(1100, 700))
+    link(br_l, "then", br_d, "execute")
+    link(has3, "ReturnValue", br_d, "Condition")
+    for branch_pin, text, y in (("then", T_PANEL_DONE, 600), ("else", T_PANEL_ACTIVE, 850)):
+        box = call(ge, fn(CPC, "ClientShowRichMessageBox"), 1400, y)
+        link(br_d, branch_pin, box, "execute")
+        link(jloop, "Array Element", box, "self")
+        ins = [p for p in box.list_input_pins() if str(p.get_pin_name()) not in ("execute", "self")]
+        literal(ge, box, str(ins[0].get_pin_name()), T_TITLE, 1400, y + 150)
+        literal(ge, box, str(ins[1].get_pin_name()), text, 1400, y + 220)
+
+
+
+def finish(bp):
+    ok = BEL.compile_blueprint(bp)
+    errs = []
+    for g in BEL.list_graphs(bp):
+        e = BGE.get_graph_editor(g)
+        errs += ["%s: %s %s" % (g.get_name(), n.get_node_title(), n.error_msg) for n in e.list_nodes_with_errors()]
+        errs += ["WARN %s: %s %s" % (g.get_name(), n.get_node_title(), n.error_msg) for n in e.list_nodes_with_warnings()]
+    log("compile=%s issues=%s" % (ok, errs))
+    if not ok or [x for x in errs if not x.startswith("WARN")]:
+        raise RuntimeError("compile errors; not saving")
+    if SCRATCH:
+        log("SCRATCH build, not saved: " + FULL)
+    elif not EAL.save_asset(FULL, only_if_is_dirty=False):
+        raise RuntimeError("save failed")
+    doc = {"asset": FULL, "boss_class": BOSS_CLASS, "dregs_spawner": DREGS_SPAWNER, "dregs_radius": DREGS_RADIUS,
+           "credit_radius": CREDIT_RADIUS, "tick_seconds": TICK_SECONDS, "issues": errs,
+           "graphs": {}}
+    for g in BEL.list_graphs(bp):
+        e = BGE.get_graph_editor(g)
+        doc["graphs"][g.get_name()] = [n.get_node_title() for n in e.list_all_nodes()]
+    doc["variables"] = list(BEL.list_member_variable_names(bp, False))
+    with open(DOC, "w", encoding="utf-8") as fh:
+        json.dump(doc, fh, indent=1, ensure_ascii=False)
+    log("DONE")
 
 
 try:
@@ -191,7 +266,8 @@ try:
     pcs = call(gk, fn(GS, "GetAllActorsOfClass"), 1250, 150)
     setv(pcs, "ActorClass", cls_path(CPC))
     loop = macro(gk, "ForEachLoop", 1550, 0)
-    link(p_in, "then", loop, "Exec")
+    link(p_in, "then", pcs, "execute")
+    link(pcs, "then", loop, "Exec")
     link(pcs, "OutActors", loop, "Array")
     pawn = call(gk, fn(unreal.Controller, "K2_GetPawn"), 1800, 250)
     link(loop, "Array Element", pawn, "self")
@@ -218,7 +294,8 @@ try:
     link(ids_get, "MQ01_CompletedIds", has, "TargetArray")
     link(sids, "ReturnValue", has, "ItemToFind")
     br_new = gk.add_branch_node(); br_new.set_node_pos(unreal.IntPoint(3550, 0))
-    link(br_near, "then", br_new, "execute")
+    link(br_near, "then", sid, "execute")
+    link(sid, "then", br_new, "execute")
     link(has, "ReturnValue", br_new, "Condition")
     add_id = call(gk, fn(KAL, "Array_Add"), 3800, 0)
     link(br_new, "else", add_id, "execute")
@@ -234,7 +311,7 @@ try:
     banner = call(gk, fn(CPC, "ClientHUDShowNotification"), 4300, 0)
     link(add_ps, "then", banner, "execute")
     link(loop, "Array Element", banner, "self")
-    setv(banner, [str(p.get_pin_name()) for p in banner.list_input_pins() if str(p.get_pin_name()).lower() == "text"][0], T_BANNER)
+    literal(gk, banner, "Text", T_BANNER, 4300, 250)
     p_done = call(gk, fn(KSL, "PrintString"), 4550, 0)
     link(banner, "then", p_done, "execute")
     setv(p_done, "bPrintToScreen", "false")
@@ -243,17 +320,18 @@ try:
     link(sids, "ReturnValue", cat, "B")
     link(cat, "ReturnValue", p_done, "InString")
     pc_get = getvar(gk, "PersistenceComponent", 4800, 250)
-    dirty = None
-    for fname in ("SetDirty", "K2_SetDirty", "BP_SetDirty", "Save"):
-        dirty = gk.add_call_function_node(fn(unreal.ActorPersistenceComponent, fname))
-        if dirty:
-            log("persistence call: " + fname)
-            break
-    if dirty is None:
+    pc_out = pin(pc_get, "PersistenceComponent", out=True)
+    pnames = [n for n in gk.list_available_nodes([pc_out]) if "dirty" in n.lower() or n.lower().endswith("|save")]
+    log("persistence candidates: %s" % pnames[:10])
+    # 2026-10-07 discovery: the ActorPersistenceComponent call is 'Dreamworld|Persistence|Setdirtyflag'
+    pick = [n for n in pnames if "|persistence|" in n.lower() and "dirty" in n.lower()]
+    if not pick:
         raise RuntimeError("no persistence save function found")
-    dirty.set_node_pos(unreal.IntPoint(4800, 0))
+    dirty = gk.create_node_from_name(pick[0], unreal.Vector2D(4800, 0), [pc_out])
+    log("persistence call: " + pick[0])
     link(p_done, "then", dirty, "execute")
-    link(pc_get, "PersistenceComponent", dirty, "self")
+    if not dirty.find_self_pin().list_connected_pins():
+        link(pc_get, "PersistenceComponent", dirty, "self")
     log("persistence pins: %s" % [str(p.get_pin_name()) for p in dirty.list_input_pins()])
     log("MQ14_OnBossKilled built")
 
@@ -264,17 +342,20 @@ try:
     bosses = call(gt, fn(GS, "GetAllActorsOfClass"), 250, 200)
     setv(bosses, "ActorClass", BOSS_CLASS)
     bloop = macro(gt, "ForEachLoop", 500, 0)
-    link(tentry, "then", bloop, "Exec")
+    link(tentry, "then", bosses, "execute")
+    link(bosses, "then", bloop, "Exec")
     link(bosses, "OutActors", bloop, "Array")
     elem_pin = pin(bloop, "Array Element", out=True)
     names = gt.list_available_nodes([elem_pin])
-    bind_names = [n for n in names if "Bind Event to Signal on Killed" in n or "Bind Event to Signal On Killed" in n]
+    bind_names = [n for n in names if "bind" in n.lower() and "signal" in n.lower() and "killed" in n.lower()]
     log("bind candidates: %s" % bind_names[:5])
     if not bind_names:
         raise RuntimeError("no 'Bind Event to Signal On Killed' node; sample=%s" % [n for n in names if "Killed" in n][:20])
     bind = gt.create_node_from_name(bind_names[0], unreal.Vector2D(800, 0), [elem_pin])
     link(bloop, "LoopBody", bind, "execute")
-    cd_names = [n for n in gt.list_available_nodes([pin(bind, "Delegate")]) if "Create Event" in n]
+    cd_names = [n for n in gt.list_available_nodes([pin(bind, "Delegate")]) if "create event" in n.lower() or "createevent" in n.lower()]
+    if not cd_names:
+        raise RuntimeError("no Create Event node offered for the delegate pin")
     log("create-event candidates: %s" % cd_names[:5])
     cdel = gt.create_node_from_name(cd_names[0], unreal.Vector2D(550, 300), [pin(bind, "Delegate")])
     if not [p for p in pin(bind, "Delegate").list_connected_pins()]:
@@ -285,7 +366,8 @@ try:
     pcs2 = call(gt, fn(GS, "GetAllActorsOfClass"), 1100, 300)
     setv(pcs2, "ActorClass", cls_path(CPC))
     ploop = macro(gt, "ForEachLoop", 1300, 0)
-    link(bloop, "Completed", ploop, "Exec")
+    link(bloop, "Completed", pcs2, "execute")
+    link(pcs2, "then", ploop, "Exec")
     link(pcs2, "OutActors", ploop, "Array")
     pawn2 = call(gt, fn(unreal.Controller, "K2_GetPawn"), 1550, 300)
     link(ploop, "Array Element", pawn2, "self")
@@ -301,7 +383,8 @@ try:
     link(ids2, "MQ01_CompletedIds", has2, "TargetArray")
     link(sids2, "ReturnValue", has2, "ItemToFind")
     br2 = gt.add_branch_node(); br2.set_node_pos(unreal.IntPoint(2300, 0))
-    link(v2, "Is Valid", br2, "execute")
+    link(v2, "Is Valid", sid2, "execute")
+    link(sid2, "then", br2, "execute")
     link(has2, "ReturnValue", br2, "Condition")
     ps2 = getvar(gt, "PlayerState", 2550, 300, cls_path(unreal.Controller))
     link(ploop, "Array Element", ps2, "self")
@@ -338,57 +421,16 @@ try:
     en = call(ge, fn(unreal.Actor, "EnableInput"), 900, 300)
     link(delay, "then", en, "execute")
     link(gpc, "ReturnValue", en, "PlayerController")
-    # F7 key -> panel
-    key_names = [n for n in ge.list_available_nodes([]) if n.endswith("|F7")]
-    log("F7 key candidates: %s" % key_names[:8])
-    jkey = ge.create_node_from_name([n for n in key_names if "Keyboard" in n][0], unreal.Vector2D(0, 700), [])
-    lpcs = call(ge, fn(GS, "GetAllActorsOfClass"), 300, 900)
-    setv(lpcs, "ActorClass", cls_path(CPC))
-    jloop = macro(ge, "ForEachLoop", 300, 700)
-    link(jkey, "Pressed", jloop, "Exec")
-    link(lpcs, "OutActors", jloop, "Array")
-    isloc = call(ge, fn(unreal.Controller, "IsLocalController"), 600, 900)
-    link(jloop, "Array Element", isloc, "self")
-    br_l = ge.add_branch_node(); br_l.set_node_pos(unreal.IntPoint(600, 700))
-    link(jloop, "LoopBody", br_l, "execute")
-    link(isloc, "ReturnValue", br_l, "Condition")
-    ps3 = getvar(ge, "PlayerState", 850, 900, cls_path(unreal.Controller))
-    link(jloop, "Array Element", ps3, "self")
-    pl3 = getvar(ge, "MQ01_CompletedPlayers", 850, 1050)
-    has3 = call(ge, fn(KAL, "Array_Contains"), 1100, 900)
-    link(pl3, "MQ01_CompletedPlayers", has3, "TargetArray")
-    link(ps3, "PlayerState", has3, "ItemToFind")
-    br_d = ge.add_branch_node(); br_d.set_node_pos(unreal.IntPoint(1100, 700))
-    link(br_l, "then", br_d, "execute")
-    link(has3, "ReturnValue", br_d, "Condition")
-    for branch_pin, text, y in (("then", T_PANEL_DONE, 600), ("else", T_PANEL_ACTIVE, 850)):
-        box = call(ge, fn(CPC, "ClientShowRichMessageBox"), 1400, y)
-        link(br_d, branch_pin, box, "execute")
-        link(jloop, "Array Element", box, "self")
-        ins = [p for p in box.list_input_pins() if str(p.get_pin_name()) not in ("execute", "self")]
-        setv(box, str(ins[0].get_pin_name()), T_TITLE)
-        setv(box, str(ins[1].get_pin_name()), text)
+    # F7 key -> panel (optional: a failure here keeps the server logic, is logged, and is fixed in a later build)
+    before = {n.get_name() for n in ge.list_all_nodes()}
+    try:
+        build_panel(ge, GS, KAL, CPC)
+        log("F7 panel built")
+    except Exception:
+        log("F7 PANEL FAILED (server logic kept): " + traceback.format_exc())
+        ge.remove_nodes([n for n in ge.list_all_nodes() if n.get_name() not in before])
     log("event graph built")
-
-    ok = BEL.compile_blueprint(bp)
-    errs = []
-    for g in BEL.list_graphs(bp):
-        e = BGE.get_graph_editor(g)
-        errs += ["%s: %s %s" % (g.get_name(), n.get_node_title(), n.error_msg) for n in e.list_nodes_with_errors()]
-        errs += ["WARN %s: %s %s" % (g.get_name(), n.get_node_title(), n.error_msg) for n in e.list_nodes_with_warnings()]
-    log("compile=%s issues=%s" % (ok, errs))
-    if not EAL.save_asset(FULL, only_if_is_dirty=False):
-        raise RuntimeError("save failed")
-    doc = {"asset": FULL, "boss_class": BOSS_CLASS, "dregs_spawner": DREGS_SPAWNER, "dregs_radius": DREGS_RADIUS,
-           "credit_radius": CREDIT_RADIUS, "tick_seconds": TICK_SECONDS, "issues": errs,
-           "graphs": {}}
-    for g in BEL.list_graphs(bp):
-        e = BGE.get_graph_editor(g)
-        doc["graphs"][g.get_name()] = [n.get_node_title() for n in e.list_all_nodes()]
-    doc["variables"] = list(BEL.list_member_variable_names(bp, False))
-    with open(DOC, "w", encoding="utf-8") as fh:
-        json.dump(doc, fh, indent=1, ensure_ascii=False)
-    log("DONE")
+    finish(bp)
 except Exception:
     log("FAILED: " + traceback.format_exc())
 finally:

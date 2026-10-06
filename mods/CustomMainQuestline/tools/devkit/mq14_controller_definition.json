@@ -1,0 +1,102 @@
+{
+ "asset": "/Game/Mods/MQ14MainQuest/BP_MQ14MainQuestController",
+ "boss_class": "/Game/Characters/NPCs/sewer_abomination/blueprints/BP_NPC_Wildlife_SewerAbomination.BP_NPC_Wildlife_SewerAbomination_C",
+ "dregs_spawner": [
+  -137111.734375,
+  375790.8125,
+  -21557.427734
+ ],
+ "dregs_radius": 12000.0,
+ "credit_radius": 5000.0,
+ "tick_seconds": 5.0,
+ "issues": [],
+ "graphs": {
+  "UserConstructionScript": [
+   "Construction Script"
+  ],
+  "ModDataTableOperations": [
+   "ModDataTableOperations"
+  ],
+  "MQ14_OnBossKilled": [
+   "MQ14_OnBossKilled",
+   "Get Actor Location",
+   "Distance (Vector)",
+   "float <= float",
+   "Branch",
+   "PrintString",
+   "PrintString",
+   "GetAllActorsOfClass",
+   "For Each Loop",
+   "Get Controlled Pawn",
+   "Is Valid",
+   "Get Actor Location",
+   "Distance (Vector)",
+   "float <= float",
+   "Branch",
+   "Get Actor Stable Id",
+   "To String (Stable Id)",
+   "Get MQ01_CompletedIds",
+   "Contains Item",
+   "Branch",
+   "Add",
+   "Get PlayerState",
+   "Get MQ01_CompletedPlayers",
+   "Add Unique",
+   "ClientHUDShowNotification",
+   "MakeLiteralText",
+   "PrintString",
+   "Append",
+   "Get PersistenceComponent",
+   "Set dirty flag"
+  ],
+  "MQ14_Tick": [
+   "MQ14_Tick",
+   "GetAllActorsOfClass",
+   "For Each Loop",
+   "Bind Event to Signal on Killed",
+   "Create Event",
+   "GetAllActorsOfClass",
+   "For Each Loop",
+   "Get Controlled Pawn",
+   "Is Valid",
+   "Get Actor Stable Id",
+   "To String (Stable Id)",
+   "Get MQ01_CompletedIds",
+   "Contains Item",
+   "Branch",
+   "Get PlayerState",
+   "Get MQ01_CompletedPlayers",
+   "Add Unique"
+  ],
+  "EventGraph": [
+   "Event BeginPlay",
+   "Event Tick",
+   "HasAuthority",
+   "Branch",
+   "Set Timer by Function Name",
+   "PrintString",
+   "Delay",
+   "GetPlayerController",
+   "EnableInput",
+   "F7",
+   "GetAllActorsOfClass",
+   "For Each Loop",
+   "IsLocalController",
+   "Branch",
+   "Get PlayerState",
+   "Get MQ01_CompletedPlayers",
+   "Contains Item",
+   "Branch",
+   "ClientShowRichMessageBox",
+   "MakeLiteralText",
+   "MakeLiteralText",
+   "ClientShowRichMessageBox",
+   "MakeLiteralText",
+   "MakeLiteralText"
+  ]
+ },
+ "variables": [
+  "MQ01_CompletedIds",
+  "MQ01_CompletedPlayers"
+ ]
+}
