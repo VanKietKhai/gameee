@@ -1,0 +1,142 @@
+[
+ {
+  "ns": "",
+  "key": "D1F159BA4908024A79ECBCA0CD1FEB7C",
+  "en": "Click For Help",
+  "already": null,
+  "vi": "Bấm để xem trợ giúp"
+ },
+ {
+  "ns": "",
+  "key": "BCA43E494452260AB56CB7AE849B1294",
+  "en": "Yes",
+  "already": null,
+  "vi": "Có"
+ },
+ {
+  "ns": "",
+  "key": "9FC524E24A2C6EF0299F799690E7665E",
+  "en": "No",
+  "already": null,
+  "vi": "Không"
+ },
+ {
+  "ns": "",
+  "key": "041E7CF340962DBF01604FA6E90CC63F",
+  "en": "Cancel",
+  "already": null,
+  "vi": "Hủy"
+ },
+ {
+  "ns": "",
+  "key": "D7845D1142F5908C5B7130A98AF1E3DA",
+  "en": "Confirm",
+  "already": null,
+  "vi": "Xác nhận"
+ },
+ {
+  "ns": "",
+  "key": "E0FB2AD541FE26588EC16FA582CAA759",
+  "en": "Continue?",
+  "already": null,
+  "vi": "Tiếp tục?"
+ },
+ {
+  "ns": "",
+  "key": "518E50FC477F7C1237DB7FBB87463B4C",
+  "en": "No",
+  "already": null,
+  "vi": "Không"
+ },
+ {
+  "ns": "",
+  "key": "AF48353442E5B867B3710FAE1C001745",
+  "en": "Yes",
+  "already": null,
+  "vi": "Có"
+ },
+ {
+  "ns": "",
+  "key": "91AD2C2E455171088FBCEFAED76077F0",
+  "en": "No Widgets Available",
+  "already": null,
+  "vi": "Không có bảng nào"
+ },
+ {
+  "ns": "",
+  "key": "A780D1D149DD80EC43D1C2BD631670A7",
+  "en": "Control Panel Settings",
+  "already": null,
+  "vi": "Cài đặt bảng điều khiển"
+ },
+ {
+  "ns": "",
+  "key": "5A0C37514B9D3465FF4F10A20E2065D8",
+  "en": "Background Blur Strength",
+  "already": null,
+  "vi": "Độ mờ nền"
+ },
+ {
+  "ns": "",
+  "key": "3885EB65442FC2F467C93E9B582C83FF",
+  "en": "Available Widgets",
+  "already": null,
+  "vi": "Các bảng hiện có"
+ },
+ {
+  "ns": "",
+  "key": "3BAA58DC4EC69A2DF10CC6927A0D86E2",
+  "en": "Delete Save Data",
+  "already": null,
+  "vi": "Xóa dữ liệu đã lưu"
+ },
+ {
+  "ns": "",
+  "key": "C556EB0D4D6CB0C699B5CFA207475559",
+  "en": "Create",
+  "already": null,
+  "vi": "Tạo"
+ },
+ {
+  "ns": "",
+  "key": "B1DEF3F8461233AAA5A1FC9E68CFC2FC",
+  "en": "Apply",
+  "already": null,
+  "vi": "Áp dụng"
+ },
+ {
+  "ns": "",
+  "key": "C8B093D84113D564121FD8A5A93B630F",
+  "en": "Categories",
+  "already": null,
+  "vi": "Danh mục"
+ },
+ {
+  "ns": "",
+  "key": "69422A19431A6ED4F4D02C94600917D0",
+  "en": "Enable Input (Shift + END)",
+  "already": null,
+  "vi": "Bật thao tác (Shift + END)"
+ },
+ {
+  "ns": "",
+  "key": "BEB174E046160CCF9E471EA663795EE4",
+  "en": "mode: admin",
+  "already": null,
+  "vi": "chế độ: admin"
+ },
+ {
+  "ns": "",
+  "key": "422504574D47F41B06E52B95D2B329C2",
+  "en": "Control Panel",
+  "already": null,
+  "vi": "Bảng điều khiển"
+ },
+ {
+  "ns": "",
+  "key": "07D66ED442B0FE6031EF78A62124426E",
+  "en": "Close",
+  "already": null,
+  "vi": "Đóng"
+ }
+]
