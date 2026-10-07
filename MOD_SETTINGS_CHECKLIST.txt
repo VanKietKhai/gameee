@@ -3,12 +3,15 @@ BANG CAI DAT MOD TRONG GAME (nhap lai sau khi reset the gioi)
 Cac cai dat nay luu trong save cua the gioi, reset la mat. Nhap lai theo bang nay.
 Cot "Dat" = gia tri da thong nhat cho server PvE 5 nguoi, do kho 8/10.
 Chinh xong moi trang nho bam AP DUNG.
+Ghi chu 08/10: cac gia tri danh dau "gia tri ban da luu" doc tu save cu truoc khi reset.
+Save cu KHONG luu: he so Thu cung/Golem, Luong/Pham vi chia se XP, Nguong tu hoi mau, Coi + hoi coi,
+he so cho chua ruong, khoang cach keo, pham vi Ruong Sap Xep -> nhap theo bang nay.
 
 ----------------------------------------------------------------
 A. IMPROVED THRALLS & QOL - ADMIN SETTINGS  (ESC -> Improved Thralls & QoL, hoac DataCmd ImprovedThrallsQoL)
 ----------------------------------------------------------------
 [Chung]
-  He so toc do thang may ............................ 2
+  He so toc do thang may ............................ 3   (gia tri ban da luu)
   Hien huong dan khi dang nhap lan dau .............. Bat
   Tu va mo duoc cau keo ............................. Bat
 [Tui Do]
@@ -19,7 +22,7 @@ A. IMPROVED THRALLS & QOL - ADMIN SETTINGS  (ESC -> Improved Thralls & QoL, hoac
   Khoang cach keo ................................... 30
   Bat Ruong Sap Xep ................................. Bat
   Pham vi Ruong Sap Xep ............................. 30
-  Kiem tra khoang cach thrall mang do ............... 15
+  Kiem tra khoang cach thrall mang do ............... 10  (gia tri ban da luu)
   Tim trong ruong gan day ........................... Bat
   Cong thuc o tram tu dong .......................... Bat
 [Do Dat]
@@ -69,8 +72,8 @@ A. IMPROVED THRALLS & QOL - ADMIN SETTINGS  (ESC -> Improved Thralls & QoL, hoac
   Bat Te Dan / Te Dan o Shaleback Hollow ............ Bat / Bat
   So ban sao toi da moi nguoi choi .................. 2
   So ong tiem rong can de sao chep .................. 1
-  Phat chi so khi hoi sinh (%) ...................... 25
-  Thoi gian xuat hien lai ong tiem (giay) ........... 1800
+  Phat chi so khi hoi sinh (%) ...................... 30  (gia tri ban da luu)
+  Thoi gian xuat hien lai ong tiem (giay) ........... 6000 (gia tri ban da luu)
 [Nhat ky nguoi theo chet]
   Bat ghi nhat ky ................................... Bat
   Xoa nhat ky sau (ngay) ............................ 14
@@ -106,16 +109,16 @@ B. IMPROVED THRALLS & QOL - USER SETTINGS  (moi nguoi tu chinh)
 C. NIGHT TERRORS  (console: dc nightterrors admin)
 ----------------------------------------------------------------
   Bat phuc kich (toan server) ....................... Bat
-  Ti le phuc kich (%) ............................... 20-30
-  Gio bat dau / ket thuc phuc kich .................. 20 / 5
+  Ti le phuc kich (%) ............................... 30  (gia tri ban da luu)
+  Gio bat dau / ket thuc phuc kich .................. 21 / 5  (gia tri ban da luu)
   Thoi gian bien mat (giay) ......................... 600
 
 ----------------------------------------------------------------
 D. PVE+ AMBUSH  (Shift+End, hoac DataCmd PvEAmbushConfig)
 ----------------------------------------------------------------
-  Gia tri dang dung (anh chup 07/10): toi thieu giua 2 lan 3600 s, ngau nhien them 1200 s,
-  khoang cach xuat hien 1200-2000, ti le 50%, canh bao 5 s, ke dich 3-10, tu xoa Bat / 900 s,
-  duong cong tren cap 60 Bat.
+  Gia tri ban da luu (doc tu save 08/10): ti le phuc kich 30%, canh bao 5 s, ke dich 3-10.
+  Cac muc khac (mac dinh mod / anh chup 07/10): toi thieu giua 2 lan 3600 s, ngau nhien them 1200 s,
+  khoang cach xuat hien 1200-2000, tu xoa Bat / 900 s, duong cong tren cap 60 Bat.
 
 ----------------------------------------------------------------
 E. SERVER (ServerSettings.ini - tu dong giu qua reset, khong can nhap lai)
