@@ -23,6 +23,10 @@ Build: response file with `"<file>" "../../../ConanSandbox/Content/<path>" -comp
 `UnrealPak.exe <out>.pak -create=<resp> -compressionformats=Zlib`. Original patch backed up in
 `E:\CSC-M3-Live\client-backups\vihoa-original-20261007`.
 
+Fonts: the game font KelsonSans (Normal/Bold/Light) has no Vietnamese glyphs; the patch replaces
+Fonts/KelsonSans_0_{Normal,Bold,Light}.ufont with the game's own Engine/Content/EngineFonts/Faces/Roboto{Regular,Bold,Light}.ufont
+(files copied as-is; .ufont = uint32 size + TTF + 4 bytes). Check coverage with cmapcheck.py.
+
 Limits: texts that a mod builds from plain strings or its own language table (for example Extended
 Thrall Stats labels) cannot be translated this way. A Vietnamese patch update replaces the pak, so
 the merge must be redone.
