@@ -1,4 +1,4 @@
-﻿DANH SÁCH 18 MOD SERVER + CHECKLIST TEST TRONG GAME
+﻿DANH SÁCH 19 MOD SERVER + CHECKLIST TEST TRONG GAME
 Conan Exiles Enhanced 3.0.0 (CL-378787) — staging — cập nhật 07/10/2026
 Nguồn: mô tả của tác giả nhúng trong từng file .pak đang chạy trên server.
 
@@ -180,6 +180,17 @@ Cách dùng: nhấn V (chế độ vanity) rồi GIỮ E để sửa nhân vật
 (radial) trên thrall. Muốn sửa nhân vật không phải của mình -> bật tùy chọn admin trong mod.
 [ ] V + giữ E -> mở bảng chỉnh nhân vật mình, đổi thử, lưu.
 [ ] Menu tròn trên 1 thrall -> chỉnh ngoại hình thrall; lưu profile và áp cho thrall khác.
+
+=====================================================================
+19. Extended Thrall Stats (Enhanced)  (Workshop 3720737911)
+=====================================================================
+Tính năng: bảng chỉ số Thrall & Pet hiện thêm: hệ số sát thương cận chiến/tầm xa, % sát thương mỗi điểm
+thuộc tính, máu mỗi điểm Vitality, tên gốc của thrall. (Thêm 07/10 theo yêu cầu, không chạy boot kiểm định.)
+[ ] Mở bảng chỉ số 1 thrall/pet -> thấy các dòng chỉ số mở rộng.
+
+---------------------------------------------------------------------
+LUẬT SERVER: khi chết chỉ rớt đồ trong balo, GIỮ trang bị đang mặc/cầm (DropEquipmentOnDeath=False).
+[ ] Chết thử -> giáp/vũ khí còn trên người, đồ balo nằm trong xác. Ghi lại hotbar có rớt không.
 
 ---------------------------------------------------------------------
 GHI CHÚ PHÍM TẮT (tránh trùng)
