@@ -1,0 +1,124 @@
+BANG CAI DAT MOD TRONG GAME (nhap lai sau khi reset the gioi)
+================================================================
+Cac cai dat nay luu trong save cua the gioi, reset la mat. Nhap lai theo bang nay.
+Cot "Dat" = gia tri da thong nhat cho server PvE 5 nguoi, do kho 8/10.
+Chinh xong moi trang nho bam AP DUNG.
+
+----------------------------------------------------------------
+A. IMPROVED THRALLS & QOL - ADMIN SETTINGS  (ESC -> Improved Thralls & QoL, hoac DataCmd ImprovedThrallsQoL)
+----------------------------------------------------------------
+[Chung]
+  He so toc do thang may ............................ 2
+  Hien huong dan khi dang nhap lan dau .............. Bat
+  Tu va mo duoc cau keo ............................. Bat
+[Tui Do]
+  Gui nhanh ......................................... Bat
+  He so stack ....................................... 1   (StackMe10K da lo)
+  He so cho chua cua ruong .......................... 2
+  Keo nhien lieu vao tram che tao ................... Bat
+  Khoang cach keo ................................... 30
+  Bat Ruong Sap Xep ................................. Bat
+  Pham vi Ruong Sap Xep ............................. 30
+  Kiem tra khoang cach thrall mang do ............... 15
+  Tim trong ruong gan day ........................... Bat
+  Cong thuc o tram tu dong .......................... Bat
+[Do Dat]
+  Bat Khoa / Mo khoa ................................ Bat
+  Tu khoa khi dat ................................... Tat
+  Bat mat ma cho cua ................................ Bat
+  Cho phep nhat tat ca .............................. Bat
+[Cam]                         khong cam gi
+[Quan ly vu khi / giap]       khong dung
+[Xay dung]
+  Gioi han khoi xay ................................. Tat
+[Thu cung]  4 o he so ................................ 1   (dang 0 - phai sua)
+[Golem]     4 o he so ................................ 1   (dang 0 - phai sua)
+[Thrall]
+  Tuy chon vu khi ua thich .......................... Bat
+  Doi hanh vi thrall ................................ Bat
+  Tuy chon cho thrall dung thuoc hoi mau ............ Bat
+  Thrall tu dung thuoc hoi mau ...................... Bat
+  Nguong tu hoi mau ................................. 50
+  Cho thrall vac NPC bat tinh ....................... Bat
+  Thrall thap den ................................... Bat
+  Thay doi he thong thuoc tinh thrall ............... khong dung
+[Nguoi theo]
+  Nhat nguoi theo ................................... Bat
+  Nguoi theo bo sung ................................ 0
+  XP cho nguoi theo khong hoat dong ................. Bat
+  Bo qua sat thuong roi ............................. Bat
+  Nguoi theo them can ky nang War Party ............. Tat
+  Tat va cham voi nguoi theo ........................ Bat
+  Trieu hoi nguoi theo dang hoat dong ............... Tat   (chu server chon)
+  Dat nha / Gui ve nha .............................. Bat
+  Giao dien quan ly ................................. Bat
+  So nguoi theo yeu thich toi da .................... 2
+  Goi bang coi ...................................... tuy chon; neu Bat thi hoi coi 300
+  Trieu hoi nguoi theo tu giao dien ................. Bat
+[Giao dien party]
+  Giao dien party nguoi theo / nguoi choi ........... Bat / Bat
+  Chia se XP trong party ............................ Bat
+  Luong XP chia se (%) .............................. 40
+  Pham vi chia se XP ................................ 60
+[Phep thuat]
+  Thrall vao Da Hien Te ............................. Bat
+  Giam hoat anh doi truong phai / da xuat hien ...... 30 / 30
+  Giam hoat anh phep ................................ 20
+  Phep moi: chi BAT Con Cu va Con Ca; TAT tat ca phep con lai
+[Te Dan Nguoi Da Khuat]
+  Bat Te Dan / Te Dan o Shaleback Hollow ............ Bat / Bat
+  So ban sao toi da moi nguoi choi .................. 2
+  So ong tiem rong can de sao chep .................. 1
+  Phat chi so khi hoi sinh (%) ...................... 25
+  Thoi gian xuat hien lai ong tiem (giay) ........... 1800
+[Nhat ky nguoi theo chet]
+  Bat ghi nhat ky ................................... Bat
+  Xoa nhat ky sau (ngay) ............................ 14
+[Phao Dai Linh Hon]
+  Bat Phao Dai / Bat thay day phep .................. Bat / Bat
+  Trieu hoi can phep thuat toi da ................... Bat
+  Thay day can phep thuat toi da .................... Bat
+  Vat pham can de trieu hoi ......................... mac dinh (Ngoi Sao Nha Vo Dich neu muon kho)
+[Hop thu]
+  Bat hop thu ....................................... Bat
+  Xoa thu chua doc / da doc sau (ngay) .............. 30 / 7
+  Phi gui thu ....................................... 5 xu vang
+[Realm]
+  Bat tao Realm / Bat vao Realm ..................... Tat / Tat
+[Hop May Rui]
+  Cho mo Hop May Rui ................................ Tat
+
+----------------------------------------------------------------
+B. IMPROVED THRALLS & QOL - USER SETTINGS  (moi nguoi tu chinh)
+----------------------------------------------------------------
+  Cong thuc o tram tu dong / Keo nhien lieu ......... Bat / Bat
+  Giu lai 1 mon khi keo ............................. Bat
+  Bat keo tu tram che tao ........................... Bat
+  Sap xep vao tram che tao .......................... Tat
+  O tui do bi khoa .................................. khoa o binh mau, thuc an, cong cu
+  Party nguoi choi + nguoi theo: Ti le giao dien .... 100  (dang 0 - phai sua)
+  Do trong suot giao dien ........................... 0-20
+  Hien luong XP duoc chia ........................... Bat
+  Thrall: tan suat hoi mau (giay) ................... 10
+  Hien thuc an cua thrall ........................... Bat
+
+----------------------------------------------------------------
+C. NIGHT TERRORS  (console: dc nightterrors admin)
+----------------------------------------------------------------
+  Bat phuc kich (toan server) ....................... Bat
+  Ti le phuc kich (%) ............................... 20-30
+  Gio bat dau / ket thuc phuc kich .................. 20 / 5
+  Thoi gian bien mat (giay) ......................... 600
+
+----------------------------------------------------------------
+D. PVE+ AMBUSH  (Shift+End, hoac DataCmd PvEAmbushConfig)
+----------------------------------------------------------------
+  Gia tri dang dung (anh chup 07/10): toi thieu giua 2 lan 3600 s, ngau nhien them 1200 s,
+  khoang cach xuat hien 1200-2000, ti le 50%, canh bao 5 s, ke dich 3-10, tu xoa Bat / 900 s,
+  duong cong tren cap 60 Bat.
+
+----------------------------------------------------------------
+E. SERVER (ServerSettings.ini - tu dong giu qua reset, khong can nhap lai)
+----------------------------------------------------------------
+  Balance da ap (x5 khai thac, PlayerDamage 0.8, NPCDamage 1.35, ...), DropEquipmentOnDeath=2,
+  EverybodyCanLootCorpse=False, gioi han thrall (cho ap): 15 / 12 / 5.
