@@ -14,7 +14,8 @@ Scripts (pilot; paths point at the session scratch folder and must be adjusted):
 - `extract_tr.py <ModName>` - writes `tr_<ModName>.json` (ns, key, English source, already-translated flag).
 - `apply_tr.py tr_A.json tr_B.json ...` - starts from the ORIGINAL patch Exiles_UI.locres and adds every
   entry that has a `vi` field, so the output is reproducible.
-- `translations/` - the translation tables (installed: PlayerDBNO 3, Simple_Minimap 86, ModControlPanel 20).
+- `translations/` - the translation tables (installed: PlayerDBNO 3, Simple_Minimap 86, ModControlPanel 20, Cannibal_Captivity 2,
+  ThrallReputation 10, Ancient_Realms 9, WO_RidingThralls 11). Apply all tables in one apply_tr.py call.
 
 Build: response file with `"<file>" "../../../ConanSandbox/Content/<path>" -compress`, then
 `UnrealPak.exe <out>.pak -create=<resp> -compressionformats=Zlib`. Original patch backed up in

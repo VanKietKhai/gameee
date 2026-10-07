@@ -1,0 +1,85 @@
+[
+ {
+  "ns": "",
+  "key": "03F39E6D47598D4E3598BFB66DE5ACB0",
+  "en": "Stables' Registrar",
+  "already": null,
+  "vi": "Sổ Đăng Ký Chuồng Ngựa"
+ },
+ {
+  "ns": "",
+  "key": "40EAE0A74F31AA10A9AC3692ED429C4F",
+  "en": "A sturdy stable register for managing riders and mounts.",
+  "already": null,
+  "vi": "Một cuốn sổ đăng ký chuồng ngựa chắc chắn để quản lý người cưỡi và thú cưỡi."
+ },
+ {
+  "ns": "",
+  "key": "A6D0C8A443649F6BD85F03BA60F7863A",
+  "en": "A well-worn registrar used to organise mounts, riders, and stable assignments.",
+  "already": null,
+  "vi": "Một cuốn sổ cũ dùng để sắp xếp thú cưỡi, người cưỡi và phân công chuồng."
+ },
+ {
+  "ns": "",
+  "key": "450E40F6439884C261A6D8906F7D0554",
+  "en": "Stables' Registrar",
+  "already": null,
+  "vi": "Sổ Đăng Ký Chuồng Ngựa"
+ },
+ {
+  "ns": "",
+  "key": "DB9D52C647373D1CEB2E3E8748BD60BB",
+  "en": "Craft a stable registrar for managing riding modes.",
+  "already": null,
+  "vi": "Chế tạo sổ đăng ký chuồng ngựa để quản lý chế độ cưỡi."
+ },
+ {
+  "ns": "",
+  "key": "09B5F47247DF38CF613DD89368884D0B",
+  "en": "Stables' Registrar",
+  "already": null,
+  "vi": "Sổ Đăng Ký Chuồng Ngựa"
+ },
+ {
+  "ns": "",
+  "key": "5015ECED4EE3DA3C3D3BBCABDA3057EC",
+  "en": "Close",
+  "already": null,
+  "vi": "Đóng"
+ },
+ {
+  "ns": "",
+  "key": "C21975D4418210276D5CA6907E1A8B7B",
+  "en": "Choose your riding mode.",
+  "already": null,
+  "vi": "Chọn chế độ cưỡi."
+ },
+ {
+  "ns": "",
+  "key": "217E72094861C6F3D0EB0E83A43B0A64",
+  "en": "One Per Mount",
+  "already": null,
+  "vi": "Mỗi người một thú cưỡi"
+ },
+ {
+  "ns": "",
+  "key": "B1290FE9486F3298393ABFA48930109E",
+  "en": "Share Mounts",
+  "already": null,
+  "vi": "Dùng chung thú cưỡi"
+ },
+ {
+  "ns": "",
+  "key": "E05880F74E6D7E3BD66E27AF0B13DC6E",
+  "en": "Ride With Me",
+  "already": null,
+  "vi": "Cưỡi cùng tôi"
+ },
+ {
+  "ns": "",
+  "key": "9B1BC4E8439C2A9B0E31138803A4D8B1",
+  "en": "Confirmation text",
+  "already": null
+ }
+]
