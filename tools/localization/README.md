@@ -11,7 +11,10 @@ Scripts (pilot; paths point at the session scratch folder and must be adjusted):
 - `uehash.py` - UE text hashes: source hash = CRC32 of UTF-32LE text; key hash = CityHash64 of
   UTF-16LE folded to 32 bits (empty string = 0). Verified on all 15,531 keys of the patch.
 - `locres_rw.py` - locres v3 reader/writer (byte-identical round trip on Exiles_UI.locres).
-- `merge_dbno.py` - adds the Player DBNO translations.
+- `extract_tr.py <ModName>` - writes `tr_<ModName>.json` (ns, key, English source, already-translated flag).
+- `apply_tr.py tr_A.json tr_B.json ...` - starts from the ORIGINAL patch Exiles_UI.locres and adds every
+  entry that has a `vi` field, so the output is reproducible.
+- `translations/` - the translation tables (installed: PlayerDBNO 3, Simple_Minimap 86).
 
 Build: response file with `"<file>" "../../../ConanSandbox/Content/<path>" -compress`, then
 `UnrealPak.exe <out>.pak -create=<resp> -compressionformats=Zlib`. Original patch backed up in

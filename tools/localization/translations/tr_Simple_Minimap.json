@@ -1,0 +1,640 @@
+[
+ {
+  "ns": "",
+  "key": "B2B096184ACF394DB65229B46C1A168C",
+  "en": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec hendrerit turpis at sem elementum ullamcorper. Duis eros risus, euismod eget sapien id, pulvinar commodo nunc.",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "9310FE584BA91724C481AE8A63344A73",
+  "en": "Settings",
+  "already": null,
+  "vi": "Cài đặt"
+ },
+ {
+  "ns": "",
+  "key": "57A46B074B4F1720CA4E9C9C92C1413B",
+  "en": "You can now use the <RedBold>custom marker system</> of <RedBold>Simple Minimap</> instead, this way they will show on your minimap. \r\nPress for more info:",
+  "already": null,
+  "vi": "Giờ bạn có thể dùng <RedBold>hệ thống đánh dấu tùy chỉnh</> của <RedBold>Simple Minimap</> thay thế, để các điểm đánh dấu hiện trên minimap.\nNhấn để xem thêm:"
+ },
+ {
+  "ns": "",
+  "key": "08221AF04E4257FFB9538FB426B685C5",
+  "en": "Did you know?",
+  "already": null,
+  "vi": "Bạn có biết?"
+ },
+ {
+  "ns": "",
+  "key": "117967E546341D4A22165896505C0DFA",
+  "en": "Simple Minimap",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "130893114949A0597CBED99BDC54B105",
+  "en": "Tutorial",
+  "already": null,
+  "vi": "Hướng dẫn"
+ },
+ {
+  "ns": "",
+  "key": "7FE8851C4FFFFCD50351C1B42FB27754",
+  "en": "This is a longer marker description",
+  "already": null,
+  "vi": "Đây là phần mô tả dài hơn của điểm đánh dấu"
+ },
+ {
+  "ns": "",
+  "key": "5599A0C64CDEC807E21783B2DA012C35",
+  "en": "Marker Name",
+  "already": null,
+  "vi": "Tên điểm đánh dấu"
+ },
+ {
+  "ns": "",
+  "key": "A3C927BD4C84ED1D3B027FAEDC94AB30",
+  "en": "Search:",
+  "already": null,
+  "vi": "Tìm kiếm:"
+ },
+ {
+  "ns": "",
+  "key": "D797CB244A756AC689E538ACBCA67744",
+  "en": "Close",
+  "already": null,
+  "vi": "Đóng"
+ },
+ {
+  "ns": "",
+  "key": "AF5136AA4131540A478AA49195A491C0",
+  "en": "SMM Add Custom Marker",
+  "already": null,
+  "vi": "SMM Thêm điểm đánh dấu"
+ },
+ {
+  "ns": "",
+  "key": "55C6646F40D59DF9FE5CBC878D989713",
+  "en": "SMM Toggle Markers",
+  "already": null,
+  "vi": "SMM Bật/tắt điểm đánh dấu"
+ },
+ {
+  "ns": "",
+  "key": "D07E5CBB47A98467B7F4D1BAA1C3214D",
+  "en": "If enabled, the marker will be saved in your game installation folder and will be shown for characters you have on other servers too. \nIf disabled, it gets saved on your character in the game database.",
+  "already": null,
+  "vi": "Nếu bật, điểm đánh dấu được lưu trong thư mục cài game và hiện cho cả các nhân vật của bạn ở server khác.\nNếu tắt, nó được lưu vào nhân vật trong dữ liệu của server."
+ },
+ {
+  "ns": "",
+  "key": "A8102BF04720C41760B15CA5C68FBFBD",
+  "en": "Allows you to see the marker from any distance on the minimap, pinned to the edge when out of range",
+  "already": null,
+  "vi": "Cho phép thấy điểm đánh dấu ở mọi khoảng cách trên minimap, ghim ở mép khi ra ngoài phạm vi"
+ },
+ {
+  "ns": "",
+  "key": "C1CC5BA2421CA7D60EDD658006361CF4",
+  "en": "Name",
+  "already": null,
+  "vi": "Tên"
+ },
+ {
+  "ns": "",
+  "key": "67A712A445C9BFCD40D34791FDA41C88",
+  "en": "Icon:",
+  "already": null,
+  "vi": "Biểu tượng:"
+ },
+ {
+  "ns": "",
+  "key": "DBD32B9543505D14F1238BB088BB47F0",
+  "en": "Description (optional)",
+  "already": null,
+  "vi": "Mô tả (không bắt buộc)"
+ },
+ {
+  "ns": "",
+  "key": "80B0D8B2413055EABEAF9EB00F71F10B",
+  "en": "Always Show on Minimap",
+  "already": null,
+  "vi": "Luôn hiện trên minimap"
+ },
+ {
+  "ns": "",
+  "key": "BF9EE77A4413DE62B6D1CF81E6B7C234",
+  "en": "Save Clientside",
+  "already": null,
+  "vi": "Lưu trên máy"
+ },
+ {
+  "ns": "",
+  "key": "87F330434978C2D77D7D4AB0E090443D",
+  "en": "Add",
+  "already": null,
+  "vi": "Thêm"
+ },
+ {
+  "ns": "",
+  "key": "FBF3769F4DA6297A61E08F943F51E312",
+  "en": "Cancel",
+  "already": null,
+  "vi": "Hủy"
+ },
+ {
+  "ns": "",
+  "key": "38B78F36494B609276546694063C5352",
+  "en": "Add New Map Marker",
+  "already": null,
+  "vi": "Thêm điểm đánh dấu mới"
+ },
+ {
+  "ns": "",
+  "key": "7A71D4434FE32E924E15E588F384DE77",
+  "en": "+Add marker here",
+  "already": null,
+  "vi": "+Thêm điểm đánh dấu tại đây"
+ },
+ {
+  "ns": "",
+  "key": "17EE4DA04CC6B8703308DCB0A51FD2F2",
+  "en": "Edit marker",
+  "already": null,
+  "vi": "Sửa điểm đánh dấu"
+ },
+ {
+  "ns": "",
+  "key": "C7FA9257400720D363A25F8486775306",
+  "en": "Delete marker",
+  "already": null,
+  "vi": "Xóa điểm đánh dấu"
+ },
+ {
+  "ns": "",
+  "key": "8C7D5B1F4962898E89C0D2A7C7BE7B2E",
+  "en": "Share marker",
+  "already": null,
+  "vi": "Chia sẻ điểm đánh dấu"
+ },
+ {
+  "ns": "",
+  "key": "19937003486B5938E019BA940F59F650",
+  "en": "Yes!.. you need to hold F1 to press that button",
+  "already": null,
+  "vi": "Đúng rồi!.. bạn cần giữ F1 để bấm nút đó"
+ },
+ {
+  "ns": "",
+  "key": "DC928D144B1C96A97F87B387CED9BBC2",
+  "en": "Simple Minimap Quick Tutorial",
+  "already": null,
+  "vi": "Hướng dẫn nhanh Simple Minimap"
+ },
+ {
+  "ns": "",
+  "key": "102E4C0F4B033FEE2CEE1CA389BA7BFD",
+  "en": "Hold",
+  "already": null,
+  "vi": "Giữ"
+ },
+ {
+  "ns": "",
+  "key": "E9B79DB34C5D2CB78A6BDFAB17275F96",
+  "en": "In the top right corner of the screen there is a hidden button to hide / show the minimap",
+  "already": null,
+  "vi": "Ở góc trên bên phải màn hình có một nút ẩn để ẩn / hiện minimap"
+ },
+ {
+  "ns": "",
+  "key": "AC123E1B4E59E162DE41EDACD1D6E249",
+  "en": "Click the + / - buttons on the minimap border to adjust zoom",
+  "already": null,
+  "vi": "Bấm nút + / - trên viền minimap để phóng to / thu nhỏ"
+ },
+ {
+  "ns": "",
+  "key": "ED5BF0F64E6A1726C566DEA72D9EF1FD",
+  "en": "Click the gear icon on the minimap border to open the Settings menu",
+  "already": null,
+  "vi": "Bấm biểu tượng bánh răng trên viền minimap để mở Cài đặt"
+ },
+ {
+  "ns": "",
+  "key": "E412410D4646F59A13C54FB1BAD905DD",
+  "en": "In the Color Settings, the Alpha slider is tied into the various elements and adjusts Transparency for the entire minimap",
+  "already": null,
+  "vi": "Trong Cài đặt màu, thanh Alpha gắn với các thành phần và chỉnh độ trong suốt cho toàn bộ minimap"
+ },
+ {
+  "ns": "",
+  "key": "C4E57F7A4D7406AE2A292DA111BC3AF8",
+  "en": "to use your mouse on the game-screen",
+  "already": null,
+  "vi": "để dùng chuột trên màn hình game"
+ },
+ {
+  "ns": "",
+  "key": "4BE75F9E434DCE178981C392CF80A88D",
+  "en": "You can grab the minimap from the center, where the player icon is, and drag it anywhere on the screen to reposition",
+  "already": null,
+  "vi": "Bạn có thể nắm minimap ở giữa, chỗ biểu tượng người chơi, rồi kéo đi bất kỳ đâu trên màn hình"
+ },
+ {
+  "ns": "",
+  "key": "521C94C546718CEB9CF923A33AA8857F",
+  "en": "Close",
+  "already": null,
+  "vi": "Đóng"
+ },
+ {
+  "ns": "",
+  "key": "40FBC9E044FEF5EF6DD84DA6D007F380",
+  "en": "don't show this again",
+  "already": null,
+  "vi": "không hiện lại nữa"
+ },
+ {
+  "ns": "",
+  "key": "733CA5954B87A8021C850CA3A1DE8FB4",
+  "en": "If you like my work you can send me a small voluntary tip by clicking here (opens website)",
+  "already": null,
+  "vi": "Nếu thích mod này, bạn có thể ủng hộ tác giả một chút bằng cách bấm vào đây (mở trang web)"
+ },
+ {
+  "ns": "",
+  "key": "71B4C0E84F7A9283ECA70FB24ACAC2E1",
+  "en": "Join Xevyr's Mod Workshop discord server (opens external link)",
+  "already": null,
+  "vi": "Tham gia server Discord Xevyr's Mod Workshop (mở liên kết ngoài)"
+ },
+ {
+  "ns": "",
+  "key": "7DEC3FBB461138C32ABFD4A62086CC52",
+  "en": "Show quick tutorial (will cancel settings)",
+  "already": null,
+  "vi": "Xem hướng dẫn nhanh (sẽ hủy thay đổi cài đặt)"
+ },
+ {
+  "ns": "",
+  "key": "2FD34F174837EC3C7F022DA1EE380315",
+  "en": "Enable / Disable the ability to track guildmembers globally on the server",
+  "already": null,
+  "vi": "Bật / Tắt khả năng theo dõi thành viên clan trên toàn server"
+ },
+ {
+  "ns": "",
+  "key": "016347494CFF7F6F8E074A9AE2CFBCBC",
+  "en": "Press a key..",
+  "already": null,
+  "vi": "Nhấn một phím.."
+ },
+ {
+  "ns": "",
+  "key": "93E214494DD251DCC9244CAD427077D1",
+  "en": "CAUTION: The game will have priority on certain keys and other mods can also hijack some. \nIf you set this to a hotkey that doesn't work, use the console command \"dc minimapsettings\" to reopen this page",
+  "already": null,
+  "vi": "CHÚ Ý: Game được ưu tiên với một số phím và mod khác cũng có thể chiếm một số phím.\nNếu đặt phím tắt không hoạt động, dùng lệnh console \"dc minimapsettings\" để mở lại trang này"
+ },
+ {
+  "ns": "",
+  "key": "0283D98444204EE2BE83ABA4098A2A28",
+  "en": "Cancel",
+  "already": null,
+  "vi": "Hủy"
+ },
+ {
+  "ns": "",
+  "key": "C6F0361F4CAAECBAC73A45B2474E811C",
+  "en": "Global",
+  "already": null,
+  "vi": "Toàn cục"
+ },
+ {
+  "ns": "",
+  "key": "1FB14A524E29C2075F5C238772FA13B1",
+  "en": "Simple Minimap Settings",
+  "already": null,
+  "vi": "Cài đặt Simple Minimap"
+ },
+ {
+  "ns": "",
+  "key": "8FD4EEAA41974833D60E788BA12C6037",
+  "en": "Hue",
+  "already": null,
+  "vi": "Sắc độ"
+ },
+ {
+  "ns": "",
+  "key": "49047D074E01A7AA69960EB0D3C9B840",
+  "en": "Saturation",
+  "already": null,
+  "vi": "Độ bão hòa"
+ },
+ {
+  "ns": "",
+  "key": "BC2C6A3B47E4FB83A951EC87FC989FB3",
+  "en": "Value",
+  "already": null,
+  "vi": "Độ sáng"
+ },
+ {
+  "ns": "",
+  "key": "3AC05BE0419EF7094B07FF898D4D717A",
+  "en": "Alpha",
+  "already": null,
+  "vi": "Độ trong suốt"
+ },
+ {
+  "ns": "",
+  "key": "3D6709CD4B6FAC45F15306B6B1F7CA5F",
+  "en": "Quick select",
+  "already": null,
+  "vi": "Chọn nhanh"
+ },
+ {
+  "ns": "",
+  "key": "074F02E14A484BC8407768AEA778769A",
+  "en": "Show coordinates",
+  "already": null,
+  "vi": "Hiện tọa độ"
+ },
+ {
+  "ns": "",
+  "key": "D1604DBF45B933B594BEDBA00A9198B4",
+  "en": "Mouse Cursor Hotkey",
+  "already": null,
+  "vi": "Phím hiện chuột"
+ },
+ {
+  "ns": "",
+  "key": "1E7E12F34D1408CD939BF1BE5D0B60F7",
+  "en": "Holding this key will let you use the mouse on the game screen so that you can interact with the minimap",
+  "already": null,
+  "vi": "Giữ phím này để dùng chuột trên màn hình game và tương tác với minimap"
+ },
+ {
+  "ns": "",
+  "key": "65E4A40E418ECC0D66BBD49B47A1A966",
+  "en": "Rotate minimap",
+  "already": null,
+  "vi": "Xoay minimap"
+ },
+ {
+  "ns": "",
+  "key": "B0CA59534B5172CCBA83CD82EB03D911",
+  "en": "Scale",
+  "already": null,
+  "vi": "Kích thước"
+ },
+ {
+  "ns": "",
+  "key": "9166EF0D48D9FB66556DAB91E93655DA",
+  "en": "Save",
+  "already": null,
+  "vi": "Lưu"
+ },
+ {
+  "ns": "",
+  "key": "8A6FF99A4A62567DB8BF8997E5BF2292",
+  "en": "Time display:",
+  "already": null,
+  "vi": "Hiển thị giờ:"
+ },
+ {
+  "ns": "",
+  "key": "B30F872F4D9E7F71E78D03AEEF83BF5B",
+  "en": "Marker visibility distance",
+  "already": null,
+  "vi": "Khoảng cách hiện điểm đánh dấu"
+ },
+ {
+  "ns": "",
+  "key": "AC2EABCD4E185253E0554A8BB8BDBAE5",
+  "en": "Show guild members",
+  "already": null,
+  "vi": "Hiện thành viên clan"
+ },
+ {
+  "ns": "",
+  "key": "FE16D45542E8C2763FA8509056E0A882",
+  "en": "Move Journey Down",
+  "already": null,
+  "vi": "Dời bảng nhiệm vụ xuống"
+ },
+ {
+  "ns": "",
+  "key": "A9C732A44ABBAEFA18F62096399D40B7",
+  "en": "Donate",
+  "already": null,
+  "vi": "Ủng hộ"
+ },
+ {
+  "ns": "",
+  "key": "3BE7EC664AF26DFF0F177DB0663C1A17",
+  "en": "Color settings",
+  "already": null,
+  "vi": "Cài đặt màu"
+ },
+ {
+  "ns": "",
+  "key": "CF5E57774CAC9E8BD996DB8E38EB46B2",
+  "en": "Discord",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "B948A8424732E61BEACB70BDF0AF0486",
+  "en": "Move Minimap",
+  "already": null,
+  "vi": "Di chuyển minimap"
+ },
+ {
+  "ns": "",
+  "key": "407C726D4F97481B739ABFA6DD446ED0",
+  "en": "Click here to toggle minimap",
+  "already": null,
+  "vi": "Bấm vào đây để ẩn/hiện minimap"
+ },
+ {
+  "ns": "",
+  "key": "D79EA5BF40CB90CCBD5733859D9092D1",
+  "en": "Zoom Out",
+  "already": null,
+  "vi": "Thu nhỏ"
+ },
+ {
+  "ns": "",
+  "key": "2305F8D94B49E9E09B85628CC1D73529",
+  "en": "Zoom In",
+  "already": null,
+  "vi": "Phóng to"
+ },
+ {
+  "ns": "",
+  "key": "7DC7B0D040E4D42BCDBC9FBA8F3E689C",
+  "en": "Settings",
+  "already": null,
+  "vi": "Cài đặt"
+ },
+ {
+  "ns": "",
+  "key": "18611ACF4CF71FAB9E39D1A84E0E77DF",
+  "en": "Description will show when hovered for more than 1 second",
+  "already": null,
+  "vi": "Mô tả sẽ hiện khi rê chuột lâu hơn 1 giây"
+ },
+ {
+  "ns": "",
+  "key": "BAEB1DA44155B0A101ABE482C8C4F390",
+  "en": "Shift+Click on the Map \nto add a new marker",
+  "already": null,
+  "vi": "Shift+Click trên bản đồ\nđể thêm điểm đánh dấu mới"
+ },
+ {
+  "ns": "",
+  "key": "EAB481FF4C65DA5757387093E0356CD4",
+  "en": "• Name your marker",
+  "already": null,
+  "vi": "• Đặt tên điểm đánh dấu"
+ },
+ {
+  "ns": "",
+  "key": "B8A8B16544F67D1515F3D6B80A4371F1",
+  "en": "• Pick Icon and color",
+  "already": null,
+  "vi": "• Chọn biểu tượng và màu"
+ },
+ {
+  "ns": "",
+  "key": "604D24EE49A3EC7D350EBF8BB38040F6",
+  "en": "• Add your marker",
+  "already": null,
+  "vi": "• Thêm điểm đánh dấu"
+ },
+ {
+  "ns": "",
+  "key": "B3C81C9A41A1350D792247A3F6C63A77",
+  "en": "Choose options",
+  "already": null,
+  "vi": "Chọn tùy chọn"
+ },
+ {
+  "ns": "",
+  "key": "9BB164094DB5C0D43CE8E98918164140",
+  "en": "Edit, delete or share your marker",
+  "already": null,
+  "vi": "Sửa, xóa hoặc chia sẻ điểm đánh dấu"
+ },
+ {
+  "ns": "",
+  "key": "47C9B6C347CC36D219A0FEB4B9C9FD99",
+  "en": "Right-click marker for options",
+  "already": null,
+  "vi": "Chuột phải vào điểm đánh dấu để xem tùy chọn"
+ },
+ {
+  "ns": "",
+  "key": "D3F4FD63430E42AE0637E396574143DA",
+  "en": "◉ Add unlimited custom map markers",
+  "already": null,
+  "vi": "◉ Thêm không giới hạn điểm đánh dấu tùy chỉnh"
+ },
+ {
+  "ns": "",
+  "key": "BEEB96824C8FDBFB719C1A86235DF037",
+  "en": "◉ Have markers that always show on the minimap edge",
+  "already": null,
+  "vi": "◉ Điểm đánh dấu luôn hiện ở mép minimap"
+ },
+ {
+  "ns": "",
+  "key": "B4D7D0DA4BB7DBE45982E685490B71F5",
+  "en": "◉ Share markers with your clan members for easy navigation",
+  "already": null,
+  "vi": "◉ Chia sẻ điểm đánh dấu với thành viên clan để dễ tìm đường"
+ },
+ {
+  "ns": "",
+  "key": "791EE18A457F8E70C7D3FCA9C741E9A9",
+  "en": "OK",
+  "already": null,
+  "vi": "OK"
+ },
+ {
+  "ns": "",
+  "key": "5E3AA04346F3FB5FAD591C9D04A3E7A4",
+  "en": "Simple Minimap Custom Markers",
+  "already": null,
+  "vi": "Điểm đánh dấu tùy chỉnh Simple Minimap"
+ },
+ {
+  "ns": "",
+  "key": "46875A5D4D3077FDC3A8C9AE2511BBB8",
+  "en": "Can access this page again by clicking ",
+  "already": null,
+  "vi": "Có thể mở lại trang này bằng cách bấm "
+ },
+ {
+  "ns": "",
+  "key": "248BDC954B645AB0200F549498C65C42",
+  "en": "below the map",
+  "already": null,
+  "vi": "bên dưới bản đồ"
+ },
+ {
+  "ns": "",
+  "key": "1B304F3E4544B5DE0633CE963C2E29BF",
+  "en": "NEW:",
+  "already": null,
+  "vi": "MỚI:"
+ },
+ {
+  "ns": "",
+  "key": "F029D68942F4469EE343AB866F8969BA",
+  "en": "SMM Error: Marker System Failed to Initialize",
+  "already": null,
+  "vi": "Lỗi SMM: Không khởi tạo được hệ thống đánh dấu"
+ },
+ {
+  "ns": "",
+  "key": "9097E15F4545460530220D94486AED78",
+  "en": "Xevyr's Mods",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "A96C5E5A4A7638EB05577284B728DAB4",
+  "en": "Settings",
+  "already": null,
+  "vi": "Cài đặt"
+ },
+ {
+  "ns": "",
+  "key": "DB140B1C4C3218577CF035AE93678657",
+  "en": "Settings",
+  "already": null,
+  "vi": "Cài đặt"
+ },
+ {
+  "ns": "",
+  "key": "51FA217F49876CA0F2983CB3D1086816",
+  "en": "Xevyr's Mods",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "61F3DF574CD59E977ABA66BEB5F3764B",
+  "en": "Discord",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "89B59374482D768AC488EF9B1C98812B",
+  "en": "Open mouse-catcher",
+  "already": null,
+  "vi": "Mở chế độ bắt chuột"
+ }
+]
