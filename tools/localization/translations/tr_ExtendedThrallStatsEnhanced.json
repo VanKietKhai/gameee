@@ -1,0 +1,44 @@
+[
+ {
+  "ns": "",
+  "key": "AF7942B443A32B4B773E8290E25951F4",
+  "en": "Max Agility Damage Bonus ",
+  "already": "Điểm Cộng Sát Thương Nhanh Nhẹn Tối Đa"
+ },
+ {
+  "ns": "",
+  "key": "006FCB1F4737041DD6E93DBAD6866EFB",
+  "en": "Grit Armor Bonus",
+  "already": "Điểm Thưởng Giáp Sức Bền"
+ },
+ {
+  "ns": "",
+  "key": "008F3596487FFA8E629ED7B84734ABA9",
+  "en": "Vitality Health Bonus",
+  "already": "Điểm Cộng Máu Từ Sinh Lực"
+ },
+ {
+  "ns": "",
+  "key": "EC9A753C440A2E8FF38A9BA51F03AB69",
+  "en": "Spectral Charge ",
+  "already": "Xung Kích Linh Hồn"
+ },
+ {
+  "ns": "",
+  "key": "ED39DAB74B5FC0147F24A69F15BE857C",
+  "en": "Attribute Stats",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "244F218C49E0C7C1383662BD5C5EEA68",
+  "en": "Max Strength Damage Bonus",
+  "already": "Điểm Cộng Sát Thương Sức Mạnh Tối Đa"
+ },
+ {
+  "ns": "",
+  "key": "D245E3A646EB4CE0B68401B5ACCA5FC3",
+  "en": "Survival buff time reduction",
+  "already": "Giảm thời gian buff sinh tồn"
+ }
+]

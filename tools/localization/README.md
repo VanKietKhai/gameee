@@ -1,4 +1,4 @@
-﻿# Mod text translation (client-only, pilot)
+# Mod text translation (client-only, pilot)
 
 The Vietnamese patch is a client pak `ConanSandbox\Content\Paks\~mod\pakchunk0-Windows_P_999.pak`
 that overrides the 18 `en` .locres files. Mod widgets use FText keys in namespace "" and are looked
@@ -15,7 +15,9 @@ Scripts (pilot; paths point at the session scratch folder and must be adjusted):
 - `apply_tr.py tr_A.json tr_B.json ...` - starts from the ORIGINAL patch Exiles_UI.locres and adds every
   entry that has a `vi` field, so the output is reproducible.
 - `translations/` - the translation tables (installed: PlayerDBNO 3, Simple_Minimap 86, ModControlPanel 20, Cannibal_Captivity 2,
-  ThrallReputation 10, Ancient_Realms 9, WO_RidingThralls 11). Apply all tables in one apply_tr.py call.
+  ThrallReputation 10, Ancient_Realms 9, WO_RidingThralls 11, StackMe10K 32, NightTerrors 35, PvEPlusAmbush 34,
+  GritandGrease 118, IdeaPoet_EditAppearance 128, ImprovedThrallsAndQoL 1604).
+- `itq_merge.py` - maps the ITQoL unique-text translations (itq_vi_*.json, scratch) back onto every entry. Apply all tables in one apply_tr.py call.
 
 Build: response file with `"<file>" "../../../ConanSandbox/Content/<path>" -compress`, then
 `UnrealPak.exe <out>.pak -create=<resp> -compressionformats=Zlib`. Original patch backed up in
