@@ -3,7 +3,7 @@
 # deleted and rebuilt on every run. Refuses unless MQ14MainQuest is the active mod.
 #
 # Server (authority):
-#   BeginPlay -> SetTimerByFunctionName("MQ14_Tick", 5 s, looping)
+#   BeginPlay -> SetTimerByFunctionName("MQ14_Tick", 10 s, looping)
 #   MQ14_Tick: bind SignalOnKilled on every BP_NPC_Wildlife_SewerAbomination_C (AddUnique semantics), and
 #              publish the PlayerStates of connected players who completed MQ01 (replicated list for the panel)
 #   MQ14_OnBossKilled(Character, Killer): only inside The Dregs (distance to the D_S_SewerBoss1 spawner);
@@ -27,7 +27,7 @@ BOSS_CLASS = "/Game/Characters/NPCs/sewer_abomination/blueprints/BP_NPC_Wildlife
 DREGS_SPAWNER = (-137111.734375, 375790.8125, -21557.427734)   # D_S_SewerBoss1_1 (Gameplay_Dungeon_Sewer)
 DREGS_RADIUS = 12000.0     # boss must die within 120 m of its own spawner
 CREDIT_RADIUS = 5000.0     # 50 m, data: completionCreditRadius
-TICK_SECONDS = 5.0
+TICK_SECONDS = 10.0
 MACROS = "/Engine/EditorBlueprintResources/StandardMacros.StandardMacros:"
 
 T_BANNER = "NHIỆM VỤ CHÍNH HOÀN THÀNH: Xuống The Dregs. Tiếp theo: Tower of Bats"
@@ -339,20 +339,34 @@ try:
     g_tick = BEL.add_function_graph(bp, "MQ14_Tick")
     gt = BGE.get_graph_editor(g_tick)
     tentry = [n for n in gt.list_all_nodes() if n.get_class().get_name() == "K2Node_FunctionEntry"][0]
+    # No hard reference to the boss Blueprint (it made the cook load the whole creature and stall on memory):
+    # scan ConanCharacter actors and match the exact class path string.
     bosses = call(gt, fn(GS, "GetAllActorsOfClass"), 250, 200)
-    setv(bosses, "ActorClass", BOSS_CLASS)
+    setv(bosses, "ActorClass", cls_path(CC))
     bloop = macro(gt, "ForEachLoop", 500, 0)
     link(tentry, "then", bosses, "execute")
     link(bosses, "then", bloop, "Exec")
     link(bosses, "OutActors", bloop, "Array")
     elem_pin = pin(bloop, "Array Element", out=True)
+    ocls = call(gt, fn(GS, "GetObjectClass"), 650, 250)
+    link(bloop, "Array Element", ocls, "Object")
+    soft = call(gt, fn(KSL, "Conv_ClassToSoftClassReference"), 850, 250)
+    link(ocls, "ReturnValue", soft, [x for x in soft.list_input_pins()][0])
+    cpath = call(gt, fn(KSL, "Conv_SoftClassReferenceToString"), 950, 300)
+    link(soft, "ReturnValue", cpath, [x for x in cpath.list_input_pins()][0])
+    same = call(gt, fn("/Script/Engine.KismetStringLibrary", "EqualEqual_StrStr"), 1050, 250)
+    link(cpath, "ReturnValue", same, "A")
+    setv(same, "B", BOSS_CLASS)
+    br_boss = gt.add_branch_node(); br_boss.set_node_pos(unreal.IntPoint(700, 0))
+    link(bloop, "LoopBody", br_boss, "execute")
+    link(same, "ReturnValue", br_boss, "Condition")
     names = gt.list_available_nodes([elem_pin])
     bind_names = [n for n in names if "bind" in n.lower() and "signal" in n.lower() and "killed" in n.lower()]
     log("bind candidates: %s" % bind_names[:5])
     if not bind_names:
         raise RuntimeError("no 'Bind Event to Signal On Killed' node; sample=%s" % [n for n in names if "Killed" in n][:20])
     bind = gt.create_node_from_name(bind_names[0], unreal.Vector2D(800, 0), [elem_pin])
-    link(bloop, "LoopBody", bind, "execute")
+    link(br_boss, "then", bind, "execute")
     cd_names = [n for n in gt.list_available_nodes([pin(bind, "Delegate")]) if "create event" in n.lower() or "createevent" in n.lower()]
     if not cd_names:
         raise RuntimeError("no Create Event node offered for the delegate pin")
