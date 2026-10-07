@@ -130,4 +130,17 @@ FAILED CONTROLLER PROBE #1 evidence is labelled and preserved (`live-test/mq14-p
 
 **Meaning:** Blueprint logic in a Dev Kit 377800 ModController executes on CL-378132. **Compatibility gate A4–A7 is PASS** through the differential probes A (data), B (empty controller) and C (controller + logic). FAILED CONTROLLER PROBE #1 stays an unexplained one-off on the old server folder; it is kept as evidence and not rerun.
 
+## MOD #14 QUEST 01 VERTICAL SLICE — staging boot PASS, installed (2026-10-07)
+
+| Item | Value |
+|---|---|
+| Mod | `MQ14MainQuest` (created with the Dev Kit "Create a new mod"); controller `BP_MQ14MainQuestController` built by `tools/devkit/mq14_build_controller.py` (headless `-ExecutePythonScript`), definition `tools/devkit/mq14_controller_definition.json`; `MQ01_CompletedIds` SaveGame flag set in the Blueprint editor (CPF_SaveGame) |
+| Behaviour | Server: every 10 s, scans ConanCharacter and binds `SignalOnKilled` on actors whose exact class path is `/Game/Characters/NPCs/sewer_abomination/blueprints/BP_NPC_Wildlife_SewerAbomination.BP_NPC_Wildlife_SewerAbomination_C`; on death inside 120 m of `D_S_SewerBoss1` credits every player pawn within 50 m once per character StableId, sets the persistence dirty flag, sends `ClientHUDShowNotification`; publishes completed PlayerStates (replicated). Client: F7 → `ClientShowRichMessageBox` (Vietnamese Main Quest panel). |
+| First build | GUI Build mod: cook **failed** (exit 3, "cook stalled … garbage collection") because a hard class reference pulled the boss Blueprint into the cook. Fixed by matching the class path string instead. |
+| Package | `RunUAT BuildMod -Cook -Pak -Compress -FinalPak` (the commands the button runs) with the editor closed, 7.5 min: `MQ14MainQuest.pak` 285,283 B, SHA-256 `585F52AAAE44ED0EC3C51DCDDA10F77BB83BCD079A97657357710770A0EE1C1D`, `devkitRevisionNumber 1002` (written into modinfo.json by the Dev Kit's own SaveModInfo during the GUI build; not hand-edited), 11 files |
+| Staging boot `mq14-q01-1` | backup `2026-10-07_090633`; mounted #14; `Persistence: Spawning mod controller: BP_MQ14MainQuestController_C`; `MQ14 MainQuest controller started (server); tracking MQ01 Abysmal Remnant`; readiness 35.4 s; 0 unattributed LoadErrors; no script errors during 180 s (≈18 scans); NORMAL 164.3 s; integrity gates PASS; rolled back |
+| Baseline after | `mq14-baseline-after-q01` PASS, NORMAL 174.4 s |
+| Installed | Staging server: backup `2026-10-07_092110` verified, `import-local` → 14 mods (SHA match). Client `D:\steamnew\...\Conan Exiles\ConanSandbox\Mods`: pak copied, modlist appended (backup `modlist.txt.bak-before-mq14-20261007`); client and server modlists identical. |
+| NOT yet verified | A real Abysmal Remnant kill (credit, banner, F7 panel, persistence after restart). Target stays Unverified in the data until that runtime check. |
+
 Comparison with accepted controllers (metadata only, no decompiling): Ancient Realms' `AR_BP_ModController` has nearly the same name map as probe #1 (PersistenceComponent, DefaultSceneRoot, SimpleConstructionScript, ModDataTableOperations). Chest Labels and Simple Minimap add `AdditionalClassComponents`. Every accepted mod has the same inner layout (`AssetRegistry.bin` + `ModCompat.bin`).
