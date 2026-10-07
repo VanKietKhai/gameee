@@ -2,12 +2,11 @@
 
 Source: `D:\steamnew\steamapps\workshop\content\440900` (37 subscribed items) and `appworkshop_440900.acf` (Workshop update dates). Compatibility was read from the modinfo embedded in each `.pak`: Conan Exiles Enhanced 3.0.0 (CL-378787) accepts Dev Kit revision `[1002]` only. A pak with no Enhanced modinfo is a legacy (UE4-era) build and cannot load on this server. Nothing was deleted or changed; unsubscribing is done by the operator in Steam.
 
-## Keep — Enhanced (revision 1002): 8
+## Keep — Enhanced (revision 1002): 7
 
 | Workshop ID | Mod | Workshop update | Note |
 |---|---|---|---|
 | 3719513784 | Simple Minimap (by Xevyr) v5.2.1 | 2026-09-15 | Byte-identical to the `Simple_Minimap.pak` in the validated 14-mod server/client pack |
-| 3720904511 | Better Thralls v3.5.0 (Enhanced) | 2026-10-03 | **Overlaps Improved Thralls & QoL** (in the server pack); not on the server |
 | 3736778117 | Better Thrall ICONS (1.0.2) - Enhanced | 2026-09-16 | Cosmetic thrall icons; not on the server |
 | 3729932396 | Better Tavern PATRONS (1.1.4) - Enhanced | 2026-09-16 | Tavern thralls; not on the server |
 | 3721090132 | Tot ! Enhanced Sudo 1.3.80 (ModAdmin.pak) | 2026-10-06 | Admin tools; replaces legacy ModAdmin/TotAdmin |
@@ -15,7 +14,15 @@ Source: `D:\steamnew\steamapps\workshop\content\440900` (37 subscribed items) an
 | 3723101055 | Organizer Sorting Chest v1.4.4 | 2026-09-17 | Storage |
 | 3722388367 | ModControlPanel (Enhanced) | 2026-09-15 | Replaces legacy ModControlPanel |
 
-## Unsubscribe — legacy, no Enhanced modinfo: 29
+## Unsubscribe — 30 (29 legacy + 1 Enhanced feature duplicate)
+
+Enhanced, but duplicates a server-pack mod (operator decision 2026-10-07):
+
+| Workshop ID | Mod | Workshop update | Duplicates |
+|---|---|---|---|
+| 3720904511 | Better Thralls v3.5.0 (Enhanced) | 2026-10-03 | Improved Thralls & QoL |
+
+Legacy, no Enhanced modinfo (29):
 
 Older version of a mod you also have in Enhanced form (duplicates):
 
@@ -45,6 +52,6 @@ Other legacy items (cannot load on Enhanced 3.0.0):
 
 ## Totals
 
-37 subscribed → **8 kept** (Enhanced) + **29 to unsubscribe** (legacy). Of the 8 kept, Better Thralls overlaps Improved Thralls & QoL; keep it only if you do not plan to add it to the server next to ITQoL.
+37 subscribed → **7 kept** (Enhanced) + **30 to unsubscribe** (29 legacy + Better Thralls, which duplicates Improved Thralls & QoL on the server).
 
 The server/client pack (14 mods) is unaffected: its paks are local copies, and its Simple Minimap is the same file as the kept 3719513784.
