@@ -144,3 +144,16 @@ FAILED CONTROLLER PROBE #1 evidence is labelled and preserved (`live-test/mq14-p
 | NOT yet verified | A real Abysmal Remnant kill (credit, banner, F7 panel, persistence after restart). Target stays Unverified in the data until that runtime check. |
 
 Comparison with accepted controllers (metadata only, no decompiling): Ancient Realms' `AR_BP_ModController` has nearly the same name map as probe #1 (PersistenceComponent, DefaultSceneRoot, SimpleConstructionScript, ModDataTableOperations). Chest Labels and Simple Minimap add `AdditionalClassComponents`. Every accepted mod has the same inner layout (`AssetRegistry.bin` + `ModCompat.bin`).
+
+## QUEST 01 RUNTIME VERIFICATION — PASS (2026-10-07, Conan 3.0.0 CL-378787, licensed client)
+
+| Check | Evidence |
+|---|---|
+| Join | `Join succeeded: Khari#73998` (04:14 UTC) |
+| Boss identity (B4/B6 runtime) | `KillCharacterWithRagdoll_Implementation. KillerNameInput: khari CauseOfDeath: Poison. IsThrall: 0 Name: BP_NPC_Wildlife_SewerAbomination_C_2147353117 CharacterName: Abyssal Remnant` |
+| Credit | `MQ14 MQ01 boss death in The Dregs; crediting nearby players` → `MQ14 MQ01 COMPLETE character=198` (no killing blow needed: death by poison) |
+| Client | Operator confirmed the HUD banner and F7 showing completion |
+| Persistence | Server restarted through the desktop app (11:33): `Persistence: Loading mod controller: BP_MQ14MainQuestController_C`; after rejoining (04:36 UTC) F7 still shows completion (operator) |
+| Data | MQ01 target set to `Verified` with the exact class path; display name corrected to the in-game "Abyssal Remnant" |
+
+Other login attempts in the same session (one other Steam account, two `NULL:<INVALID>` ids) failed PreLogin because they lacked the server's 14-mod set; not related to Mod #14.

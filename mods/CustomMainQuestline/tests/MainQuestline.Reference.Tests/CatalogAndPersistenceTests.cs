@@ -122,35 +122,45 @@ public sealed class ProvisionalDataTests
         Assert.StartsWith("PROVISIONAL", file.Status, StringComparison.Ordinal);
     }
 
+    private const string RemnantClass =
+        "/Game/Characters/NPCs/sewer_abomination/blueprints/BP_NPC_Wildlife_SewerAbomination.BP_NPC_Wildlife_SewerAbomination_C";
+
     [Fact]
-    public void No_provisional_target_is_verified_or_carries_a_guessed_class()
+    public void Only_quest_01_is_verified_and_no_other_target_carries_a_guessed_class()
     {
         var (_, catalog) = QuestDataLoader.Load(DataJson());
 
-        Assert.All(catalog.Enabled, q =>
+        Assert.All(catalog.Enabled.Where(q => q.QuestId != "MQ01"), q =>
         {
             Assert.Equal(TargetVerification.Unverified, q.Target.Verification);
             Assert.Null(q.Target.TargetClassPath);
             Assert.False(q.Target.CanGrantCredit);
-            Assert.True(q.Reward.Placeholder);
         });
+        Assert.All(catalog.Enabled, q => Assert.True(q.Reward.Placeholder));
     }
 
     [Fact]
-    public void Quest_01_records_the_ranked_candidates_but_cannot_complete_yet()
+    public void Quest_01_is_verified_on_the_exact_remnant_class_only()
     {
+        // Verified 2026-10-07: Dev Kit trace + staging kill on Conan 3.0.0 (log: CharacterName "Abyssal Remnant").
         var (_, catalog) = QuestDataLoader.Load(DataJson());
         var q1 = catalog.First;
         var engine = new CampaignEngine(catalog);
         var p = engine.NewPlayer("p1");
 
-        Assert.Equal("Abysmal Remnant", q1.Target.DisplayName);
+        Assert.Equal(("Abyssal Remnant", TargetVerification.Verified, RemnantClass), (q1.Target.DisplayName, q1.Target.Verification, q1.Target.TargetClassPath));
+        Assert.True(q1.Target.CanGrantCredit);
         Assert.Equal(15, q1.MinimumLevel);
-        Assert.Equal(2, q1.Target.Candidates!.Count);
-        var r = engine.OnBossDeath(new BossDeathEvent("e1", "/Game/Characters/NPCs/BP_NPC_Wildlife_SewerAbomination.BP_NPC_Wildlife_SewerAbomination_C",
+
+        // A near-miss path (different folder casing) never credits.
+        var miss = engine.OnBossDeath(new BossDeathEvent("e1", RemnantClass.Replace("/blueprints/", "/Blueprints/"),
             0, 0, 0, [new PlayerSnapshot("p1", 30, 0, 0, 0)]), _ => p);
-        Assert.Null(r.QuestId);
+        Assert.Null(miss.QuestId);
         Assert.Empty(p.Completed);
+
+        var hit = engine.OnBossDeath(new BossDeathEvent("e2", RemnantClass, 0, 0, 0, [new PlayerSnapshot("p1", 30, 0, 0, 0)]), _ => p);
+        Assert.Equal("MQ01", hit.QuestId);
+        Assert.Equal("MQ01", Assert.Single(p.Completed).QuestId);
     }
 
     [Fact]

@@ -39,18 +39,14 @@
       "actId": "ACT_I_SURVIVAL",
       "sequence": 10,
       "displayName": "Xuống The Dregs",
-      "description": "Hạ gục Abysmal Remnant tại The Dregs.",
-      "objective": "Hạ gục Abysmal Remnant.",
+      "description": "Hạ gục Abyssal Remnant tại The Dregs.",
+      "objective": "Hạ gục Abyssal Remnant.",
       "target": {
         "type": "BossKill",
-        "displayName": "Abysmal Remnant",
-        "targetClassPath": null,
-        "verification": "Unverified",
-        "verificationNote": "Unresolved. 2.2.3 server asset indexes show the Abysmal/Abyssal Remnant VFX, weapons, trophy and icons (content set A3C1, Darkened Dregs). Ranked candidates below; the exact class must be confirmed from a staged kill (server log KillCharacterWithRagdoll Name/CharacterName) or DevKit before enabling credit.",
-        "candidates": [
-          "BP_NPC_Wildlife_SewerAbomination (creature; acid puke/spit kit matches NS_AbysmalRemnant_* VFX; trophy BP_PL_W_Trophy_DarkDregs_Abomination)",
-          "Nahjef encounter (HumanoidNPCCharacter_20percentbigger_boss_Nahjef / DT_NPC_Nahjef, spawned by BP_BossDarkDregs_Nahjef_SpawnRequest; a separate Dregs boss)"
-        ]
+        "displayName": "Abyssal Remnant",
+        "targetClassPath": "/Game/Characters/NPCs/sewer_abomination/blueprints/BP_NPC_Wildlife_SewerAbomination.BP_NPC_Wildlife_SewerAbomination_C",
+        "verification": "Verified",
+        "verificationNote": "Verified 2026-10-07. Dev Kit trace (B1-B7): The Dregs -> NPCTerritorySpawner D_S_SewerBoss1 -> spawn row Wildlife_SewerAbomination (Npc.Boss, Npc.Dungeon.Dregs) -> this class. Runtime on staging (Conan 3.0.0 CL-378787, licensed client): server log 'KillCharacterWithRagdoll_Implementation ... Name: BP_NPC_Wildlife_SewerAbomination_C_2147353117 CharacterName: Abyssal Remnant', then 'MQ14 MQ01 COMPLETE character=198'; banner and F7 panel confirmed by the operator; completion survived a server restart."
       },
       "nextQuestId": "MQ02",
       "minimumLevel": 15,
