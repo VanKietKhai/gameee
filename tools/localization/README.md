@@ -23,6 +23,8 @@ Build: response file with `"<file>" "../../../ConanSandbox/Content/<path>" -comp
 `UnrealPak.exe <out>.pak -create=<resp> -compressionformats=Zlib`. Original patch backed up in
 `E:\CSC-M3-Live\client-backups\vihoa-original-20261007`.
 
+Round 2 tools: `extract_dt.py` (DataTable texts, key like ItemTable_<id>_Name, namespace ""), `base_diff.py` (base-game English vs the patch: missing / changed / kept-English), `groupC.py` (name overrides), `build_all.py` (rebuilds Exiles_UI additions from tr_/trdt_/trbase_ tables and Exiles_Items overrides from trov_ tables; keys already in any original file are never duplicated).
+
 Fonts: the game font KelsonSans (Normal/Bold/Light) has no Vietnamese glyphs; the patch replaces
 Fonts/KelsonSans_0_{Normal,Bold,Light}.ufont with the game's own Engine/Content/EngineFonts/Faces/Roboto{Regular,Bold,Light}.ufont
 (files copied as-is; .ufont = uint32 size + TTF + 4 bytes). Check coverage with cmapcheck.py.

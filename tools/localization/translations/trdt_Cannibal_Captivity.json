@@ -1,0 +1,20 @@
+[
+ {
+  "ns": "",
+  "key": "ItemTable_51315_ShortDesc",
+  "en": "A one-handed staff used by sorcerers as a focus to cast spells. ",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "ItemTable_51315_LongDesc",
+  "en": "In ordinary hands, an arcane staff is a commonplace cudgel with little to distinguish it beyond its capacity for blunt force trauma. But in the hands of an adept sorcerer, this same rod becomes a powerful focus object capable of channeling raw magic into complex spells and invocations. ",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "ItemTable_51315_FirstModifier",
+  "en": "Sorcerous Tool",
+  "already": false
+ }
+]

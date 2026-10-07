@@ -1,0 +1,1325 @@
+[
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_RecipesTable_101344600_ShortDesc",
+  "en": "Swords crafted from a dull, grey metal, radiating intense heat, and balanced for dual wielding. ",
+  "already": false,
+  "vi": "Cặp kiếm làm từ kim loại xám xỉn, tỏa ra sức nóng dữ dội, được cân bằng để cầm hai tay. "
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_RecipesTable_101344601_ShortDesc",
+  "en": "A two-handed sword crafted from a dull, grey metal that radiates with intense heat.",
+  "already": false,
+  "vi": "Một thanh đại kiếm làm từ kim loại xám xỉn tỏa ra sức nóng dữ dội."
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_RecipesTable_101344602_ShortDesc",
+  "en": "A sword crafted of a dull, grey metal that radiates with intense heat.",
+  "already": false,
+  "vi": "Một thanh kiếm làm từ kim loại xám xỉn tỏa ra sức nóng dữ dội."
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_RecipesTable_101344603_ShortDesc",
+  "en": "A battle axe crafted of a dull, grey metal that radiates with intense heat. ",
+  "already": false,
+  "vi": "Một cây rìu chiến làm từ kim loại xám xỉn tỏa ra sức nóng dữ dội. "
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_RecipesTable_101344604_ShortDesc",
+  "en": "Battle axes crafted from a dull, grey metal, radiating intense heat, and balanced for dual wielding.",
+  "already": false,
+  "vi": "Cặp rìu chiến làm từ kim loại xám xỉn, tỏa ra sức nóng dữ dội, được cân bằng để cầm hai tay."
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_RecipesTable_101344605_RecipeName",
+  "en": "Blighted Axe",
+  "already": false,
+  "vi": "Rìu Ô Uế"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_RecipesTable_101344605_ShortDesc",
+  "en": "A wicked looking battle axe shaped from the pelvic bone of a demon from the hells.",
+  "already": false,
+  "vi": "Một cây rìu chiến trông hiểm ác, tạo hình từ xương chậu của một con quỷ địa ngục."
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_RecipesTable_101344606_RecipeName",
+  "en": "Blighted Dual Axes",
+  "already": false,
+  "vi": "Song Rìu Ô Uế"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_RecipesTable_101344606_ShortDesc",
+  "en": "Wicked looking battle axes, balanced for dual wielding.",
+  "already": false,
+  "vi": "Cặp rìu chiến trông hiểm ác, được cân bằng để cầm hai tay."
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_RecipesTable_101344607_RecipeName",
+  "en": "Blighted Spear",
+  "already": false,
+  "vi": "Giáo Ô Uế"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_RecipesTable_101344607_ShortDesc",
+  "en": "A wicked looking pike shaped from the femurs of a demon from the hells.",
+  "already": false,
+  "vi": "Một cây trường mâu trông hiểm ác, tạo hình từ xương đùi của một con quỷ địa ngục."
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_RecipesTable_101344608_RecipeName",
+  "en": "Blighted Great Sword",
+  "already": false,
+  "vi": "Đại Kiếm Ô Uế"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_RecipesTable_101344608_ShortDesc",
+  "en": "A wicked looking two-handed sword shaped from the spine of a demon from the hells.",
+  "already": false,
+  "vi": "Một thanh đại kiếm trông hiểm ác, tạo hình từ xương sống của một con quỷ địa ngục."
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_RecipesTable_101344650_RecipeName",
+  "en": "Call of the Valkyrie",
+  "already": false,
+  "vi": "Tiếng Gọi Của Valkyrie"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_RecipesTable_101344650_ShortDesc",
+  "en": "An ornate horn to call upon Ymirs favor",
+  "already": false,
+  "vi": "Một chiếc tù và chạm trổ để cầu xin ân huệ của Ymir"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_RecipesTable_101344651_RecipeName",
+  "en": "Ymir Plushie",
+  "already": false,
+  "vi": "Thú Bông Ymir"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_RecipesTable_101344651_ShortDesc",
+  "en": "Using this plushie will call on the favor of Ymir for comfort",
+  "already": false,
+  "vi": "Dùng thú bông này để cầu ân huệ của Ymir che chở"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_RecipesTable_101344652_RecipeName",
+  "en": "Idol of Minevra",
+  "already": false,
+  "vi": "Tượng Thần Minevra"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_RecipesTable_101344652_ShortDesc",
+  "en": "A dark relic that calls Minevra’s attention to your soul",
+  "already": false,
+  "vi": "Một di vật hắc ám thu hút sự chú ý của Minevra tới linh hồn bạn"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_RecipesTable_101344653_RecipeName",
+  "en": "Derketo Plushie",
+  "already": false,
+  "vi": "Thú Bông Derketo"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_RecipesTable_101344653_ShortDesc",
+  "en": "Using this plushie will call on the favor of Derketo for comfort",
+  "already": false,
+  "vi": "Dùng thú bông này để cầu ân huệ của Derketo che chở"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_RecipesTable_101344654_RecipeName",
+  "en": "Teddy Bear",
+  "already": false,
+  "vi": "Gấu Bông"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_RecipesTable_101344654_ShortDesc",
+  "en": "Using this teddy bear will call on the favor of Mitra for comfort",
+  "already": false,
+  "vi": "Dùng gấu bông này để cầu ân huệ của Mitra che chở"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_RecipesTable_101344655_RecipeName",
+  "en": "Jhebbal Sag Plushie",
+  "already": false,
+  "vi": "Thú Bông Jhebbal Sag"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_RecipesTable_101344655_ShortDesc",
+  "en": "Using this plushie will call on the favor of Jhebbal Sag for comfort",
+  "already": false,
+  "vi": "Dùng thú bông này để cầu ân huệ của Jhebbal Sag che chở"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_RecipesTable_101344656_RecipeName",
+  "en": "Set Plushie",
+  "already": false,
+  "vi": "Thú Bông Set"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_RecipesTable_101344656_ShortDesc",
+  "en": "Using this plushie will call on the favor of Set for comfort",
+  "already": false,
+  "vi": "Dùng thú bông này để cầu ân huệ của Set che chở"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_RecipesTable_101344657_RecipeName",
+  "en": "Yog Plushie",
+  "already": false,
+  "vi": "Thú Bông Yog"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_RecipesTable_101344657_ShortDesc",
+  "en": "Using this plushie will call on the favor of Yog for comfort",
+  "already": false,
+  "vi": "Dùng thú bông này để cầu ân huệ của Yog che chở"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_RecipesTable_101344658_RecipeName",
+  "en": "Zath Plushie",
+  "already": false,
+  "vi": "Thú Bông Zath"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_RecipesTable_101344658_ShortDesc",
+  "en": "Using this plushie will call on the favor of Zath for comfort",
+  "already": false,
+  "vi": "Dùng thú bông này để cầu ân huệ của Zath che chở"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_RecipesTable_101344659_RecipeName",
+  "en": "Idol of Minevra",
+  "already": false,
+  "vi": "Tượng Thần Minevra"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_RecipesTable_101344659_ShortDesc",
+  "en": "A dark relic that calls Minevra’s attention to your soul",
+  "already": false,
+  "vi": "Một di vật hắc ám thu hút sự chú ý của Minevra tới linh hồn bạn"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_RecipesTable_101344660_RecipeName",
+  "en": "Idol of Minevra",
+  "already": false,
+  "vi": "Tượng Thần Minevra"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_RecipesTable_101344660_ShortDesc",
+  "en": "A dark relic that calls Minevra’s attention to your soul",
+  "already": false,
+  "vi": "Một di vật hắc ám thu hút sự chú ý của Minevra tới linh hồn bạn"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_RecipesTable_101344661_RecipeName",
+  "en": "Idol of Minevra",
+  "already": false,
+  "vi": "Tượng Thần Minevra"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_RecipesTable_101344661_ShortDesc",
+  "en": "A dark relic that calls Minevra’s attention to your soul",
+  "already": false,
+  "vi": "Một di vật hắc ám thu hút sự chú ý của Minevra tới linh hồn bạn"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_RecipesTable_101344662_RecipeName",
+  "en": "Idol of Minevra",
+  "already": false,
+  "vi": "Tượng Thần Minevra"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_RecipesTable_101344662_ShortDesc",
+  "en": "A dark relic that calls Minevra’s attention to your soul",
+  "already": false,
+  "vi": "Một di vật hắc ám thu hút sự chú ý của Minevra tới linh hồn bạn"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_RecipesTable_101344663_RecipeName",
+  "en": "Idol of Minevra",
+  "already": false,
+  "vi": "Tượng Thần Minevra"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_RecipesTable_101344663_ShortDesc",
+  "en": "A dark relic that calls Minevra’s attention to your soul",
+  "already": false,
+  "vi": "Một di vật hắc ám thu hút sự chú ý của Minevra tới linh hồn bạn"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_RecipesTable_101344664_RecipeName",
+  "en": "Idol of Minevra",
+  "already": false,
+  "vi": "Tượng Thần Minevra"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_RecipesTable_101344664_ShortDesc",
+  "en": "A dark relic that calls Minevra’s attention to your soul",
+  "already": false,
+  "vi": "Một di vật hắc ám thu hút sự chú ý của Minevra tới linh hồn bạn"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_FeatTable_101344625_FeatName",
+  "en": "Blighted Axe",
+  "already": false,
+  "vi": "Rìu Ô Uế"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_FeatTable_101344626_FeatName",
+  "en": "Blighted Dual Axes",
+  "already": false,
+  "vi": "Song Rìu Ô Uế"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_FeatTable_101344627_FeatName",
+  "en": "Blighted Spear",
+  "already": false,
+  "vi": "Giáo Ô Uế"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_FeatTable_101344650_FeatName",
+  "en": "Call of the Valkyrie",
+  "already": false,
+  "vi": "Tiếng Gọi Của Valkyrie"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_FeatTable_101344651_FeatName",
+  "en": "Trinkets of Minevra",
+  "already": false,
+  "vi": "Bùa Hộ Mệnh Minevra"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_FeatTable_101344652_FeatName",
+  "en": "Trinkets of Minevra",
+  "already": false,
+  "vi": "Bùa Hộ Mệnh Minevra"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_FeatTable_101344653_FeatName",
+  "en": "Trinkets of Minevra",
+  "already": false,
+  "vi": "Bùa Hộ Mệnh Minevra"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_FeatTable_101344654_FeatName",
+  "en": "Trinkets of Minevra",
+  "already": false,
+  "vi": "Bùa Hộ Mệnh Minevra"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_FeatTable_101344655_FeatName",
+  "en": "Trinkets of Minevra",
+  "already": false,
+  "vi": "Bùa Hộ Mệnh Minevra"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_FeatTable_101344656_FeatName",
+  "en": "Trinkets of Minevra",
+  "already": false,
+  "vi": "Bùa Hộ Mệnh Minevra"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_FeatTable_101344657_FeatName",
+  "en": "Trinkets of Minevra",
+  "already": false,
+  "vi": "Bùa Hộ Mệnh Minevra"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344600_Name",
+  "en": "Hellforge Dual Blades",
+  "already": false,
+  "vi": "Song Kiếm Lò Rèn Địa Ngục"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344600_ShortDesc",
+  "en": "Swords crafted from a dull, grey metal, radiating intense heat, and balanced for dual wielding. ",
+  "already": false,
+  "vi": "Cặp kiếm làm từ kim loại xám xỉn, tỏa ra sức nóng dữ dội, được cân bằng để cầm hai tay. "
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344600_LongDesc",
+  "en": "Forged in the blistering heat of the hells and infused with the essence and remains of demons, these weapons have an unnatural and disconcerting feeling.These swords have been perfectly balanced for the purpose of wielding both of them at the same time, sacrificing defense in favor of a flurry of blows being rained down on your opponent.",
+  "already": false,
+  "vi": "Được rèn trong sức nóng thiêu đốt của địa ngục và thấm đẫm tinh chất cùng hài cốt của quỷ dữ, những vũ khí này mang cảm giác phi tự nhiên và bất an. Cặp kiếm được cân bằng hoàn hảo để cầm cả hai cùng lúc, hy sinh phòng thủ để trút một loạt đòn liên hoàn lên đối thủ."
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344600_FirstModifier",
+  "en": "Cripple",
+  "already": false,
+  "vi": "Gây Què"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344600_SecondModifier",
+  "en": "Exhausting",
+  "already": false,
+  "vi": "Gây Kiệt Sức"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344601_Name",
+  "en": "Hellforge Great Sword",
+  "already": false,
+  "vi": "Đại Kiếm Lò Rèn Địa Ngục"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344601_ShortDesc",
+  "en": "A two-handed sword crafted from a dull, grey metal that radiates with intense heat. ",
+  "already": false,
+  "vi": "Một thanh đại kiếm làm từ kim loại xám xỉn tỏa ra sức nóng dữ dội. "
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344601_LongDesc",
+  "en": "Forged in the blistering heat of the hells and infused with the essence and remains of demons, this weapon has an unnatural and disconcerting feeling.\n \nGreat swords are faster than many other two-handed weapons, and their great reach makes them ideal for fending off groups of opponents.",
+  "already": false,
+  "vi": "Được rèn trong sức nóng thiêu đốt của địa ngục và thấm đẫm tinh chất cùng hài cốt của quỷ dữ, vũ khí này mang cảm giác phi tự nhiên và bất an.\n \nĐại kiếm nhanh hơn nhiều vũ khí hai tay khác, và tầm với dài khiến chúng lý tưởng để chống lại nhóm kẻ địch."
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344601_FirstModifier",
+  "en": "Cripple",
+  "already": false,
+  "vi": "Gây Què"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344601_SecondModifier",
+  "en": "Exhausting",
+  "already": false,
+  "vi": "Gây Kiệt Sức"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344602_Name",
+  "en": "Hellforge Sword",
+  "already": false,
+  "vi": "Kiếm Lò Rèn Địa Ngục"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344602_ShortDesc",
+  "en": "A sword crafted of a dull, grey metal that radiates with intense heat.",
+  "already": false,
+  "vi": "Một thanh kiếm làm từ kim loại xám xỉn tỏa ra sức nóng dữ dội."
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344602_LongDesc",
+  "en": "Forged in the blistering heat of the hells and infused with the essence and remains of demons, this weapon has an unnatural and disconcerting feeling.   \n\nSwords are straight-bladed, one-handed weapons, both fast and reliable.",
+  "already": false,
+  "vi": "Được rèn trong sức nóng thiêu đốt của địa ngục và thấm đẫm tinh chất cùng hài cốt của quỷ dữ, vũ khí này mang cảm giác phi tự nhiên và bất an.   \n\nKiếm là vũ khí một tay lưỡi thẳng, vừa nhanh vừa đáng tin cậy."
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344602_FirstModifier",
+  "en": "Cripple",
+  "already": false,
+  "vi": "Gây Què"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344602_SecondModifier",
+  "en": "Exhausting",
+  "already": false,
+  "vi": "Gây Kiệt Sức"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344603_Name",
+  "en": "Hellforge Axe",
+  "already": false,
+  "vi": "Rìu Lò Rèn Địa Ngục"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344603_ShortDesc",
+  "en": "A battle axe crafted of a dull, grey metal that radiates with intense heat. ",
+  "already": false,
+  "vi": "Một cây rìu chiến làm từ kim loại xám xỉn tỏa ra sức nóng dữ dội. "
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344603_LongDesc",
+  "en": "Forged in the blistering heat of the hells and infused with the essence and remains of demons, this weapon has an unnatural and disconcerting feeling. \n\nBattle axes are a difficult weapon for inexperienced warriors, due to their smaller surface area and uneven balance. No other one-handed weapon shares their raw power, and they can wreak havoc on unarmored foes.",
+  "already": false,
+  "vi": "Được rèn trong sức nóng thiêu đốt của địa ngục và thấm đẫm tinh chất cùng hài cốt của quỷ dữ, vũ khí này mang cảm giác phi tự nhiên và bất an. \n\nRìu chiến là vũ khí khó dùng với chiến binh thiếu kinh nghiệm vì bề mặt nhỏ và cân bằng lệch. Không vũ khí một tay nào có sức mạnh thô như nó, và nó có thể tàn phá kẻ địch không mặc giáp."
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344603_FirstModifier",
+  "en": "Shieldsmash",
+  "already": false,
+  "vi": "Đập Khiên"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344603_SecondModifier",
+  "en": "Exhausting",
+  "already": false,
+  "vi": "Gây Kiệt Sức"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344604_Name",
+  "en": "Hellforge Dual Axes",
+  "already": false,
+  "vi": "Song Rìu Lò Rèn Địa Ngục"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344604_ShortDesc",
+  "en": "Battle axes crafted from a dull, grey metal, radiating intense heat, and balanced for dual wielding. ",
+  "already": false,
+  "vi": "Cặp rìu chiến làm từ kim loại xám xỉn, tỏa ra sức nóng dữ dội, được cân bằng để cầm hai tay. "
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344604_LongDesc",
+  "en": "Forged in the blistering heat of the hells and infused with the essence and remains of demons, these weapons have an unnatural and disconcerting feeling.These axes have been perfectly balanced for the purpose of wielding both of them at the same time, sacrificing defense in favor of a flurry of blows being rained down on your opponent.",
+  "already": false,
+  "vi": "Được rèn trong sức nóng thiêu đốt của địa ngục và thấm đẫm tinh chất cùng hài cốt của quỷ dữ, những vũ khí này mang cảm giác phi tự nhiên và bất an. Cặp rìu được cân bằng hoàn hảo để cầm cả hai cùng lúc, hy sinh phòng thủ để trút một loạt đòn liên hoàn lên đối thủ."
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344604_FirstModifier",
+  "en": "Shieldsmash",
+  "already": false,
+  "vi": "Đập Khiên"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344604_SecondModifier",
+  "en": "Exhausting",
+  "already": false,
+  "vi": "Gây Kiệt Sức"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344605_Name",
+  "en": "Blighted Axe",
+  "already": false,
+  "vi": "Rìu Ô Uế"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344605_ShortDesc",
+  "en": "A wicked looking battle axe shaped from the pelvic bone of a demon from the hells.  ",
+  "already": false,
+  "vi": "Một cây rìu chiến trông hiểm ác, tạo hình từ xương chậu của một con quỷ địa ngục.  "
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344605_LongDesc",
+  "en": "Forged in the blistering heat of the hells and infused with the essence and remains of demons, this weapon has an unnatural resilience and emanates a disconcerting feeling.\n\nBattle axes are a difficult weapon for inexperienced warriors, due to their smaller surface area and uneven balance. No other one-handed weapon shares their raw power, and they can wreak havoc on unarmored foes.",
+  "already": false,
+  "vi": "Được rèn trong sức nóng thiêu đốt của địa ngục và thấm đẫm tinh chất cùng hài cốt của quỷ dữ, vũ khí này có độ bền phi tự nhiên và tỏa ra cảm giác bất an.\n\nRìu chiến là vũ khí khó dùng với chiến binh thiếu kinh nghiệm vì bề mặt nhỏ và cân bằng lệch. Không vũ khí một tay nào có sức mạnh thô như nó, và nó có thể tàn phá kẻ địch không mặc giáp."
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344605_FirstModifier",
+  "en": "Shieldsmash",
+  "already": false,
+  "vi": "Đập Khiên"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344606_Name",
+  "en": "Blighted Dual Axes",
+  "already": false,
+  "vi": "Song Rìu Ô Uế"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344606_ShortDesc",
+  "en": "Wicked looking battle axes, balanced for dual wielding.",
+  "already": false,
+  "vi": "Cặp rìu chiến trông hiểm ác, được cân bằng để cầm hai tay."
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344606_LongDesc",
+  "en": "Forged in the blistering heat of the hells and infused with the essence and remains of demons, this weapon has an unnatural resilience and emanates a disconcerting feeling.These axes have been perfectly balanced for the purpose of wielding both of them at the same time, sacrificing defense in favor of a flurry of blows being rained down on your opponent.",
+  "already": false,
+  "vi": "Được rèn trong sức nóng thiêu đốt của địa ngục và thấm đẫm tinh chất cùng hài cốt của quỷ dữ, vũ khí này có độ bền phi tự nhiên và tỏa ra cảm giác bất an. Cặp rìu được cân bằng hoàn hảo để cầm cả hai cùng lúc, hy sinh phòng thủ để trút một loạt đòn liên hoàn lên đối thủ."
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344606_FirstModifier",
+  "en": "Shieldsmash",
+  "already": false,
+  "vi": "Đập Khiên"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344607_Name",
+  "en": "Blighted Spear",
+  "already": false,
+  "vi": "Giáo Ô Uế"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344607_ShortDesc",
+  "en": "A wicked looking pike shaped from the femurs of a demon from the hells.",
+  "already": false,
+  "vi": "Một cây trường mâu trông hiểm ác, tạo hình từ xương đùi của một con quỷ địa ngục."
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344607_FirstModifier",
+  "en": "Reach",
+  "already": false,
+  "vi": "Tầm Với"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344608_Name",
+  "en": "Blighted Great Sword",
+  "already": false,
+  "vi": "Đại Kiếm Ô Uế"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344608_ShortDesc",
+  "en": "A wicked looking two-handed sword shaped from the spine of a demon from the hells.  ",
+  "already": false,
+  "vi": "Một thanh đại kiếm trông hiểm ác, tạo hình từ xương sống của một con quỷ địa ngục.  "
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344608_LongDesc",
+  "en": "Forged in the blistering heat of the hells and infused with the essence and remains of demons, this weapon has an unnatural resilience and emanates a disconcerting feeling.\n\nGreat swords are faster than many other two-handed weapons, and their great reach makes them ideal for fending off groups of opponents.",
+  "already": false,
+  "vi": "Được rèn trong sức nóng thiêu đốt của địa ngục và thấm đẫm tinh chất cùng hài cốt của quỷ dữ, vũ khí này có độ bền phi tự nhiên và tỏa ra cảm giác bất an.\n\nĐại kiếm nhanh hơn nhiều vũ khí hai tay khác, và tầm với dài khiến chúng lý tưởng để chống lại nhóm kẻ địch."
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344608_FirstModifier",
+  "en": "Cripple",
+  "already": false,
+  "vi": "Gây Què"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344609_Name",
+  "en": "Hellforge Spear",
+  "already": false,
+  "vi": "Giáo Lò Rèn Địa Ngục"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344609_ShortDesc",
+  "en": "A spear crafted of a dull, grey metal that radiates with intense heat. ",
+  "already": false,
+  "vi": "Một cây giáo làm từ kim loại xám xỉn, tỏa ra sức nóng dữ dội. "
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344609_FirstModifier",
+  "en": "Reach",
+  "already": false,
+  "vi": "Tầm Với"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344609_SecondModifier",
+  "en": "Exhausting",
+  "already": false,
+  "vi": "Gây Kiệt Sức"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344625_Name",
+  "en": "Weapon Schematic (Blighted Axe)",
+  "already": false,
+  "vi": "Bản Thiết Kế Vũ Khí (Rìu Ô Uế)"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344625_ShortDesc",
+  "en": "A schematic for a weapon",
+  "already": false,
+  "vi": "Bản thiết kế một loại vũ khí"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344625_LongDesc",
+  "en": "Studying this crafting schematic will unlock the ability to craft a weapon.",
+  "already": false,
+  "vi": "Nghiên cứu bản thiết kế này sẽ mở khóa khả năng chế tạo một loại vũ khí."
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344626_ShortDesc",
+  "en": "A schematic for a weapon",
+  "already": false,
+  "vi": "Bản thiết kế một loại vũ khí"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344626_LongDesc",
+  "en": "Studying this crafting schematic will unlock the ability to craft a weapon.",
+  "already": false,
+  "vi": "Nghiên cứu bản thiết kế này sẽ mở khóa khả năng chế tạo một loại vũ khí."
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344627_ShortDesc",
+  "en": "A schematic for a weapon",
+  "already": false,
+  "vi": "Bản thiết kế một loại vũ khí"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344627_LongDesc",
+  "en": "Studying this crafting schematic will unlock the ability to craft a weapon.",
+  "already": false,
+  "vi": "Nghiên cứu bản thiết kế này sẽ mở khóa khả năng chế tạo một loại vũ khí."
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344628_ShortDesc",
+  "en": "A schematic for a weapon",
+  "already": false,
+  "vi": "Bản thiết kế một loại vũ khí"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344628_LongDesc",
+  "en": "Studying this crafting schematic will unlock the ability to craft a weapon.",
+  "already": false,
+  "vi": "Nghiên cứu bản thiết kế này sẽ mở khóa khả năng chế tạo một loại vũ khí."
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344650_Name",
+  "en": "Call of the Valkyrie",
+  "already": false,
+  "vi": "Tiếng Gọi Của Valkyrie"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344650_ShortDesc",
+  "en": "An ornate horn to call upon Ymirs favor",
+  "already": false,
+  "vi": "Một chiếc tù và chạm trổ để cầu xin ân huệ của Ymir"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344650_LongDesc",
+  "en": "Blowing this horn will summon a Lesser Valkyrie to your side. Once the horn has been sounded, an unbreakable bond is crafted.",
+  "already": false,
+  "vi": "Thổi tù và này sẽ triệu hồi một Valkyrie Thấp Cấp đến bên bạn. Khi tiếng tù và đã vang lên, một mối liên kết không thể phá vỡ được tạo ra."
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344651_Name",
+  "en": "Ymir Plushie",
+  "already": false,
+  "vi": "Thú Bông Ymir"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344651_ShortDesc",
+  "en": "Using this plushie will call on the favor of Ymir for comfort",
+  "already": false,
+  "vi": "Dùng thú bông này để cầu ân huệ của Ymir che chở"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344651_LongDesc",
+  "en": "Aww, use this cute, cuddly little guy to hide from Minevra, so that her minions cannot find you in the night. Night Terrors ambushes will be disabled.",
+  "already": false,
+  "vi": "Ôi, dùng bé bông dễ thương này để trốn khỏi Minevra, để tay sai của bà ta không tìm thấy bạn trong đêm. Phục kích Night Terrors sẽ bị tắt."
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344652_Name",
+  "en": "Idol of Minevra",
+  "already": false,
+  "vi": "Tượng Thần Minevra"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344652_ShortDesc",
+  "en": "A dark relic that calls Minevra’s attention to your soul",
+  "already": false,
+  "vi": "Một di vật hắc ám thu hút sự chú ý của Minevra tới linh hồn bạn"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344652_LongDesc",
+  "en": "Use this idol to draw the attention of Minevra, the Pale Mother, allowing her minions to once again find you in the night. Night Terrors ambushes will be enabled.",
+  "already": false,
+  "vi": "Dùng tượng thần này để thu hút sự chú ý của Minevra, Người Mẹ Nhợt Nhạt, cho tay sai của bà ta lại tìm thấy bạn trong đêm. Phục kích Night Terrors sẽ được bật."
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344653_Name",
+  "en": "Derketo Plushie",
+  "already": false,
+  "vi": "Thú Bông Derketo"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344653_ShortDesc",
+  "en": "Using this plushie will call on the favor of Derketo for comfort",
+  "already": false,
+  "vi": "Dùng thú bông này để cầu ân huệ của Derketo che chở"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344653_LongDesc",
+  "en": "Aww, use this cute, cuddly little ... demon ... to hide from Minevra, so that her minions cannot find you in the night. Night Terrors ambushes will be disabled.",
+  "already": false,
+  "vi": "Ôi, dùng bé ... quỷ ... bông dễ thương này để trốn khỏi Minevra, để tay sai của bà ta không tìm thấy bạn trong đêm. Phục kích Night Terrors sẽ bị tắt."
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344654_Name",
+  "en": "Teddy Bear",
+  "already": false,
+  "vi": "Gấu Bông"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344654_ShortDesc",
+  "en": "Using this teddy bear will call on the favor of Mitra for comfort",
+  "already": false,
+  "vi": "Dùng gấu bông này để cầu ân huệ của Mitra che chở"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344654_LongDesc",
+  "en": "Aww, use this cute, cuddly little guy to hide from Minevra, so that her minions cannot find you in the night. Night Terrors ambushes will be disabled.",
+  "already": false,
+  "vi": "Ôi, dùng bé bông dễ thương này để trốn khỏi Minevra, để tay sai của bà ta không tìm thấy bạn trong đêm. Phục kích Night Terrors sẽ bị tắt."
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344655_Name",
+  "en": "Jhebbal Sag Plushie",
+  "already": false,
+  "vi": "Thú Bông Jhebbal Sag"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344655_ShortDesc",
+  "en": "Using this plushie will call on the favor of Jhebbal Sag for comfort",
+  "already": false,
+  "vi": "Dùng thú bông này để cầu ân huệ của Jhebbal Sag che chở"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344655_LongDesc",
+  "en": "Aww, use this cute, cuddly little guy to hide from Minevra, so that her minions cannot find you in the night. Night Terrors ambushes will be disabled.",
+  "already": false,
+  "vi": "Ôi, dùng bé bông dễ thương này để trốn khỏi Minevra, để tay sai của bà ta không tìm thấy bạn trong đêm. Phục kích Night Terrors sẽ bị tắt."
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344656_Name",
+  "en": "Set Plushie",
+  "already": false,
+  "vi": "Thú Bông Set"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344656_ShortDesc",
+  "en": "Using this plushie will call on the favor of Set for comfort",
+  "already": false,
+  "vi": "Dùng thú bông này để cầu ân huệ của Set che chở"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344656_LongDesc",
+  "en": "Aww, use this cute, cuddly little guy to hide from Minevra, so that her minions cannot find you in the night. Night Terrors ambushes will be disabled.",
+  "already": false,
+  "vi": "Ôi, dùng bé bông dễ thương này để trốn khỏi Minevra, để tay sai của bà ta không tìm thấy bạn trong đêm. Phục kích Night Terrors sẽ bị tắt."
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344657_Name",
+  "en": "Yog Plushie",
+  "already": false,
+  "vi": "Thú Bông Yog"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344657_ShortDesc",
+  "en": "Using this plushie will call on the favor of Yog for comfort",
+  "already": false,
+  "vi": "Dùng thú bông này để cầu ân huệ của Yog che chở"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344657_LongDesc",
+  "en": "Aww, use this cute, cuddly little guy to hide from Minevra, so that her minions cannot find you in the night. Night Terrors ambushes will be disabled.",
+  "already": false,
+  "vi": "Ôi, dùng bé bông dễ thương này để trốn khỏi Minevra, để tay sai của bà ta không tìm thấy bạn trong đêm. Phục kích Night Terrors sẽ bị tắt."
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344658_Name",
+  "en": "Zath Plushie",
+  "already": false,
+  "vi": "Thú Bông Zath"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344658_ShortDesc",
+  "en": "Using this plushie will call on the favor of Zath for comfort",
+  "already": false,
+  "vi": "Dùng thú bông này để cầu ân huệ của Zath che chở"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344658_LongDesc",
+  "en": "Aww, use this cute, cuddly little guy to hide from Minevra, so that her minions cannot find you in the night. Night Terrors ambushes will be disabled.",
+  "already": false,
+  "vi": "Ôi, dùng bé bông dễ thương này để trốn khỏi Minevra, để tay sai của bà ta không tìm thấy bạn trong đêm. Phục kích Night Terrors sẽ bị tắt."
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344659_Name",
+  "en": "Idol of Minevra",
+  "already": false,
+  "vi": "Tượng Thần Minevra"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344659_ShortDesc",
+  "en": "A dark relic that calls Minevra’s attention to your soul",
+  "already": false,
+  "vi": "Một di vật hắc ám thu hút sự chú ý của Minevra tới linh hồn bạn"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344659_LongDesc",
+  "en": "Use this idol to draw the attention of Minevra, the Pale Mother, allowing her minions to once again find you in the night. Night Terrors ambushes will be enabled.",
+  "already": false,
+  "vi": "Dùng tượng thần này để thu hút sự chú ý của Minevra, Người Mẹ Nhợt Nhạt, cho tay sai của bà ta lại tìm thấy bạn trong đêm. Phục kích Night Terrors sẽ được bật."
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344660_Name",
+  "en": "Idol of Minevra",
+  "already": false,
+  "vi": "Tượng Thần Minevra"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344660_ShortDesc",
+  "en": "A dark relic that calls Minevra’s attention to your soul",
+  "already": false,
+  "vi": "Một di vật hắc ám thu hút sự chú ý của Minevra tới linh hồn bạn"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344660_LongDesc",
+  "en": "Use this idol to draw the attention of Minevra, the Pale Mother, allowing her minions to once again find you in the night. Night Terrors ambushes will be enabled.",
+  "already": false,
+  "vi": "Dùng tượng thần này để thu hút sự chú ý của Minevra, Người Mẹ Nhợt Nhạt, cho tay sai của bà ta lại tìm thấy bạn trong đêm. Phục kích Night Terrors sẽ được bật."
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344661_Name",
+  "en": "Idol of Minevra",
+  "already": false,
+  "vi": "Tượng Thần Minevra"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344661_ShortDesc",
+  "en": "A dark relic that calls Minevra’s attention to your soul",
+  "already": false,
+  "vi": "Một di vật hắc ám thu hút sự chú ý của Minevra tới linh hồn bạn"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344661_LongDesc",
+  "en": "Use this idol to draw the attention of Minevra, the Pale Mother, allowing her minions to once again find you in the night. Night Terrors ambushes will be enabled.",
+  "already": false,
+  "vi": "Dùng tượng thần này để thu hút sự chú ý của Minevra, Người Mẹ Nhợt Nhạt, cho tay sai của bà ta lại tìm thấy bạn trong đêm. Phục kích Night Terrors sẽ được bật."
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344662_Name",
+  "en": "Idol of Minevra",
+  "already": false,
+  "vi": "Tượng Thần Minevra"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344662_ShortDesc",
+  "en": "A dark relic that calls Minevra’s attention to your soul",
+  "already": false,
+  "vi": "Một di vật hắc ám thu hút sự chú ý của Minevra tới linh hồn bạn"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344662_LongDesc",
+  "en": "Use this idol to draw the attention of Minevra, the Pale Mother, allowing her minions to once again find you in the night. Night Terrors ambushes will be enabled.",
+  "already": false,
+  "vi": "Dùng tượng thần này để thu hút sự chú ý của Minevra, Người Mẹ Nhợt Nhạt, cho tay sai của bà ta lại tìm thấy bạn trong đêm. Phục kích Night Terrors sẽ được bật."
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344663_Name",
+  "en": "Idol of Minevra",
+  "already": false,
+  "vi": "Tượng Thần Minevra"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344663_ShortDesc",
+  "en": "A dark relic that calls Minevra’s attention to your soul",
+  "already": false,
+  "vi": "Một di vật hắc ám thu hút sự chú ý của Minevra tới linh hồn bạn"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344663_LongDesc",
+  "en": "Use this idol to draw the attention of Minevra, the Pale Mother, allowing her minions to once again find you in the night. Night Terrors ambushes will be enabled.",
+  "already": false,
+  "vi": "Dùng tượng thần này để thu hút sự chú ý của Minevra, Người Mẹ Nhợt Nhạt, cho tay sai của bà ta lại tìm thấy bạn trong đêm. Phục kích Night Terrors sẽ được bật."
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344664_Name",
+  "en": "Idol of Minevra",
+  "already": false,
+  "vi": "Tượng Thần Minevra"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344664_ShortDesc",
+  "en": "A dark relic that calls Minevra’s attention to your soul",
+  "already": false,
+  "vi": "Một di vật hắc ám thu hút sự chú ý của Minevra tới linh hồn bạn"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344664_LongDesc",
+  "en": "Use this idol to draw the attention of Minevra, the Pale Mother, allowing her minions to once again find you in the night. Night Terrors ambushes will be enabled.",
+  "already": false,
+  "vi": "Dùng tượng thần này để thu hút sự chú ý của Minevra, Người Mẹ Nhợt Nhạt, cho tay sai của bà ta lại tìm thấy bạn trong đêm. Phục kích Night Terrors sẽ được bật."
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344690_Name",
+  "en": "Demon Bone",
+  "already": false,
+  "vi": "Xương Quỷ"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344690_ShortDesc",
+  "en": "Bones rife with the foul blight of the hells",
+  "already": false,
+  "vi": "Những khúc xương đầy rẫy dịch bệnh ô uế của địa ngục"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344690_LongDesc",
+  "en": "These bones emenate great evil and remain hot to the touch..\n",
+  "already": false,
+  "vi": "Những khúc xương này tỏa ra tà khí khủng khiếp và vẫn nóng khi chạm vào..\n"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344691_Name",
+  "en": "Demon Essence",
+  "already": false,
+  "vi": "Tinh Chất Quỷ"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344691_ShortDesc",
+  "en": "This unearthly substance defies description.",
+  "already": false,
+  "vi": "Thứ vật chất phi trần thế này không thể mô tả."
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344691_LongDesc",
+  "en": "Taken from a demonic entity that was out of place in this reality, this object defies simple description. It seems to struggle against classification, an unstable form that ripples against the very fabric of time and space.",
+  "already": false,
+  "vi": "Lấy từ một thực thể quỷ dữ vốn không thuộc về thực tại này, vật này không thể mô tả đơn giản. Nó dường như chống lại mọi cách phân loại, một hình dạng bất ổn gợn sóng trên chính kết cấu của thời gian và không gian."
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344692_Name",
+  "en": "Sigil of Minevra",
+  "already": false,
+  "vi": "Ấn Ký Minevra"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344692_ShortDesc",
+  "en": "A symbol of the demon queen Minevra, the Pale Mother",
+  "already": false,
+  "vi": "Biểu tượng của nữ hoàng quỷ Minevra, Người Mẹ Nhợt Nhạt"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344693_Name",
+  "en": "Hellforge Steel",
+  "already": false,
+  "vi": "Thép Lò Rèn Địa Ngục"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344693_ShortDesc",
+  "en": "An alloy created from some mysterious unknown ore",
+  "already": false,
+  "vi": "Một hợp kim làm từ loại quặng bí ẩn chưa ai biết"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_ItemTable_101344693_LongDesc",
+  "en": "This forged ingot seems to put thoughts in the mind when touched and emanates unsettling feelings.\n\nAll of this aside, it seems impossible to work and will require someone with more knowledge to craft with.",
+  "already": false,
+  "vi": "Thỏi kim loại rèn này dường như gieo ý nghĩ vào đầu khi chạm vào và tỏa ra cảm giác bất an.\n\nBỏ qua tất cả những điều đó, nó dường như không thể gia công và cần người hiểu biết hơn mới chế tác được."
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_SpawnDataTable_DeviousMirth_NightTerrors_BloodDefiler_Name",
+  "en": "Blood Defiler",
+  "already": false,
+  "vi": "Kẻ Làm Ô Uế Máu"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_SpawnDataTable_DeviousMirth_NightTerrors_BloodDefiler_V2_Name",
+  "en": "Blood Defiler Elite",
+  "already": false,
+  "vi": "Kẻ Làm Ô Uế Máu Tinh Nhuệ"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_SpawnDataTable_DeviousMirth_NightTerrors_BloodMoonBeast_Albino_Name",
+  "en": "Blood-Moon Demon",
+  "already": false,
+  "vi": "Quỷ Trăng Máu"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_SpawnDataTable_DeviousMirth_NightTerrors_BloodMoonBeast_Flesh_Name",
+  "en": "Blood-Moon Demon",
+  "already": false,
+  "vi": "Quỷ Trăng Máu"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_SpawnDataTable_DeviousMirth_NightTerrors_DevolvedFiend_Name",
+  "en": "Degenerate Fiend",
+  "already": false,
+  "vi": "Ác Quỷ Thoái Hóa"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_SpawnDataTable_DeviousMirth_NightTerrors_DevolvedFiend_V2_Name",
+  "en": "Degenerate Fiend",
+  "already": false,
+  "vi": "Ác Quỷ Thoái Hóa"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_SpawnDataTable_DeviousMirth_NightTerrors_BloodlessHusk_Name",
+  "en": "Bloodless Husk",
+  "already": false,
+  "vi": "Xác Khô Không Máu"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_SpawnDataTable_DeviousMirth_NightTerrors_Yakith_Name",
+  "en": "Yakith",
+  "already": false,
+  "vi": "Yakith"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_SpawnDataTable_DeviousMirth_NightTerrors_Ghoul_Demon_Name",
+  "en": "Blood Ghoul",
+  "already": false,
+  "vi": "Ma Cà Rồng Máu"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_SpawnDataTable_DeviousMirth_NightTerrors_Ghoul_Demon_V2_Name",
+  "en": "Flesh Ghoul",
+  "already": false,
+  "vi": "Ma Cà Rồng Thịt"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_SpawnDataTable_DeviousMirth_NightTerrors_ShaggaiHuntress_DarkBluePurple_Name",
+  "en": "Shaggai Huntress",
+  "already": false,
+  "vi": "Nữ Thợ Săn Shaggai"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_SpawnDataTable_DeviousMirth_NightTerrors_ShaggaiHuntress_RedFlesh_Name",
+  "en": "Shaggai Huntress",
+  "already": false,
+  "vi": "Nữ Thợ Săn Shaggai"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_SpawnDataTable_DeviousMirth_NightTerrors_Silent_Legion_Warrior_4_Name",
+  "en": "Silent Legion Warrior",
+  "already": false,
+  "vi": "Chiến Binh Đạo Quân Câm Lặng"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_SpawnDataTable_DeviousMirth_NightTerrors_Silent_Legion_Warrior_1_Name",
+  "en": "Silent Legion Warrior",
+  "already": false,
+  "vi": "Chiến Binh Đạo Quân Câm Lặng"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_SpawnDataTable_DeviousMirth_NightTerrors_Silent_Legion_Warrior_2_Name",
+  "en": "Silent Legion Warrior",
+  "already": false,
+  "vi": "Chiến Binh Đạo Quân Câm Lặng"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_SpawnDataTable_DeviousMirth_NightTerrors_Silent_Legion_Warrior_3_Name",
+  "en": "Silent Legion Warrior",
+  "already": false,
+  "vi": "Chiến Binh Đạo Quân Câm Lặng"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_SpawnDataTable_DeviousMirth_NightTerrors_TchoTcho_Orange_Name",
+  "en": "TchoTcho Orange",
+  "already": false,
+  "vi": "TchoTcho Cam"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_SpawnDataTable_DeviousMirth_NightTerrors_TchoTcho_Lama_Name",
+  "en": "TchoTcho Lama",
+  "already": false,
+  "vi": "TchoTcho Lama"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_SpawnDataTable_DeviousMirth_NightTerrors_TchoTcho_Red_Name",
+  "en": "TchoTcho Red",
+  "already": false,
+  "vi": "TchoTcho Đỏ"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_SpawnDataTable_DeviousMirth_NightTerrors_YmirValkyrie_Name",
+  "en": "Lesser Valkyrie",
+  "already": false,
+  "vi": "Valkyrie Thấp Cấp"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_SpawnDataTable_DeviousMirth_NightTerrors_CorruptedValkyrie_Name",
+  "en": "Corrupted Valkyrie",
+  "already": false,
+  "vi": "Valkyrie Bị Tha Hóa"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_SpawnDataTable_DeviousMirth_NightTerrors_CorruptedKinarra_Name",
+  "en": "Kinarra the Blight-Dancer",
+  "already": false,
+  "vi": "Kinarra Vũ Công Ô Uế"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_SpawnDataTable_DeviousMirth_NightTerrors_CorruptedAleatha_Name",
+  "en": "Aleatha the Blight-Singer",
+  "already": false,
+  "vi": "Aleatha Ca Sĩ Ô Uế"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_SpawnDataTable_DeviousMirth_NightTerrors_DemonSpider_Name",
+  "en": "Demon Spider",
+  "already": false,
+  "vi": "Nhện Quỷ"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_SpawnDataTable_DeviousMirth_NightTerrors_Imp_Name",
+  "en": "Imp",
+  "already": false,
+  "vi": "Quỷ Nhỏ"
+ },
+ {
+  "ns": "",
+  "key": "DT_NightTerrors_SpawnDataTable_DeviousMirth_NightTerrors_ImpExplosive_Name",
+  "en": "Exploding Imp",
+  "already": false,
+  "vi": "Quỷ Nhỏ Phát Nổ"
+ }
+]

@@ -1,0 +1,764 @@
+[
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_203917001_Name",
+  "en": "XX_Spider_bc_1",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_203917001_ShortDesc",
+  "en": "XX_Spider_bc_1",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_203917001_LongDesc",
+  "en": "XX_Spider_bc_1",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_203917002_Name",
+  "en": "XX_Spider_bc_2",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_203917002_ShortDesc",
+  "en": "XX_Spider_bc_2",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_203917002_LongDesc",
+  "en": "XX_Spider_bc_2",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_203917003_Name",
+  "en": "XX_Spider_Bite",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_203917003_ShortDesc",
+  "en": "XX_Spider_Bite",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_203917003_LongDesc",
+  "en": "XX_Spider_Bite",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_203917004_Name",
+  "en": "XX_Spider_Dash_Bite",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_203917004_ShortDesc",
+  "en": "XX_Spider_Dash_Bite",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_203917004_LongDesc",
+  "en": "XX_Spider_Dash_Bite",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_203917005_Name",
+  "en": "XX_Spider_Web_Dashback",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_203917005_ShortDesc",
+  "en": "XX_Spider_Web_Dashback",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_203917005_LongDesc",
+  "en": "XX_Spider_Web_Dashback",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_203917006_Name",
+  "en": "XX_Spider_VenomLauncher",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_203917006_ShortDesc",
+  "en": "XX_Spider_VenomLauncher",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_203917006_LongDesc",
+  "en": "XX_Spider_VenomLauncher",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_203917007_Name",
+  "en": "XX_Spider_Web",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_203917007_ShortDesc",
+  "en": "XX_Spider_Web",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_203917007_LongDesc",
+  "en": "XX_Spider_Web",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_203917008_Name",
+  "en": "XX_Spider_Reposition_Tarantula_Back",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_203917008_ShortDesc",
+  "en": "XX_Spider_Reposition_Left",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_203917008_LongDesc",
+  "en": "XX_Spider_Reposition_Left",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_203917009_Name",
+  "en": "XX_Spider_Reposition_Tarantula_Sides",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_203917009_ShortDesc",
+  "en": "XX_Spider_Reposition_Back",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_203917009_LongDesc",
+  "en": "XX_Spider_Reposition_Back",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_203917010_Name",
+  "en": "XX_RhinoBlack_bc_1",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_203917010_ShortDesc",
+  "en": "XX_RhinoBlack_bc_1",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_203917010_LongDesc",
+  "en": "XX_RhinoBlack_bc_1",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_203917011_Name",
+  "en": "XX_RhinoBlack_bc_2",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_203917011_ShortDesc",
+  "en": "XX_RhinoBlack_bc_2",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_203917011_LongDesc",
+  "en": "XX_RhinoBlack_bc_2",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_203917012_Name",
+  "en": "XX_RhinoBlack_bc_3",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_203917012_ShortDesc",
+  "en": "XX_RhinoBlack_bc_3",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_203917012_LongDesc",
+  "en": "XX_RhinoBlack_bc_3",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_203917013_Name",
+  "en": "XX_RhinoBlack_charge_1",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_203917013_ShortDesc",
+  "en": "XX_RhinoBlack_charge_1",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_203917013_LongDesc",
+  "en": "XX_RhinoBlack_charge_1",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_203917014_Name",
+  "en": "xx_horse_bc_1",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_203917015_Name",
+  "en": "xx_horse_bc_2",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_203917016_Name",
+  "en": "XX_DemonSpider_left",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_203917016_ShortDesc",
+  "en": "XX_DemonSpider_left",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_203917016_LongDesc",
+  "en": "XX_DemonSpider_left",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_203917017_Name",
+  "en": "XX_DemonSpider_Right",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_203917017_ShortDesc",
+  "en": "XX_DemonSpider_Right",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_203917017_LongDesc",
+  "en": "XX_DemonSpider_Right",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_203917018_Name",
+  "en": "XX_DemonSpider_Mid",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_203917018_ShortDesc",
+  "en": "XX_DemonSpider_Mid",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_203917018_LongDesc",
+  "en": "XX_DemonSpider_Mid",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_203917019_Name",
+  "en": "XX_DemonSpider_Special_Poison",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_203917019_ShortDesc",
+  "en": "XX_DemonSpider_Special_Poison",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_203917019_LongDesc",
+  "en": "XX_DemonSpider_Special_Poison",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_203917020_Name",
+  "en": "XX_DemonSpider_Special_Web",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_203917020_ShortDesc",
+  "en": "XX_DemonSpider_Special_Web",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_203917020_LongDesc",
+  "en": "XX_DemonSpider_Special_Web",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_20664_Name",
+  "en": "XX_Wild_Boar_Boss_bc_1",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_20664_ShortDesc",
+  "en": "XX_Wild_Boar_Boss_bc_1",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_20664_LongDesc",
+  "en": "XX_Wild_Boar_Boss_bc_1",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_20665_Name",
+  "en": "XX_Wild_Boar_Boss_bc_2",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_20665_ShortDesc",
+  "en": "XX_Wild_Boar_Boss_bc_1",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_20665_LongDesc",
+  "en": "XX_Wild_Boar_Boss_bc_1",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_20666_Name",
+  "en": "XX_Wild_Boar_Boss_charge",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_20666_ShortDesc",
+  "en": "XX_Wild_Boar_Boss_bc_1",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_20666_LongDesc",
+  "en": "XX_Wild_Boar_Boss_bc_1",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_20669_Name",
+  "en": "XX_Wild_Boar_Boss_taunt",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_20669_ShortDesc",
+  "en": "XX_Wild_Boar_taunt",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_ItemTable_Ambush_20669_LongDesc",
+  "en": "XX_Wild_Boar_taunt",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_SpawnDataTable_Ambush_Witch_Queen_Statue_Ambush_Name",
+  "en": "Protector Statues",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_SpawnDataTable_Ambush_Witch_Queen_Ambush_Name",
+  "en": "Witch Queen",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_SpawnDataTable_Ambush_Wildlife_Miniboss_KappaRed_Ambush_Name",
+  "en": "Black Shaleback",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_SpawnDataTable_Ambush_Wildlife_Miniboss_ReptileCrocodile_Ambush_Name",
+  "en": "Large Crocodile",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_SpawnDataTable_Ambush_Wildlife_Miniboss_HyenaAlpha_Ambush_Name",
+  "en": "Large Hyena",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_SpawnDataTable_Ambush_Wildlife_SpiderCorrupted_Blue_Ambush_Name",
+  "en": "Corrupted Spider",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_SpawnDataTable_Ambush_Wildlife_SpiderCorrupted_Green_Ambush_Name",
+  "en": "Corrupted Spider",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_SpawnDataTable_Ambush_Wildlife_SpiderCorrupted_Red_Ambush_Name",
+  "en": "Corrupted Spider",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_SpawnDataTable_Ambush_Wildlife_SpiderCorrupted_Purple_Ambush_Name",
+  "en": "Corrupted Spider",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_SpawnDataTable_Ambush_Wildlife_SpiderCourrupted_Glowing_Blue_Name",
+  "en": "Corrupted Glowing Spider",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_SpawnDataTable_Ambush_Wildlife_SpiderCourrupted_Glowing_Green_Name",
+  "en": "Corrupted Glowing Spider",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_SpawnDataTable_Ambush_Wildlife_SpiderCourrupted_Glowing_Red_Name",
+  "en": "Corrupted Glowing Spider",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_SpawnDataTable_Ambush_Wildlife_SpiderCourrupted_Glowing_Purple_Name",
+  "en": "Corrupted Glowing Spider",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_SpawnDataTable_Ambush_Wildlife_Miniboss_JungleBird_Grey_Ambush_Name",
+  "en": "Large Shoebill",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_SpawnDataTable_Ambush_Wildlife_Miniboss_Rocknose_Ambush_Name",
+  "en": "Large Rocknose",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_SpawnDataTable_Ambush_Wildlife_Rocknose_King_Molten_Ambush_Name",
+  "en": "Living Magma",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_SpawnDataTable_Ambush_Wildlife_Rocknose_King_Ice_Ambush_Name",
+  "en": "Mini Avalanche",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_SpawnDataTable_Ambush_Wildlife_Rocknose_King_Ambush_Name",
+  "en": "Mini Mountain",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_SpawnDataTable_Ambush_Wildlife_Rocknose_King_Boss_Ambush_Name",
+  "en": "Mini Rockslide",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_SpawnDataTable_Ambush_Wildlife_Rocknose_King_Moss_Ambush_Name",
+  "en": "Moss Rocknose",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_SpawnDataTable_Ambush_Wildlife_Miniboss_GorillaSilverback_Ambush_Name",
+  "en": "Gorilla Silverback",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_SpawnDataTable_Ambush_Wildlife_RhinoBlack_Ambush_Name",
+  "en": "Black Rhino",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_SpawnDataTable_Ambush_Wildlife_DemonRhino_Ambush_Name",
+  "en": "Demon Rhino",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_SpawnDataTable_Ambush_Wildlife_DemonRhino_Elite_Ambush_Name",
+  "en": "Demon Rhino",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_SpawnDataTable_Ambush_Wildlife_BatDemonWhite_Ambush_Name",
+  "en": "White Death",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_SpawnDataTable_Ambush_Wildlife_Horse_Demon_Ambush_Name",
+  "en": "Abyssal Steed",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_SpawnDataTable_Ambush_Wildlife_DemonSpider_Ambush_Name",
+  "en": "Demon Spider",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_SpawnDataTable_Ambush_Wildlife_ImpKing_Ambush_Name",
+  "en": "Imp King",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_SpawnDataTable_Ambush_Wildlife_Wild_Boar_Ambush_Name",
+  "en": "Large Wild Boar",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_SpawnDataTable_Ambush_Wildlife_Wild_Boar_HighTier_Ambush_Name",
+  "en": "Large Wild Boar",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_SpawnDataTable_Ambush_Wildlife_Serpentmen_Warrior_Low_Ambush_Name",
+  "en": "Serpentman Hordeling",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_SpawnDataTable_Ambush_DungeonSag_Wildlife_PantherBoss_Ambush_Name",
+  "en": "Panther",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_SpawnDataTable_Ambush_Wildlife_Large_Jaguar_Ambush_Name",
+  "en": "Large Jaguar",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_SpawnDataTable_Ambush_Wildlife_Large_Tiger_Ambush_Name",
+  "en": "Large Tiger",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_SpawnDataTable_Ambush_Wildlife_Large_Locust_Ambush_Name",
+  "en": "Large Sand Reaper",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_SpawnDataTable_Ambush_Wildlife_Elephant_Ambush_Name",
+  "en": "Elephant",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_SpawnDataTable_Ambush_Wildlife_Elephant_Elite_Ambush_Name",
+  "en": "Elephant",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_SpawnDataTable_Ambush_Event_Gods_JS_Hunter_5_Ambush_Name",
+  "en": "Venerable Hunter",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_SpawnDataTable_Ambush_Wildlife_Large_Bear_Brown_Ambush_Name",
+  "en": "Demonic Bear",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_SpawnDataTable_Ambush_Wildlife_Greater_Bear_Brown_Ambush_Name",
+  "en": "Greater Bear",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_SpawnDataTable_Ambush_Wildlife_Large_Wolf_Ambush_Name",
+  "en": "Demonic Wolf",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_SpawnDataTable_Ambush_DungeonSag_WerewolfBoss_Ambush_Name",
+  "en": "Werewolf",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_SpawnDataTable_Ambush_Wildlife_Large_Children_of_Jhil_Ambush_Name",
+  "en": "Black Child of Jhil",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_SpawnDataTable_Ambush_Wildlife_Crocodile_Giant_Tomb_Ambush_Name",
+  "en": "Giant Crocodile",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_SpawnDataTable_Ambush_Wildlife_CrocodileAlpha_Ambush_Name",
+  "en": "Demonic Crocodile",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_SpawnDataTable_Ambush_Wildlife_Mammoth_Ambush_Name",
+  "en": "Mammoth",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_SpawnDataTable_Ambush_Wildlife_Mammoth_Alpha_Ambush_Name",
+  "en": "Mammoth",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_SpawnDataTable_Ambush_Wildlife_Serpentmen_Boss_Slaver_Ambush_Name",
+  "en": "Keeper of the Larder",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_SpawnDataTable_Ambush_Wildlife_Serpentment_Brute_Ambush_Name",
+  "en": "Serpentman Brute",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_SpawnDataTable_Ambush_Wildlife_Frost_Giant_Bodyguard_Ambush_Name",
+  "en": "Frost Giant Bodyguard",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_SpawnDataTable_Ambush_Wildlife_SabretoothAlpha_Ambush_Name",
+  "en": "Demonic Sabretooth",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_SpawnDataTable_Ambush_Wildlife_Large_Sabretooth_Ambush_Name",
+  "en": "Demonic Sabretooth",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_SpawnDataTable_Ambush_Wildlife_DragonGreenHatchling_Ambush_Name",
+  "en": "Dragon Hatchling",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_SpawnDataTable_Ambush_Wildlife_DragonRedHatchling_Ambush_Name",
+  "en": "Dragon Hatchling",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_SpawnDataTable_Ambush_Wildlife_DragonWhiteHatchling_Ambush_Name",
+  "en": "Dragon Hatchling",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_SpawnDataTable_Ambush_Wildlife_Lion_White_Ambush_Name",
+  "en": "White Lion",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_SpawnDataTable_Ambush_Wildlife_Yeti_Ambush_Name",
+  "en": "Yeti",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_SpawnDataTable_Ambush_Wildlife_Elite_Yeti_Ambush_Name",
+  "en": "Yeti",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "DT_SpawnDataTable_Ambush_Wildlife_SnakeCobra_Name",
+  "en": "Cobra",
+  "already": false
+ }
+]

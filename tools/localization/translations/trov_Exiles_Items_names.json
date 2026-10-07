@@ -1,0 +1,554 @@
+[
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_14199_Name",
+  "en": "Asura's Glory",
+  "old": "Asura's Glory",
+  "vi": "Vinh Quang Asura"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_11021_Name",
+  "en": "Black Blood",
+  "old": "Black Blood",
+  "vi": "Máu Đen"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51613_Name",
+  "en": "Black Blood Hatchet",
+  "old": "Rìu Nhỏ Black Blood",
+  "vi": "Rìu Nhỏ Máu Đen"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51612_Name",
+  "en": "Black Blood Pick",
+  "old": "Cuốc Chim Black Blood",
+  "vi": "Cuốc Chim Máu Đen"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51614_Name",
+  "en": "Black Blood Sickle",
+  "old": "Liềm Black Blood",
+  "vi": "Liềm Máu Đen"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51615_Name",
+  "en": "Black Blood Skinning Knife",
+  "old": "Dao Lột Da Black Blood",
+  "vi": "Dao Lột Da Máu Đen"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_11086_Name",
+  "en": "Black Lotus Flower",
+  "old": "Hoa Black Lotus",
+  "vi": "Hoa Sen Đen"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_18291_Name",
+  "en": "Black Lotus Potion",
+  "old": "Thuốc Black Lotus",
+  "vi": "Thuốc Sen Đen"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_11087_Name",
+  "en": "Black Lotus Powder",
+  "old": "Bột Black Lotus",
+  "vi": "Bột Sen Đen"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_11088_Name",
+  "en": "Black Lotus Seeds",
+  "old": "Hạt Giống Black Lotus",
+  "vi": "Hạt Giống Sen Đen"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_10027_Name",
+  "en": "Blood Crystal",
+  "old": "Blood Crystal",
+  "vi": "Pha Lê Máu"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_11023_Name",
+  "en": "Blue Crystal",
+  "old": "Blue Crystal",
+  "vi": "Pha Lê Xanh Dương"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_11124_Name",
+  "en": "Crimson Lotus Flower",
+  "old": "Hoa Crimson Lotus",
+  "vi": "Hoa Sen Đỏ Thẫm"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_11125_Name",
+  "en": "Crimson Lotus Powder",
+  "old": "Bột Crimson Lotus",
+  "vi": "Bột Sen Đỏ Thẫm"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_11126_Name",
+  "en": "Crimson Lotus Seeds",
+  "old": "Hạt Giống Crimson Lotus",
+  "vi": "Hạt Giống Sen Đỏ Thẫm"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_44306_Name",
+  "en": "Crystalline Guardian Axe Arm",
+  "old": "Tay Rìu Hộ Vệ Crystal",
+  "vi": "Tay Rìu Hộ Vệ Pha Lê"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_44314_Name",
+  "en": "Crystalline Guardian Brimstone Head",
+  "old": "Đầu Hộ Vệ Crystal Lưu Huỳnh",
+  "vi": "Đầu Hộ Vệ Pha Lê Lưu Huỳnh"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_44316_Name",
+  "en": "Crystalline Guardian Brimstone Leg",
+  "old": "Chân Hộ Vệ Crystal Lưu Huỳnh",
+  "vi": "Chân Hộ Vệ Pha Lê Lưu Huỳnh"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_44315_Name",
+  "en": "Crystalline Guardian Brimstone Torso",
+  "old": "Thân Hộ Vệ Crystal Lưu Huỳnh",
+  "vi": "Thân Hộ Vệ Pha Lê Lưu Huỳnh"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_44304_Name",
+  "en": "Crystalline Guardian Empty Arm",
+  "old": "Tay Hộ Vệ Crystal Rỗng",
+  "vi": "Tay Hộ Vệ Pha Lê Rỗng"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_44301_Name",
+  "en": "Crystalline Guardian Head",
+  "old": "Đầu Hộ Vệ Crystal",
+  "vi": "Đầu Hộ Vệ Pha Lê"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_44303_Name",
+  "en": "Crystalline Guardian Leg",
+  "old": "Chân Hộ Vệ Crystal",
+  "vi": "Chân Hộ Vệ Pha Lê"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_44307_Name",
+  "en": "Crystalline Guardian Maul Arm",
+  "old": "Tay Chùy Lớn Hộ Vệ Crystal",
+  "vi": "Tay Chùy Lớn Hộ Vệ Pha Lê"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_44308_Name",
+  "en": "Crystalline Guardian Scythe Arm",
+  "old": "Tay Lưỡi Hái Hộ Vệ Crystal",
+  "vi": "Tay Lưỡi Hái Hộ Vệ Pha Lê"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_44305_Name",
+  "en": "Crystalline Guardian Sword Arm",
+  "old": "Tay Kiếm Hộ Vệ Crystal",
+  "vi": "Tay Kiếm Hộ Vệ Pha Lê"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_44311_Name",
+  "en": "Crystalline Guardian Tar Head",
+  "old": "Đầu Hộ Vệ Crystal Phủ Hắc Ín",
+  "vi": "Đầu Hộ Vệ Pha Lê Phủ Hắc Ín"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_44313_Name",
+  "en": "Crystalline Guardian Tar Leg",
+  "old": "Chân Hộ Vệ Crystal Phủ Hắc Ín",
+  "vi": "Chân Hộ Vệ Pha Lê Phủ Hắc Ín"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_44312_Name",
+  "en": "Crystalline Guardian Tar Torso",
+  "old": "Thân Hộ Vệ Crystal Phủ Hắc Ín",
+  "vi": "Thân Hộ Vệ Pha Lê Phủ Hắc Ín"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_44302_Name",
+  "en": "Crystalline Guardian Torso",
+  "old": "Thân Hộ Vệ Crystal",
+  "vi": "Thân Hộ Vệ Pha Lê"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_80327_Name",
+  "en": "Decorative Planter (Asura's Glory)",
+  "old": "Chậu Trang Trí (Asura's Glory)",
+  "vi": "Chậu Trang Trí (Vinh Quang Asura)"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_80320_Name",
+  "en": "Decorative Planter (Black Lotus)",
+  "old": "Chậu Trang Trí (Black Lotus)",
+  "vi": "Chậu Trang Trí (Sen Đen)"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_80317_Name",
+  "en": "Decorative Planter (Frost Lotus)",
+  "old": "Chậu Trang Trí (Frost Lotus)",
+  "vi": "Chậu Trang Trí (Sen Băng)"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_80321_Name",
+  "en": "Decorative Planter (Golden Lotus)",
+  "old": "Chậu Trang Trí (Golden Lotus)",
+  "vi": "Chậu Trang Trí (Sen Hoàng Kim)"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_80322_Name",
+  "en": "Decorative Planter (Grey Lotus)",
+  "old": "Chậu Trang Trí (Grey Lotus)",
+  "vi": "Chậu Trang Trí (Sen Xám)"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_80328_Name",
+  "en": "Decorative Planter (Midnight Blue)",
+  "old": "Chậu Trang Trí (Midnight Blue)",
+  "vi": "Chậu Trang Trí (Lam Nửa Đêm)"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_80319_Name",
+  "en": "Decorative Planter (Purple Lotus)",
+  "old": "Chậu Trang Trí (Purple Lotus)",
+  "vi": "Chậu Trang Trí (Sen Tím)"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_80318_Name",
+  "en": "Decorative Planter (Yellow Lotus)",
+  "old": "Chậu Trang Trí (Yellow Lotus)",
+  "vi": "Chậu Trang Trí (Sen Vàng)"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_11080_Name",
+  "en": "Frost Lotus Flower",
+  "old": "Hoa Frost Lotus",
+  "vi": "Hoa Sen Băng"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_18300_Name",
+  "en": "Frost Lotus Potion",
+  "old": "Thuốc Frost Lotus",
+  "vi": "Thuốc Sen Băng"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_11121_Name",
+  "en": "Frost Lotus Powder",
+  "old": "Bột Frost Lotus",
+  "vi": "Bột Sen Băng"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_11081_Name",
+  "en": "Frost Lotus Seeds",
+  "old": "Hạt Giống Frost Lotus",
+  "vi": "Hạt Giống Sen Băng"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_11089_Name",
+  "en": "Golden Lotus Flower",
+  "old": "Hoa Golden Lotus",
+  "vi": "Hoa Sen Hoàng Kim"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_18293_Name",
+  "en": "Golden Lotus Potion",
+  "old": "Thuốc Golden Lotus",
+  "vi": "Thuốc Sen Hoàng Kim"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_11123_Name",
+  "en": "Golden Lotus Powder",
+  "old": "Bột Golden Lotus",
+  "vi": "Bột Sen Hoàng Kim"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_11090_Name",
+  "en": "Golden Lotus Seeds",
+  "old": "Hạt Giống Golden Lotus",
+  "vi": "Hạt Giống Sen Hoàng Kim"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_11024_Name",
+  "en": "Green Crystal",
+  "old": "Green Crystal",
+  "vi": "Pha Lê Xanh Lá"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_11091_Name",
+  "en": "Grey Lotus Flower",
+  "old": "Hoa Grey Lotus",
+  "vi": "Hoa Sen Xám"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_18294_Name",
+  "en": "Grey Lotus Potion",
+  "old": "Thuốc Grey Lotus",
+  "vi": "Thuốc Sen Xám"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_11092_Name",
+  "en": "Grey Lotus Powder",
+  "old": "Bột Grey Lotus",
+  "vi": "Bột Sen Xám"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_11093_Name",
+  "en": "Grey Lotus Seeds",
+  "old": "Hạt Giống Grey Lotus",
+  "vi": "Hạt Giống Sen Xám"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_18032_Name",
+  "en": "Highland Berry Pulp",
+  "old": "Bã Quả Mọng Highland",
+  "vi": "Bã Quả Mọng Cao Nguyên"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_44318_Name",
+  "en": "Lotus Burner Guardian Torso",
+  "old": "Thân Hộ Vệ Lò Đốt Lotus",
+  "vi": "Thân Hộ Vệ Lò Đốt Sen"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_17112_Name",
+  "en": "Midnight Blue Dye",
+  "old": "Thuốc Nhuộm Midnight Blue",
+  "vi": "Thuốc Nhuộm Lam Nửa Đêm"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_18402_Name",
+  "en": "Midnight Blue Flower",
+  "old": "Hoa Midnight Blue",
+  "vi": "Hoa Lam Nửa Đêm"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_11099_Name",
+  "en": "Midnight Blue Flower Seeds",
+  "old": "Hạt Giống Hoa Midnight Blue",
+  "vi": "Hạt Giống Hoa Lam Nửa Đêm"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_11083_Name",
+  "en": "Purple Lotus Flower",
+  "old": "Hoa Purple Lotus",
+  "vi": "Hoa Sen Tím"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51969_Name",
+  "en": "Purple Lotus Orb",
+  "old": "Cầu Purple Lotus",
+  "vi": "Cầu Sen Tím"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_18296_Name",
+  "en": "Purple Lotus Potion",
+  "old": "Thuốc Purple Lotus",
+  "vi": "Thuốc Sen Tím"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_11084_Name",
+  "en": "Purple Lotus Powder",
+  "old": "Bột Purple Lotus",
+  "vi": "Bột Sen Tím"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_11085_Name",
+  "en": "Purple Lotus Seeds",
+  "old": "Hạt Purple Lotus",
+  "vi": "Hạt Giống Sen Tím"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_11022_Name",
+  "en": "Red Crystal",
+  "old": "Red Crystal",
+  "vi": "Pha Lê Đỏ"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_19076_Name",
+  "en": "Shadespiced Crystal",
+  "old": "Shadespiced Crystal(Pha Lê Tẩm Gia Vị U Ám)",
+  "vi": "Pha Lê Tẩm Gia Vị U Ám"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_14191_Name",
+  "en": "True Indigo",
+  "old": "True Indigo",
+  "vi": "Chàm Thật"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_11128_Name",
+  "en": "True Indigo Seeds",
+  "old": "Hạt Giống True Indigo",
+  "vi": "Hạt Giống Chàm Thật"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_14151_Name",
+  "en": "Yellow Lotus Blossom",
+  "old": "Hoa Yellow Lotus",
+  "vi": "Hoa Sen Vàng"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_53101_Name",
+  "en": "Yellow Lotus Potion",
+  "old": "Thuốc Yellow Lotus",
+  "vi": "Thuốc Sen Vàng"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_11122_Name",
+  "en": "Yellow Lotus Powder",
+  "old": "Bột Yellow Lotus",
+  "vi": "Bột Sen Vàng"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_11082_Name",
+  "en": "Yellow Lotus Seeds",
+  "old": "Hạt Giống Yellow Lotus",
+  "vi": "Hạt Giống Sen Vàng"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_18238_Name",
+  "en": "Yellow Lotus Soup",
+  "old": "Súp Yellow Lotus",
+  "vi": "Súp Sen Vàng"
+ }
+]

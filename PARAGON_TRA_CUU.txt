@@ -1,0 +1,152 @@
+SAVAGE PARAGON - TRA CUU TIENG VIET
+================================================================
+Bang Paragon mo tu man hinh Chi so nhan vat, chi nhan XP Paragon sau cap 60.
+Ten va mo ta tren bang van la tieng Anh (tac gia ghi chu thuong, khong dich duoc
+bang file va). File nay giai thich tung dong.
+
+6 cay: STR (Suc manh), AGI (Nhanh nhen), VIT (Sinh luc), AUT (Uy quyen / nguoi theo),
+       GRI (Ben bi / the luc), EXP (Kinh nghiem / che tao - kham pha).
+Cach chia nhom ben duoi la theo noi dung cua o; tren bang that, o co the nam o cay khac.
+"Diem nho" (+1.9% Weapon Damage...) la o phu, "diem lon" (o co ten) ton 2 diem (mac dinh).
+
+----------------------------------------------------------------
+STR - SUC MANH (can chien)
+----------------------------------------------------------------
+Relentless Assault (Tan Cong Khong Ngung)
+  "+{Percent}% melee damage."  -> +X% sat thuong can chien.
+Crushing Blows (Don Nghien Nat)
+  "+2% melee damage per consecutive hit, up to +10%." -> moi don trung lien tiep +2% sat thuong can chien, toi da +10%.
+Executioner (Dao Phu)
+  "+15% damage vs enemies below 20% HP." -> +15% sat thuong len ke dich duoi 20% mau.
+Barbaric (Man Ro)
+  "Up to +20% melee damage at low armor." -> giap cang thap, sat thuong can chien cang cao, toi da +20%.
+Cleaving Force (Luc Che)
+  "Kills unleash a cleave dealing 50% of your weapon damage to enemies within 3m."
+  -> ha guc ke dich tung mot nhat chem gay 50% sat thuong vu khi len ke dich trong 3 m.
+Titan's Momentum (Da Tien Cua Titan)
+  "Kills grant +15% attack speed for 4s." -> moi lan ha guc +15% toc do danh trong 4 giay.
+Blood Drinker (Ke Uong Mau)
+  "Melee hits heal 2% of your max health (1-15 HP)." -> don can chien hoi 2% mau toi da (1-15 mau).
+Bone Breaker (Ke Be Xuong)  -> gay hieu ung Bone Broken (Gay Xuong):
+  "Broken bones: deals 10% less damage." -> ke dich bi gay xuong gay it hon 10% sat thuong.
+Evisceration (Mo Bung)
+  "+15% crit chance; crits deal +50% damage." -> +15% ti le chi mang; don chi mang +50% sat thuong.
+Diem nho: "+1.9% / +2.1% Weapon Damage" -> +1.9% / +2.1% sat thuong vu khi.
+
+----------------------------------------------------------------
+AGI - NHANH NHEN (tam xa, di chuyen, an nap)
+----------------------------------------------------------------
+Predator's Aim (Ngam Ban Cua Ke San Moi)
+  "+15% ranged damage while you hold still." / "Stand still 1.5s for +15% ranged damage."
+  -> dung yen 1.5 giay de +15% sat thuong tam xa.
+Windrunner (Ke Chay Theo Gio)
+  "Avoid taking damage and your speed ramps up to +15%. Getting hit resets the wind."
+  -> khong bi trung don thi toc do tang dan toi +15%; bi danh trung se mat.
+Acrobat (Nghe Si Nhao Lon)
+  "Dodge grants +15% move speed for 2s; dodging again refreshes it." -> ne don +15% toc do di chuyen 2 giay.
+  "Dodge roll restores +10 stamina (1s cooldown)." -> lan ne hoi 10 the luc (hoi chieu 1 giay).
+Pinning Shot (Phat Ban Ghim) -> gay hieu ung Pinned (Bi Ghim chan).
+Shadowstep / Shadow Cloak (Buoc Bong Toi / Ao Choang Bong Toi)
+  "Stealth while crouched: greatly reduced NPC detection." -> ngoi xuong de an nap, NPC kho phat hien hon nhieu.
+  "Cloaked in shadow: NPCs have greatly reduced awareness of you."
+Basilisk's Bite (Vet Can Basilisk) -> gay Basilisk Venom (Noc Basilisk):
+  "Combo finisher: immunity-piercing poison for 8s." -> don ket thuc combo gay doc xuyen mien nhiem trong 8 giay.
+
+----------------------------------------------------------------
+VIT - SINH LUC (song sot)
+----------------------------------------------------------------
+Second Wind (Hoi Suc)
+  "Survive a lethal hit at 20% HP + 3s invuln (15 min CD)."
+  -> do mot don chi mang, con 20% mau va bat tu 3 giay (hoi chieu 15 phut).
+Unyielding (Khong Khuat Phuc)
+  "Taking hits hardens you: +8 armor per hit taken, stacking up to +40 (8s)."
+  -> moi lan bi trung +8 giap, cong don toi +40, keo dai 8 giay.
+Regenerative Flesh / Regenerating (Thit Tai Sinh)
+  "+0.5 HP/s at all times." -> luon hoi 0.5 mau moi giay.
+Pain is Power (Dau Don La Suc Manh)
+  "+{Percent}% damage from pain." / "+2% damage per hit taken, up to +10%."
+  -> moi lan bi trung +2% sat thuong, toi da +10%.
+Adrenaline Rush (Bung No Adrenaline)
+  "Big hits (>15% HP) grant +20 stamina (3s cooldown)." -> bi don lon (>15% mau) nhan 20 the luc (hoi chieu 3 giay).
+Immovable (Bat Dong)
+  "Immune to stagger and knockback while above 90% health." -> tren 90% mau thi mien choang va bi day lui.
+Diem nho: "+6 / +7 Max Health" -> +6 / +7 mau toi da.
+
+----------------------------------------------------------------
+AUT - UY QUYEN (nguoi theo / thrall / thu cung)
+----------------------------------------------------------------
+Battle Commander (Chi Huy Chien Tran)   "Followers attack 8% faster." -> nguoi theo danh nhanh hon 8%.
+Ultimate Sacrifice (Hy Sinh Toi Thuong)
+  "Lethal hit: your lowest-health follower (horses exempt) is sacrificed, healing you for its remaining health (10 min CD)."
+  -> khi ban dinh don chi mang, nguoi theo it mau nhat (tru ngua) bi hy sinh va hoi cho ban bang luong mau con lai cua no (hoi chieu 10 phut).
+Rallying Cry (Tieng Ho Tap Hop)   "Kills heal your followers for 2% max HP." -> ha guc hoi 2% mau toi da cho nguoi theo.
+Veteran Trainer (Huan Luyen Vien Ky Cuu)   "Followers gain +25% XP." -> nguoi theo nhan them 25% XP.
+Shared Pain (Chia Se Dau Don)   "Redirect 15% of damage taken to each combat follower." -> chuyen 15% sat thuong ban nhan sang moi nguoi theo chien dau.
+Guardian Bond (Khe Uoc Ho Ve)
+  "Follower below 25% HP: +30% damage reduction, 5s." -> nguoi theo duoi 25% mau duoc giam 30% sat thuong nhan vao trong 5 giay.
+  "Bonded guardian: damage taken reduced by 30%."
+Pack Leader (Thu Linh Bay Dan)   "+3% damage per active follower." -> +3% sat thuong cho moi nguoi theo dang di cung.
+Coordinated Assault (Tan Cong Phoi Hop)
+  "Same target as your follower: +10% damage to both." -> danh cung muc tieu voi nguoi theo: ca hai +10% sat thuong.
+Inspiring Presence (Su Hien Dien Truyen Cam Hung)   "Followers regenerate +4 HP/s." -> nguoi theo hoi 4 mau moi giay.
+Diem nho: "+1% / +2% Follower Damage" -> +1% / +2% sat thuong cua nguoi theo.
+Luat War Party (admin): neu bat, nguoi co ky nang War Party mat phan thuong sat thuong cua diem nho Authority.
+
+----------------------------------------------------------------
+GRI - BEN BI (giap, the luc)
+----------------------------------------------------------------
+Battle Hardened (Toi Luyen Qua Chien Tran)   "+{Armor} armor." -> +X giap.
+Tireless (Khong Biet Met)
+  "Attacks refund {R2h} stamina with two-handed weapons or {R1h} with one-handed." -> moi don hoan lai the luc (vu khi 2 tay nhieu hon 1 tay).
+  "Attacks cost progressively less stamina during extended combat (up to -3 one-handed, -5 two-handed)."
+  -> danh cang lau cang ton it the luc (toi da -3 voi vu khi 1 tay, -5 voi 2 tay).
+Battle Rhythm (Nhip Dieu Chien Dau)
+  "Alternating light and heavy attacks refunds stamina (+3 one-handed, +5 two-handed)." -> xen ke don nhe va nang de hoan the luc.
+Iron Resolve (Y Chi Sat Da)
+  "Lesser blows cannot stagger you while your stamina holds; heavy hits still can. Fades as stamina drains."
+  -> con the luc thi don nhe khong lam ban choang; don nang van co the. Mat dan khi the luc can.
+Survival Instinct (Ban Nang Sinh Ton)   "At 0 stamina: instantly recover 40 stamina (15s cooldown)." -> het the luc thi hoi ngay 40 (hoi chieu 15 giay).
+Iron Skin (Da Sat)   "Armor weight no longer reduces stamina regen." -> giap nang khong con lam cham hoi the luc.
+Weathered (Dan Day Suong Gio)   "+15 cold and +15 heat resistance." -> +15 khang lanh va +15 khang nong.
+Meteor (Thien Thach)
+  "Survive any fall: normal fall damage applies, but you always land with at least 1 HP."
+  -> roi tu bat ky do cao nao cung song, van mat mau binh thuong nhung con it nhat 1 mau.
+Diem nho: "+3/+4 Armor, +1/+2 Max Stamina" -> +3/+4 giap, +1/+2 the luc toi da.
+
+----------------------------------------------------------------
+EXP - KINH NGHIEM (khai thac, che tao, kham pha)
+----------------------------------------------------------------
+Master Gatherer (Bac Thay Thu Thap)   "~2% chance for a bonus rare material when harvesting." -> ~2% co hoi nhan them nguyen lieu hiem khi khai thac.
+Efficient Craftsman (Tho Thu Cong Hieu Qua)   "5% chance to craft a free copy." -> 5% co hoi che tao them mot ban mien phi.
+Treasure Hunter (Ke San Kho Bau)
+  "Unowned chests: 15% chance of bonus coins, 5% chance of a rare treasure." -> ruong vo chu: 15% co hoi them xu, 5% co hoi kho bau hiem.
+Salvager (Ke Tan Dung)   "Dismantling returns +25% materials." -> thao do tra them 25% nguyen lieu.
+Forgemaster (Bac Thay Ren)   "Repair kits no longer reduce max durability." -> bo sua do khong con lam giam do ben toi da.
+Artisan's Touch (Ban Tay Nghe Nhan)   "Crafted gear is masterwork: +15% durability." -> do che tao la hang thuong hang: +15% do ben.
+Legendary Tinker (Tho Sua Huyen Thoai)
+  "Unlocks Legendary Repair Kits (Tinker's Bench): fully restores your most damaged equipped legendary at a 2.5% max durability cost. Forgemaster makes it penalty-free."
+  -> mo khoa Bo Sua Do Huyen Thoai (che o Ban Tho Sua): sua day mon huyen thoai hu nhat dang mac, mat 2.5% do ben toi da; co Forgemaster thi khong mat.
+Diem nho: "+9 / +10 Carry Capacity" -> +9 / +10 suc mang.
+
+----------------------------------------------------------------
+THONG BAO THUONG GAP
+----------------------------------------------------------------
+Paragon points reset.                         -> Da dat lai diem Paragon.
+Legendary equipment restored.                 -> Da sua xong do huyen thoai.
+No legendary equipped that needs repair.      -> Khong co mon huyen thoai nao can sua.
+That relic is not worn enough to be worth mending. -> Mon nay chua du hu de sua.
+Repairing the relic has reduced its maximum durability. -> Sua xong nhung do ben toi da bi giam.
+This kit only mends legendary equipment.      -> Bo nay chi sua do huyen thoai.
+SP: that tree is locked by an admin           -> Cay nay da bi admin khoa.
+
+----------------------------------------------------------------
+LENH ADMIN (console, can bat admin)
+----------------------------------------------------------------
+dc SPXPMult <0.25|0.5|0.75|1|1.5|2|3|5|10>   He so XP Paragon (1 = mac dinh)
+dc SPMaxLevel <25|50|75|100|150|200|300>     Cap Paragon toi da (100 = mac dinh)
+dc SPMajorCost <1-6>                         So diem cho moi o lon (2 = mac dinh)
+dc SPWarPartyRule on|off                     Luat War Party (xem muc AUT)
+dc SPGrantPoints <diem> <ten nhan vat>        Tang diem Paragon
+dc SPRespec <ten nhan vat>                   Dat lai diem cho mot nguoi
+dc SPLockTree / SPUnlockTree <str|agi|vit|aut|gri|exp|all> <ten>   Khoa / mo cay
+dc SPWipe ...                                Xoa sach tien trinh Paragon (khong hoan tac)

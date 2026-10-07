@@ -1,0 +1,603 @@
+[
+ {
+  "ns": "",
+  "key": "_CraftingStationName_Altar_199712_StationName",
+  "en": "Altar of the Fallen",
+  "already": false,
+  "vi": "Tế Đàn Người Đã Khuất"
+ },
+ {
+  "ns": "",
+  "key": "_RecipesTable_923000_ShortDesc",
+  "en": "Fight with death and revive all of your DBNO thralls nearby, also they get extra bonuses for a few minutes.",
+  "already": false,
+  "vi": "Chống lại tử thần và hồi sinh tất cả thrall đang gục ở gần, chúng còn nhận thêm phần thưởng trong vài phút."
+ },
+ {
+  "ns": "",
+  "key": "_RecipesTable_923001_ShortDesc",
+  "en": "Gives strength weapon damage to active followers",
+  "already": false,
+  "vi": "Tăng sát thương vũ khí sức mạnh cho người theo đang hoạt động"
+ },
+ {
+  "ns": "",
+  "key": "_RecipesTable_923002_ShortDesc",
+  "en": "Gives agility weapon damage to active followers",
+  "already": false,
+  "vi": "Tăng sát thương vũ khí nhanh nhẹn cho người theo đang hoạt động"
+ },
+ {
+  "ns": "",
+  "key": "_RecipesTable_923003_ShortDesc",
+  "en": "Gives armor to active followers",
+  "already": false,
+  "vi": "Tăng giáp cho người theo đang hoạt động"
+ },
+ {
+  "ns": "",
+  "key": "_RecipesTable_923004_ShortDesc",
+  "en": "Instantly restore your followers' maximum health in 3 waves",
+  "already": false,
+  "vi": "Hồi ngay máu tối đa của người theo trong 3 đợt"
+ },
+ {
+  "ns": "",
+  "key": "_RecipesTable_923005_ShortDesc",
+  "en": "Summon the shadows of your thralls and enemies will aggro it instead of your thralls",
+  "already": false,
+  "vi": "Triệu hồi bóng của thrall, kẻ địch sẽ nhắm vào chúng thay vì thrall của bạn"
+ },
+ {
+  "ns": "",
+  "key": "_RecipesTable_923006_ShortDesc",
+  "en": "Grants your followers a second chance. Once they get into the DBNO state, they'll automatically revive themselves. The effect lasts for 10 minutes.",
+  "already": false,
+  "vi": "Cho người theo cơ hội thứ hai. Khi rơi vào trạng thái gục (DBNO), chúng sẽ tự hồi sinh. Hiệu ứng kéo dài 10 phút."
+ },
+ {
+  "ns": "",
+  "key": "_RecipesTable_923007_RecipeName",
+  "en": "Feather Leaps",
+  "already": false,
+  "vi": "Cú Nhảy Lông Vũ"
+ },
+ {
+  "ns": "",
+  "key": "_RecipesTable_923007_ShortDesc",
+  "en": "Charge yourself and jump on the clouds",
+  "already": false,
+  "vi": "Tích năng lượng và nhảy lên mây"
+ },
+ {
+  "ns": "",
+  "key": "_RecipesTable_923009_RecipeName",
+  "en": "Mother Of Nature",
+  "already": false,
+  "vi": "Mẹ Thiên Nhiên"
+ },
+ {
+  "ns": "",
+  "key": "_RecipesTable_923009_ShortDesc",
+  "en": "Grants healing for pets / attack.",
+  "already": false,
+  "vi": "Hồi máu cho thú cưng theo mỗi đòn đánh."
+ },
+ {
+  "ns": "",
+  "key": "_RecipesTable_923010_RecipeName",
+  "en": "The Owl",
+  "already": false,
+  "vi": "Con Cú"
+ },
+ {
+  "ns": "",
+  "key": "_RecipesTable_923010_ShortDesc",
+  "en": "Grants Nightvision for 15 minutes",
+  "already": false,
+  "vi": "Nhìn đêm trong 15 phút"
+ },
+ {
+  "ns": "",
+  "key": "_RecipesTable_923011_RecipeName",
+  "en": "The Fishy",
+  "already": false,
+  "vi": "Con Cá"
+ },
+ {
+  "ns": "",
+  "key": "_RecipesTable_923011_ShortDesc",
+  "en": "Grants Water Breathing for 30 minutes",
+  "already": false,
+  "vi": "Thở dưới nước trong 30 phút"
+ },
+ {
+  "ns": "",
+  "key": "_RecipeTable_19991000_RecipeName",
+  "en": "Organizer Chest",
+  "already": false,
+  "vi": "Rương Sắp Xếp"
+ },
+ {
+  "ns": "",
+  "key": "_RecipeTable_19991000_ShortDesc",
+  "en": "A large chest for organizing items",
+  "already": false,
+  "vi": "Một chiếc rương lớn để sắp xếp đồ"
+ },
+ {
+  "ns": "",
+  "key": "_RecipeTable_920002_RecipeName",
+  "en": "Heart Extraction",
+  "already": false,
+  "vi": "Moi Tim"
+ },
+ {
+  "ns": "",
+  "key": "_RecipeTable_920002_ShortDesc",
+  "en": "Rips out the heart of the victim.",
+  "already": false,
+  "vi": "Moi tim của nạn nhân."
+ },
+ {
+  "ns": "",
+  "key": "DT_Realm_Recipes_19991500_RecipeName",
+  "en": "Realm Portal Gate",
+  "already": false,
+  "vi": "Cổng Portal Realm"
+ },
+ {
+  "ns": "",
+  "key": "DT_Realm_Recipes_19991500_ShortDesc",
+  "en": "Allows you to travel to Realms!",
+  "already": false,
+  "vi": "Cho phép bạn đi tới các Realm!"
+ },
+ {
+  "ns": "",
+  "key": "DT_Realm_Recipes_19991501_RecipeName",
+  "en": "Realm Door",
+  "already": false,
+  "vi": "Cửa Realm"
+ },
+ {
+  "ns": "",
+  "key": "DT_Realm_Recipes_19991501_ShortDesc",
+  "en": "Allows you to travel to Realms!",
+  "already": false,
+  "vi": "Cho phép bạn đi tới các Realm!"
+ },
+ {
+  "ns": "",
+  "key": "DT_Realm_Recipes_19991502_ShortDesc",
+  "en": "Allows you to travel to Realms!",
+  "already": false,
+  "vi": "Cho phép bạn đi tới các Realm!"
+ },
+ {
+  "ns": "",
+  "key": "_SpellTable_703_ShortDesc",
+  "en": "Gives Water Breathing for 30 minutes",
+  "already": false,
+  "vi": "Thở dưới nước trong 30 phút"
+ },
+ {
+  "ns": "",
+  "key": "_SpellTable_600_ShortDesc",
+  "en": "Fight with death and revive all of your DBNO thralls nearby, also they get 1000 armor for 5 minutes after revieve. Also removes a stack of strike.",
+  "already": false,
+  "vi": "Chống lại tử thần và hồi sinh tất cả thrall đang gục ở gần, chúng còn nhận 1000 giáp trong 5 phút sau khi hồi sinh. Đồng thời xóa một tầng đòn đánh."
+ },
+ {
+  "ns": "",
+  "key": "_SpellTable_601_ShortDesc",
+  "en": "Gives 10% strength weapon damage to active followers for 30 minutes",
+  "already": false,
+  "vi": "+10% sát thương vũ khí sức mạnh cho người theo đang hoạt động trong 30 phút"
+ },
+ {
+  "ns": "",
+  "key": "_SpellTable_602_ShortDesc",
+  "en": "Gives 10% agility weapon damage to active followers for 30 minutes",
+  "already": false,
+  "vi": "+10% sát thương vũ khí nhanh nhẹn cho người theo đang hoạt động trong 30 phút"
+ },
+ {
+  "ns": "",
+  "key": "_SpellTable_603_ShortDesc",
+  "en": "Gives 350 armor to active followers for 30 minutes",
+  "already": false,
+  "vi": "+350 giáp cho người theo đang hoạt động trong 30 phút"
+ },
+ {
+  "ns": "",
+  "key": "_SpellTable_604_ShortDesc",
+  "en": "Instantly restore 24% of your followers' maximum health in 3 waves",
+  "already": false,
+  "vi": "Hồi ngay 24% máu tối đa của người theo trong 3 đợt"
+ },
+ {
+  "ns": "",
+  "key": "_SpellTable_605_ShortDesc",
+  "en": "Summon the shadows of your thralls and enemies will aggro it instead of your thralls",
+  "already": false,
+  "vi": "Triệu hồi bóng của thrall, kẻ địch sẽ nhắm vào chúng thay vì thrall của bạn"
+ },
+ {
+  "ns": "",
+  "key": "_SpellTable_606_ShortDesc",
+  "en": "Grants your followers a second chance. Once they get into the DBNO state, they'll automatically revive themselves. The effect lasts for 10 minutes.",
+  "already": false,
+  "vi": "Cho người theo cơ hội thứ hai. Khi rơi vào trạng thái gục (DBNO), chúng sẽ tự hồi sinh. Hiệu ứng kéo dài 10 phút."
+ },
+ {
+  "ns": "",
+  "key": "_SpellTable_607_Name",
+  "en": "Mother Of Nature",
+  "already": false,
+  "vi": "Mẹ Thiên Nhiên"
+ },
+ {
+  "ns": "",
+  "key": "_SpellTable_607_ShortDesc",
+  "en": "Grants your pet followers a blessing. They'll restore health with each attack. The spell lasts for 30 minutes.",
+  "already": false,
+  "vi": "Ban phước cho thú cưng đi theo. Chúng sẽ hồi máu theo mỗi đòn đánh. Phép kéo dài 30 phút."
+ },
+ {
+  "ns": "",
+  "key": "_SpellTable_700_ShortDesc",
+  "en": "Charge yourself and jump on the clouds",
+  "already": false,
+  "vi": "Tích năng lượng và nhảy lên mây"
+ },
+ {
+  "ns": "",
+  "key": "_SpellTable_701_ShortDesc",
+  "en": "Open a portal to your nearest Transportory Stone",
+  "already": false,
+  "vi": "Mở cổng dịch chuyển tới Đá Dịch Chuyển gần nhất"
+ },
+ {
+  "ns": "",
+  "key": "_SpellTable_702_ShortDesc",
+  "en": "Gives Nightvision for 15 minutes",
+  "already": false,
+  "vi": "Nhìn đêm trong 15 phút"
+ },
+ {
+  "ns": "",
+  "key": "_FeatTable_96102_FeatName",
+  "en": "Word of Power: Blood Rite",
+  "already": false,
+  "vi": "Lời Quyền Năng: Nghi Lễ Máu"
+ },
+ {
+  "ns": "",
+  "key": "_FeatTable_96307_FeatName",
+  "en": "Word of Power: Feather Leaps",
+  "already": false,
+  "vi": "Lời Quyền Năng: Cú Nhảy Lông Vũ"
+ },
+ {
+  "ns": "",
+  "key": "_FeatTable_96309_FeatName",
+  "en": "Word of Power: Mother Of Nature",
+  "already": false,
+  "vi": "Lời Quyền Năng: Mẹ Thiên Nhiên"
+ },
+ {
+  "ns": "",
+  "key": "_FeatTable_96310_FeatName",
+  "en": "Word of Power: The Owl",
+  "already": false,
+  "vi": "Lời Quyền Năng: Con Cú"
+ },
+ {
+  "ns": "",
+  "key": "_FeatTable_96311_FeatName",
+  "en": "Word of Power: The Fishy",
+  "already": false,
+  "vi": "Lời Quyền Năng: Con Cá"
+ },
+ {
+  "ns": "",
+  "key": "_FeatTable_19990999_FeatName",
+  "en": "Improved Thralls & QoL",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "_FeatTable_19991000_FeatName",
+  "en": "Organizer Chest",
+  "already": false,
+  "vi": "Rương Sắp Xếp"
+ },
+ {
+  "ns": "",
+  "key": "DT_Realm_Feats_19991502_FeatName",
+  "en": "Realm Door",
+  "already": false,
+  "vi": "Cửa Realm"
+ },
+ {
+  "ns": "",
+  "key": "DT_Realm_Feats_19991501_FeatName",
+  "en": "Realm Portal",
+  "already": false,
+  "vi": "Cổng Portal Realm"
+ },
+ {
+  "ns": "",
+  "key": "_ItemTable_19991000_Name",
+  "en": "[Pet] Attribute Reroll Potion",
+  "already": false,
+  "vi": "[Thú cưng] Thuốc Quay Lại Thuộc Tính"
+ },
+ {
+  "ns": "",
+  "key": "_ItemTable_19991000_ShortDesc",
+  "en": "Reroll atributes for pets.",
+  "already": false,
+  "vi": "Quay lại thuộc tính cho thú cưng."
+ },
+ {
+  "ns": "",
+  "key": "_ItemTable_19991000_LongDesc",
+  "en": "Reroll atributes for pets.",
+  "already": false,
+  "vi": "Quay lại thuộc tính cho thú cưng."
+ },
+ {
+  "ns": "",
+  "key": "_ItemTable_19991001_Name",
+  "en": "[Thrall] Attribute Reroll Potion",
+  "already": false,
+  "vi": "[Thrall] Thuốc Quay Lại Thuộc Tính"
+ },
+ {
+  "ns": "",
+  "key": "_ItemTable_19991001_ShortDesc",
+  "en": "Reroll atributes for thralls.",
+  "already": false,
+  "vi": "Quay lại thuộc tính cho thrall."
+ },
+ {
+  "ns": "",
+  "key": "_ItemTable_19991001_LongDesc",
+  "en": "Reroll atributes for thralls.",
+  "already": false,
+  "vi": "Quay lại thuộc tính cho thrall."
+ },
+ {
+  "ns": "",
+  "key": "_ItemTable_19991002_Name",
+  "en": "[Thrall] Perk Reroll Potion",
+  "already": false,
+  "vi": "[Thrall] Thuốc Quay Lại Đặc Tính"
+ },
+ {
+  "ns": "",
+  "key": "_ItemTable_19991002_ShortDesc",
+  "en": "Reroll perks for thralls.",
+  "already": false,
+  "vi": "Quay lại đặc tính cho thrall."
+ },
+ {
+  "ns": "",
+  "key": "_ItemTable_19991002_LongDesc",
+  "en": "Reroll perks for thralls.",
+  "already": false,
+  "vi": "Quay lại đặc tính cho thrall."
+ },
+ {
+  "ns": "",
+  "key": "_ItemTable_19991003_Name",
+  "en": "[Pet] Perk Reroll Potion",
+  "already": false,
+  "vi": "[Thú cưng] Thuốc Quay Lại Đặc Tính"
+ },
+ {
+  "ns": "",
+  "key": "_ItemTable_19991003_ShortDesc",
+  "en": "Reroll perks for pets.",
+  "already": false,
+  "vi": "Quay lại đặc tính cho thú cưng."
+ },
+ {
+  "ns": "",
+  "key": "_ItemTable_19991003_LongDesc",
+  "en": "Reroll perks for pets.",
+  "already": false,
+  "vi": "Quay lại đặc tính cho thú cưng."
+ },
+ {
+  "ns": "",
+  "key": "_ItemTable_199720_Name",
+  "en": "Empty DNA Syringe",
+  "already": false,
+  "vi": "Ống Tiêm DNA Rỗng"
+ },
+ {
+  "ns": "",
+  "key": "_ItemTable_199720_ShortDesc",
+  "en": "An empty strange syringe that can contain a DNA sample",
+  "already": false,
+  "vi": "Một ống tiêm kỳ lạ còn trống, có thể chứa mẫu DNA"
+ },
+ {
+  "ns": "",
+  "key": "_ItemTable_199720_LongDesc",
+  "en": "An ancient and sinister tool, this weathered syringe pulses faintly with a dark aura. Though its origins are shrouded in mystery, it holds the power to extract the very essence of warriors — their DNA.However, this is no simple feat. Harnessing its abilities requires channeling forbidden dark magic, an act not without consequence. Those who dare to wield it must tread carefully, for the price of tampering with the threads of life can be as steep as the power it offers. Will you use it to reshape your army, or will its shadow claim you instead?",
+  "already": false,
+  "vi": "Một dụng cụ cổ xưa và đáng sợ, ống tiêm sờn cũ này đập nhẹ với luồng khí hắc ám. Dù nguồn gốc bị che phủ trong bí ẩn, nó có sức mạnh rút ra chính tinh chất của chiến binh — DNA của họ. Tuy nhiên đây không phải chuyện đơn giản. Khai thác năng lực của nó đòi hỏi phải dẫn truyền ma thuật hắc ám bị cấm, một hành động không phải không có hậu quả. Kẻ nào dám dùng nó phải thận trọng, vì cái giá của việc can thiệp vào sợi chỉ sinh mệnh có thể đắt như chính sức mạnh nó ban cho. Bạn sẽ dùng nó để định hình lại đạo quân của mình, hay để bóng tối của nó nuốt chửng bạn?"
+ },
+ {
+  "ns": "",
+  "key": "_ItemTable_199721_Name",
+  "en": "Filled DNA Syringe",
+  "already": false,
+  "vi": "Ống Tiêm DNA Đầy"
+ },
+ {
+  "ns": "",
+  "key": "_ItemTable_199721_ShortDesc",
+  "en": "A filled strange syringe that contains a DNA sample",
+  "already": false,
+  "vi": "Một ống tiêm kỳ lạ chứa mẫu DNA"
+ },
+ {
+  "ns": "",
+  "key": "_ItemTable_199721_LongDesc",
+  "en": "An ancient and sinister tool, this weathered syringe pulses faintly with a dark aura. Though its origins are shrouded in mystery, it holds the power to extract the very essence of warriors — their DNA.However, this is no simple feat. Harnessing its abilities requires channeling forbidden dark magic, an act not without consequence. Those who dare to wield it must tread carefully, for the price of tampering with the threads of life can be as steep as the power it offers. Will you use it to reshape your army, or will its shadow claim you instead?",
+  "already": false,
+  "vi": "Một dụng cụ cổ xưa và đáng sợ, ống tiêm sờn cũ này đập nhẹ với luồng khí hắc ám. Dù nguồn gốc bị che phủ trong bí ẩn, nó có sức mạnh rút ra chính tinh chất của chiến binh — DNA của họ. Tuy nhiên đây không phải chuyện đơn giản. Khai thác năng lực của nó đòi hỏi phải dẫn truyền ma thuật hắc ám bị cấm, một hành động không phải không có hậu quả. Kẻ nào dám dùng nó phải thận trọng, vì cái giá của việc can thiệp vào sợi chỉ sinh mệnh có thể đắt như chính sức mạnh nó ban cho. Bạn sẽ dùng nó để định hình lại đạo quân của mình, hay để bóng tối của nó nuốt chửng bạn?"
+ },
+ {
+  "ns": "",
+  "key": "_ItemTable_1997023_Name",
+  "en": "Custom Nightvision Potion",
+  "already": false,
+  "vi": "Thuốc Nhìn Đêm Đặc Biệt"
+ },
+ {
+  "ns": "",
+  "key": "_ItemTable_1997023_ShortDesc",
+  "en": "A potion that gives the ability to see in the dark with a special effect.",
+  "already": false,
+  "vi": "Một loại thuốc giúp nhìn trong bóng tối với hiệu ứng đặc biệt."
+ },
+ {
+  "ns": "",
+  "key": "_ItemTable_1997024_Name",
+  "en": "Gambling Box [T1]",
+  "already": false,
+  "vi": "Hộp May Rủi [T1]"
+ },
+ {
+  "ns": "",
+  "key": "_ItemTable_1997024_ShortDesc",
+  "en": "Fortune favors the bold… or the reckless.",
+  "already": false,
+  "vi": "Vận may mỉm cười với kẻ táo bạo… hoặc kẻ liều lĩnh."
+ },
+ {
+  "ns": "",
+  "key": "_ItemTable_1997025_Name",
+  "en": "Gambling Box [T2]",
+  "already": false,
+  "vi": "Hộp May Rủi [T2]"
+ },
+ {
+  "ns": "",
+  "key": "_ItemTable_1997025_ShortDesc",
+  "en": "Fortune favors the bold… or the reckless.",
+  "already": false,
+  "vi": "Vận may mỉm cười với kẻ táo bạo… hoặc kẻ liều lĩnh."
+ },
+ {
+  "ns": "",
+  "key": "_ItemTable_1997026_Name",
+  "en": "Gambling Box [T3]",
+  "already": false,
+  "vi": "Hộp May Rủi [T3]"
+ },
+ {
+  "ns": "",
+  "key": "_ItemTable_1997026_ShortDesc",
+  "en": "Fortune favors the bold… or the reckless.",
+  "already": false,
+  "vi": "Vận may mỉm cười với kẻ táo bạo… hoặc kẻ liều lĩnh."
+ },
+ {
+  "ns": "",
+  "key": "_ItemTable_42004_ShortDesc",
+  "en": "An extracted human heart used for resurrection.",
+  "already": false,
+  "vi": "Một trái tim người đã moi ra, dùng để hồi sinh."
+ },
+ {
+  "ns": "",
+  "key": "_ItemTable_42004_LongDesc",
+  "en": "An extracted human heart used for resurrection.",
+  "already": false,
+  "vi": "Một trái tim người đã moi ra, dùng để hồi sinh."
+ },
+ {
+  "ns": "",
+  "key": "_ItemTable_19992003_Name",
+  "en": "Organizer Chest",
+  "already": false,
+  "vi": "Rương Sắp Xếp"
+ },
+ {
+  "ns": "",
+  "key": "_ItemTable_19992003_ShortDesc",
+  "en": "A large chest for organizing items",
+  "already": false,
+  "vi": "Một chiếc rương lớn để sắp xếp đồ"
+ },
+ {
+  "ns": "",
+  "key": "_ItemTable_199712_Name",
+  "en": "Altar of the Fallen",
+  "already": false,
+  "vi": "Tế Đàn Người Đã Khuất"
+ },
+ {
+  "ns": "",
+  "key": "_ItemTable_1997022_Name",
+  "en": "Heart Extractor",
+  "already": false,
+  "vi": "Máy Moi Tim"
+ },
+ {
+  "ns": "",
+  "key": "_ItemTable_1997022_ShortDesc",
+  "en": "Makes it possible to extract human hearts from the body.",
+  "already": false,
+  "vi": "Cho phép moi tim người từ thân xác."
+ },
+ {
+  "ns": "",
+  "key": "_ItemTable_1997022_LongDesc",
+  "en": "Makes it possible to extract human hearts from the body.",
+  "already": false,
+  "vi": "Cho phép moi tim người từ thân xác."
+ },
+ {
+  "ns": "",
+  "key": "DT_Realm_Items_19995000_Name",
+  "en": "Realm Portal",
+  "already": false,
+  "vi": "Cổng Portal Realm"
+ },
+ {
+  "ns": "",
+  "key": "DT_Realm_Items_19995000_ShortDesc",
+  "en": "Allows you to travel to Realms!",
+  "already": false,
+  "vi": "Cho phép bạn đi tới các Realm!"
+ },
+ {
+  "ns": "",
+  "key": "DT_Realm_Items_19995001_Name",
+  "en": "Realm Door",
+  "already": false,
+  "vi": "Cửa Realm"
+ },
+ {
+  "ns": "",
+  "key": "DT_Realm_Items_19995001_ShortDesc",
+  "en": "Allows you to travel to Realms!",
+  "already": false,
+  "vi": "Cho phép bạn đi tới các Realm!"
+ },
+ {
+  "ns": "",
+  "key": "DT_Realm_Items_19995002_ShortDesc",
+  "en": "Allows you to travel to Realms!",
+  "already": false,
+  "vi": "Cho phép bạn đi tới các Realm!"
+ }
+]

@@ -1,0 +1,1502 @@
+[
+ {
+  "ns": "",
+  "key": "FeatTable_91900_FeatName",
+  "en": "Paragon Memory",
+  "already": false,
+  "vi": "Ký Ức Paragon"
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_91901_FeatName",
+  "en": "Legendary Tinker",
+  "already": false,
+  "vi": "Thợ Sửa Huyền Thoại"
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92000_FeatName",
+  "en": "SP_Node_0",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92001_FeatName",
+  "en": "SP_Node_1",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92002_FeatName",
+  "en": "SP_Node_2",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92003_FeatName",
+  "en": "SP_Node_3",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92004_FeatName",
+  "en": "SP_Node_4",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92005_FeatName",
+  "en": "SP_Node_5",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92006_FeatName",
+  "en": "SP_Node_6",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92007_FeatName",
+  "en": "SP_Node_7",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92008_FeatName",
+  "en": "SP_Node_8",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92009_FeatName",
+  "en": "SP_Node_9",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92010_FeatName",
+  "en": "SP_Node_10",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92011_FeatName",
+  "en": "SP_Node_11",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92012_FeatName",
+  "en": "SP_Node_12",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92013_FeatName",
+  "en": "SP_Node_13",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92014_FeatName",
+  "en": "SP_Node_14",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92015_FeatName",
+  "en": "SP_Node_15",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92016_FeatName",
+  "en": "SP_Node_16",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92017_FeatName",
+  "en": "SP_Node_17",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92018_FeatName",
+  "en": "SP_Node_18",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92019_FeatName",
+  "en": "SP_Node_19",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92020_FeatName",
+  "en": "SP_Node_20",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92021_FeatName",
+  "en": "SP_Node_21",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92022_FeatName",
+  "en": "SP_Node_22",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92023_FeatName",
+  "en": "SP_Node_23",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92024_FeatName",
+  "en": "SP_Node_24",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92025_FeatName",
+  "en": "SP_Node_25",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92026_FeatName",
+  "en": "SP_Node_26",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92027_FeatName",
+  "en": "SP_Node_27",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92028_FeatName",
+  "en": "SP_Node_28",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92029_FeatName",
+  "en": "SP_Node_29",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92030_FeatName",
+  "en": "SP_Node_30",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92031_FeatName",
+  "en": "SP_Node_31",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92032_FeatName",
+  "en": "SP_Node_32",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92033_FeatName",
+  "en": "SP_Node_33",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92034_FeatName",
+  "en": "SP_Node_34",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92035_FeatName",
+  "en": "SP_Node_35",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92100_FeatName",
+  "en": "SP_Node_100",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92101_FeatName",
+  "en": "SP_Node_101",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92102_FeatName",
+  "en": "SP_Node_102",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92103_FeatName",
+  "en": "SP_Node_103",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92104_FeatName",
+  "en": "SP_Node_104",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92105_FeatName",
+  "en": "SP_Node_105",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92106_FeatName",
+  "en": "SP_Node_106",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92107_FeatName",
+  "en": "SP_Node_107",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92108_FeatName",
+  "en": "SP_Node_108",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92109_FeatName",
+  "en": "SP_Node_109",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92110_FeatName",
+  "en": "SP_Node_110",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92111_FeatName",
+  "en": "SP_Node_111",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92112_FeatName",
+  "en": "SP_Node_112",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92113_FeatName",
+  "en": "SP_Node_113",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92114_FeatName",
+  "en": "SP_Node_114",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92115_FeatName",
+  "en": "SP_Node_115",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92116_FeatName",
+  "en": "SP_Node_116",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92117_FeatName",
+  "en": "SP_Node_117",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92118_FeatName",
+  "en": "SP_Node_118",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92119_FeatName",
+  "en": "SP_Node_119",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92120_FeatName",
+  "en": "SP_Node_120",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92121_FeatName",
+  "en": "SP_Node_121",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92122_FeatName",
+  "en": "SP_Node_122",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92123_FeatName",
+  "en": "SP_Node_123",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92124_FeatName",
+  "en": "SP_Node_124",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92125_FeatName",
+  "en": "SP_Node_125",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92126_FeatName",
+  "en": "SP_Node_126",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92127_FeatName",
+  "en": "SP_Node_127",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92128_FeatName",
+  "en": "SP_Node_128",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92129_FeatName",
+  "en": "SP_Node_129",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92130_FeatName",
+  "en": "SP_Node_130",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92200_FeatName",
+  "en": "SP_Node_200",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92201_FeatName",
+  "en": "SP_Node_201",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92202_FeatName",
+  "en": "SP_Node_202",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92203_FeatName",
+  "en": "SP_Node_203",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92204_FeatName",
+  "en": "SP_Node_204",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92205_FeatName",
+  "en": "SP_Node_205",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92206_FeatName",
+  "en": "SP_Node_206",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92207_FeatName",
+  "en": "SP_Node_207",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92208_FeatName",
+  "en": "SP_Node_208",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92209_FeatName",
+  "en": "SP_Node_209",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92210_FeatName",
+  "en": "SP_Node_210",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92211_FeatName",
+  "en": "SP_Node_211",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92212_FeatName",
+  "en": "SP_Node_212",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92213_FeatName",
+  "en": "SP_Node_213",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92214_FeatName",
+  "en": "SP_Node_214",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92215_FeatName",
+  "en": "SP_Node_215",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92216_FeatName",
+  "en": "SP_Node_216",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92217_FeatName",
+  "en": "SP_Node_217",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92218_FeatName",
+  "en": "SP_Node_218",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92219_FeatName",
+  "en": "SP_Node_219",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92220_FeatName",
+  "en": "SP_Node_220",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92221_FeatName",
+  "en": "SP_Node_221",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92222_FeatName",
+  "en": "SP_Node_222",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92223_FeatName",
+  "en": "SP_Node_223",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92224_FeatName",
+  "en": "SP_Node_224",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92225_FeatName",
+  "en": "SP_Node_225",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92226_FeatName",
+  "en": "SP_Node_226",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92227_FeatName",
+  "en": "SP_Node_227",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92228_FeatName",
+  "en": "SP_Node_228",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92229_FeatName",
+  "en": "SP_Node_229",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92230_FeatName",
+  "en": "SP_Node_230",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92300_FeatName",
+  "en": "SP_Node_300",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92301_FeatName",
+  "en": "SP_Node_301",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92302_FeatName",
+  "en": "SP_Node_302",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92303_FeatName",
+  "en": "SP_Node_303",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92304_FeatName",
+  "en": "SP_Node_304",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92305_FeatName",
+  "en": "SP_Node_305",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92306_FeatName",
+  "en": "SP_Node_306",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92307_FeatName",
+  "en": "SP_Node_307",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92308_FeatName",
+  "en": "SP_Node_308",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92309_FeatName",
+  "en": "SP_Node_309",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92310_FeatName",
+  "en": "SP_Node_310",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92311_FeatName",
+  "en": "SP_Node_311",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92312_FeatName",
+  "en": "SP_Node_312",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92313_FeatName",
+  "en": "SP_Node_313",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92314_FeatName",
+  "en": "SP_Node_314",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92315_FeatName",
+  "en": "SP_Node_315",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92316_FeatName",
+  "en": "SP_Node_316",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92317_FeatName",
+  "en": "SP_Node_317",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92318_FeatName",
+  "en": "SP_Node_318",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92319_FeatName",
+  "en": "SP_Node_319",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92320_FeatName",
+  "en": "SP_Node_320",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92321_FeatName",
+  "en": "SP_Node_321",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92322_FeatName",
+  "en": "SP_Node_322",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92323_FeatName",
+  "en": "SP_Node_323",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92324_FeatName",
+  "en": "SP_Node_324",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92325_FeatName",
+  "en": "SP_Node_325",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92326_FeatName",
+  "en": "SP_Node_326",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92327_FeatName",
+  "en": "SP_Node_327",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92328_FeatName",
+  "en": "SP_Node_328",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92329_FeatName",
+  "en": "SP_Node_329",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92330_FeatName",
+  "en": "SP_Node_330",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92331_FeatName",
+  "en": "SP_Node_331",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92332_FeatName",
+  "en": "SP_Node_332",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92333_FeatName",
+  "en": "SP_Node_333",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92334_FeatName",
+  "en": "SP_Node_334",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92335_FeatName",
+  "en": "SP_Node_335",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92400_FeatName",
+  "en": "SP_Node_400",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92401_FeatName",
+  "en": "SP_Node_401",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92402_FeatName",
+  "en": "SP_Node_402",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92403_FeatName",
+  "en": "SP_Node_403",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92404_FeatName",
+  "en": "SP_Node_404",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92405_FeatName",
+  "en": "SP_Node_405",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92406_FeatName",
+  "en": "SP_Node_406",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92407_FeatName",
+  "en": "SP_Node_407",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92408_FeatName",
+  "en": "SP_Node_408",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92409_FeatName",
+  "en": "SP_Node_409",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92410_FeatName",
+  "en": "SP_Node_410",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92411_FeatName",
+  "en": "SP_Node_411",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92412_FeatName",
+  "en": "SP_Node_412",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92413_FeatName",
+  "en": "SP_Node_413",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92414_FeatName",
+  "en": "SP_Node_414",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92415_FeatName",
+  "en": "SP_Node_415",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92416_FeatName",
+  "en": "SP_Node_416",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92417_FeatName",
+  "en": "SP_Node_417",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92418_FeatName",
+  "en": "SP_Node_418",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92419_FeatName",
+  "en": "SP_Node_419",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92420_FeatName",
+  "en": "SP_Node_420",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92421_FeatName",
+  "en": "SP_Node_421",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92422_FeatName",
+  "en": "SP_Node_422",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92423_FeatName",
+  "en": "SP_Node_423",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92424_FeatName",
+  "en": "SP_Node_424",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92425_FeatName",
+  "en": "SP_Node_425",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92426_FeatName",
+  "en": "SP_Node_426",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92427_FeatName",
+  "en": "SP_Node_427",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92428_FeatName",
+  "en": "SP_Node_428",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92429_FeatName",
+  "en": "SP_Node_429",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92430_FeatName",
+  "en": "SP_Node_430",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92500_FeatName",
+  "en": "SP_Node_500",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92501_FeatName",
+  "en": "SP_Node_501",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92502_FeatName",
+  "en": "SP_Node_502",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92503_FeatName",
+  "en": "SP_Node_503",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92504_FeatName",
+  "en": "SP_Node_504",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92505_FeatName",
+  "en": "SP_Node_505",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92506_FeatName",
+  "en": "SP_Node_506",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92507_FeatName",
+  "en": "SP_Node_507",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92508_FeatName",
+  "en": "SP_Node_508",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92509_FeatName",
+  "en": "SP_Node_509",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92510_FeatName",
+  "en": "SP_Node_510",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92511_FeatName",
+  "en": "SP_Node_511",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92512_FeatName",
+  "en": "SP_Node_512",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92513_FeatName",
+  "en": "SP_Node_513",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92514_FeatName",
+  "en": "SP_Node_514",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92515_FeatName",
+  "en": "SP_Node_515",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92516_FeatName",
+  "en": "SP_Node_516",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92517_FeatName",
+  "en": "SP_Node_517",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92518_FeatName",
+  "en": "SP_Node_518",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92519_FeatName",
+  "en": "SP_Node_519",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92520_FeatName",
+  "en": "SP_Node_520",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92521_FeatName",
+  "en": "SP_Node_521",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92522_FeatName",
+  "en": "SP_Node_522",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92523_FeatName",
+  "en": "SP_Node_523",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92524_FeatName",
+  "en": "SP_Node_524",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92525_FeatName",
+  "en": "SP_Node_525",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92526_FeatName",
+  "en": "SP_Node_526",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92527_FeatName",
+  "en": "SP_Node_527",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92528_FeatName",
+  "en": "SP_Node_528",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92529_FeatName",
+  "en": "SP_Node_529",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_92530_FeatName",
+  "en": "SP_Node_530",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_91910_FeatName",
+  "en": "SP_TreeLock_STR",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_91911_FeatName",
+  "en": "SP_TreeLock_AGI",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_91912_FeatName",
+  "en": "SP_TreeLock_VIT",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_91913_FeatName",
+  "en": "SP_TreeLock_AUT",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_91914_FeatName",
+  "en": "SP_TreeLock_GRI",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_91915_FeatName",
+  "en": "SP_TreeLock_EXP",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_91916_FeatName",
+  "en": "SP_WarPartyRule",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_91930_FeatName",
+  "en": "SP_MajorCost_1",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_91931_FeatName",
+  "en": "SP_MajorCost_3",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_91932_FeatName",
+  "en": "SP_MajorCost_4",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_91933_FeatName",
+  "en": "SP_MajorCost_5",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_91934_FeatName",
+  "en": "SP_MajorCost_6",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_91920_FeatName",
+  "en": "SP_XPMult_0_25",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_91921_FeatName",
+  "en": "SP_XPMult_0_5",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_91922_FeatName",
+  "en": "SP_XPMult_0_75",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_91923_FeatName",
+  "en": "SP_XPMult_1_5",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_91924_FeatName",
+  "en": "SP_XPMult_2",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_91925_FeatName",
+  "en": "SP_XPMult_3",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_91926_FeatName",
+  "en": "SP_XPMult_5",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_91927_FeatName",
+  "en": "SP_XPMult_10",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_91940_FeatName",
+  "en": "SP_MaxLevel_25",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_91941_FeatName",
+  "en": "SP_MaxLevel_50",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_91942_FeatName",
+  "en": "SP_MaxLevel_75",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_91943_FeatName",
+  "en": "SP_MaxLevel_150",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_91944_FeatName",
+  "en": "SP_MaxLevel_200",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "FeatTable_91945_FeatName",
+  "en": "SP_MaxLevel_300",
+  "already": false
+ },
+ {
+  "ns": "",
+  "key": "RecipesTable_91900_RecipeName",
+  "en": "Potion of Paragon Memory",
+  "already": false,
+  "vi": "Thuốc Ký Ức Paragon"
+ },
+ {
+  "ns": "",
+  "key": "RecipesTable_91900_ShortDesc",
+  "en": "A potion that resets Paragon points",
+  "already": false,
+  "vi": "Thuốc đặt lại điểm Paragon"
+ },
+ {
+  "ns": "",
+  "key": "RecipesTable_91901_RecipeName",
+  "en": "Legendary Repair Kit",
+  "already": false,
+  "vi": "Bộ Sửa Đồ Huyền Thoại"
+ },
+ {
+  "ns": "",
+  "key": "RecipesTable_91901_ShortDesc",
+  "en": "Fully restores your most damaged equipped legendary item",
+  "already": false,
+  "vi": "Sửa đầy món huyền thoại hư hại nặng nhất bạn đang mặc"
+ },
+ {
+  "ns": "",
+  "key": "RecipesTable_91902_RecipeName",
+  "en": "Legendary Weapon Repair Kit",
+  "already": false,
+  "vi": "Bộ Sửa Vũ Khí Huyền Thoại"
+ },
+ {
+  "ns": "",
+  "key": "RecipesTable_91902_ShortDesc",
+  "en": "Drag onto a legendary weapon or tool to mend it",
+  "already": false,
+  "vi": "Kéo thả lên vũ khí hoặc công cụ huyền thoại để sửa"
+ },
+ {
+  "ns": "",
+  "key": "RecipesTable_91903_RecipeName",
+  "en": "Legendary Armor Repair Kit",
+  "already": false,
+  "vi": "Bộ Sửa Giáp Huyền Thoại"
+ },
+ {
+  "ns": "",
+  "key": "RecipesTable_91903_ShortDesc",
+  "en": "Drag onto a piece of legendary armor to mend it",
+  "already": false,
+  "vi": "Kéo thả lên món giáp huyền thoại để sửa"
+ },
+ {
+  "ns": "",
+  "key": "ItemTable_91900_Name",
+  "en": "Potion of Paragon Memory",
+  "already": false,
+  "vi": "Thuốc Ký Ức Paragon"
+ },
+ {
+  "ns": "",
+  "key": "ItemTable_91900_ShortDesc",
+  "en": "A potion that resets Paragon points",
+  "already": false,
+  "vi": "Thuốc đặt lại điểm Paragon"
+ },
+ {
+  "ns": "",
+  "key": "ItemTable_91900_LongDesc",
+  "en": "<LoreItalics>The paragon's path is not carved in stone.</>\n\nThis brew unbinds the pattern of mastery itself, returning every Paragon point for reallocation. What was learned beyond the limits of mortal growth is never forgotten - only rearranged.",
+  "already": false,
+  "vi": "<LoreItalics>Con đường paragon không khắc trên đá.</>\n\nThứ thuốc này tháo bỏ chính khuôn mẫu của sự thành thạo, trả lại mọi điểm Paragon để phân bổ lại. Những gì đã học vượt quá giới hạn của người phàm không bao giờ bị quên - chỉ được sắp xếp lại."
+ },
+ {
+  "ns": "",
+  "key": "ItemTable_91901_Name",
+  "en": "Legendary Repair Kit",
+  "already": false,
+  "vi": "Bộ Sửa Đồ Huyền Thoại"
+ },
+ {
+  "ns": "",
+  "key": "ItemTable_91901_ShortDesc",
+  "en": "Fully restores your most damaged equipped legendary item",
+  "already": false,
+  "vi": "Sửa đầy món huyền thoại hư hại nặng nhất bạn đang mặc"
+ },
+ {
+  "ns": "",
+  "key": "ItemTable_91901_LongDesc",
+  "en": "Relics of the ancients were never meant to be mended by mortal hands - yet the Legendary Tinker knows the old ways. Use it and the most worn legendary you wear is made whole again.",
+  "already": false,
+  "vi": "Những di vật cổ xưa vốn không dành cho bàn tay phàm nhân sửa chữa - nhưng Thợ Sửa Huyền Thoại biết những cách cũ. Dùng nó và món huyền thoại sờn nhất bạn đang mặc sẽ lành lặn trở lại."
+ },
+ {
+  "ns": "",
+  "key": "ItemTable_41037_FirstModifier",
+  "en": "Weapon Repair",
+  "already": false,
+  "vi": "Sửa Vũ Khí"
+ },
+ {
+  "ns": "",
+  "key": "ItemTable_91902_Name",
+  "en": "Legendary Weapon Repair Kit",
+  "already": false,
+  "vi": "Bộ Sửa Vũ Khí Huyền Thoại"
+ },
+ {
+  "ns": "",
+  "key": "ItemTable_91902_ShortDesc",
+  "en": "Drag onto a legendary weapon or tool to mend it",
+  "already": false,
+  "vi": "Kéo thả lên vũ khí hoặc công cụ huyền thoại để sửa"
+ },
+ {
+  "ns": "",
+  "key": "ItemTable_91902_LongDesc",
+  "en": "Relics of the ancients were never meant to be mended by mortal hands - yet the Legendary Tinker knows the old ways. Drag it onto a worn legendary weapon or tool to make it whole again.",
+  "already": false,
+  "vi": "Những di vật cổ xưa vốn không dành cho bàn tay phàm nhân sửa chữa - nhưng Thợ Sửa Huyền Thoại biết những cách cũ. Kéo nó lên vũ khí hoặc công cụ huyền thoại đã sờn để làm nó lành lặn trở lại."
+ },
+ {
+  "ns": "",
+  "key": "ItemTable_91903_Name",
+  "en": "Legendary Armor Repair Kit",
+  "already": false,
+  "vi": "Bộ Sửa Giáp Huyền Thoại"
+ },
+ {
+  "ns": "",
+  "key": "ItemTable_91903_ShortDesc",
+  "en": "Drag onto a piece of legendary armor to mend it",
+  "already": false,
+  "vi": "Kéo thả lên món giáp huyền thoại để sửa"
+ },
+ {
+  "ns": "",
+  "key": "ItemTable_91903_LongDesc",
+  "en": "Relics of the ancients were never meant to be mended by mortal hands - yet the Legendary Tinker knows the old ways. Drag it onto a worn piece of legendary armor to make it whole again.",
+  "already": false,
+  "vi": "Những di vật cổ xưa vốn không dành cho bàn tay phàm nhân sửa chữa - nhưng Thợ Sửa Huyền Thoại biết những cách cũ. Kéo nó lên món giáp huyền thoại đã sờn để làm nó lành lặn trở lại."
+ },
+ {
+  "ns": "",
+  "key": "ItemTable_41040_FirstModifier",
+  "en": "Armor Repair",
+  "already": false,
+  "vi": "Sửa Giáp"
+ }
+]
