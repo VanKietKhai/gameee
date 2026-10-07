@@ -176,7 +176,9 @@ public sealed class LoadErrorSignatureTests
     {
         var withoutSignatures = ValidatedCatalog.Current with
         {
-            LoadErrorBaselines = ModBootGates.LoadErrorBaselines.Where(b => b.Signatures is null).ToList()
+            LoadErrorBaselines = ModBootGates.LoadErrorBaselines.Where(b => b.Signatures is null).ToList(),
+            // The priest-variant noise kind was added after Phase 2 (operator decision A, 2026-10-07).
+            BaseGameNoise = ModBootGates.BaseGameNoise.Where(k => k.Id != "SPAWNTABLE-PRIEST-VARIANT").ToList()
         };
 
         Assert.DoesNotContain("Signatures", System.Text.Json.JsonSerializer.Serialize(withoutSignatures), StringComparison.Ordinal);

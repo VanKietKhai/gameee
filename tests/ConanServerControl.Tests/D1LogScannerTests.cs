@@ -141,6 +141,24 @@ public sealed class D1LogScannerTests
     }
 
     [Fact]
+    public void Vanilla_priest_variant_weighted_tables_are_known_but_nothing_else_is()
+    {
+        const string prefix = "[2026.10.07-02.49.21:625][  0]SpawnTable: Error: Data: USpawnTableLibrary::SpawnNPCFromWeightedTable - could not find weighted table with id: ";
+        foreach (var id in new[] { "Exile_Priest_4_Hyrkanian", "Exile_Priest_4_Nordheimer", "Exile_OrchidPriest_4_Nordheimer" })
+        {
+            Assert.Equal("SPAWNTABLE-PRIEST-VARIANT", ModBootGates.MatchBaseGameNoise(prefix + id));
+            Assert.Empty(ModBootGates.SelectProblemLines([prefix + id], []));
+        }
+
+        // Other tiers, other spawn families, suffixes and trailing text must stay visible.
+        foreach (var id in new[] { "Exile_Priest_3_Hyrkanian", "Exile_Fighter_4_Hyrkanian", "Exile_Priest_4_", "Exile_Priest_4_Hyrkanian_2", "Exile_Priest_4_Hyrkanian x" })
+        {
+            Assert.Null(ModBootGates.MatchBaseGameNoise(prefix + id));
+            Assert.Equal(prefix + id, Assert.Single(ModBootGates.SelectProblemLines([prefix + id], [])));
+        }
+    }
+
+    [Fact]
     public void The_new_D1_message_and_near_misses_of_baseline_kinds_are_never_baseline()
     {
         Assert.All(D1Errors, line => Assert.Null(ModBootGates.MatchBaseGameNoise(line)));
