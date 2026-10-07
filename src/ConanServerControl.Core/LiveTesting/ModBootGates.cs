@@ -324,6 +324,10 @@ public static class ModBootGates
         // vanilla 3.0.0 CL-378787: Exile_OrchidPriest_4_Nordheimer); Exile_Priest_4_Hyrkanian seen in modded boots,
         // including before Mod #14 existed. Only these two id families; any other id stays unknown.
         Noise("SPAWNTABLE-PRIEST-VARIANT", @"^SpawnTable: Error: Data: USpawnTableLibrary::SpawnNPCFromWeightedTable - could not find weighted table with id: Exile_(?:Orchid)?Priest_4_[A-Za-z]+$"),
+        // Vanilla temperature system on a world with player activity (2026-10-07, Conan 3.0.0 CL-378787): logged at
+        // startup frames ~3-20 by a NO-MOD boot of the post-play staging world, absent on the fresh pre-play world.
+        // Only the two shipped heat-map assets; any other path stays unknown.
+        Noise("TEMPERATURE-HEATMAP-NOT-LOADED", @"^Main: Error: Data: Energy source heat map not loaded ""/Game/Systems/Temperature/TemperatureHeatMapData(?:_Siptah)?""$"),
         Noise("BASESPAWNER-MODULE", @"^LogBaseSpawner: Error: ABaseSpawner::TickSpawnBase - Failed to spawn module from BP_HL_Build\w+_T2_C\.$"),
         Noise("BUILDING-STABILITY", @"^building: Error: Code: ABuildingBase::AddModule_Internal - Removing placed module that did not manage to find stability\.$")
     ];

@@ -159,6 +159,23 @@ public sealed class D1LogScannerTests
     }
 
     [Fact]
+    public void Vanilla_temperature_heat_map_lines_are_known_but_other_assets_are_not()
+    {
+        const string prefix = "[2026.10.07-05.44.36:135][  3]Main: Error: Data: Energy source heat map not loaded ";
+        foreach (var asset in new[] { "\"/Game/Systems/Temperature/TemperatureHeatMapData\"", "\"/Game/Systems/Temperature/TemperatureHeatMapData_Siptah\"" })
+        {
+            Assert.Equal("TEMPERATURE-HEATMAP-NOT-LOADED", ModBootGates.MatchBaseGameNoise(prefix + asset));
+            Assert.Empty(ModBootGates.SelectProblemLines([prefix + asset], []));
+        }
+
+        foreach (var asset in new[] { "\"/Game/Mods/X/TemperatureHeatMapData\"", "\"/Game/Systems/Temperature/TemperatureHeatMapData_Custom\"", "/Game/Systems/Temperature/TemperatureHeatMapData" })
+        {
+            Assert.Null(ModBootGates.MatchBaseGameNoise(prefix + asset));
+            Assert.Equal(prefix + asset, Assert.Single(ModBootGates.SelectProblemLines([prefix + asset], [])));
+        }
+    }
+
+    [Fact]
     public void The_new_D1_message_and_near_misses_of_baseline_kinds_are_never_baseline()
     {
         Assert.All(D1Errors, line => Assert.Null(ModBootGates.MatchBaseGameNoise(line)));

@@ -1,4 +1,4 @@
-# 14 -> 19 mods on staging (operator, 2026-10-07): verified backup, read-only MQ01 persistence check on the backup
+# 14 -> 18 mods on staging (operator, 2026-10-07; Tot ! Enhanced Sudo dropped after the 19-mod run): verified backup, read-only MQ01 persistence check on the backup
 # copy, import the 5 new Enhanced mods through the harness Local pipeline (appended after MQ14), 19-mod validation boot.
 $ErrorActionPreference = 'Stop'
 $env:CSC_LIVE_TESTS = '1'; $env:CSC_LIVE_ROOT = 'E:\CSC-M3-Live'
@@ -6,7 +6,7 @@ $env:CSC_SERVER_DIR = 'D:\steamnew\steamapps\common\Conan Exiles Dedicated Serve
 $env:CSC_CLIENT_ROOT = 'D:\steamnew\steamapps\common\Conan Exiles'
 $exe = 'E:\github\gameee\tests\ConanServerControl.LiveHarness\bin\Release\net8.0\ConanServerControl.LiveHarness.exe'
 $mods = "$env:CSC_SERVER_DIR\ConanSandbox\Mods"
-$out = 'E:\CSC-M3-Live\live-test\install-19'
+$out = 'E:\CSC-M3-Live\live-test\install-18'
 New-Item -ItemType Directory -Force $out | Out-Null
 function Say($m) { $l = "[$(Get-Date -Format HH:mm:ss)] $m"; Write-Host $l; Add-Content "$out\install.log" $l }
 function Offline { if (@(Get-Process | ? { $_.ProcessName -match 'ConanSandbox|LiveHarness' }).Count) { throw 'Conan/harness process running' } }
@@ -35,7 +35,6 @@ Remove-Item $copy -Force
 $src = [ordered]@{
   'Better_Thrall_ICONS'      = 'E:\CSC-M3-Live\mod-sources\Better_Thrall_ICONS\Better_Thrall_ICONS.pak'
   'Better_Tavern_PATRONS_E'  = 'E:\CSC-M3-Live\mod-sources\Better_Tavern_PATRONS_E\Better_Tavern_PATRONS_E.pak'
-  'ModAdmin'                 = 'E:\CSC-M3-Live\mod-sources\ModAdmin\ModAdmin.pak'
   'ModControlPanel'          = 'E:\CSC-M3-Live\mod-sources\ModControlPanel\ModControlPanel.pak'
   'IdeaPoet_EditAppearance'  = 'E:\CSC-M3-Live\mod-sources\IdeaPoet_EditAppearance\IdeaPoet_EditAppearance.pak'
 }
@@ -43,8 +42,8 @@ $i = 2
 foreach ($k in $src.Keys) { $i++; if ((Run ("{0:D2}-import-$k" -f $i) @('import-local', $src[$k])) -ne 0) { throw "import $k failed" } }
 $list = Get-Content "$mods\modlist.txt" | ? { $_.Trim() }
 Say "MODLIST ($($list.Count)): $($list -join ' | ')"
-if ($list.Count -ne 19) { throw 'expected 19 mods after import' }
+if ($list.Count -ne 18) { throw 'expected 18 mods after import' }
 
-$b = Run '10-validation-boot' @('mod-boot', '--hold', '180', '--batch', 'cl378787-19mod-validation')
+$b = Run '10-validation-boot' @('mod-boot', '--hold', '180', '--batch', 'cl378787-18mod-validation')
 Offline
 Say "VALIDATION boot exit=$b"

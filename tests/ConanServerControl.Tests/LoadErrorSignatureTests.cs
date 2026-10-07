@@ -178,7 +178,7 @@ public sealed class LoadErrorSignatureTests
         {
             LoadErrorBaselines = ModBootGates.LoadErrorBaselines.Where(b => b.Signatures is null).ToList(),
             // The priest-variant noise kind was added after Phase 2 (operator decision A, 2026-10-07).
-            BaseGameNoise = ModBootGates.BaseGameNoise.Where(k => k.Id != "SPAWNTABLE-PRIEST-VARIANT").ToList()
+            BaseGameNoise = ModBootGates.BaseGameNoise.Where(k => k.Id is not "SPAWNTABLE-PRIEST-VARIANT" and not "TEMPERATURE-HEATMAP-NOT-LOADED").ToList()
         };
 
         Assert.DoesNotContain("Signatures", System.Text.Json.JsonSerializer.Serialize(withoutSignatures), StringComparison.Ordinal);
