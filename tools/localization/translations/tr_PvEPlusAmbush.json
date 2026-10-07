@@ -1,0 +1,258 @@
+[
+ {
+  "ns": "",
+  "key": "FCA3658E4A9DEB60EA576D9998F63977",
+  "en": "Example Help Text",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "C0A2C439472A4B6D785DF3A87245E390",
+  "en": "Click For Help",
+  "already": null,
+  "vi": "Bấm để xem trợ giúp"
+ },
+ {
+  "ns": "",
+  "key": "C58DD6B1457B3A8AB161A4A22D0DC925",
+  "en": "Example Text Line 1{LineBreak}Example Text Line 2",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "6A520E224750E8809C71128447F3E48A",
+  "en": "Makes the Additional Ambush setting require a defined number of players on the server in order to work. ",
+  "already": null,
+  "vi": "Khiến thiết lập Phục kích bổ sung chỉ hoạt động khi server có đủ số người chơi quy định. "
+ },
+ {
+  "ns": "",
+  "key": "E74B0D274A65A068627227807D0C57A5",
+  "en": "This despawns the Ambush after a period of time when the Ambush is unable to find another viable target. ",
+  "already": null,
+  "vi": "Phục kích sẽ biến mất sau một khoảng thời gian nếu không tìm được mục tiêu khác. "
+ },
+ {
+  "ns": "",
+  "key": "1F6325D34C7F1FCF58EBB993A45FB232",
+  "en": "Amount of time before Ambush NPC's despawn (NPC's will immediately despawn if this timer expires when they are no longer attacking). ",
+  "already": null,
+  "vi": "Thời gian trước khi NPC phục kích biến mất (NPC sẽ biến mất ngay nếu hết giờ mà chúng không còn tấn công). "
+ },
+ {
+  "ns": "",
+  "key": "3BA2058C441E89FCC661C7B72804D8C4",
+  "en": "Ambush Chance (%):",
+  "already": null,
+  "vi": "Tỉ lệ phục kích (%):"
+ },
+ {
+  "ns": "",
+  "key": "745B139B43168E50F3B8C5B9462ECAC1",
+  "en": "Ambush Warning Time (In Seconds):",
+  "already": null,
+  "vi": "Thời gian cảnh báo phục kích (giây):"
+ },
+ {
+  "ns": "",
+  "key": "EB2785E144F007A9022B19B9D75137D8",
+  "en": "Sets the delay between when a player receives an Ambush warning and the actual spawn.",
+  "already": null,
+  "vi": "Đặt khoảng trễ giữa lúc người chơi nhận cảnh báo phục kích và lúc kẻ địch xuất hiện."
+ },
+ {
+  "ns": "",
+  "key": "011D1D454CF1A56F5660A0A5684AE4AD",
+  "en": "Minimum Time Between Ambushes (In Seconds): ",
+  "already": null,
+  "vi": "Thời gian tối thiểu giữa các lần phục kích (giây): "
+ },
+ {
+  "ns": "",
+  "key": "68598E3348E33DDBD1C8189AC082940C",
+  "en": "Enable 'Isle of Siptah' Enemies (Default = OFF)",
+  "already": null,
+  "vi": "Bật kẻ địch 'Isle of Siptah' (Mặc định = TẮT)"
+ },
+ {
+  "ns": "",
+  "key": "52C6449F4747BDC08E12BCAF152EF7BF",
+  "en": "Enable 'Exile Lands' Enemies (Default = ON)",
+  "already": null,
+  "vi": "Bật kẻ địch 'Exiled Lands' (Mặc định = BẬT)"
+ },
+ {
+  "ns": "",
+  "key": "516AB0C344741BDAE6872B97F6E78185",
+  "en": "Additional Ambush Chance (Percentage):",
+  "already": null,
+  "vi": "Tỉ lệ phục kích bổ sung (%):"
+ },
+ {
+  "ns": "",
+  "key": "D0D8B3294F083F9E63F680941F1D9507",
+  "en": "Percentage of additional ambushes during an ambush event.",
+  "already": null,
+  "vi": "Tỉ lệ phục kích bổ sung trong một đợt phục kích."
+ },
+ {
+  "ns": "",
+  "key": "13F683924F01AC496BFFDAAA6200A346",
+  "en": "Minimum Number of Enemies: ",
+  "already": null,
+  "vi": "Số kẻ địch tối thiểu: "
+ },
+ {
+  "ns": "",
+  "key": "2435D3294CBB89CFDFF8AB880E93678F",
+  "en": "Maximum Number of Enemies: ",
+  "already": null,
+  "vi": "Số kẻ địch tối đa: "
+ },
+ {
+  "ns": "",
+  "key": "BE1E89814197A6DF286AB5B02AEE73D3",
+  "en": "Require a Minimum # of Players on Server for Additional Ambush (Default = OFF)",
+  "already": null,
+  "vi": "Yêu cầu số người chơi tối thiểu trên server cho Phục kích bổ sung (Mặc định = TẮT)"
+ },
+ {
+  "ns": "",
+  "key": "3E300A184E9F220B03AEBD9E555D45C9",
+  "en": "Minimum # of Players Needed on Server for Additional Ambush: ",
+  "already": null,
+  "vi": "Số người chơi tối thiểu trên server cho Phục kích bổ sung: "
+ },
+ {
+  "ns": "",
+  "key": "7315CC374AEA89316FFCA6B6F56549A9",
+  "en": "Set the Minimum amount of players needed on the server for the additional ambush setting to work. ",
+  "already": null,
+  "vi": "Đặt số người chơi tối thiểu trên server để thiết lập phục kích bổ sung hoạt động. "
+ },
+ {
+  "ns": "",
+  "key": "53CE58CF45C08DEDB874D1B4456ACE4D",
+  "en": "Enable Ambush Despawner (Default = ON)",
+  "already": null,
+  "vi": "Bật tự xóa phục kích (Mặc định = BẬT)"
+ },
+ {
+  "ns": "",
+  "key": "C836FD464E855812914A3D986C1A9335",
+  "en": "Ambush NPC Despawn Time (In Seconds):",
+  "already": null,
+  "vi": "Thời gian NPC phục kích biến mất (giây):"
+ },
+ {
+  "ns": "",
+  "key": "8D5E0FF0453C836D6AAABE9096069AC6",
+  "en": "Maximum Spawn Distance:",
+  "already": null,
+  "vi": "Khoảng cách xuất hiện tối đa:"
+ },
+ {
+  "ns": "",
+  "key": "9D40C4324D55E8ADC3AAE9A1F1E87524",
+  "en": "Minimum Spawn Distance:",
+  "already": null,
+  "vi": "Khoảng cách xuất hiện tối thiểu:"
+ },
+ {
+  "ns": "",
+  "key": "DE53F96F48AB21945DD762A4B87E9E1C",
+  "en": "Maximum Extra Time Between Ambushes (In Seconds):",
+  "already": null,
+  "vi": "Thời gian ngẫu nhiên thêm tối đa giữa các lần phục kích (giây):"
+ },
+ {
+  "ns": "",
+  "key": "D29A7CD14D524E7582D19285C1B78F77",
+  "en": "Enable 'Maelstorm' Monsters Found on 'Isle of Siptah' (Default = OFF)",
+  "already": null,
+  "vi": "Bật quái 'Maelstrom' trên 'Isle of Siptah' (Mặc định = TẮT)"
+ },
+ {
+  "ns": "",
+  "key": "C1A661F243DFC125CA0369B60D514F78",
+  "en": "Admin Options",
+  "already": null,
+  "vi": "Tùy chọn Admin"
+ },
+ {
+  "ns": "",
+  "key": "CAB149CF436DF3CD3D3A798386102B4F",
+  "en": "Enable Enemy Multiplier Curve Above Level 60 (The Higher the Player Level, the More Additional Spawns They Get) (Default = ON)",
+  "already": null,
+  "vi": "Bật đường cong nhân số kẻ địch trên cấp 60 (Cấp càng cao, kẻ địch xuất hiện thêm càng nhiều) (Mặc định = BẬT)"
+ },
+ {
+  "ns": "",
+  "key": "BC628CE442302A5947B24CB61E18FFE5",
+  "en": "Increases the number of enemies that will ambush if the player is above level 90 by 2x,  level 150 by 3x, and level 210 by 4x. ",
+  "already": null,
+  "vi": "Tăng số kẻ địch phục kích lên 2x nếu người chơi trên cấp 90, 3x trên cấp 150 và 4x trên cấp 210. "
+ },
+ {
+  "ns": "",
+  "key": "3DF6CBC2470EF0FA11023D8101BB376C",
+  "en": "Enable Progression Spawns (Default = ON)",
+  "already": null,
+  "vi": "Bật kẻ địch theo tiến trình (Mặc định = BẬT)"
+ },
+ {
+  "ns": "",
+  "key": "0CF9AF43455A6EEB74245BAAC1E340DA",
+  "en": "Disabling this will rotate in ambush enemies as possible spawns within level range and below. ",
+  "already": null,
+  "vi": "Tắt mục này sẽ luân phiên kẻ địch phục kích trong khoảng cấp độ hiện tại và thấp hơn. "
+ },
+ {
+  "ns": "",
+  "key": "3256AFE14354369B9DF32E9406576A10",
+  "en": "Minimum Time Between Ambushes: {LineBreak}     * This represents the minimum amount of time between ambushes.  {LineBreak}     * Enter in seconds. (ex. 1200 = 20 mins (1200/60)) {LineBreak}{LineBreak}Maximum Extra Time Between Ambushes:{LineBreak}    * This represent the additional amount of random time between ambushes.  This allows you to randomize the ambush clock.{LineBreak}    * Enter in seconds. (ex. 600 = 10 mins(600/60)){LineBreak}{LineBreak}Minimum Spawn Distance:{LineBreak}    * This is a base minimum number for spawn closeness.  The spawner will choose a random distance between the max and min.{LineBreak}    * Choose a slider point, the lower the number the closer the spawn.{LineBreak}    * Note: Setting this number below 20 may result in NPCs spawning right on top of you, pinning you in a position where you cannot move.{LineBreak}{LineBreak}Max Spawn Distance:{LineBreak}     * This is a base maximum for spawn distance.  The spawner will choose a random distance between the max and min.{LineBreak}     * Choose a slider point, the lower the number the closer the spawn.{LineBreak}{LineBreak}Ambush Warning Time:{LineBreak}     * This represents the amount of time between the ambush horn and NPCs spawning in.{LineBreak}     * Enter in seconds.{LineBreak}{LineBreak}Minimum Number of Enemies:{LineBreak}    * The least amount of enemies that can spawn during a single ambush spawn.{LineBreak}{LineBreak}Maximum Number of Enemies:{LineBreak}    * The maximum amount of enemies that can spawn during a single ambush spawn.{LineBreak}{LineBreak}Enable Ambush Despawner: {LineBreak}     *Despawns ambush spawned enemies after a period of time. {LineBreak}{LineBreak}Ambush NPC Despawn Time: {LineBreak}     *Will despawn enemies after the time has expired. Time is in seconds. {LineBreak}{LineBreak}Enable 'Exile Lands' Enemies:{LineBreak}     * Enabling this toggle will allow enemies unique to the 'Exile Lands' map to spawn.{LineBreak}     * For example, Frost Giants, Yetis, and Sandbeasts.{LineBreak}{LineBreak}Enable 'Isle of Siptah' Enemies LineBreak}     * Enabling this toggle will allow monsters unique to the 'Isle of Siptah' map to spawn.{LineBreak}     * For example, Devolved monsters, Bigfoot, and Fiends.{LineBreak}{LineBreak}Enable 'Maelstorm' Specific Monsters Found on 'Isle of Siptah':{LineBreak}     * Enabling this toggle will allow monsters unique to the 'Maelstorm' event found on the 'Isle of Siptah' map to spawn.{LineBreak}     * For example, Doels, Ghouls, and Blood Defilers.{LineBreak}{LineBreak}Enable Enemy Multiplier Curve Above Level 60:{LineBreak}    * Use this toggle to increase the number of enemies that will spawn the higher the player gets above level 60",
+  "already": null,
+  "vi": "Thời gian tối thiểu giữa các lần phục kích: {LineBreak}     * Khoảng thời gian tối thiểu giữa các lần phục kích.  {LineBreak}     * Nhập theo giây. (vd. 1200 = 20 phút (1200/60)) {LineBreak}{LineBreak}Thời gian ngẫu nhiên thêm tối đa:{LineBreak}    * Khoảng thời gian ngẫu nhiên cộng thêm giữa các lần phục kích, giúp ngẫu nhiên hóa đồng hồ phục kích.{LineBreak}    * Nhập theo giây. (vd. 600 = 10 phút (600/60)){LineBreak}{LineBreak}Khoảng cách xuất hiện tối thiểu:{LineBreak}    * Mức tối thiểu cho độ gần khi xuất hiện. Bộ sinh quái sẽ chọn khoảng cách ngẫu nhiên giữa tối đa và tối thiểu.{LineBreak}    * Chọn mức trên thanh trượt, số càng nhỏ quái xuất hiện càng gần.{LineBreak}    * Lưu ý: Đặt dưới 20 có thể khiến NPC xuất hiện ngay trên đầu bạn, kẹt bạn không di chuyển được.{LineBreak}{LineBreak}Khoảng cách xuất hiện tối đa:{LineBreak}     * Mức tối đa cho khoảng cách xuất hiện. Bộ sinh quái sẽ chọn khoảng cách ngẫu nhiên giữa tối đa và tối thiểu.{LineBreak}     * Chọn mức trên thanh trượt, số càng nhỏ quái xuất hiện càng gần.{LineBreak}{LineBreak}Thời gian cảnh báo phục kích:{LineBreak}     * Khoảng thời gian giữa tiếng tù và phục kích và lúc NPC xuất hiện.{LineBreak}     * Nhập theo giây.{LineBreak}{LineBreak}Số kẻ địch tối thiểu:{LineBreak}    * Số kẻ địch ít nhất có thể xuất hiện trong một đợt phục kích.{LineBreak}{LineBreak}Số kẻ địch tối đa:{LineBreak}    * Số kẻ địch nhiều nhất có thể xuất hiện trong một đợt phục kích.{LineBreak}{LineBreak}Bật tự xóa phục kích: {LineBreak}     * Xóa kẻ địch phục kích sau một khoảng thời gian. {LineBreak}{LineBreak}Thời gian NPC phục kích biến mất: {LineBreak}     * Kẻ địch sẽ biến mất khi hết thời gian. Tính bằng giây. {LineBreak}{LineBreak}Bật kẻ địch 'Exiled Lands':{LineBreak}     * Cho phép kẻ địch riêng của bản đồ 'Exiled Lands' xuất hiện.{LineBreak}     * Ví dụ: Người Khổng Lồ Băng, Yeti và Quái Cát.{LineBreak}{LineBreak}Bật kẻ địch 'Isle of Siptah':{LineBreak}     * Cho phép quái riêng của bản đồ 'Isle of Siptah' xuất hiện.{LineBreak}     * Ví dụ: quái thoái hóa, Bigfoot và Fiend.{LineBreak}{LineBreak}Bật quái 'Maelstrom' trên 'Isle of Siptah':{LineBreak}     * Cho phép quái riêng của sự kiện 'Maelstrom' trên bản đồ 'Isle of Siptah' xuất hiện.{LineBreak}     * Ví dụ: Doel, Ghoul và Blood Defiler.{LineBreak}{LineBreak}Bật đường cong nhân số kẻ địch trên cấp 60:{LineBreak}    * Dùng tùy chọn này để tăng số kẻ địch xuất hiện khi người chơi càng vượt cấp 60"
+ },
+ {
+  "ns": "",
+  "key": "89320357490A57AED78A2B924B799954",
+  "en": "Makes the Additional Ambush setting require a defined number of players on the server in order to work. ",
+  "already": null,
+  "vi": "Khiến thiết lập Phục kích bổ sung chỉ hoạt động khi server có đủ số người chơi quy định. "
+ },
+ {
+  "ns": "",
+  "key": "FA597C4E4AF5CEA6E639C587F048CC7B",
+  "en": "Restore Defaults",
+  "already": null,
+  "vi": "Khôi phục mặc định"
+ },
+ {
+  "ns": "",
+  "key": "91F8834248E998491366EB9B442E59EE",
+  "en": "Example MultiUser Widget",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "C086E3CD4948C4D90071E29FB600D810",
+  "en": "Save",
+  "already": null,
+  "vi": "Lưu"
+ },
+ {
+  "ns": "",
+  "key": "783C4C81430F6A73BABA7F9ED99EA73F",
+  "en": "Cancel",
+  "already": null,
+  "vi": "Hủy"
+ },
+ {
+  "ns": "",
+  "key": "A28E10034114970C6B67CCB095911D58",
+  "en": "This entry should be mostly temporary until Funcom fixes Warmaker to qualify as a dungeon again.",
+  "already": null,
+  "vi": "Mục này chủ yếu là tạm thời cho đến khi Funcom sửa Warmaker để được tính là dungeon trở lại."
+ }
+]

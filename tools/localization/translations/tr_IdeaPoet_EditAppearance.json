@@ -1,0 +1,1216 @@
+[
+ {
+  "ns": "",
+  "key": "B07439C247112CEACD00849C50960054",
+  "en": "Male",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "2BA39C374C6A4C167467629D4BFA0E34",
+  "en": "Has Component",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "A5C6A0E54E2062805123C697E26B1DE9",
+  "en": "Invalid",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "5B128C0C42D1EE35B77D61B3C030AF43",
+  "en": "Skin",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "5EB5626D468E9463FFF64F9DA6FDC583",
+  "en": "Hair",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "6A26C1A64A9A020E1321F4832E9148E5",
+  "en": "HairEnhanced",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "39E43BB547ABA8667DEB2AB932FC6660",
+  "en": "BodyHair",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "3310BC5D4DED44516E65729B11ED3BB7",
+  "en": "LeftInnerIris",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "F57645E34BAC60E194156898D1D479EB",
+  "en": "LeftMiddleIris",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "0BCB91D948E680B455445C88132C1493",
+  "en": "LeftOuterIris",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "CE2218294D9D25A0EC366D98C5AC19DB",
+  "en": "RightInnerIris",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "4FE9BDBC4CDA04885FFA7C8BCFED3D54",
+  "en": "RightMiddleIris",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "C17C4D024471EDC98562C097B91DCB0A",
+  "en": "RightOuterIris",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "57F06A8245AD6D1165075BA47C3DC6C4",
+  "en": "Eyebrows",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "0DEBBC9A40790C5DA14D45B6A3FF8890",
+  "en": "EyeMakeup",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "4FA1B3D448766C2FD66D298FA96E1D2D",
+  "en": "LipMakeup",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "6BF2A46D402118BFE2666A85C8D6B49E",
+  "en": "Warpaint",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "B82BB2D6464D7841A169D18CFBC68BEA",
+  "en": "HelmetDye1",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "9A6C68AF44F75551AEF5D7AF6A448370",
+  "en": "HelmetDye2",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "A6A47613470645C3DA1A3D88243F8120",
+  "en": "HelmetDye3",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "204DCC024468918830B04D8E85597FA6",
+  "en": "HelmetDye4",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "48E32E41410CA6D22D8446BB0474A9C2",
+  "en": "ForearmDye1",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "E02CC3794B31F5606778688CFD029B3D",
+  "en": "ForearmDye2",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "15ABEC5A4FDF722F0EBE56B551154A19",
+  "en": "ForearmDye3",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "87CE2D1D46D48AED75ED228371F08AF0",
+  "en": "ForearmDye4",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "67B97C254C299AC8615397A64F2CEFBD",
+  "en": "HandsDye1",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "2B6D82004A0454AC01C589B04D21AA3C",
+  "en": "HandsDye2",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "958968B7408170265BA0A3A7981EA571",
+  "en": "HandsDye3",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "98BA7FFA43D47696DAF93ABFE4688A04",
+  "en": "HandsDye4",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "1C6A27364FDA65E0EE41E4AA4F60D0BC",
+  "en": "UpperBodyDye1",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "0EBF6FCE44275E6B596B808C7424FB67",
+  "en": "UpperBodyDye2",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "7F1E00FC4E000A6445D4BE892E752E5F",
+  "en": "UpperBodyDye3",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "17316B8044099339F85C9F88FEF2D594",
+  "en": "UpperBodyDye4",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "10272A2B45E2F44D7C1F01963C582DC5",
+  "en": "LowerBodyDye1",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "B1A785124F90C718AC93278711019F23",
+  "en": "LowerBodyDye2",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "6E2E25FD4A7D96C660A977A87070C304",
+  "en": "LowerBodyDye3",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "2D7DDAF94EA548C0ACA6319EE842E061",
+  "en": "LowerBodyDye4",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "652E652A49D18C7A2CFD82A0D0188851",
+  "en": "LegsDye1",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "057869894CB8FDB273F2FF9317B76B9C",
+  "en": "LegsDye2",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "F7F1AC0840C6EBFD66E219991600996F",
+  "en": "LegsDye3",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "8DC0C9164AD7CB97209827B84815CE0A",
+  "en": "LegsDye4",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "3D67F15E487E36FB0FC274AD01568E04",
+  "en": "FeetDye1",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "C1A6F018408C9A49B3781086E7930EBF",
+  "en": "FeetDye2",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "25B415A0484BB1AE4CC718917819CA17",
+  "en": "FeetDye3",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "DC9D19F544910585E769C99DA85FFC97",
+  "en": "FeetDye4",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "1D748D9A4555A3D3FF2C23B8C819F441",
+  "en": "FacialHair",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "19621AD34C2AE57D3604EAB5D18B8F69",
+  "en": "Top",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "9B502A9D4180B19B522795A38B2A6E3B",
+  "en": "Up",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "126E2B5D411EA3EBBB2C648084D7CA2F",
+  "en": "Down",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "1BC011204771283AD02B2A90AE59229E",
+  "en": "Bottom",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "0393889E487FB98603152D942CBE7DDA",
+  "en": "Eyes Scale",
+  "already": null,
+  "vi": "Cỡ mắt"
+ },
+ {
+  "ns": "",
+  "key": "D057C373494E1E5A37AFE9A490C72B75",
+  "en": "Eyes Angle",
+  "already": null,
+  "vi": "Góc mắt"
+ },
+ {
+  "ns": "",
+  "key": "C81DE31A4E203B6D11B3988C058EE784",
+  "en": "Eyes Spacing",
+  "already": null,
+  "vi": "Khoảng cách mắt"
+ },
+ {
+  "ns": "",
+  "key": "CEB10F0E4D9E8782B1F712A0DD78B74C",
+  "en": "Nose Width",
+  "already": null,
+  "vi": "Độ rộng mũi"
+ },
+ {
+  "ns": "",
+  "key": "79EAF674473BAA382A857A93F938FC59",
+  "en": "Nose Size",
+  "already": null,
+  "vi": "Cỡ mũi"
+ },
+ {
+  "ns": "",
+  "key": "D1AFD2DD4176B551CD311DBC6093D23D",
+  "en": "Nose Curve",
+  "already": null,
+  "vi": "Độ cong mũi"
+ },
+ {
+  "ns": "",
+  "key": "0BC339BF49175BDE0EDC3B80228DD95C",
+  "en": "Ears Angle",
+  "already": null,
+  "vi": "Góc tai"
+ },
+ {
+  "ns": "",
+  "key": "9964FFEB4174D25C8EC16DB2ECD5A04D",
+  "en": "Ears Size",
+  "already": null,
+  "vi": "Cỡ tai"
+ },
+ {
+  "ns": "",
+  "key": "0EC6A669479B3DA7F022EE9C1ABEE5E7",
+  "en": "Cheek Width",
+  "already": null,
+  "vi": "Độ rộng má"
+ },
+ {
+  "ns": "",
+  "key": "E466E6E44DEDE18AEBA1AC960F463597",
+  "en": "Cheek Height",
+  "already": null,
+  "vi": "Độ cao má"
+ },
+ {
+  "ns": "",
+  "key": "07491BAD4FAE7ACE35A105B03613103F",
+  "en": "Lips Size",
+  "already": null,
+  "vi": "Cỡ môi"
+ },
+ {
+  "ns": "",
+  "key": "03A8AC21413C4729E29D7CA994FF29C4",
+  "en": "Jaw Width",
+  "already": null,
+  "vi": "Độ rộng hàm"
+ },
+ {
+  "ns": "",
+  "key": "BA3DE04F4DB5886B99FB46A174F8B1A7",
+  "en": "Chin Width",
+  "already": null,
+  "vi": "Độ rộng cằm"
+ },
+ {
+  "ns": "",
+  "key": "8F2CF7E14EFB1C97C21E31ACCF1AFCB6",
+  "en": "Height",
+  "already": null,
+  "vi": "Chiều cao"
+ },
+ {
+  "ns": "",
+  "key": "AD3AD0A547D352559A676DACCCBE61B3",
+  "en": "Physique",
+  "already": null,
+  "vi": "Vóc dáng"
+ },
+ {
+  "ns": "",
+  "key": "639500474F72BD6CF664FC805F8F40F3",
+  "en": "Bust Size",
+  "already": null,
+  "vi": "Cỡ ngực"
+ },
+ {
+  "ns": "",
+  "key": "2B09F2B148B356486958628F0D86CD3C",
+  "en": "Endowment",
+  "already": null,
+  "vi": "Cỡ của quý"
+ },
+ {
+  "ns": "",
+  "key": "D5FDF76F47C562E82BCCFFA46725CF1F",
+  "en": "Eye Veins",
+  "already": null,
+  "vi": "Gân mắt"
+ },
+ {
+  "ns": "",
+  "key": "4734CD3E42D6EC76809866B484507910",
+  "en": "Body Hair Opacity",
+  "already": null,
+  "vi": "Độ đậm lông cơ thể"
+ },
+ {
+  "ns": "",
+  "key": "6C3175414182A372093591854A5FC241",
+  "en": "Helmet",
+  "already": null,
+  "vi": "Mũ"
+ },
+ {
+  "ns": "",
+  "key": "4B93C50748F87B83924D928F15C1F308",
+  "en": "Upper Body",
+  "already": null,
+  "vi": "Thân trên"
+ },
+ {
+  "ns": "",
+  "key": "98BD52CF462340EEB8FA1E9DB6DFAC17",
+  "en": "Hands",
+  "already": null,
+  "vi": "Tay"
+ },
+ {
+  "ns": "",
+  "key": "104771BE4BADE394B092EAA46214179B",
+  "en": "Lower Body",
+  "already": null,
+  "vi": "Thân dưới"
+ },
+ {
+  "ns": "",
+  "key": "DC41C12E452CA6F57462C69A23FBCBC7",
+  "en": "Feet",
+  "already": null,
+  "vi": "Chân"
+ },
+ {
+  "ns": "",
+  "key": "CF9D4CA74C2C5F03B59B3391B6B7A922",
+  "en": "Ascending",
+  "already": null,
+  "vi": "Tăng dần"
+ },
+ {
+  "ns": "",
+  "key": "2B40CEAB44943483610626A3F3744CC2",
+  "en": "Descending",
+  "already": null,
+  "vi": "Giảm dần"
+ },
+ {
+  "ns": "",
+  "key": "16C751724C0F027140086AA463C322D7",
+  "en": "Type Ascending",
+  "already": null,
+  "vi": "Loại tăng dần"
+ },
+ {
+  "ns": "",
+  "key": "E95493264937A262FBA62599BFCD6CDE",
+  "en": "Type Descending",
+  "already": null,
+  "vi": "Loại giảm dần"
+ },
+ {
+  "ns": "",
+  "key": "759CC5F54DF7B37B13C3BB82853BA4D7",
+  "en": "Not Sorted",
+  "already": null,
+  "vi": "Không sắp xếp"
+ },
+ {
+  "ns": "",
+  "key": "ABC28EA34D491E18EA1262924427B263",
+  "en": "Some New Name",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "914BE815476A4BC604C406B3824906A6",
+  "en": "Face Details",
+  "already": null,
+  "vi": "Chi tiết khuôn mặt"
+ },
+ {
+  "ns": "",
+  "key": "6649214049C3CC72DAC294843244AEDD",
+  "en": "Eyes Angle:",
+  "already": null,
+  "vi": "Góc mắt:"
+ },
+ {
+  "ns": "",
+  "key": "4B7BF7A14D32A354987AF1841472C8D8",
+  "en": "Eyes Spacing:",
+  "already": null,
+  "vi": "Khoảng cách mắt:"
+ },
+ {
+  "ns": "",
+  "key": "BF7D77214683E396F4EE639317C522BC",
+  "en": "Chin Width:",
+  "already": null,
+  "vi": "Độ rộng cằm:"
+ },
+ {
+  "ns": "",
+  "key": "8FFD28C54D7B5D7CBDD1A2AC9C8880C5",
+  "en": "Left Eye Veins:",
+  "already": null,
+  "vi": "Gân mắt trái:"
+ },
+ {
+  "ns": "",
+  "key": "BBCE14DE4E0D0AB0E4851CBA4082F5EB",
+  "en": "Right Eye Veins:",
+  "already": null,
+  "vi": "Gân mắt phải:"
+ },
+ {
+  "ns": "",
+  "key": "B1062E6B47E1B5E33AFD65A35A4E3387",
+  "en": "Nose Curve:",
+  "already": null,
+  "vi": "Độ cong mũi:"
+ },
+ {
+  "ns": "",
+  "key": "A3DE08264AB6CE94243D3E8A20C6D0F7",
+  "en": "Nose Width:",
+  "already": null,
+  "vi": "Độ rộng mũi:"
+ },
+ {
+  "ns": "",
+  "key": "18E0E5194892B06CB0B6D08F655936E4",
+  "en": "Nose Size:",
+  "already": null,
+  "vi": "Cỡ mũi:"
+ },
+ {
+  "ns": "",
+  "key": "DF3914114FC07480C8438B9A26620C05",
+  "en": "Ears Angle:",
+  "already": null,
+  "vi": "Góc tai:"
+ },
+ {
+  "ns": "",
+  "key": "7F85A5434DD8D4ADAC5A839A3ECE9E01",
+  "en": "Ears Size:",
+  "already": null,
+  "vi": "Cỡ tai:"
+ },
+ {
+  "ns": "",
+  "key": "552D95A441C5D2D700F06FAA5EF2F14A",
+  "en": "Cheeks Width:",
+  "already": null,
+  "vi": "Độ rộng má:"
+ },
+ {
+  "ns": "",
+  "key": "F869586F49A10262C0A0D7B22946931B",
+  "en": "Cheeks Height:",
+  "already": null,
+  "vi": "Độ cao má:"
+ },
+ {
+  "ns": "",
+  "key": "82037F5C4E47AEF00DBF6AA61A5C71FB",
+  "en": "Eyes Scale:",
+  "already": null,
+  "vi": "Cỡ mắt:"
+ },
+ {
+  "ns": "",
+  "key": "F3C8C82A41C228FB3CC875ACF9EB095B",
+  "en": "Lips Size:",
+  "already": null,
+  "vi": "Cỡ môi:"
+ },
+ {
+  "ns": "",
+  "key": "8D1BEDDF4AB925C3653C4BB520B14531",
+  "en": "Jaw Width:",
+  "already": null,
+  "vi": "Độ rộng hàm:"
+ },
+ {
+  "ns": "",
+  "key": "7504CEFF493E10D27C9DF299F039AED9",
+  "en": "Custom Colors:",
+  "already": null,
+  "vi": "Màu tùy chỉnh:"
+ },
+ {
+  "ns": "",
+  "key": "BAC8F5064FAB51FE3C7BCA8CD87D1FA0",
+  "en": "Body Hair Colors:",
+  "already": null,
+  "vi": "Màu lông cơ thể:"
+ },
+ {
+  "ns": "",
+  "key": "B62C60B341C0F4D4D202CC9173913A47",
+  "en": "Body Details",
+  "already": null,
+  "vi": "Chi tiết cơ thể"
+ },
+ {
+  "ns": "",
+  "key": "8D82D2734071BC14A3570A8E9DB10C12",
+  "en": "Height:",
+  "already": null,
+  "vi": "Chiều cao:"
+ },
+ {
+  "ns": "",
+  "key": "0E3586814533541ED56469849E49338E",
+  "en": "Bust Size:",
+  "already": null,
+  "vi": "Cỡ ngực:"
+ },
+ {
+  "ns": "",
+  "key": "9FE57B6B432013291FD2008CED8C098E",
+  "en": "Endowment:",
+  "already": null,
+  "vi": "Cỡ của quý:"
+ },
+ {
+  "ns": "",
+  "key": "CED083554AC751D75C69A8BEDFB557BE",
+  "en": "Body Hair:",
+  "already": null,
+  "vi": "Lông cơ thể:"
+ },
+ {
+  "ns": "",
+  "key": "C6ED82CF41E3D38282259CB504F2D70D",
+  "en": "Physique:",
+  "already": null,
+  "vi": "Vóc dáng:"
+ },
+ {
+  "ns": "",
+  "key": "37FAF8F44A55F4DFCE7B8AA29B238640",
+  "en": "Hide Armor",
+  "already": null,
+  "vi": "Ẩn giáp"
+ },
+ {
+  "ns": "",
+  "key": "C416F0004A6CCD094F5ABDBFD2D3FAED",
+  "en": "Eye Shadow Colors:",
+  "already": null,
+  "vi": "Màu phấn mắt:"
+ },
+ {
+  "ns": "",
+  "key": "1264AA954149327FA58B8D8F0EE29B81",
+  "en": "Lips Color:",
+  "already": null,
+  "vi": "Màu môi:"
+ },
+ {
+  "ns": "",
+  "key": "934B2A394CDC214FF86C899C549B47BA",
+  "en": "Warpaint Dyes:",
+  "already": null,
+  "vi": "Màu vẽ chiến:"
+ },
+ {
+  "ns": "",
+  "key": "29D027C34B261C71A13ECB8FD18A77B7",
+  "en": "Makeup",
+  "already": null,
+  "vi": "Trang điểm"
+ },
+ {
+  "ns": "",
+  "key": "0550725C48436459A1F95FA1B4662BE5",
+  "en": "Eye Shadow",
+  "already": null,
+  "vi": "Phấn mắt"
+ },
+ {
+  "ns": "",
+  "key": "C4DD48E24B46346715A2E081D035C3A8",
+  "en": "Lip Makeup",
+  "already": null,
+  "vi": "Son môi"
+ },
+ {
+  "ns": "",
+  "key": "F63D7D3A4355E42CE1B7DA98FF04DB69",
+  "en": "Warpaint",
+  "already": null,
+  "vi": "Vẽ chiến"
+ },
+ {
+  "ns": "",
+  "key": "A3B3527F43A1D6801CAD2CA1DD95862F",
+  "en": "Lip Makeup:",
+  "already": null,
+  "vi": "Son môi:"
+ },
+ {
+  "ns": "",
+  "key": "8B7E9AB14543B5E9B666678D13209031",
+  "en": "Warpaint:",
+  "already": null,
+  "vi": "Vẽ chiến:"
+ },
+ {
+  "ns": "",
+  "key": "3C1C18D649F8133E9ABE43B9A98D53C2",
+  "en": "Eye Shadow:",
+  "already": null,
+  "vi": "Phấn mắt:"
+ },
+ {
+  "ns": "",
+  "key": "B9B34B36479A8D82AEB819A395FF2983",
+  "en": "Warpaint:",
+  "already": null,
+  "vi": "Vẽ chiến:"
+ },
+ {
+  "ns": "",
+  "key": "68C7299E4D647F64AF8B019CE6018750",
+  "en": "Warpaint:",
+  "already": null,
+  "vi": "Vẽ chiến:"
+ },
+ {
+  "ns": "",
+  "key": "84E7D9E74D1AA52FE30753AFDFAC62C3",
+  "en": "Colors:",
+  "already": null,
+  "vi": "Màu:"
+ },
+ {
+  "ns": "",
+  "key": "DAB88C674FBAD8F0FF5C9690755FDA22",
+  "en": "Helmet Colors:",
+  "already": null,
+  "vi": "Màu mũ:"
+ },
+ {
+  "ns": "",
+  "key": "5E5083CB42DC251CF2DE78B89B0E799B",
+  "en": "Equipment",
+  "already": null,
+  "vi": "Trang bị"
+ },
+ {
+  "ns": "",
+  "key": "4A93CF5C4AA05718BCE7D8BA1B23857D",
+  "en": "Dye 1",
+  "already": null,
+  "vi": "Thuốc nhuộm 1"
+ },
+ {
+  "ns": "",
+  "key": "8A815B2D458D39DB040B48933DA6821B",
+  "en": "Dye 2",
+  "already": null,
+  "vi": "Thuốc nhuộm 2"
+ },
+ {
+  "ns": "",
+  "key": "0E576E4F4E55F20C1BEB6DA53B8E5054",
+  "en": "Dye 3",
+  "already": null,
+  "vi": "Thuốc nhuộm 3"
+ },
+ {
+  "ns": "",
+  "key": "71889B4B43709CBC896326B9F664F932",
+  "en": "Dye 4",
+  "already": null,
+  "vi": "Thuốc nhuộm 4"
+ },
+ {
+  "ns": "",
+  "key": "D191FC9441C4F0A23EA6E3B0413E06C7",
+  "en": "Feet",
+  "already": null,
+  "vi": "Chân"
+ },
+ {
+  "ns": "",
+  "key": "CA13B7EF4878EAE9EEA453BBC43F4B17",
+  "en": "Hands",
+  "already": null,
+  "vi": "Tay"
+ },
+ {
+  "ns": "",
+  "key": "85E26E294C0628BF6F248E9E2C3E11D6",
+  "en": "Helmet",
+  "already": null,
+  "vi": "Mũ"
+ },
+ {
+  "ns": "",
+  "key": "EDAA1DAD4FDFC0E8280D768CBA774678",
+  "en": "Lower Body",
+  "already": null,
+  "vi": "Thân dưới"
+ },
+ {
+  "ns": "",
+  "key": "07A3AB16487F5B9C9B83FFB78E0C297F",
+  "en": "Upper Body",
+  "already": null,
+  "vi": "Thân trên"
+ },
+ {
+  "ns": "",
+  "key": "1D0995594B2971C8912EBEB335C907A8",
+  "en": "Upper Body:",
+  "already": null,
+  "vi": "Thân trên:"
+ },
+ {
+  "ns": "",
+  "key": "188EC14D41ECEE6AD6E27894CC294465",
+  "en": "Hands:",
+  "already": null,
+  "vi": "Tay:"
+ },
+ {
+  "ns": "",
+  "key": "EC02228B460F467CCCF5858E993A9F87",
+  "en": "Lower Body:",
+  "already": null,
+  "vi": "Thân dưới:"
+ },
+ {
+  "ns": "",
+  "key": "213C90FD4EDBAEE7BF8587B8F72E9271",
+  "en": "Feet:",
+  "already": null,
+  "vi": "Chân:"
+ },
+ {
+  "ns": "",
+  "key": "DC2490F3420AC39EC120CE8888700272",
+  "en": "Colors:",
+  "already": null,
+  "vi": "Màu:"
+ },
+ {
+  "ns": "",
+  "key": "64DBED0A4E8E8F5FF1531DBE3BEEACF4",
+  "en": "Helmet:",
+  "already": null,
+  "vi": "Mũ:"
+ },
+ {
+  "ns": "",
+  "key": "A60E321B4C46EE9CAB4D77A06C12E0A1",
+  "en": "Eyebrows Colors:",
+  "already": null,
+  "vi": "Màu lông mày:"
+ },
+ {
+  "ns": "",
+  "key": "777676494F06D2C87697ED8408C67F70",
+  "en": "Eye Colors:",
+  "already": null,
+  "vi": "Màu mắt:"
+ },
+ {
+  "ns": "",
+  "key": "7E1D5E794A84C311343AC2BE1EF61120",
+  "en": "Facial Hair Colors:",
+  "already": null,
+  "vi": "Màu râu:"
+ },
+ {
+  "ns": "",
+  "key": "8148661E419B205C9A6B1EB821C7B594",
+  "en": "Hair Colors:",
+  "already": null,
+  "vi": "Màu tóc:"
+ },
+ {
+  "ns": "",
+  "key": "98A55EB84CCD0DB4A12169863544ACD0",
+  "en": "Skin Colors:",
+  "already": null,
+  "vi": "Màu da:"
+ },
+ {
+  "ns": "",
+  "key": "C805616E4653E0BF53AC7F9C92527314",
+  "en": "General",
+  "already": null,
+  "vi": "Chung"
+ },
+ {
+  "ns": "",
+  "key": "9D7BB5724DED4EE984F9B9A56B4B719D",
+  "en": "Eyebrows",
+  "already": null,
+  "vi": "Lông mày"
+ },
+ {
+  "ns": "",
+  "key": "CE994A284DBDC3F6F7A3BDA99BEB2837",
+  "en": "Eyes",
+  "already": null,
+  "vi": "Mắt"
+ },
+ {
+  "ns": "",
+  "key": "4801F59A4CF2C76F251099A98CA94E0B",
+  "en": "Facial Hair",
+  "already": null,
+  "vi": "Râu"
+ },
+ {
+  "ns": "",
+  "key": "D34E1A0B47BC15B9A5EA6687D3A6592F",
+  "en": "Hair",
+  "already": null,
+  "vi": "Tóc"
+ },
+ {
+  "ns": "",
+  "key": "1C18DFE74EE434A8547752A37582051A",
+  "en": "Skin",
+  "already": null,
+  "vi": "Da"
+ },
+ {
+  "ns": "",
+  "key": "0B4835CB4FB36F48B2CEDFBAD2047F3E",
+  "en": "Hair",
+  "already": null,
+  "vi": "Tóc"
+ },
+ {
+  "ns": "",
+  "key": "F084421F40AD09F632F86490A45032D9",
+  "en": "Enhanced",
+  "already": null,
+  "vi": "Nâng cao"
+ },
+ {
+  "ns": "",
+  "key": "A3D2F19A46331312371937AC41CA7F36",
+  "en": "Inner Iris",
+  "already": null,
+  "vi": "Mống mắt trong"
+ },
+ {
+  "ns": "",
+  "key": "BE1D7F764B32DCCAF03C21A06AF053C6",
+  "en": "Left Eye",
+  "already": null,
+  "vi": "Mắt trái"
+ },
+ {
+  "ns": "",
+  "key": "2744F43A48161D0C923512B4365D0C6B",
+  "en": "Middle Iris",
+  "already": null,
+  "vi": "Mống mắt giữa"
+ },
+ {
+  "ns": "",
+  "key": "08491D084FDB4BF263A2A9ABB29AA688",
+  "en": "Outer Iris",
+  "already": null,
+  "vi": "Mống mắt ngoài"
+ },
+ {
+  "ns": "",
+  "key": "0803141D466735F1D37E1F86168ADFBB",
+  "en": "Right Eye",
+  "already": null,
+  "vi": "Mắt phải"
+ },
+ {
+  "ns": "",
+  "key": "613BBA644646684D790D40B3503D0EE3",
+  "en": "Colors:",
+  "already": null,
+  "vi": "Màu:"
+ },
+ {
+  "ns": "",
+  "key": "066D1DAB487EE670FB076CB8E7B55D43",
+  "en": "Hair:",
+  "already": null,
+  "vi": "Tóc:"
+ },
+ {
+  "ns": "",
+  "key": "61A690C5447E929A5DCB7892C3352E17",
+  "en": "Face:",
+  "already": null,
+  "vi": "Khuôn mặt:"
+ },
+ {
+  "ns": "",
+  "key": "B50C32F14A69895C308E8CBFC8B8B77C",
+  "en": "Eyebrows:",
+  "already": null,
+  "vi": "Lông mày:"
+ },
+ {
+  "ns": "",
+  "key": "F4CA62444067A701AD12F4A56B5DEDF2",
+  "en": "Facial Hair:",
+  "already": null,
+  "vi": "Râu:"
+ },
+ {
+  "ns": "",
+  "key": "0B498F374FD9ADA36F5B449C49D5892C",
+  "en": "Hide Helmet",
+  "already": null,
+  "vi": "Ẩn mũ"
+ },
+ {
+  "ns": "",
+  "key": "1B8C974141C564F92FA2219DD6B4F9DE",
+  "en": "Enter Limit",
+  "already": null,
+  "vi": "Nhập giới hạn"
+ },
+ {
+  "ns": "",
+  "key": "D3E8AF294BDC410AC24915934DA5B378",
+  "en": "Enter Limit",
+  "already": null,
+  "vi": "Nhập giới hạn"
+ },
+ {
+  "ns": "",
+  "key": "0F58C4304FF06EAF8C3EC6A2FB700EA2",
+  "en": "Yes",
+  "already": null,
+  "vi": "Có"
+ },
+ {
+  "ns": "",
+  "key": "653868074771EB810006C582E73E487C",
+  "en": "Owners Only",
+  "already": null,
+  "vi": "Chỉ chủ sở hữu"
+ },
+ {
+  "ns": "",
+  "key": "9E1F90EC45C7374F567C79ACA51448F1",
+  "en": "Min:",
+  "already": null,
+  "vi": "Tối thiểu:"
+ },
+ {
+  "ns": "",
+  "key": "AE8670F34F385E8633DD2981CC1F193B",
+  "en": "Max:",
+  "already": null,
+  "vi": "Tối đa:"
+ },
+ {
+  "ns": "",
+  "key": "F840847649A3EB1B49E0DBA4FA858D81",
+  "en": "Male Preview:",
+  "already": null,
+  "vi": "Xem trước nam:"
+ },
+ {
+  "ns": "",
+  "key": "03112C114944673CACD86F8CB3688AF8",
+  "en": "Permissions:",
+  "already": null,
+  "vi": "Quyền:"
+ },
+ {
+  "ns": "",
+  "key": "5547A5CD46B3BE45E837EC830279616B",
+  "en": "Appearance Editing (Not Including Admins):",
+  "already": null,
+  "vi": "Chỉnh ngoại hình (không tính Admin):"
+ },
+ {
+  "ns": "",
+  "key": "1E92623C4840D8B4C9FA49B8549FA6D4",
+  "en": "Female Preview:",
+  "already": null,
+  "vi": "Xem trước nữ:"
+ },
+ {
+  "ns": "",
+  "key": "01D441D2457F1D93DEEFD1AC9FCB8394",
+  "en": "Slider Limits:",
+  "already": null,
+  "vi": "Giới hạn thanh trượt:"
+ },
+ {
+  "ns": "",
+  "key": "C5075F7140FF2E6561B36FBDAA3F0393",
+  "en": "Current Slider:",
+  "already": null,
+  "vi": "Thanh trượt hiện tại:"
+ },
+ {
+  "ns": "",
+  "key": "997C3F924B844BEF95E81ABF268E4FA6",
+  "en": "Apply Appearance to Paperdolls (Local Setting):",
+  "already": null,
+  "vi": "Áp dụng ngoại hình cho hình nhân trang bị (cài đặt trên máy):"
+ },
+ {
+  "ns": "",
+  "key": "7B6E3DE643FDD81710FD66BBC45A22CD",
+  "en": "Registry",
+  "already": null,
+  "vi": "Sổ đăng ký"
+ },
+ {
+  "ns": "",
+  "key": "AF0F49364C56DDFCC9E86195CF96F787",
+  "en": "Voice Pitch:",
+  "already": null,
+  "vi": "Cao độ giọng:"
+ },
+ {
+  "ns": "",
+  "key": "B803B9A54CF69BF18553C4AE9E642BD7",
+  "en": "Non-persistent character: Edits made will be lost when server restarts or character respawns.",
+  "already": null,
+  "vi": "Nhân vật không lưu lâu dài: thay đổi sẽ mất khi server khởi động lại hoặc nhân vật hồi sinh."
+ },
+ {
+  "ns": "",
+  "key": "F4BE7AEC4CF243D922684BA17FAF4514",
+  "en": "CharacterName",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "21069A784299A6CCD9B7D2AD1737E5DF",
+  "en": "Enter Character's Name",
+  "already": null,
+  "vi": "Nhập tên nhân vật"
+ },
+ {
+  "ns": "",
+  "key": "85FB6DFC43DD7119F37E21A89C539B73",
+  "en": "Character Name",
+  "already": null,
+  "vi": "Tên nhân vật"
+ },
+ {
+  "ns": "",
+  "key": "449F86824624E5A45BCB98B69C9447CA",
+  "en": "Version 1.2.8",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "A60823D244F1D8A0BFA33EB63EE3E817",
+  "en": "Like this mod?",
+  "already": null,
+  "vi": "Thích mod này?"
+ },
+ {
+  "ns": "",
+  "key": "8168EAF546CB4CF8BA17ECA069A10E8E",
+  "en": "Support",
+  "already": null,
+  "vi": "Ủng hộ"
+ }
+]

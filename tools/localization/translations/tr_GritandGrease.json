@@ -1,0 +1,924 @@
+[
+ {
+  "ns": "",
+  "key": "2DCC25DF4D451BD65E3CBC8FAE44F967",
+  "en": "Fire1",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "322E4B3C4DA0933A5E96BB8E10670421",
+  "en": "Frost1",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "1C8AB3E84C8340852850779A800E2B4F",
+  "en": "Air1",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "AE3E05E04EC7D5FA3CC8619C6A483817",
+  "en": "Air3",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "ADFBB40E4692204435A51A98753EB454",
+  "en": "None",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "674B332A47F74930BCD70A8D8F45AA9E",
+  "en": "Fire2",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "F860D9E34B298F1EEE7B7694BAAAFFDB",
+  "en": "Fire3",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "0385310040E0EC369E78D0AE47204131",
+  "en": "Frost2",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "D1526D2B421EAE0860338B92280E1561",
+  "en": "Frost3",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "0F8576D946F606F0615A37A624B541C2",
+  "en": "Air2",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "7EA0402A4F09F88E4F4B618B9D2C91BA",
+  "en": "Blood1",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "8E8DEDA246B5B330A4C178AFB434304C",
+  "en": "Blood2",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "8E2FE47249BD49085086DABB8DD559A0",
+  "en": "Blood3",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "8615BFCE47FBA4D5CAD06C9F5CFAD414",
+  "en": "Lightning1",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "3376476A4150EDB8CF2FF7AE19B994DF",
+  "en": "Lightning2",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "2BFC007249BA471DF8D605BE07573016",
+  "en": "Lightning3",
+  "already": null
+ },
+ {
+  "ns": "",
+  "key": "1E7EE71346736EB28C66369C668E1E3B",
+  "en": "Weak Fire Resin",
+  "already": null,
+  "vi": "Nhựa Lửa Yếu"
+ },
+ {
+  "ns": "",
+  "key": "5F0C9A61460E879A6AD69DB3E18E6A0B",
+  "en": "Use to apply this resin to a weapon you are holding. Can't be used on bows.",
+  "already": null,
+  "vi": "Dùng để bôi lên vũ khí đang cầm. Không dùng được cho cung."
+ },
+ {
+  "ns": "",
+  "key": "7868AF0C42587B779D1CBFA731CE80A9",
+  "en": "Strong Fire Resin",
+  "already": null,
+  "vi": "Nhựa Lửa Mạnh"
+ },
+ {
+  "ns": "",
+  "key": "859CF2D748BC21C2DA8706B9B78EACA3",
+  "en": "Use to apply this resin to a weapon you are holding. Can't be used on bows.",
+  "already": null,
+  "vi": "Dùng để bôi lên vũ khí đang cầm. Không dùng được cho cung."
+ },
+ {
+  "ns": "",
+  "key": "60A1F76D470956E427CE8F91247BD212",
+  "en": "Grand Fire Resin",
+  "already": null,
+  "vi": "Nhựa Lửa Thượng Hạng"
+ },
+ {
+  "ns": "",
+  "key": "0BE2626849F0FE6B9B5E6A869E206CA3",
+  "en": "Use to apply this resin to a weapon you are holding. Can't be used on bows.",
+  "already": null,
+  "vi": "Dùng để bôi lên vũ khí đang cầm. Không dùng được cho cung."
+ },
+ {
+  "ns": "",
+  "key": "91346C294E705D532DEC5DB4778F4156",
+  "en": "Weak Frost Resin",
+  "already": null,
+  "vi": "Nhựa Băng Yếu"
+ },
+ {
+  "ns": "",
+  "key": "2418355F46B92C9392E46CBA0F10DCD5",
+  "en": "Use to apply this resin to a weapon you are holding. Can't be used on bows.",
+  "already": null,
+  "vi": "Dùng để bôi lên vũ khí đang cầm. Không dùng được cho cung."
+ },
+ {
+  "ns": "",
+  "key": "60E067434C0E7EE67A9C51A673D21E0D",
+  "en": "Strong Frost Resin",
+  "already": null,
+  "vi": "Nhựa Băng Mạnh"
+ },
+ {
+  "ns": "",
+  "key": "4FC10924427EA0643C431BAAD418C722",
+  "en": "Use to apply this resin to a weapon you are holding. Can't be used on bows.",
+  "already": null,
+  "vi": "Dùng để bôi lên vũ khí đang cầm. Không dùng được cho cung."
+ },
+ {
+  "ns": "",
+  "key": "52C04A0B4A747EB27BD753A24C822954",
+  "en": "Grand Frost Resin",
+  "already": null,
+  "vi": "Nhựa Băng Thượng Hạng"
+ },
+ {
+  "ns": "",
+  "key": "9158A6A04E8AF3F3989513AC43C13BC6",
+  "en": "Use to apply this resin to a weapon you are holding. Can't be used on bows.",
+  "already": null,
+  "vi": "Dùng để bôi lên vũ khí đang cầm. Không dùng được cho cung."
+ },
+ {
+  "ns": "",
+  "key": "DBD106EC438E11BE3A1C848C73483826",
+  "en": "Weak Air Resin",
+  "already": null,
+  "vi": "Nhựa Gió Yếu"
+ },
+ {
+  "ns": "",
+  "key": "E30EBBA2473E12F38868DABBA127F72E",
+  "en": "Use to apply this resin to a weapon you are holding. Can't be used on bows.",
+  "already": null,
+  "vi": "Dùng để bôi lên vũ khí đang cầm. Không dùng được cho cung."
+ },
+ {
+  "ns": "",
+  "key": "B6A1979748D920CC2EF9328199C1FDBA",
+  "en": "Strong Air Resin",
+  "already": null,
+  "vi": "Nhựa Gió Mạnh"
+ },
+ {
+  "ns": "",
+  "key": "FF7009EA4804164CE986499F1629B2EC",
+  "en": "Use to apply this resin to a weapon you are holding. Can't be used on bows.",
+  "already": null,
+  "vi": "Dùng để bôi lên vũ khí đang cầm. Không dùng được cho cung."
+ },
+ {
+  "ns": "",
+  "key": "A4B65C61427FEAC7A7E5839865A648C6",
+  "en": "Grand Air Resin",
+  "already": null,
+  "vi": "Nhựa Gió Thượng Hạng"
+ },
+ {
+  "ns": "",
+  "key": "F861FC924688019981ADBF9C945C4695",
+  "en": "Use to apply this resin to a weapon you are holding. Can't be used on bows.",
+  "already": null,
+  "vi": "Dùng để bôi lên vũ khí đang cầm. Không dùng được cho cung."
+ },
+ {
+  "ns": "",
+  "key": "491CF3BB499B17FD67FC27AB6F2C69A6",
+  "en": "Weak Blood Resin",
+  "already": null,
+  "vi": "Nhựa Máu Yếu"
+ },
+ {
+  "ns": "",
+  "key": "75F06B704DABE09CE2F18A93316D1D20",
+  "en": "Use to apply this resin to a weapon you are holding. Can't be used on bows.",
+  "already": null,
+  "vi": "Dùng để bôi lên vũ khí đang cầm. Không dùng được cho cung."
+ },
+ {
+  "ns": "",
+  "key": "04570F28477170BD30B3BBA8C4949F4F",
+  "en": "Strong Blood Resin",
+  "already": null,
+  "vi": "Nhựa Máu Mạnh"
+ },
+ {
+  "ns": "",
+  "key": "7D5715D74DDAB6ECE6343A99EF741951",
+  "en": "Use to apply this resin to a weapon you are holding. Can't be used on bows.",
+  "already": null,
+  "vi": "Dùng để bôi lên vũ khí đang cầm. Không dùng được cho cung."
+ },
+ {
+  "ns": "",
+  "key": "DA82B01C49F838C4F0F24E801D450FF6",
+  "en": "Grand Blood Resin",
+  "already": null,
+  "vi": "Nhựa Máu Thượng Hạng"
+ },
+ {
+  "ns": "",
+  "key": "E29A23D741214349F7525B82E984DFC1",
+  "en": "Crafted Use to apply this resin to a weapon you are holding. Can't be used on bows.by alchemists this resin is bursting with power. Using this on your weapons will cover it in bloody oil and deal 30% weapon damage as extra blood damage. It also has 40% chance to apply a bleeding DOT. Repeated use resets the duration.",
+  "already": null,
+  "vi": "Dùng để bôi lên vũ khí đang cầm. Không dùng được cho cung. Được các nhà giả kim chế tạo, loại nhựa này tràn đầy sức mạnh. Bôi lên vũ khí sẽ khiến nó phủ dầu máu và gây thêm 30% sát thương vũ khí dưới dạng sát thương máu. Có 40% cơ hội gây chảy máu theo thời gian. Dùng lại sẽ làm mới thời gian hiệu lực."
+ },
+ {
+  "ns": "",
+  "key": "12A45FA048DB87355B373AB8DF955EE6",
+  "en": "Weak Lightning Resin",
+  "already": null,
+  "vi": "Nhựa Sét Yếu"
+ },
+ {
+  "ns": "",
+  "key": "EF245F1C4D07EF5C30C5C0A9993555EB",
+  "en": "Use to apply this resin to a weapon you are holding. Can't be used on bows.",
+  "already": null,
+  "vi": "Dùng để bôi lên vũ khí đang cầm. Không dùng được cho cung."
+ },
+ {
+  "ns": "",
+  "key": "F4D1BCB34EC1C00B68D7BEB15C67BEBC",
+  "en": "Strong Lightning Resin",
+  "already": null,
+  "vi": "Nhựa Sét Mạnh"
+ },
+ {
+  "ns": "",
+  "key": "E54579E8451BA29A3F66CC8D552B1401",
+  "en": "Use to apply this resin to a weapon you are holding. Can't be used on bows.",
+  "already": null,
+  "vi": "Dùng để bôi lên vũ khí đang cầm. Không dùng được cho cung."
+ },
+ {
+  "ns": "",
+  "key": "76A7D6D0469073532902E88364939F37",
+  "en": "Use to apply this resin to a weapon you are holding. Can't be used on bows.",
+  "already": null,
+  "vi": "Dùng để bôi lên vũ khí đang cầm. Không dùng được cho cung."
+ },
+ {
+  "ns": "",
+  "key": "1F40830C40BAEB2FAFF659A70EF944C9",
+  "en": "Weak Fire Resin",
+  "already": null,
+  "vi": "Nhựa Lửa Yếu"
+ },
+ {
+  "ns": "",
+  "key": "7534439A42D0257A9EBF38AF046A1CC9",
+  "en": "Use to apply this resin to a weapon you are holding. Can't be used on bows.",
+  "already": null,
+  "vi": "Dùng để bôi lên vũ khí đang cầm. Không dùng được cho cung."
+ },
+ {
+  "ns": "",
+  "key": "6C8210E94114BC3A33A24A8B4D8AB5C3",
+  "en": "Crafted by alchemists this resin is crude but functional. Using this on your weapons will put it on fire and deal 10% weapon damage as extra fire damage. Repeated use resets the duration.",
+  "already": null,
+  "vi": "Được các nhà giả kim chế tạo, loại nhựa này thô sơ nhưng dùng được. Bôi lên vũ khí sẽ khiến nó bốc lửa và gây thêm 10% sát thương vũ khí dưới dạng sát thương lửa. Dùng lại sẽ làm mới thời gian hiệu lực."
+ },
+ {
+  "ns": "",
+  "key": "C99C21A24AAFAF17CCCA8E96C8BA8620",
+  "en": "10% Damage as Fire",
+  "already": null,
+  "vi": "10% sát thương thành sát thương lửa"
+ },
+ {
+  "ns": "",
+  "key": "2D52D34E4592D54D36AC969525F42AB3",
+  "en": "120 Seconds Duration",
+  "already": null,
+  "vi": "Kéo dài 120 giây"
+ },
+ {
+  "ns": "",
+  "key": "140C0693469AAE53CE7DDE98B250F302",
+  "en": "Fire Infusion",
+  "already": null,
+  "vi": "Tẩm lửa"
+ },
+ {
+  "ns": "",
+  "key": "B0D43D1146BEA2C7EA7C68B7EBF8E21B",
+  "en": "No Bows",
+  "already": null,
+  "vi": "Không dùng cho cung"
+ },
+ {
+  "ns": "",
+  "key": "B25E7BD243772ED2C2ADEA80225DB6E3",
+  "en": "Strong Fire Resin",
+  "already": null,
+  "vi": "Nhựa Lửa Mạnh"
+ },
+ {
+  "ns": "",
+  "key": "BB2F31184937ACA8C27762B4CCEE9A01",
+  "en": "Use to apply this resin to a weapon you are holding. Can't be used on bows.",
+  "already": null,
+  "vi": "Dùng để bôi lên vũ khí đang cầm. Không dùng được cho cung."
+ },
+ {
+  "ns": "",
+  "key": "C5C6E15F4500F0F53ECF0C89F0F12687",
+  "en": "Crafted by alchemists this resin is potent. Using this on your weapons will put it on fire and deal 20% weapon damage as extra fire damage, it also has 25% chance to apply a burning DOT. Repeated use resets the duration. ",
+  "already": null,
+  "vi": "Được các nhà giả kim chế tạo, loại nhựa này mạnh. Bôi lên vũ khí sẽ khiến nó bốc lửa và gây thêm 20% sát thương vũ khí dưới dạng sát thương lửa. Có 25% cơ hội gây bỏng theo thời gian. Dùng lại sẽ làm mới thời gian hiệu lực. "
+ },
+ {
+  "ns": "",
+  "key": "0C0D4D1D4B3EAB635D01F58724F8D7FC",
+  "en": "20% Damage as Fire",
+  "already": null,
+  "vi": "20% sát thương thành sát thương lửa"
+ },
+ {
+  "ns": "",
+  "key": "DC25868C43ED393F2017F180B207F40D",
+  "en": "120 Seconds Duration",
+  "already": null,
+  "vi": "Kéo dài 120 giây"
+ },
+ {
+  "ns": "",
+  "key": "4358D070490A4BF834D2BE97469C7955",
+  "en": "Fire Infusion",
+  "already": null,
+  "vi": "Tẩm lửa"
+ },
+ {
+  "ns": "",
+  "key": "6A85891E491DFC2175B26D85A36D3CEB",
+  "en": "No Bows",
+  "already": null,
+  "vi": "Không dùng cho cung"
+ },
+ {
+  "ns": "",
+  "key": "6D55292741A05F867ECAB6BE7F9E732F",
+  "en": "25% DOT Chance",
+  "already": null,
+  "vi": "25% cơ hội gây sát thương theo thời gian"
+ },
+ {
+  "ns": "",
+  "key": "6B172A544DF098535C6EB3B31ADF9B43",
+  "en": "Grand Fire Resin",
+  "already": null,
+  "vi": "Nhựa Lửa Thượng Hạng"
+ },
+ {
+  "ns": "",
+  "key": "F8194900455777E1A6EB769AEBF9E3A8",
+  "en": "Use to apply this resin to a weapon you are holding. Can't be used on bows.",
+  "already": null,
+  "vi": "Dùng để bôi lên vũ khí đang cầm. Không dùng được cho cung."
+ },
+ {
+  "ns": "",
+  "key": "F9ED539048EE0155A9D327A8378B131C",
+  "en": "Crafted by alchemists this resin is bursting with power. Using this on your weapons will put it on fire and deal 30% weapon damage as extra fire damage, it also has 40% chance to apply a burning DOT that explodes on 10 stacks. Repeated use resets the duration. ",
+  "already": null,
+  "vi": "Được các nhà giả kim chế tạo, loại nhựa này tràn đầy sức mạnh. Bôi lên vũ khí sẽ khiến nó bốc lửa và gây thêm 30% sát thương vũ khí dưới dạng sát thương lửa. Có 40% cơ hội gây bỏng theo thời gian, phát nổ khi đủ 10 tầng. Dùng lại sẽ làm mới thời gian hiệu lực. "
+ },
+ {
+  "ns": "",
+  "key": "E1471E2144A7043892BA868FA2825924",
+  "en": "30% Damage as Fire",
+  "already": null,
+  "vi": "30% sát thương thành sát thương lửa"
+ },
+ {
+  "ns": "",
+  "key": "8FC8A3FE4A72258E4B547B93B43DF1B4",
+  "en": "120 Seconds Duration",
+  "already": null,
+  "vi": "Kéo dài 120 giây"
+ },
+ {
+  "ns": "",
+  "key": "AEA703CD4664B4FBF04A97AE84E104AE",
+  "en": "Fire Infusion",
+  "already": null,
+  "vi": "Tẩm lửa"
+ },
+ {
+  "ns": "",
+  "key": "52F76C9A411F70F6C99EDD8D9BC43065",
+  "en": "No Bows",
+  "already": null,
+  "vi": "Không dùng cho cung"
+ },
+ {
+  "ns": "",
+  "key": "62CFA2154BABFD4FEDD8E1BCF6276A57",
+  "en": "40% DOT Chance",
+  "already": null,
+  "vi": "40% cơ hội gây sát thương theo thời gian"
+ },
+ {
+  "ns": "",
+  "key": "A79B30AE448B7C0734EAADA0C72EE2F0",
+  "en": "Explosion at 10 Stacks",
+  "already": null,
+  "vi": "Phát nổ khi đủ 10 tầng"
+ },
+ {
+  "ns": "",
+  "key": "D037B78346DAA033FECD8EA3B8D604D7",
+  "en": "Weak Frost Resin",
+  "already": null,
+  "vi": "Nhựa Băng Yếu"
+ },
+ {
+  "ns": "",
+  "key": "0BC70FCC4B9BAB286B7D0EA45BDD80C4",
+  "en": "Crafted by alchemists this resin is crude but functional. Using this on your weapons will cover it in frost and deal 10% weapon damage as extra frost damage. Repeated use resets the duration.",
+  "already": null,
+  "vi": "Được các nhà giả kim chế tạo, loại nhựa này thô sơ nhưng dùng được. Bôi lên vũ khí sẽ khiến nó phủ băng giá và gây thêm 10% sát thương vũ khí dưới dạng sát thương băng giá. Dùng lại sẽ làm mới thời gian hiệu lực."
+ },
+ {
+  "ns": "",
+  "key": "E3D7C10F4FCF3770DFEEA7A96F275472",
+  "en": "10% Damage as Frost",
+  "already": null,
+  "vi": "10% sát thương thành sát thương băng giá"
+ },
+ {
+  "ns": "",
+  "key": "64214EE54E5A983CF1126FBBDFC03F12",
+  "en": "Frost Infusion",
+  "already": null,
+  "vi": "Tẩm băng giá"
+ },
+ {
+  "ns": "",
+  "key": "BD097C3743323EFB0A296F8372109EC4",
+  "en": "Strong Frost Resin",
+  "already": null,
+  "vi": "Nhựa Băng Mạnh"
+ },
+ {
+  "ns": "",
+  "key": "F86FBE2444024EE0B851A19F189B915C",
+  "en": "Crafted by alchemists this resin is potent. Using this on your weapons will cover it in frost and deal 20% weapon damage as extra frost damage, it also has 25% chance to apply a slow that's stacking. Repeated use resets the duration. ",
+  "already": null,
+  "vi": "Được các nhà giả kim chế tạo, loại nhựa này mạnh. Bôi lên vũ khí sẽ khiến nó phủ băng giá và gây thêm 20% sát thương vũ khí dưới dạng sát thương băng giá. Có 25% cơ hội làm chậm, cộng dồn được. Dùng lại sẽ làm mới thời gian hiệu lực. "
+ },
+ {
+  "ns": "",
+  "key": "C7C0F1DA4AACF25F93E58F9F54B556B3",
+  "en": "20% Damage as Frost",
+  "already": null,
+  "vi": "20% sát thương thành sát thương băng giá"
+ },
+ {
+  "ns": "",
+  "key": "DD291C434236B2E7F1C8B68F8BE17231",
+  "en": "Frost Infusion",
+  "already": null,
+  "vi": "Tẩm băng giá"
+ },
+ {
+  "ns": "",
+  "key": "F2F45D8E4BCB1A1AF2A2C8A7B0FE54ED",
+  "en": "25% Slow Chance",
+  "already": null,
+  "vi": "25% cơ hội làm chậm"
+ },
+ {
+  "ns": "",
+  "key": "D4368957429FC0583258728FE4CDF8EA",
+  "en": "Grand Frost Resin",
+  "already": null,
+  "vi": "Nhựa Băng Thượng Hạng"
+ },
+ {
+  "ns": "",
+  "key": "1B4F9690419A9270EDA6B6B96FD34E39",
+  "en": "Crafted by alchemists this resin is bursting with power. Using this on your weapons will cover it in frost and deal 30% weapon damage as extra frost damage, it also has 40% chance to apply a slow and attack speed slow DOT. Repeated use resets the duration. ",
+  "already": null,
+  "vi": "Được các nhà giả kim chế tạo, loại nhựa này tràn đầy sức mạnh. Bôi lên vũ khí sẽ khiến nó phủ băng giá và gây thêm 30% sát thương vũ khí dưới dạng sát thương băng giá. Có 40% cơ hội làm chậm di chuyển và giảm tốc độ đánh theo thời gian. Dùng lại sẽ làm mới thời gian hiệu lực. "
+ },
+ {
+  "ns": "",
+  "key": "F06C58204B3D856437ECAAAB83B26A52",
+  "en": "30% Damage as Frost",
+  "already": null,
+  "vi": "30% sát thương thành sát thương băng giá"
+ },
+ {
+  "ns": "",
+  "key": "F550BCB14A259484B9044E9869722232",
+  "en": "Frost Infusion",
+  "already": null,
+  "vi": "Tẩm băng giá"
+ },
+ {
+  "ns": "",
+  "key": "DA43A0084568627FE5C78989674666D6",
+  "en": "40% Slow Chance",
+  "already": null,
+  "vi": "40% cơ hội làm chậm"
+ },
+ {
+  "ns": "",
+  "key": "D7E43C10499C3FB4BF6A3284F6F0BCC8",
+  "en": "Attack Speed Debuff",
+  "already": null,
+  "vi": "Giảm tốc độ đánh"
+ },
+ {
+  "ns": "",
+  "key": "DFB588B24A829421AE4BF0A53D913CB0",
+  "en": "Weak Air Resin",
+  "already": null,
+  "vi": "Nhựa Gió Yếu"
+ },
+ {
+  "ns": "",
+  "key": "A2F35AF044A3F186B050B4BE050079AD",
+  "en": "Crafted by alchemists this resin is crude but functional. Using this on your weapons will cover it in air energy and deal 10% weapon damage as extra air damage. Repeated use resets the duration.",
+  "already": null,
+  "vi": "Được các nhà giả kim chế tạo, loại nhựa này thô sơ nhưng dùng được. Bôi lên vũ khí sẽ khiến nó phủ năng lượng gió và gây thêm 10% sát thương vũ khí dưới dạng sát thương gió. Dùng lại sẽ làm mới thời gian hiệu lực."
+ },
+ {
+  "ns": "",
+  "key": "56832AC4472BDB1F1871A2A34AACCCEB",
+  "en": "10% Damage as Air",
+  "already": null,
+  "vi": "10% sát thương thành sát thương gió"
+ },
+ {
+  "ns": "",
+  "key": "E48E67BB4EED9F0E91ED34B1F2B02B8E",
+  "en": "Air Infusion",
+  "already": null,
+  "vi": "Tẩm gió"
+ },
+ {
+  "ns": "",
+  "key": "8063B18C4B2681566BDA80AF0447D1B3",
+  "en": "Strong Air Resin",
+  "already": null,
+  "vi": "Nhựa Gió Mạnh"
+ },
+ {
+  "ns": "",
+  "key": "7B55608548BD22B07D44E8912A0E83F8",
+  "en": "Crafted by alchemists this resin is potent. Using this on your weapons will cover it in frost and deal 20% weapon damage as extra air damage, it also has 25% chance to apply a buff that increases your attack speed by 2% per stack. Repeated use resets the duration. ",
+  "already": null,
+  "vi": "Được các nhà giả kim chế tạo, loại nhựa này mạnh. Bôi lên vũ khí sẽ khiến nó phủ năng lượng gió và gây thêm 20% sát thương vũ khí dưới dạng sát thương gió. Có 25% cơ hội nhận hiệu ứng tăng 2% tốc độ đánh mỗi tầng. Dùng lại sẽ làm mới thời gian hiệu lực. "
+ },
+ {
+  "ns": "",
+  "key": "8927B24D4A6A707EC0E389885C230CAF",
+  "en": "20% Damage as Air",
+  "already": null,
+  "vi": "20% sát thương thành sát thương gió"
+ },
+ {
+  "ns": "",
+  "key": "55A43E98459E32455EA7C59021447F27",
+  "en": "Air Infusion",
+  "already": null,
+  "vi": "Tẩm gió"
+ },
+ {
+  "ns": "",
+  "key": "72C30C574FB9537C5EE7818AA15F42D6",
+  "en": "3% Attack Speed per Stack",
+  "already": null,
+  "vi": "3% tốc độ đánh mỗi tầng"
+ },
+ {
+  "ns": "",
+  "key": "434ED7DE4B3FA11161BD45A2607F7E82",
+  "en": "Grand Air Resin",
+  "already": null,
+  "vi": "Nhựa Gió Thượng Hạng"
+ },
+ {
+  "ns": "",
+  "key": "CD62D3074115ACEDE8B1E499B143625C",
+  "en": "Crafted by alchemists this resin is bursting with power. Using this on your weapons will cover it in frost and deal 20% weapon damage as extra air damage, it also has 25% chance to apply a buff that increases your attack speed by 2% per stack, at 10 stacks your enemy will be lifted in the air . Repeated use resets the duration. ",
+  "already": null,
+  "vi": "Được các nhà giả kim chế tạo, loại nhựa này tràn đầy sức mạnh. Bôi lên vũ khí sẽ khiến nó phủ năng lượng gió và gây thêm 20% sát thương vũ khí dưới dạng sát thương gió. Có 25% cơ hội nhận hiệu ứng tăng 2% tốc độ đánh mỗi tầng; đủ 10 tầng kẻ địch sẽ bị hất tung lên không. Dùng lại sẽ làm mới thời gian hiệu lực. "
+ },
+ {
+  "ns": "",
+  "key": "AEA9193E4EFA95681C50798DD9E26FDF",
+  "en": "Knock Up at 10 Stacks",
+  "already": null,
+  "vi": "Hất tung khi đủ 10 tầng"
+ },
+ {
+  "ns": "",
+  "key": "E7BE7BC845CB2235EF0ACCAE3459550A",
+  "en": "Weak Blood Infused Oil",
+  "already": null,
+  "vi": "Dầu Tẩm Máu Yếu"
+ },
+ {
+  "ns": "",
+  "key": "0EAD762F4AD428EAB2E3158CA28B05C4",
+  "en": "Use to apply this oil to a weapon you are holding. Can't be used on bows.",
+  "already": null,
+  "vi": "Dùng để bôi dầu này lên vũ khí đang cầm. Không dùng được cho cung."
+ },
+ {
+  "ns": "",
+  "key": "E39ED2A04EA3113DADB9CD9E858CDF33",
+  "en": "Crafted by alchemists this resin is crude but functional. Using this on your weapons will cover it in bloody oil and deal 10% weapon damage as extra blood damage. Repeated use resets the duration.",
+  "already": null,
+  "vi": "Được các nhà giả kim chế tạo, loại nhựa này thô sơ nhưng dùng được. Bôi lên vũ khí sẽ khiến nó phủ dầu máu và gây thêm 10% sát thương vũ khí dưới dạng sát thương máu. Dùng lại sẽ làm mới thời gian hiệu lực."
+ },
+ {
+  "ns": "",
+  "key": "76B3DE8E476582CDDF03B6A0192FC5E8",
+  "en": "10% Damage as Blood",
+  "already": null,
+  "vi": "10% sát thương thành sát thương máu"
+ },
+ {
+  "ns": "",
+  "key": "F00B989340F7A8D59CFB4CBF635ABDA9",
+  "en": "Blood Infusion",
+  "already": null,
+  "vi": "Tẩm máu"
+ },
+ {
+  "ns": "",
+  "key": "81E357644C39603982589BB37079F3CA",
+  "en": "Strong Blood Infused Oil",
+  "already": null,
+  "vi": "Dầu Tẩm Máu Mạnh"
+ },
+ {
+  "ns": "",
+  "key": "E5BABDA9462A2F3A46A48AA1D78AE876",
+  "en": "Crafted by alchemists this resin is potent. Using this on your weapons will cover it in bloody oil and deal 20% weapon damage as extra blood damage. It also has 25% chance to apply a bleeding DOT. Repeated use resets the duration.",
+  "already": null,
+  "vi": "Được các nhà giả kim chế tạo, loại nhựa này mạnh. Bôi lên vũ khí sẽ khiến nó phủ dầu máu và gây thêm 20% sát thương vũ khí dưới dạng sát thương máu. Có 25% cơ hội gây chảy máu theo thời gian. Dùng lại sẽ làm mới thời gian hiệu lực."
+ },
+ {
+  "ns": "",
+  "key": "C4068ABC4B618438779A1B8CCBB1F6C0",
+  "en": "20% Damage as Blood",
+  "already": null,
+  "vi": "20% sát thương thành sát thương máu"
+ },
+ {
+  "ns": "",
+  "key": "6457D9D9498F7835B0FECD9D5EF77936",
+  "en": "25% DOT Chance",
+  "already": null,
+  "vi": "25% cơ hội gây sát thương theo thời gian"
+ },
+ {
+  "ns": "",
+  "key": "B0570AD04A8612F602ED0697730056FA",
+  "en": "Grand Blood Infused Oil",
+  "already": null,
+  "vi": "Dầu Tẩm Máu Thượng Hạng"
+ },
+ {
+  "ns": "",
+  "key": "9A896A28473CDD5DE09F54B31E45605F",
+  "en": "Crafted by alchemists this resin is bursting with power. Using this on your weapons will cover it in bloody oil and deal 30% weapon damage as extra blood damage. It also has 40% chance to apply a bleeding DOT. Repeated use resets the duration.",
+  "already": null,
+  "vi": "Được các nhà giả kim chế tạo, loại nhựa này tràn đầy sức mạnh. Bôi lên vũ khí sẽ khiến nó phủ dầu máu và gây thêm 30% sát thương vũ khí dưới dạng sát thương máu. Có 40% cơ hội gây chảy máu theo thời gian. Dùng lại sẽ làm mới thời gian hiệu lực."
+ },
+ {
+  "ns": "",
+  "key": "28DBA54A40737E0DFA429289FC7DDF09",
+  "en": "40% DOT Chance",
+  "already": null,
+  "vi": "40% cơ hội gây sát thương theo thời gian"
+ },
+ {
+  "ns": "",
+  "key": "4B5B421148C74AC1BBB1FD947342E8A8",
+  "en": "Weak Lightning Resin",
+  "already": null,
+  "vi": "Nhựa Sét Yếu"
+ },
+ {
+  "ns": "",
+  "key": "46BBB6E741BDD68AF40C17B30B0002F3",
+  "en": "Use to apply this resin to a weapon you are holding. Can't be used on bows.",
+  "already": null,
+  "vi": "Dùng để bôi lên vũ khí đang cầm. Không dùng được cho cung."
+ },
+ {
+  "ns": "",
+  "key": "959B7A76462DC6D3C299BE8E239361AF",
+  "en": "Crafted by alchemists this resin is crude but functional. Using this on your weapons will cover it in living lightning and deal 10% weapon damage as extra lightning damage. Repeated use resets the duration.",
+  "already": null,
+  "vi": "Được các nhà giả kim chế tạo, loại nhựa này thô sơ nhưng dùng được. Bôi lên vũ khí sẽ khiến nó phủ sét sống và gây thêm 10% sát thương vũ khí dưới dạng sát thương sét. Dùng lại sẽ làm mới thời gian hiệu lực."
+ },
+ {
+  "ns": "",
+  "key": "C2157E1C4067AFF210B35F954CC565CD",
+  "en": "10% Damage as Lightning",
+  "already": null,
+  "vi": "10% sát thương thành sát thương sét"
+ },
+ {
+  "ns": "",
+  "key": "D44532BC4FCE3F60B860F793B7C3C074",
+  "en": "Lightning Infusion",
+  "already": null,
+  "vi": "Tẩm sét"
+ },
+ {
+  "ns": "",
+  "key": "BBEAB9214908D3F2571750B8EFF296C2",
+  "en": "Strong Lightning Resin",
+  "already": null,
+  "vi": "Nhựa Sét Mạnh"
+ },
+ {
+  "ns": "",
+  "key": "CC97248145749E88C16E1BA2006FFAAE",
+  "en": "Crafted by alchemists this resin is potent. Using this on your weapons will cover it in living lightning and deal 20% weapon damage as extra lightning damage. There is a 15% chance to strike your target with lightning on hit. Repeated use resets the duration.",
+  "already": null,
+  "vi": "Được các nhà giả kim chế tạo, loại nhựa này mạnh. Bôi lên vũ khí sẽ khiến nó phủ sét sống và gây thêm 20% sát thương vũ khí dưới dạng sát thương sét. Có 15% cơ hội gọi sét đánh mục tiêu khi trúng đòn. Dùng lại sẽ làm mới thời gian hiệu lực."
+ },
+ {
+  "ns": "",
+  "key": "457D275B4CB0B7A30D57BBA8495D3AC0",
+  "en": "20% Damage as Lightning",
+  "already": null,
+  "vi": "20% sát thương thành sát thương sét"
+ },
+ {
+  "ns": "",
+  "key": "4C3F3CEC49C2A01C71F49686DB033EEB",
+  "en": "15% Lightning Chance",
+  "already": null,
+  "vi": "15% cơ hội gọi sét"
+ },
+ {
+  "ns": "",
+  "key": "22511F5648570439B6D37698128C1797",
+  "en": "Grand Lightning Resin",
+  "already": null,
+  "vi": "Nhựa Sét Thượng Hạng"
+ },
+ {
+  "ns": "",
+  "key": "11F4D3CB4CFB8760D88B8CB668991A96",
+  "en": "Crafted by alchemists this resin is bursting with power. Using this on your weapons will cover it in living lightning and deal 30% weapon damage as extra lightning damage. There is a 30% chance to strike your target with lightning on hit. Repeated use resets the duration.",
+  "already": null,
+  "vi": "Được các nhà giả kim chế tạo, loại nhựa này tràn đầy sức mạnh. Bôi lên vũ khí sẽ khiến nó phủ sét sống và gây thêm 30% sát thương vũ khí dưới dạng sát thương sét. Có 30% cơ hội gọi sét đánh mục tiêu khi trúng đòn. Dùng lại sẽ làm mới thời gian hiệu lực."
+ },
+ {
+  "ns": "",
+  "key": "E912B1D74E16CFCECD1300A52FA32E0C",
+  "en": "30% Damage as Lightning",
+  "already": null,
+  "vi": "30% sát thương thành sát thương sét"
+ },
+ {
+  "ns": "",
+  "key": "3C271EDD40D4196789786FA427B4B16E",
+  "en": "30% Lightning Chance",
+  "already": null,
+  "vi": "30% cơ hội gọi sét"
+ },
+ {
+  "ns": "",
+  "key": "418C309C48094DF0067133A0D847B2C6",
+  "en": "Fire Resin Alchemy",
+  "already": null,
+  "vi": "Giả Kim Nhựa Lửa"
+ },
+ {
+  "ns": "",
+  "key": "EDF2FF694FCC1A8A820C9DA83379975D",
+  "en": "Teaches you how to craft fire infusements for your weapons",
+  "already": null,
+  "vi": "Dạy bạn cách chế tạo chất tẩm lửa cho vũ khí"
+ },
+ {
+  "ns": "",
+  "key": "A16E8B044B2A482C8DA91493699900EA",
+  "en": "Frost Resin Alchemy",
+  "already": null,
+  "vi": "Giả Kim Nhựa Băng"
+ },
+ {
+  "ns": "",
+  "key": "07C186FD4F9A10D3282FB8B583B4F21F",
+  "en": "Teaches you how to craft frost infusements for your weapons",
+  "already": null,
+  "vi": "Dạy bạn cách chế tạo chất tẩm băng giá cho vũ khí"
+ },
+ {
+  "ns": "",
+  "key": "BF5A5ADF44F1A4E80BC123A61E814F57",
+  "en": "Air Resin Alchemy",
+  "already": null,
+  "vi": "Giả Kim Nhựa Gió"
+ },
+ {
+  "ns": "",
+  "key": "BC91BE714E0632E98D9099B02BB0F250",
+  "en": "Teaches you how to craft air infusements for your weapons",
+  "already": null,
+  "vi": "Dạy bạn cách chế tạo chất tẩm gió cho vũ khí"
+ },
+ {
+  "ns": "",
+  "key": "8A75F2BF46E732346410B4A972B6F363",
+  "en": "Blood Resin Alchemy",
+  "already": null,
+  "vi": "Giả Kim Nhựa Máu"
+ },
+ {
+  "ns": "",
+  "key": "D752D0AA487BD1ACA43340827004A49F",
+  "en": "Teaches you how to craft blood infusements for your weapons",
+  "already": null,
+  "vi": "Dạy bạn cách chế tạo chất tẩm máu cho vũ khí"
+ },
+ {
+  "ns": "",
+  "key": "E580D8E348962B6A9624E19BAF41DE65",
+  "en": "Lightning Resin Alchemy",
+  "already": null,
+  "vi": "Giả Kim Nhựa Sét"
+ },
+ {
+  "ns": "",
+  "key": "7B1B467E42BC1D012165AB9D1EA9B639",
+  "en": "Teaches you how to craft lightning infusements for your weapons",
+  "already": null,
+  "vi": "Dạy bạn cách chế tạo chất tẩm sét cho vũ khí"
+ },
+ {
+  "ns": "",
+  "key": "2B4D9F4D4AE65E4F272CA288B0F917A5",
+  "en": "Speed of Wind",
+  "already": null,
+  "vi": "Tốc Độ Của Gió"
+ },
+ {
+  "ns": "",
+  "key": "AF87FB794981C23FBC072B99F0B75F10",
+  "en": "Wind's Strength",
+  "already": null,
+  "vi": "Sức Mạnh Của Gió"
+ },
+ {
+  "ns": "",
+  "key": "9F090C8F42265C662D566496DE14536C",
+  "en": "Speed of Wind",
+  "already": null,
+  "vi": "Tốc Độ Của Gió"
+ }
+]
