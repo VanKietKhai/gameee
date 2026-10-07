@@ -1,0 +1,8554 @@
+[
+ {
+  "file": "Exiles_Aquilonia_DLC.locres",
+  "ns": "",
+  "key": "DLC_Aquilonia_FeatTable_7031_FeatName",
+  "en": "Aquilonian Warpaints",
+  "old": "Aquilonian Warpaints",
+  "vi": "Sơn Chiến Aquilonia"
+ },
+ {
+  "file": "Exiles_Code.locres",
+  "ns": "CharacterTransfer",
+  "key": "Client",
+  "en": "Client",
+  "old": "Client",
+  "vi": "Máy khách"
+ },
+ {
+  "file": "Exiles_Code.locres",
+  "ns": "UProgressionRadialMenu",
+  "key": "ProgressionRadialMenuOpenBattlePass",
+  "en": "Battle Pass",
+  "old": "Battle Pass",
+  "vi": "Thẻ Chiến Trận"
+ },
+ {
+  "file": "Exiles_Code.locres",
+  "ns": "UProgressionRadialMenu",
+  "key": "ProgressionRadialMenuOpenStore",
+  "en": "Bazaar",
+  "old": "Bazaar",
+  "vi": "Chợ"
+ },
+ {
+  "file": "Exiles_Dialogues.locres",
+  "ns": "",
+  "key": "0B89A5854E3E3A999AA5039A4C30329E",
+  "en": "[Continue]",
+  "old": "[Continue]",
+  "vi": "[Tiếp tục]"
+ },
+ {
+  "file": "Exiles_Dialogues.locres",
+  "ns": "",
+  "key": "113B524D41B6817EB9F5D5B695650F3F",
+  "en": "[Continue]",
+  "old": "[Continue]",
+  "vi": "[Tiếp tục]"
+ },
+ {
+  "file": "Exiles_Dialogues.locres",
+  "ns": "",
+  "key": "11C855704CF06FF00E1B7DA130F98611",
+  "en": "[Continue]",
+  "old": "[Continue]",
+  "vi": "[Tiếp tục]"
+ },
+ {
+  "file": "Exiles_Dialogues.locres",
+  "ns": "",
+  "key": "11D8A94F421AC6789E551E9269C9FC78",
+  "en": "[Continue]",
+  "old": "[Continue]",
+  "vi": "[Tiếp tục]"
+ },
+ {
+  "file": "Exiles_Dialogues.locres",
+  "ns": "",
+  "key": "11E0C3BF4410B010639D46956B8F11C1",
+  "en": "[Continue]",
+  "old": "[Continue]",
+  "vi": "[Tiếp tục]"
+ },
+ {
+  "file": "Exiles_Dialogues.locres",
+  "ns": "",
+  "key": "1D2D98FA43FEB302A6E3FAB5D5C6BD1F",
+  "en": "[Continue]",
+  "old": "[Continue]",
+  "vi": "[Tiếp tục]"
+ },
+ {
+  "file": "Exiles_Dialogues.locres",
+  "ns": "",
+  "key": "1EE9CAFC4610B9DBE092B6A271A79F72",
+  "en": "[Continue]",
+  "old": "[Continue]",
+  "vi": "[Tiếp tục]"
+ },
+ {
+  "file": "Exiles_Dialogues.locres",
+  "ns": "",
+  "key": "25776979434C0D75D73E21AA1EFF30E7",
+  "en": "[Continue]",
+  "old": "[Continue]",
+  "vi": "[Tiếp tục]"
+ },
+ {
+  "file": "Exiles_Dialogues.locres",
+  "ns": "",
+  "key": "2746C854459E602D7FFB6A8DCAADC239",
+  "en": "[Continue]",
+  "old": "[Continue]",
+  "vi": "[Tiếp tục]"
+ },
+ {
+  "file": "Exiles_Dialogues.locres",
+  "ns": "",
+  "key": "292AAFCC470DD992FF574693DEF2D2CC",
+  "en": "[Continue]",
+  "old": "[Continue]",
+  "vi": "[Tiếp tục]"
+ },
+ {
+  "file": "Exiles_Dialogues.locres",
+  "ns": "",
+  "key": "3F0C6C1442C95B0C4C6DF493B8E3D800",
+  "en": "[Continue]",
+  "old": "[Continue]",
+  "vi": "[Tiếp tục]"
+ },
+ {
+  "file": "Exiles_Dialogues.locres",
+  "ns": "",
+  "key": "46916FB7476B237CF69DC4BDFD2871D9",
+  "en": "[Continue]",
+  "old": "[Continue]",
+  "vi": "[Tiếp tục]"
+ },
+ {
+  "file": "Exiles_Dialogues.locres",
+  "ns": "",
+  "key": "4BABC1D74FCD190750262CBC6CE09DF0",
+  "en": "[Continue]",
+  "old": "[Continue]",
+  "vi": "[Tiếp tục]"
+ },
+ {
+  "file": "Exiles_Dialogues.locres",
+  "ns": "",
+  "key": "539EDB7A499C1873EE1DE0BE58E6D88D",
+  "en": "[Continue]",
+  "old": "[Continue]",
+  "vi": "[Tiếp tục]"
+ },
+ {
+  "file": "Exiles_Dialogues.locres",
+  "ns": "",
+  "key": "543B070B4690FC97ECB00D903DC80473",
+  "en": "[Continue]",
+  "old": "[Continue]",
+  "vi": "[Tiếp tục]"
+ },
+ {
+  "file": "Exiles_Dialogues.locres",
+  "ns": "",
+  "key": "5F92E7FC48BEC986B69E04865A655B31",
+  "en": "[Continue]",
+  "old": "[Continue]",
+  "vi": "[Tiếp tục]"
+ },
+ {
+  "file": "Exiles_Dialogues.locres",
+  "ns": "",
+  "key": "6299C0134F0BF1428A179987FA67B518",
+  "en": "[Continue]",
+  "old": "[Continue]",
+  "vi": "[Tiếp tục]"
+ },
+ {
+  "file": "Exiles_Dialogues.locres",
+  "ns": "",
+  "key": "648418914CC090F65FAD139AC09ACA0E",
+  "en": "[Continue]",
+  "old": "[Continue]",
+  "vi": "[Tiếp tục]"
+ },
+ {
+  "file": "Exiles_Dialogues.locres",
+  "ns": "",
+  "key": "6DD8817448DD1EA4F84AB684175858AD",
+  "en": "[Continue]",
+  "old": "[Continue]",
+  "vi": "[Tiếp tục]"
+ },
+ {
+  "file": "Exiles_Dialogues.locres",
+  "ns": "",
+  "key": "78053E00422EDE2EE3C9F2BA702F7FE9",
+  "en": "[Continue]",
+  "old": "[Continue]",
+  "vi": "[Tiếp tục]"
+ },
+ {
+  "file": "Exiles_Dialogues.locres",
+  "ns": "",
+  "key": "78D122E844DD0EED34BDBE9FF7E20012",
+  "en": "[Continue]",
+  "old": "[Continue]",
+  "vi": "[Tiếp tục]"
+ },
+ {
+  "file": "Exiles_Dialogues.locres",
+  "ns": "",
+  "key": "86DC4095447FDF838C7A2BB44E03E20D",
+  "en": "[Continue]",
+  "old": "[Continue]",
+  "vi": "[Tiếp tục]"
+ },
+ {
+  "file": "Exiles_Dialogues.locres",
+  "ns": "",
+  "key": "8D8D771C4DEE87A0D63EB9945AE30872",
+  "en": "[Continue]",
+  "old": "[Continue]",
+  "vi": "[Tiếp tục]"
+ },
+ {
+  "file": "Exiles_Dialogues.locres",
+  "ns": "",
+  "key": "8E9BB94D4EB583D84063DBBDF4EB2995",
+  "en": "[Continue]",
+  "old": "[Continue]",
+  "vi": "[Tiếp tục]"
+ },
+ {
+  "file": "Exiles_Dialogues.locres",
+  "ns": "",
+  "key": "90F128A0425AB4CB197385A5C258B28A",
+  "en": "[Continue]",
+  "old": "[Continue]",
+  "vi": "[Tiếp tục]"
+ },
+ {
+  "file": "Exiles_Dialogues.locres",
+  "ns": "",
+  "key": "918BB5804852693B77B77988A083FB8E",
+  "en": "[Continue]",
+  "old": "[Continue]",
+  "vi": "[Tiếp tục]"
+ },
+ {
+  "file": "Exiles_Dialogues.locres",
+  "ns": "",
+  "key": "99B202BA45260B3EC4CF48AB8F9C30B9",
+  "en": "[Continue]",
+  "old": "[Continue]",
+  "vi": "[Tiếp tục]"
+ },
+ {
+  "file": "Exiles_Dialogues.locres",
+  "ns": "",
+  "key": "9AE754BE436D10ADF16300A766040E2E",
+  "en": "[Continue]",
+  "old": "[Continue]",
+  "vi": "[Tiếp tục]"
+ },
+ {
+  "file": "Exiles_Dialogues.locres",
+  "ns": "",
+  "key": "9D81F20A416EF8CBC66E33A2749FD5D4",
+  "en": "[Continue]",
+  "old": "[Continue]",
+  "vi": "[Tiếp tục]"
+ },
+ {
+  "file": "Exiles_Dialogues.locres",
+  "ns": "",
+  "key": "A16458BE4E51DB28DA8BF09E7F31ECD8",
+  "en": "[Continue]",
+  "old": "[Continue]",
+  "vi": "[Tiếp tục]"
+ },
+ {
+  "file": "Exiles_Dialogues.locres",
+  "ns": "",
+  "key": "A25D288241E7E2CF1D6D3982DA7239FD",
+  "en": "[Continue]",
+  "old": "[Continue]",
+  "vi": "[Tiếp tục]"
+ },
+ {
+  "file": "Exiles_Dialogues.locres",
+  "ns": "",
+  "key": "A5F93E1E42DCF123926ECAB664D818B0",
+  "en": "[Continue]",
+  "old": "[Continue]",
+  "vi": "[Tiếp tục]"
+ },
+ {
+  "file": "Exiles_Dialogues.locres",
+  "ns": "",
+  "key": "A835229E4C87A2F2FF1A9FB79242A69A",
+  "en": "[Continue]",
+  "old": "[Continue]",
+  "vi": "[Tiếp tục]"
+ },
+ {
+  "file": "Exiles_Dialogues.locres",
+  "ns": "",
+  "key": "AA2D06E140D77A19AB63D898AFCBBA98",
+  "en": "[Continue]",
+  "old": "[Continue]",
+  "vi": "[Tiếp tục]"
+ },
+ {
+  "file": "Exiles_Dialogues.locres",
+  "ns": "",
+  "key": "AC539F6742BA34446424F293013D2CB3",
+  "en": "[Continue]",
+  "old": "[Continue]",
+  "vi": "[Tiếp tục]"
+ },
+ {
+  "file": "Exiles_Dialogues.locres",
+  "ns": "",
+  "key": "B12F9A1648227B021FA4529B11853D65",
+  "en": "[Continue]",
+  "old": "[Continue]",
+  "vi": "[Tiếp tục]"
+ },
+ {
+  "file": "Exiles_Dialogues.locres",
+  "ns": "",
+  "key": "B24D39CE4D4A21518DAC8895323D543F",
+  "en": "[Continue]",
+  "old": "[Continue]",
+  "vi": "[Tiếp tục]"
+ },
+ {
+  "file": "Exiles_Dialogues.locres",
+  "ns": "",
+  "key": "B30EF4A04A1783ED0A51E686E15A339D",
+  "en": "[Continue]",
+  "old": "[Continue]",
+  "vi": "[Tiếp tục]"
+ },
+ {
+  "file": "Exiles_Dialogues.locres",
+  "ns": "",
+  "key": "B39586A34553A14B51A53F9F38894582",
+  "en": "[Continue]",
+  "old": "[Continue]",
+  "vi": "[Tiếp tục]"
+ },
+ {
+  "file": "Exiles_Dialogues.locres",
+  "ns": "",
+  "key": "BCEE1B47452D1EC7026A1E87FD9B911A",
+  "en": "[Continue]",
+  "old": "[Continue]",
+  "vi": "[Tiếp tục]"
+ },
+ {
+  "file": "Exiles_Dialogues.locres",
+  "ns": "",
+  "key": "BE9F8F174D53646A8E88258864629D62",
+  "en": "[Continue]",
+  "old": "[Continue]",
+  "vi": "[Tiếp tục]"
+ },
+ {
+  "file": "Exiles_Dialogues.locres",
+  "ns": "",
+  "key": "C567EE10432E0618ADAE51B64ACF6D0D",
+  "en": "[Continue]",
+  "old": "[Continue]",
+  "vi": "[Tiếp tục]"
+ },
+ {
+  "file": "Exiles_Dialogues.locres",
+  "ns": "",
+  "key": "CEA873C4435FE4E0E0A11FBC35683891",
+  "en": "[Continue]",
+  "old": "[Continue]",
+  "vi": "[Tiếp tục]"
+ },
+ {
+  "file": "Exiles_Dialogues.locres",
+  "ns": "",
+  "key": "D238B81D411AAF155DD1E9922AA56F96",
+  "en": "[Continue]",
+  "old": "[Continue]",
+  "vi": "[Tiếp tục]"
+ },
+ {
+  "file": "Exiles_Dialogues.locres",
+  "ns": "",
+  "key": "D6346D44427A87D478C5E3AD0235BF90",
+  "en": "[Continue]",
+  "old": "[Continue]",
+  "vi": "[Tiếp tục]"
+ },
+ {
+  "file": "Exiles_Dialogues.locres",
+  "ns": "",
+  "key": "D91C68324962D2359C75809F518211A7",
+  "en": "[Continue]",
+  "old": "[Continue]",
+  "vi": "[Tiếp tục]"
+ },
+ {
+  "file": "Exiles_Dialogues.locres",
+  "ns": "",
+  "key": "E9B9895C44EE47AE96CDE8B10E879DE4",
+  "en": "[Continue]",
+  "old": "[Continue]",
+  "vi": "[Tiếp tục]"
+ },
+ {
+  "file": "Exiles_Dialogues.locres",
+  "ns": "",
+  "key": "EEDFFCDF427AFB3DA6C157A889354AD3",
+  "en": "[Continue]",
+  "old": "[Continue]",
+  "vi": "[Tiếp tục]"
+ },
+ {
+  "file": "Exiles_Dialogues.locres",
+  "ns": "",
+  "key": "F16351D34D0B14F4EF6CA3BA4E93EC72",
+  "en": "[Continue]",
+  "old": "[Continue]",
+  "vi": "[Tiếp tục]"
+ },
+ {
+  "file": "Exiles_Dialogues.locres",
+  "ns": "",
+  "key": "F3EFAA38427F58EEEC4A9D94D24AC85C",
+  "en": "[Continue]",
+  "old": "[Continue]",
+  "vi": "[Tiếp tục]"
+ },
+ {
+  "file": "Exiles_Dialogues.locres",
+  "ns": "",
+  "key": "F46CDA06418AFE10F85311940C17127E",
+  "en": "[Continue]",
+  "old": "[Continue]",
+  "vi": "[Tiếp tục]"
+ },
+ {
+  "file": "Exiles_Dialogues.locres",
+  "ns": "",
+  "key": "E6BFED4846DCE5DF2AE8CD8EFA566709",
+  "en": "[Offer a chunk of Obsidian]",
+  "old": "[Offer a chunk of Obsidian]",
+  "vi": "[Dâng một khối Obsidian]"
+ },
+ {
+  "file": "Exiles_Dialogues.locres",
+  "ns": "",
+  "key": "2A2BB72C46F8AFE8DDAA17928B5930AF",
+  "en": "[Offer a cut of Exquisite Meat]",
+  "old": "[Offer a cut of Exquisite Meat]",
+  "vi": "[Dâng một miếng Thịt Thượng Hạng]"
+ },
+ {
+  "file": "Exiles_Dialogues.locres",
+  "ns": "",
+  "key": "AA7FCAFC49AD695268F9D5B86134180C",
+  "en": "[Offer a dollop of Alchemical Base]",
+  "old": "[Offer a dollop of Alchemical Base]",
+  "vi": "[Dâng một ít Dung Dịch Giả Kim]"
+ },
+ {
+  "file": "Exiles_Dialogues.locres",
+  "ns": "",
+  "key": "ABD9D4724654A8E6A25460AB6106EF07",
+  "en": "[Offer a drop of Blood]",
+  "old": "[Offer a drop of Blood]",
+  "vi": "[Dâng một giọt Máu]"
+ },
+ {
+  "file": "Exiles_Dialogues.locres",
+  "ns": "",
+  "key": "5835632340A5B33CA401A5AF3A902CB1",
+  "en": "[Offer a flask of Sacrificial Blood]",
+  "old": "[Offer a flask of Sacrificial Blood]",
+  "vi": "[Dâng một bình Máu Hiến Tế]"
+ },
+ {
+  "file": "Exiles_Dialogues.locres",
+  "ns": "",
+  "key": "1B00ED8B435110B5617348AC77BA64F0",
+  "en": "[Offer a handful of Brimstone]",
+  "old": "[Offer a handful of Brimstone]",
+  "vi": "[Dâng một nắm Lưu Huỳnh]"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_19196_Name",
+  "en": "Aardwolf",
+  "old": "Aardwolf",
+  "vi": "Sói Đất"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_20001_RecipeName",
+  "en": "Aardwolf",
+  "old": "Aardwolf",
+  "vi": "Sói Đất"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_20002_RecipeName",
+  "en": "Aardwolf",
+  "old": "Aardwolf",
+  "vi": "Sói Đất"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_20003_RecipeName",
+  "en": "Aardwolf",
+  "old": "Aardwolf",
+  "vi": "Sói Đất"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_20004_RecipeName",
+  "en": "Aardwolf",
+  "old": "Aardwolf",
+  "vi": "Sói Đất"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_20005_RecipeName",
+  "en": "Aardwolf",
+  "old": "Aardwolf",
+  "vi": "Sói Đất"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_20006_RecipeName",
+  "en": "Aardwolf",
+  "old": "Aardwolf",
+  "vi": "Sói Đất"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_20007_RecipeName",
+  "en": "Aardwolf",
+  "old": "Aardwolf",
+  "vi": "Sói Đất"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_20036_RecipeName",
+  "en": "Aardwolf",
+  "old": "Aardwolf",
+  "vi": "Sói Đất"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_20037_RecipeName",
+  "en": "Aardwolf",
+  "old": "Aardwolf",
+  "vi": "Sói Đất"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_20038_RecipeName",
+  "en": "Aardwolf",
+  "old": "Aardwolf",
+  "vi": "Sói Đất"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_20039_RecipeName",
+  "en": "Aardwolf",
+  "old": "Aardwolf",
+  "vi": "Sói Đất"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_20040_RecipeName",
+  "en": "Aardwolf",
+  "old": "Aardwolf",
+  "vi": "Sói Đất"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_20041_RecipeName",
+  "en": "Aardwolf",
+  "old": "Aardwolf",
+  "vi": "Sói Đất"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_20042_RecipeName",
+  "en": "Aardwolf",
+  "old": "Aardwolf",
+  "vi": "Sói Đất"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_52227_FeatName",
+  "en": "Acheronian Legate",
+  "old": "Acheronian Legate",
+  "vi": "Pháp Quan Acheron"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_55003_FeatName",
+  "en": "Acolyte of Mitra",
+  "old": "Acolyte of Mitra",
+  "vi": "Tín Đồ Mitra"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_55001_FeatName",
+  "en": "Acolyte of Set",
+  "old": "Acolyte of Set",
+  "vi": "Tín Đồ Set"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_55002_FeatName",
+  "en": "Acolyte of Yog",
+  "old": "Acolyte of Yog",
+  "vi": "Tín Đồ Yog"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51548_Name",
+  "en": "Aja's Bane",
+  "old": "Aja's Bane",
+  "vi": "Khắc Tinh Của Aja"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_51548_RecipeName",
+  "en": "Aja's Bane",
+  "old": "Aja's Bane",
+  "vi": "Khắc Tinh Của Aja"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24120_Name",
+  "en": "Alligator Bite",
+  "old": "Alligator Bite",
+  "vi": "Cú Cắn Cá Sấu"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_80974_FeatName",
+  "en": "Altar to Ymir",
+  "old": "Altar to Ymir",
+  "vi": "Bàn Thờ Ymir"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_916_FeatName",
+  "en": "Ancestral Knowledge: Decorative Warpaints",
+  "old": "Ancestral Knowledge: Decorative Warpaints",
+  "vi": "Tri Thức Tổ Tiên: Sơn Chiến Trang Trí"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_51084_FeatName",
+  "en": "Ancient Javelin",
+  "old": "Ancient Javelin",
+  "vi": "Lao Cổ"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51084_Name",
+  "en": "Ancient Javelin",
+  "old": "Ancient Javelin",
+  "vi": "Lao Cổ"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_51084_RecipeName",
+  "en": "Ancient Javelin",
+  "old": "Ancient Javelin",
+  "vi": "Lao Cổ"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_161_FeatName",
+  "en": "Angerspike",
+  "old": "Angerspike",
+  "vi": "Gai Phẫn Nộ"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24061_Name",
+  "en": "Angerspike",
+  "old": "Angerspike",
+  "vi": "Gai Phẫn Nộ"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24205_Name",
+  "en": "Angerspike",
+  "old": "Angerspike",
+  "vi": "Gai Phẫn Nộ"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_24205_RecipeName",
+  "en": "Angerspike",
+  "old": "Angerspike",
+  "vi": "Gai Phẫn Nộ"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51389_Name",
+  "en": "Annihilator",
+  "old": "Annihilator",
+  "vi": "Kẻ Hủy Diệt"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_53527_FeatName",
+  "en": "Aspect Warpaints",
+  "old": "Aspect Warpaints",
+  "vi": "Sơn Chiến Hóa Thân"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_14199_Name",
+  "en": "Asura's Glory",
+  "old": "Asura's Glory",
+  "vi": "Vinh Quang Asura"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_14199_RecipeName",
+  "en": "Asura's Glory",
+  "old": "Asura's Glory",
+  "vi": "Vinh Quang Asura"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "9C16CC7E48E7C2615532FC9281DF9D7F",
+  "en": "Aviary",
+  "old": "Aviary",
+  "vi": "Chuồng Chim"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51554_Name",
+  "en": "Baal-pteor's Lodestone",
+  "old": "Baal-pteor's Lodestone",
+  "vi": "Đá Nam Châm Của Baal-pteor"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_51554_RecipeName",
+  "en": "Baal-pteor's Lodestone",
+  "old": "Baal-pteor's Lodestone",
+  "vi": "Đá Nam Châm Của Baal-pteor"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51541_Name",
+  "en": "Baal-pteor's Razor",
+  "old": "Baal-pteor's Razor",
+  "vi": "Dao Cạo Của Baal-pteor"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_51541_RecipeName",
+  "en": "Baal-pteor's Razor",
+  "old": "Baal-pteor's Razor",
+  "vi": "Dao Cạo Của Baal-pteor"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_118_FeatName",
+  "en": "Bad Karma",
+  "old": "Bad Karma",
+  "vi": "Nghiệp Xấu"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24018_Name",
+  "en": "Bad Karma",
+  "old": "Bad Karma",
+  "vi": "Nghiệp Xấu"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24162_Name",
+  "en": "Bad Karma",
+  "old": "Bad Karma",
+  "vi": "Nghiệp Xấu"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_24162_RecipeName",
+  "en": "Bad Karma",
+  "old": "Bad Karma",
+  "vi": "Nghiệp Xấu"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "8B4BB9324028789873B881817014B020",
+  "en": "Ballista",
+  "old": "Ballista",
+  "vi": "Nỏ Thần Công"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_89803_FeatName",
+  "en": "Ballista",
+  "old": "Ballista",
+  "vi": "Nỏ Thần Công"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_89814_Name",
+  "en": "Ballista",
+  "old": "Ballista",
+  "vi": "Nỏ Thần Công"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_89814_RecipeName",
+  "en": "Ballista",
+  "old": "Ballista",
+  "vi": "Nỏ Thần Công"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_19018_FeatName",
+  "en": "Battering Ram",
+  "old": "Battering Ram",
+  "vi": "Xe Phá Thành"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_50592_Name",
+  "en": "Battering Ram",
+  "old": "Battering Ram",
+  "vi": "Xe Phá Thành"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_40029_RecipeName",
+  "en": "Battering Ram",
+  "old": "Battering Ram",
+  "vi": "Xe Phá Thành"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_50592_RecipeName",
+  "en": "Battering Ram",
+  "old": "Battering Ram",
+  "vi": "Xe Phá Thành"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51553_Name",
+  "en": "Bec-de-Corbin",
+  "old": "Bec-de-Corbin",
+  "vi": "Mỏ Quạ"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_51553_RecipeName",
+  "en": "Bec-de-Corbin",
+  "old": "Bec-de-Corbin",
+  "vi": "Mỏ Quạ"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51371_Name",
+  "en": "Bitch-scent",
+  "old": "Bitch-scent",
+  "vi": "Mùi Chó Cái"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_51371_RecipeName",
+  "en": "Bitch-scent",
+  "old": "Bitch-scent",
+  "vi": "Mùi Chó Cái"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_108_FeatName",
+  "en": "Bite",
+  "old": "Bite",
+  "vi": "Cú Cắn"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24008_Name",
+  "en": "Bite",
+  "old": "Bite",
+  "vi": "Cú Cắn"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24152_Name",
+  "en": "Bite",
+  "old": "Bite",
+  "vi": "Cú Cắn"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_24152_RecipeName",
+  "en": "Bite",
+  "old": "Bite",
+  "vi": "Cú Cắn"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_160_FeatName",
+  "en": "Bitter Bite",
+  "old": "Bitter Bite",
+  "vi": "Cú Cắn Cay Đắng"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24060_Name",
+  "en": "Bitter Bite",
+  "old": "Bitter Bite",
+  "vi": "Cú Cắn Cay Đắng"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24204_Name",
+  "en": "Bitter Bite",
+  "old": "Bitter Bite",
+  "vi": "Cú Cắn Cay Đắng"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_24204_RecipeName",
+  "en": "Bitter Bite",
+  "old": "Bitter Bite",
+  "vi": "Cú Cắn Cay Đắng"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_11021_Name",
+  "en": "Black Blood",
+  "old": "Black Blood",
+  "vi": "Máu Đen"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51566_Name",
+  "en": "Black Bruargh's Fury",
+  "old": "Black Bruargh's Fury",
+  "vi": "Cơn Thịnh Nộ Của Bruargh Đen"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_51566_RecipeName",
+  "en": "Black Bruargh's Fury",
+  "old": "Black Bruargh's Fury",
+  "vi": "Cơn Thịnh Nộ Của Bruargh Đen"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24141_Name",
+  "en": "Black Claws",
+  "old": "Black Claws",
+  "vi": "Vuốt Đen"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_50484_Name",
+  "en": "Black Iron Bulwark",
+  "old": "Black Iron Bulwark",
+  "vi": "Thành Lũy Sắt Đen"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_504_FeatName",
+  "en": "Black Privateer's Outfit",
+  "old": "Black Privateer's Outfit",
+  "vi": "Trang Phục Cướp Biển Đen"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51461_Name",
+  "en": "Blessed Blood Letter",
+  "old": "Blessed Blood Letter",
+  "vi": "Kẻ Trích Máu Được Ban Phước"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_51461_RecipeName",
+  "en": "Blessed Blood Letter",
+  "old": "Blessed Blood Letter",
+  "vi": "Kẻ Trích Máu Được Ban Phước"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51462_Name",
+  "en": "Blessed Derketo's Kiss",
+  "old": "Blessed Derketo's Kiss",
+  "vi": "Nụ Hôn Derketo Được Ban Phước"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_51462_RecipeName",
+  "en": "Blessed Derketo's Kiss",
+  "old": "Blessed Derketo's Kiss",
+  "vi": "Nụ Hôn Derketo Được Ban Phước"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51457_Name",
+  "en": "Blessed Mitraen Ankh",
+  "old": "Blessed Mitraen Ankh",
+  "vi": "Ankh Mitra Được Ban Phước"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_51457_RecipeName",
+  "en": "Blessed Mitraen Ankh",
+  "old": "Blessed Mitraen Ankh",
+  "vi": "Ankh Mitra Được Ban Phước"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_10027_Name",
+  "en": "Blood Crystal",
+  "old": "Blood Crystal",
+  "vi": "Pha Lê Máu"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_914149_RecipeName",
+  "en": "Blood Crystal",
+  "old": "Blood Crystal",
+  "vi": "Pha Lê Máu"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51455_Name",
+  "en": "Blood Letter",
+  "old": "Blood Letter",
+  "vi": "Kẻ Trích Máu"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_51455_RecipeName",
+  "en": "Blood Letter",
+  "old": "Blood Letter",
+  "vi": "Kẻ Trích Máu"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_50580_SecondModifier",
+  "en": "Blood-drinker",
+  "old": "Blood-drinker",
+  "vi": "Kẻ Uống Máu"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_18036_Name",
+  "en": "Blood-stained Nails",
+  "old": "Blood-stained Nails",
+  "vi": "Móng Vuốt Nhuốm Máu"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51359_Name",
+  "en": "Blooded Claws",
+  "old": "Blooded Claws",
+  "vi": "Vuốt Đẫm Máu"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_51359_RecipeName",
+  "en": "Blooded Claws",
+  "old": "Blooded Claws",
+  "vi": "Vuốt Đẫm Máu"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_11023_Name",
+  "en": "Blue Crystal",
+  "old": "Blue Crystal",
+  "vi": "Pha Lê Xanh Dương"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_80851_FeatName",
+  "en": "Boxmaker",
+  "old": "Boxmaker",
+  "vi": "Thợ Đóng Hộp"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_122_FeatName",
+  "en": "Bright Slice",
+  "old": "Bright Slice",
+  "vi": "Nhát Chém Sáng"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24022_Name",
+  "en": "Bright Slice",
+  "old": "Bright Slice",
+  "vi": "Nhát Chém Sáng"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24166_Name",
+  "en": "Bright Slice",
+  "old": "Bright Slice",
+  "vi": "Nhát Chém Sáng"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_24166_RecipeName",
+  "en": "Bright Slice",
+  "old": "Bright Slice",
+  "vi": "Nhát Chém Sáng"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24132_Name",
+  "en": "Brittle Edge",
+  "old": "Brittle Edge",
+  "vi": "Lưỡi Giòn"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_3_FeatName",
+  "en": "Bruiser",
+  "old": "Bruiser",
+  "vi": "Kẻ Đấm Bốc"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_511_FeatName",
+  "en": "Cannibal's Trappings",
+  "old": "Cannibal's Trappings",
+  "vi": "Đồ Lề Của Kẻ Ăn Thịt Người"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51825_Name",
+  "en": "Carnage",
+  "old": "Carnage",
+  "vi": "Tàn Sát"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_80521_FeatName",
+  "en": "Chandler",
+  "old": "Chandler",
+  "vi": "Thợ Làm Nến"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_11062_Name",
+  "en": "Chitin",
+  "old": "Chitin",
+  "vi": "Kitin"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_13634_RecipeName",
+  "en": "Chitin",
+  "old": "Chitin",
+  "vi": "Kitin"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_19985_RecipeName",
+  "en": "Chitin",
+  "old": "Chitin",
+  "vi": "Kitin"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_14193_Name",
+  "en": "Cochineal",
+  "old": "Cochineal",
+  "vi": "Phẩm Son Rệp"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_175_FeatName",
+  "en": "Coldheart",
+  "old": "Coldheart",
+  "vi": "Tim Lạnh"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24075_Name",
+  "en": "Coldheart",
+  "old": "Coldheart",
+  "vi": "Tim Lạnh"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24219_Name",
+  "en": "Coldheart",
+  "old": "Coldheart",
+  "vi": "Tim Lạnh"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_24219_RecipeName",
+  "en": "Coldheart",
+  "old": "Coldheart",
+  "vi": "Tim Lạnh"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24047_SecondModifier",
+  "en": "Corruptor",
+  "old": "Corruptor",
+  "vi": "Kẻ Tha Hóa"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24068_SecondModifier",
+  "en": "Corruptor",
+  "old": "Corruptor",
+  "vi": "Kẻ Tha Hóa"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24191_SecondModifier",
+  "en": "Corruptor",
+  "old": "Corruptor",
+  "vi": "Kẻ Tha Hóa"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24212_SecondModifier",
+  "en": "Corruptor",
+  "old": "Corruptor",
+  "vi": "Kẻ Tha Hóa"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24118_ThirdModifier",
+  "en": "Coup De Grace",
+  "old": "Coup De Grace",
+  "vi": "Nhát Kết Liễu"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51392_Name",
+  "en": "Crom's Hammer",
+  "old": "Crom's Hammer",
+  "vi": "Búa Của Crom"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_137_FeatName",
+  "en": "Death-To-Trees",
+  "old": "Death-To-Trees",
+  "vi": "Tử Thần Của Cây"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24037_Name",
+  "en": "Death-To-Trees",
+  "old": "Death-To-Trees",
+  "vi": "Tử Thần Của Cây"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24181_Name",
+  "en": "Death-To-Trees",
+  "old": "Death-To-Trees",
+  "vi": "Tử Thần Của Cây"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_24181_RecipeName",
+  "en": "Death-To-Trees",
+  "old": "Death-To-Trees",
+  "vi": "Tử Thần Của Cây"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51072_Name",
+  "en": "Deathbringer Axe",
+  "old": "Deathbringer Axe",
+  "vi": "Rìu Mang Tử Thần"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51085_Name",
+  "en": "Deathbringer Axe",
+  "old": "Deathbringer Axe",
+  "vi": "Rìu Mang Tử Thần"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_51072_RecipeName",
+  "en": "Deathbringer Axe",
+  "old": "Deathbringer Axe",
+  "vi": "Rìu Mang Tử Thần"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_126_FeatName",
+  "en": "Deceiver",
+  "old": "Deceiver",
+  "vi": "Kẻ Lừa Dối"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24026_Name",
+  "en": "Deceiver",
+  "old": "Deceiver",
+  "vi": "Kẻ Lừa Dối"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24170_Name",
+  "en": "Deceiver",
+  "old": "Deceiver",
+  "vi": "Kẻ Lừa Dối"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_24170_RecipeName",
+  "en": "Deceiver",
+  "old": "Deceiver",
+  "vi": "Kẻ Lừa Dối"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_53520_FeatName",
+  "en": "Decorative Warpaints",
+  "old": "Decorative Warpaints",
+  "vi": "Sơn Chiến Trang Trí"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_12_FeatName",
+  "en": "Defender",
+  "old": "Defender",
+  "vi": "Người Bảo Vệ"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51456_Name",
+  "en": "Derketo's Kiss",
+  "old": "Derketo's Kiss",
+  "vi": "Nụ Hôn Của Derketo"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_51456_RecipeName",
+  "en": "Derketo's Kiss",
+  "old": "Derketo's Kiss",
+  "vi": "Nụ Hôn Của Derketo"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51391_Name",
+  "en": "Derketo's Voice",
+  "old": "Derketo's Voice",
+  "vi": "Tiếng Nói Của Derketo"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51826_Name",
+  "en": "Destroyer",
+  "old": "Destroyer",
+  "vi": "Kẻ Phá Hủy"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24129_Name",
+  "en": "Diseased Spike",
+  "old": "Diseased Spike",
+  "vi": "Gai Bệnh Dịch"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51447_Name",
+  "en": "Doom",
+  "old": "Doom",
+  "vi": "Diệt Vong"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FEC60CA04E7A1DA2C9E89180EC239676",
+  "en": "Dragonmouth",
+  "old": "Dragonmouth",
+  "vi": "Miệng Rồng"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_155_FeatName",
+  "en": "Draining Will",
+  "old": "Draining Will",
+  "vi": "Ý Chí Cạn Kiệt"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24055_Name",
+  "en": "Draining Will",
+  "old": "Draining Will",
+  "vi": "Ý Chí Cạn Kiệt"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24199_Name",
+  "en": "Draining Will",
+  "old": "Draining Will",
+  "vi": "Ý Chí Cạn Kiệt"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_24199_RecipeName",
+  "en": "Draining Will",
+  "old": "Draining Will",
+  "vi": "Ý Chí Cạn Kiệt"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_90224_Name",
+  "en": "Drawbridge",
+  "old": "Drawbridge",
+  "vi": "Cầu Kéo"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_90224_RecipeName",
+  "en": "Drawbridge",
+  "old": "Drawbridge",
+  "vi": "Cầu Kéo"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_542_FeatName",
+  "en": "Drowned Armory",
+  "old": "Drowned Armory",
+  "vi": "Kho Vũ Khí Chết Đuối"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_50511_Name",
+  "en": "Drunkard's Blade",
+  "old": "Drunkard's Blade",
+  "vi": "Kiếm Của Kẻ Say"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_516_FeatName",
+  "en": "Dune Hunter's Outfit",
+  "old": "Dune Hunter's Outfit",
+  "vi": "Trang Phục Thợ Săn Cồn Cát"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_4222_Name",
+  "en": "Eight-Sided Die",
+  "old": "Eight-Sided Die",
+  "vi": "Xúc Xắc Tám Mặt"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_4222_RecipeName",
+  "en": "Eight-Sided Die",
+  "old": "Eight-Sided Die",
+  "vi": "Xúc Xắc Tám Mặt"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51532_Name",
+  "en": "El's Drinker",
+  "old": "El's Drinker",
+  "vi": "Kẻ Uống Của El"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_51532_RecipeName",
+  "en": "El's Drinker",
+  "old": "El's Drinker",
+  "vi": "Kẻ Uống Của El"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_50486_Name",
+  "en": "Evening Star",
+  "old": "Evening Star",
+  "vi": "Sao Hôm"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_52567_FeatName",
+  "en": "Exile Epics",
+  "old": "Exile Epics",
+  "vi": "Đồ Sử Thi Lưu Đày"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "054102954DCB157DEF844D8CBFBEBECD",
+  "en": "Exiles",
+  "old": "Exiles",
+  "vi": "Kẻ Lưu Đày"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_52500_Name",
+  "en": "Eye Patch",
+  "old": "Eye Patch",
+  "vi": "Bịt Mắt"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_52500_RecipeName",
+  "en": "Eye Patch",
+  "old": "Eye Patch",
+  "vi": "Bịt Mắt"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_185_FeatName",
+  "en": "Eye-piercer",
+  "old": "Eye-piercer",
+  "vi": "Kẻ Đâm Mắt"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24085_Name",
+  "en": "Eye-piercer",
+  "old": "Eye-piercer",
+  "vi": "Kẻ Đâm Mắt"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24229_Name",
+  "en": "Eye-piercer",
+  "old": "Eye-piercer",
+  "vi": "Kẻ Đâm Mắt"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_24229_RecipeName",
+  "en": "Eye-piercer",
+  "old": "Eye-piercer",
+  "vi": "Kẻ Đâm Mắt"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_209_FeatName",
+  "en": "Fervor",
+  "old": "Fervor",
+  "vi": "Nhiệt Huyết"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24109_Name",
+  "en": "Fervor",
+  "old": "Fervor",
+  "vi": "Nhiệt Huyết"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24253_Name",
+  "en": "Fervor",
+  "old": "Fervor",
+  "vi": "Nhiệt Huyết"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_24253_RecipeName",
+  "en": "Fervor",
+  "old": "Fervor",
+  "vi": "Nhiệt Huyết"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_159_FeatName",
+  "en": "Fever",
+  "old": "Fever",
+  "vi": "Cơn Sốt"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24059_Name",
+  "en": "Fever",
+  "old": "Fever",
+  "vi": "Cơn Sốt"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24203_Name",
+  "en": "Fever",
+  "old": "Fever",
+  "vi": "Cơn Sốt"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_24203_RecipeName",
+  "en": "Fever",
+  "old": "Fever",
+  "vi": "Cơn Sốt"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_50564_Name",
+  "en": "Fiend-Bone Battle Axe",
+  "old": "Fiend-Bone Battle Axe",
+  "vi": "Rìu Chiến Xương Quỷ"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_50564_RecipeName",
+  "en": "Fiend-Bone Battle Axe",
+  "old": "Fiend-Bone Battle Axe",
+  "vi": "Rìu Chiến Xương Quỷ"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_50565_Name",
+  "en": "Fiend-Bone Great Sword",
+  "old": "Fiend-Bone Great Sword",
+  "vi": "Đại Kiếm Xương Quỷ"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_50565_RecipeName",
+  "en": "Fiend-Bone Great Sword",
+  "old": "Fiend-Bone Great Sword",
+  "vi": "Đại Kiếm Xương Quỷ"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_50566_Name",
+  "en": "Fiend-Bone Pike",
+  "old": "Fiend-Bone Pike",
+  "vi": "Trường Mâu Xương Quỷ"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_50566_RecipeName",
+  "en": "Fiend-Bone Pike",
+  "old": "Fiend-Bone Pike",
+  "vi": "Trường Mâu Xương Quỷ"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_50567_Name",
+  "en": "Fiend-Bone Shield",
+  "old": "Fiend-Bone Shield",
+  "vi": "Khiên Xương Quỷ"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_50567_RecipeName",
+  "en": "Fiend-Bone Shield",
+  "old": "Fiend-Bone Shield",
+  "vi": "Khiên Xương Quỷ"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51373_Name",
+  "en": "Fiend-bone Hammer",
+  "old": "Fiend-bone Hammer",
+  "vi": "Búa Xương Quỷ"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_51373_RecipeName",
+  "en": "Fiend-bone Hammer",
+  "old": "Fiend-bone Hammer",
+  "vi": "Búa Xương Quỷ"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51374_Name",
+  "en": "Fiend-bone Mace",
+  "old": "Fiend-bone Mace",
+  "vi": "Chùy Xương Quỷ"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_51374_RecipeName",
+  "en": "Fiend-bone Mace",
+  "old": "Fiend-bone Mace",
+  "vi": "Chùy Xương Quỷ"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51358_Name",
+  "en": "Fish-hook",
+  "old": "Fish-hook",
+  "vi": "Lưỡi Câu"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_51358_RecipeName",
+  "en": "Fish-hook",
+  "old": "Fish-hook",
+  "vi": "Lưỡi Câu"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_91328_Name",
+  "en": "Fists of the Drowned",
+  "old": "Fists of the Drowned",
+  "vi": "Nắm Đấm Của Kẻ Chết Đuối"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_91328_RecipeName",
+  "en": "Fists of the Drowned",
+  "old": "Fists of the Drowned",
+  "vi": "Nắm Đấm Của Kẻ Chết Đuối"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_153_FeatName",
+  "en": "Fleshtearer",
+  "old": "Fleshtearer",
+  "vi": "Kẻ Xé Thịt"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24053_Name",
+  "en": "Fleshtearer",
+  "old": "Fleshtearer",
+  "vi": "Kẻ Xé Thịt"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24197_Name",
+  "en": "Fleshtearer",
+  "old": "Fleshtearer",
+  "vi": "Kẻ Xé Thịt"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_24197_RecipeName",
+  "en": "Fleshtearer",
+  "old": "Fleshtearer",
+  "vi": "Kẻ Xé Thịt"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24137_Name",
+  "en": "Fling Shot",
+  "old": "Fling Shot",
+  "vi": "Phát Bắn Văng"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51463_Name",
+  "en": "Foeshatter",
+  "old": "Foeshatter",
+  "vi": "Kẻ Đập Tan Kẻ Thù"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_51463_RecipeName",
+  "en": "Foeshatter",
+  "old": "Foeshatter",
+  "vi": "Kẻ Đập Tan Kẻ Thù"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51551_Name",
+  "en": "Forgelight",
+  "old": "Forgelight",
+  "vi": "Ánh Lò Rèn"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_51551_RecipeName",
+  "en": "Forgelight",
+  "old": "Forgelight",
+  "vi": "Ánh Lò Rèn"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_11103_Name",
+  "en": "Fragment of Power",
+  "old": "Fragment of Power",
+  "vi": "Mảnh Quyền Năng"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_16023_RecipeName",
+  "en": "Fragment of Power",
+  "old": "Fragment of Power",
+  "vi": "Mảnh Quyền Năng"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_509_FeatName",
+  "en": "Frost Giant's Garb",
+  "old": "Frost Giant's Garb",
+  "vi": "Y Phục Người Khổng Lồ Băng"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51558_Name",
+  "en": "Frostshot",
+  "old": "Frostshot",
+  "vi": "Phát Bắn Băng"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_51558_RecipeName",
+  "en": "Frostshot",
+  "old": "Frostshot",
+  "vi": "Phát Bắn Băng"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51344_Name",
+  "en": "Ghoul Bone",
+  "old": "Ghoul Bone",
+  "vi": "Xương Ma Cà Rồng"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_51344_RecipeName",
+  "en": "Ghoul Bone",
+  "old": "Ghoul Bone",
+  "vi": "Xương Ma Cà Rồng"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51068_Name",
+  "en": "Glacier-Crack",
+  "old": "Glacier-Crack",
+  "vi": "Vết Nứt Sông Băng"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_51068_RecipeName",
+  "en": "Glacier-Crack",
+  "old": "Glacier-Crack",
+  "vi": "Vết Nứt Sông Băng"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51578_Name",
+  "en": "Glimmermoon",
+  "old": "Glimmermoon",
+  "vi": "Trăng Lấp Lánh"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_51578_RecipeName",
+  "en": "Glimmermoon",
+  "old": "Glimmermoon",
+  "vi": "Trăng Lấp Lánh"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51370_Name",
+  "en": "Goblinfangs",
+  "old": "Goblinfangs",
+  "vi": "Nanh Yêu Tinh"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_51370_RecipeName",
+  "en": "Goblinfangs",
+  "old": "Goblinfangs",
+  "vi": "Nanh Yêu Tinh"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_44007_Name",
+  "en": "Golem Follower",
+  "old": "Golem Follower",
+  "vi": "Golem Đi Theo"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24112_Name",
+  "en": "Graceful Night",
+  "old": "Graceful Night",
+  "vi": "Đêm Duyên Dáng"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_148_FeatName",
+  "en": "Gravebane",
+  "old": "Gravebane",
+  "vi": "Khắc Tinh Mồ Mả"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24048_Name",
+  "en": "Gravebane",
+  "old": "Gravebane",
+  "vi": "Khắc Tinh Mồ Mả"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24192_Name",
+  "en": "Gravebane",
+  "old": "Gravebane",
+  "vi": "Khắc Tinh Mồ Mả"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_24192_RecipeName",
+  "en": "Gravebane",
+  "old": "Gravebane",
+  "vi": "Khắc Tinh Mồ Mả"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_15011_FeatName",
+  "en": "Gravedigger",
+  "old": "Gravedigger",
+  "vi": "Kẻ Đào Mộ"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_4196_Name",
+  "en": "Gravedigger",
+  "old": "Gravedigger",
+  "vi": "Kẻ Đào Mộ"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_4196_RecipeName",
+  "en": "Gravedigger",
+  "old": "Gravedigger",
+  "vi": "Kẻ Đào Mộ"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_91330_SecondModifier",
+  "en": "Great Wolf's Rage",
+  "old": "Great Wolf's Rage",
+  "vi": "Cơn Giận Của Sói Lớn"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_11024_Name",
+  "en": "Green Crystal",
+  "old": "Green Crystal",
+  "vi": "Pha Lê Xanh Lá"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_109_FeatName",
+  "en": "Grief",
+  "old": "Grief",
+  "vi": "Bi Thương"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24009_Name",
+  "en": "Grief",
+  "old": "Grief",
+  "vi": "Bi Thương"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24153_Name",
+  "en": "Grief",
+  "old": "Grief",
+  "vi": "Bi Thương"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_24153_RecipeName",
+  "en": "Grief",
+  "old": "Grief",
+  "vi": "Bi Thương"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_14149_FirstModifier",
+  "en": "Hallowed",
+  "old": "Hallowed",
+  "vi": "Thánh Hóa"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51067_FirstModifier",
+  "en": "Hallowed",
+  "old": "Hallowed",
+  "vi": "Thánh Hóa"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51304_FirstModifier",
+  "en": "Hallowed",
+  "old": "Hallowed",
+  "vi": "Thánh Hóa"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51455_FirstModifier",
+  "en": "Hallowed",
+  "old": "Hallowed",
+  "vi": "Thánh Hóa"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51456_FirstModifier",
+  "en": "Hallowed",
+  "old": "Hallowed",
+  "vi": "Thánh Hóa"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51457_FirstModifier",
+  "en": "Hallowed",
+  "old": "Hallowed",
+  "vi": "Thánh Hóa"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51458_FirstModifier",
+  "en": "Hallowed",
+  "old": "Hallowed",
+  "vi": "Thánh Hóa"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51459_FirstModifier",
+  "en": "Hallowed",
+  "old": "Hallowed",
+  "vi": "Thánh Hóa"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51460_FirstModifier",
+  "en": "Hallowed",
+  "old": "Hallowed",
+  "vi": "Thánh Hóa"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51461_FirstModifier",
+  "en": "Hallowed",
+  "old": "Hallowed",
+  "vi": "Thánh Hóa"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51462_FirstModifier",
+  "en": "Hallowed",
+  "old": "Hallowed",
+  "vi": "Thánh Hóa"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51625_FirstModifier",
+  "en": "Hallowed",
+  "old": "Hallowed",
+  "vi": "Thánh Hóa"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51634_FirstModifier",
+  "en": "Hallowed",
+  "old": "Hallowed",
+  "vi": "Thánh Hóa"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51816_FirstModifier",
+  "en": "Hallowed",
+  "old": "Hallowed",
+  "vi": "Thánh Hóa"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51817_FirstModifier",
+  "en": "Hallowed",
+  "old": "Hallowed",
+  "vi": "Thánh Hóa"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51854_FirstModifier",
+  "en": "Hallowed",
+  "old": "Hallowed",
+  "vi": "Thánh Hóa"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51855_FirstModifier",
+  "en": "Hallowed",
+  "old": "Hallowed",
+  "vi": "Thánh Hóa"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51856_FirstModifier",
+  "en": "Hallowed",
+  "old": "Hallowed",
+  "vi": "Thánh Hóa"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51902_FirstModifier",
+  "en": "Hallowed",
+  "old": "Hallowed",
+  "vi": "Thánh Hóa"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51908_FirstModifier",
+  "en": "Hallowed",
+  "old": "Hallowed",
+  "vi": "Thánh Hóa"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51909_FirstModifier",
+  "en": "Hallowed",
+  "old": "Hallowed",
+  "vi": "Thánh Hóa"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51922_FirstModifier",
+  "en": "Hallowed",
+  "old": "Hallowed",
+  "vi": "Thánh Hóa"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_52501_FirstModifier",
+  "en": "Hallowed",
+  "old": "Hallowed",
+  "vi": "Thánh Hóa"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_52502_FirstModifier",
+  "en": "Hallowed",
+  "old": "Hallowed",
+  "vi": "Thánh Hóa"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_52504_FirstModifier",
+  "en": "Hallowed",
+  "old": "Hallowed",
+  "vi": "Thánh Hóa"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_52505_FirstModifier",
+  "en": "Hallowed",
+  "old": "Hallowed",
+  "vi": "Thánh Hóa"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_52511_FirstModifier",
+  "en": "Hallowed",
+  "old": "Hallowed",
+  "vi": "Thánh Hóa"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_52512_FirstModifier",
+  "en": "Hallowed",
+  "old": "Hallowed",
+  "vi": "Thánh Hóa"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_52513_FirstModifier",
+  "en": "Hallowed",
+  "old": "Hallowed",
+  "vi": "Thánh Hóa"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_52514_FirstModifier",
+  "en": "Hallowed",
+  "old": "Hallowed",
+  "vi": "Thánh Hóa"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_52515_FirstModifier",
+  "en": "Hallowed",
+  "old": "Hallowed",
+  "vi": "Thánh Hóa"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_52522_FirstModifier",
+  "en": "Hallowed",
+  "old": "Hallowed",
+  "vi": "Thánh Hóa"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_52523_FirstModifier",
+  "en": "Hallowed",
+  "old": "Hallowed",
+  "vi": "Thánh Hóa"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_52524_FirstModifier",
+  "en": "Hallowed",
+  "old": "Hallowed",
+  "vi": "Thánh Hóa"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_52525_FirstModifier",
+  "en": "Hallowed",
+  "old": "Hallowed",
+  "vi": "Thánh Hóa"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_52610_FirstModifier",
+  "en": "Hallowed",
+  "old": "Hallowed",
+  "vi": "Thánh Hóa"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_52611_FirstModifier",
+  "en": "Hallowed",
+  "old": "Hallowed",
+  "vi": "Thánh Hóa"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_52612_FirstModifier",
+  "en": "Hallowed",
+  "old": "Hallowed",
+  "vi": "Thánh Hóa"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_52613_FirstModifier",
+  "en": "Hallowed",
+  "old": "Hallowed",
+  "vi": "Thánh Hóa"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_52614_FirstModifier",
+  "en": "Hallowed",
+  "old": "Hallowed",
+  "vi": "Thánh Hóa"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_52645_FirstModifier",
+  "en": "Hallowed",
+  "old": "Hallowed",
+  "vi": "Thánh Hóa"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_52646_FirstModifier",
+  "en": "Hallowed",
+  "old": "Hallowed",
+  "vi": "Thánh Hóa"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_52647_FirstModifier",
+  "en": "Hallowed",
+  "old": "Hallowed",
+  "vi": "Thánh Hóa"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_52648_FirstModifier",
+  "en": "Hallowed",
+  "old": "Hallowed",
+  "vi": "Thánh Hóa"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_52659_FirstModifier",
+  "en": "Hallowed",
+  "old": "Hallowed",
+  "vi": "Thánh Hóa"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_53501_FirstModifier",
+  "en": "Hallowed",
+  "old": "Hallowed",
+  "vi": "Thánh Hóa"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_53502_FirstModifier",
+  "en": "Hallowed",
+  "old": "Hallowed",
+  "vi": "Thánh Hóa"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_53503_FirstModifier",
+  "en": "Hallowed",
+  "old": "Hallowed",
+  "vi": "Thánh Hóa"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_53651_FirstModifier",
+  "en": "Hallowed",
+  "old": "Hallowed",
+  "vi": "Thánh Hóa"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24134_Name",
+  "en": "Hangman's Bindings",
+  "old": "Hangman's Bindings",
+  "vi": "Dây Trói Của Đao Phủ"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51552_Name",
+  "en": "Hanuman's Gada",
+  "old": "Hanuman's Gada",
+  "vi": "Chùy Gada Của Hanuman"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_51552_RecipeName",
+  "en": "Hanuman's Gada",
+  "old": "Hanuman's Gada",
+  "vi": "Chùy Gada Của Hanuman"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_146_FeatName",
+  "en": "Harm",
+  "old": "Harm",
+  "vi": "Tổn Hại"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24046_Name",
+  "en": "Harm",
+  "old": "Harm",
+  "vi": "Tổn Hại"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24190_Name",
+  "en": "Harm",
+  "old": "Harm",
+  "vi": "Tổn Hại"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_24190_RecipeName",
+  "en": "Harm",
+  "old": "Harm",
+  "vi": "Tổn Hại"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_202_FeatName",
+  "en": "Headache",
+  "old": "Headache",
+  "vi": "Nhức Đầu"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24102_Name",
+  "en": "Headache",
+  "old": "Headache",
+  "vi": "Nhức Đầu"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24102_SecondModifier",
+  "en": "Headache",
+  "old": "Headache",
+  "vi": "Nhức Đầu"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24246_Name",
+  "en": "Headache",
+  "old": "Headache",
+  "vi": "Nhức Đầu"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24246_SecondModifier",
+  "en": "Headache",
+  "old": "Headache",
+  "vi": "Nhức Đầu"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_24246_RecipeName",
+  "en": "Headache",
+  "old": "Headache",
+  "vi": "Nhức Đầu"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_140_FeatName",
+  "en": "Headcracker",
+  "old": "Headcracker",
+  "vi": "Kẻ Bổ Đầu"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24040_Name",
+  "en": "Headcracker",
+  "old": "Headcracker",
+  "vi": "Kẻ Bổ Đầu"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24184_Name",
+  "en": "Headcracker",
+  "old": "Headcracker",
+  "vi": "Kẻ Bổ Đầu"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_24184_RecipeName",
+  "en": "Headcracker",
+  "old": "Headcracker",
+  "vi": "Kẻ Bổ Đầu"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_191_FeatName",
+  "en": "Heartfreezer",
+  "old": "Heartfreezer",
+  "vi": "Kẻ Đóng Băng Tim"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24091_Name",
+  "en": "Heartfreezer",
+  "old": "Heartfreezer",
+  "vi": "Kẻ Đóng Băng Tim"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24235_Name",
+  "en": "Heartfreezer",
+  "old": "Heartfreezer",
+  "vi": "Kẻ Đóng Băng Tim"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_24235_RecipeName",
+  "en": "Heartfreezer",
+  "old": "Heartfreezer",
+  "vi": "Kẻ Đóng Băng Tim"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_123_FeatName",
+  "en": "Hearthblade",
+  "old": "Hearthblade",
+  "vi": "Lưỡi Kiếm Lò Sưởi"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24023_Name",
+  "en": "Hearthblade",
+  "old": "Hearthblade",
+  "vi": "Lưỡi Kiếm Lò Sưởi"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24167_Name",
+  "en": "Hearthblade",
+  "old": "Hearthblade",
+  "vi": "Lưỡi Kiếm Lò Sưởi"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_24167_RecipeName",
+  "en": "Hearthblade",
+  "old": "Hearthblade",
+  "vi": "Lưỡi Kiếm Lò Sưởi"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24113_Name",
+  "en": "Heartpiercer",
+  "old": "Heartpiercer",
+  "vi": "Kẻ Xuyên Tim"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_50514_Name",
+  "en": "Heated Argument",
+  "old": "Heated Argument",
+  "vi": "Tranh Cãi Nảy Lửa"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_15031_FeatName",
+  "en": "Heavy-Weight Truncheon",
+  "old": "Heavy-Weight Truncheon",
+  "vi": "Gậy Hạng Nặng"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "5B00D9574BED57C1393BFDB46676B277",
+  "en": "Heirs",
+  "old": "Heirs",
+  "vi": "Người Thừa Kế"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_143_FeatName",
+  "en": "Heritance",
+  "old": "Heritance",
+  "vi": "Di Sản"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24043_Name",
+  "en": "Heritance",
+  "old": "Heritance",
+  "vi": "Di Sản"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24187_Name",
+  "en": "Heritance",
+  "old": "Heritance",
+  "vi": "Di Sản"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_24187_RecipeName",
+  "en": "Heritance",
+  "old": "Heritance",
+  "vi": "Di Sản"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51346_Name",
+  "en": "Hound Fang Daggers",
+  "old": "Hound Fang Daggers",
+  "vi": "Dao Găm Nanh Chó Săn"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_51346_RecipeName",
+  "en": "Hound Fang Daggers",
+  "old": "Hound Fang Daggers",
+  "vi": "Dao Găm Nanh Chó Săn"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24124_Name",
+  "en": "Hunger Blades",
+  "old": "Hunger Blades",
+  "vi": "Lưỡi Đói Khát"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_180_FeatName",
+  "en": "Huntress",
+  "old": "Huntress",
+  "vi": "Nữ Thợ Săn"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24080_Name",
+  "en": "Huntress",
+  "old": "Huntress",
+  "vi": "Nữ Thợ Săn"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24224_Name",
+  "en": "Huntress",
+  "old": "Huntress",
+  "vi": "Nữ Thợ Săn"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_24224_RecipeName",
+  "en": "Huntress",
+  "old": "Huntress",
+  "vi": "Nữ Thợ Săn"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_100_FeatName",
+  "en": "Ice Core",
+  "old": "Ice Core",
+  "vi": "Lõi Băng"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24000_Name",
+  "en": "Ice Core",
+  "old": "Ice Core",
+  "vi": "Lõi Băng"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24144_Name",
+  "en": "Ice Core",
+  "old": "Ice Core",
+  "vi": "Lõi Băng"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_24144_RecipeName",
+  "en": "Ice Core",
+  "old": "Ice Core",
+  "vi": "Lõi Băng"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24136_Name",
+  "en": "Infectious Reach",
+  "old": "Infectious Reach",
+  "vi": "Tầm Với Lây Nhiễm"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_43001_FirstModifier",
+  "en": "Insatiable",
+  "old": "Insatiable",
+  "vi": "Không Thể Thỏa Mãn"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_43002_FirstModifier",
+  "en": "Insatiable",
+  "old": "Insatiable",
+  "vi": "Không Thể Thỏa Mãn"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_43003_FirstModifier",
+  "en": "Insatiable",
+  "old": "Insatiable",
+  "vi": "Không Thể Thỏa Mãn"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_43004_SecondModifier",
+  "en": "Insatiable",
+  "old": "Insatiable",
+  "vi": "Không Thể Thỏa Mãn"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_43005_SecondModifier",
+  "en": "Insatiable",
+  "old": "Insatiable",
+  "vi": "Không Thể Thỏa Mãn"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_43006_SecondModifier",
+  "en": "Insatiable",
+  "old": "Insatiable",
+  "vi": "Không Thể Thỏa Mãn"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_43007_SecondModifier",
+  "en": "Insatiable",
+  "old": "Insatiable",
+  "vi": "Không Thể Thỏa Mãn"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_43008_SecondModifier",
+  "en": "Insatiable",
+  "old": "Insatiable",
+  "vi": "Không Thể Thỏa Mãn"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_51811_FeatName",
+  "en": "Iron Broadsword",
+  "old": "Iron Broadsword",
+  "vi": "Trường Kiếm Sắt"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51811_Name",
+  "en": "Iron Broadsword",
+  "old": "Iron Broadsword",
+  "vi": "Trường Kiếm Sắt"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_95713_Name",
+  "en": "Iron Broadsword",
+  "old": "Iron Broadsword",
+  "vi": "Trường Kiếm Sắt"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_51811_RecipeName",
+  "en": "Iron Broadsword",
+  "old": "Iron Broadsword",
+  "vi": "Trường Kiếm Sắt"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_95730_RecipeName",
+  "en": "Iron Broadsword",
+  "old": "Iron Broadsword",
+  "vi": "Trường Kiếm Sắt"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_51611_FeatName",
+  "en": "Iron Targe",
+  "old": "Iron Targe",
+  "vi": "Khiên Tròn Sắt"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51611_Name",
+  "en": "Iron Targe",
+  "old": "Iron Targe",
+  "vi": "Khiên Tròn Sắt"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_95717_Name",
+  "en": "Iron Targe",
+  "old": "Iron Targe",
+  "vi": "Khiên Tròn Sắt"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_51611_RecipeName",
+  "en": "Iron Targe",
+  "old": "Iron Targe",
+  "vi": "Khiên Tròn Sắt"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_95733_RecipeName",
+  "en": "Iron Targe",
+  "old": "Iron Targe",
+  "vi": "Khiên Tròn Sắt"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_19192_Name",
+  "en": "Island Lynx",
+  "old": "Island Lynx",
+  "vi": "Linh Miêu Đảo"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_19987_RecipeName",
+  "en": "Island Lynx",
+  "old": "Island Lynx",
+  "vi": "Linh Miêu Đảo"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_19988_RecipeName",
+  "en": "Island Lynx",
+  "old": "Island Lynx",
+  "vi": "Linh Miêu Đảo"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_19989_RecipeName",
+  "en": "Island Lynx",
+  "old": "Island Lynx",
+  "vi": "Linh Miêu Đảo"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_19990_RecipeName",
+  "en": "Island Lynx",
+  "old": "Island Lynx",
+  "vi": "Linh Miêu Đảo"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_19991_RecipeName",
+  "en": "Island Lynx",
+  "old": "Island Lynx",
+  "vi": "Linh Miêu Đảo"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_19992_RecipeName",
+  "en": "Island Lynx",
+  "old": "Island Lynx",
+  "vi": "Linh Miêu Đảo"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_19993_RecipeName",
+  "en": "Island Lynx",
+  "old": "Island Lynx",
+  "vi": "Linh Miêu Đảo"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_20022_RecipeName",
+  "en": "Island Lynx",
+  "old": "Island Lynx",
+  "vi": "Linh Miêu Đảo"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_20023_RecipeName",
+  "en": "Island Lynx",
+  "old": "Island Lynx",
+  "vi": "Linh Miêu Đảo"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_20024_RecipeName",
+  "en": "Island Lynx",
+  "old": "Island Lynx",
+  "vi": "Linh Miêu Đảo"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_20025_RecipeName",
+  "en": "Island Lynx",
+  "old": "Island Lynx",
+  "vi": "Linh Miêu Đảo"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_20026_RecipeName",
+  "en": "Island Lynx",
+  "old": "Island Lynx",
+  "vi": "Linh Miêu Đảo"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_20027_RecipeName",
+  "en": "Island Lynx",
+  "old": "Island Lynx",
+  "vi": "Linh Miêu Đảo"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_20028_RecipeName",
+  "en": "Island Lynx",
+  "old": "Island Lynx",
+  "vi": "Linh Miêu Đảo"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24111_Name",
+  "en": "Jagged Edge",
+  "old": "Jagged Edge",
+  "vi": "Lưỡi Răng Cưa"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51395_Name",
+  "en": "Jhebbal Sag's Prowl",
+  "old": "Jhebbal Sag's Prowl",
+  "vi": "Bước Rình Mồi Của Jhebbal Sag"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_561_FeatName",
+  "en": "Jhil Armory",
+  "old": "Jhil Armory",
+  "vi": "Kho Vũ Khí Jhil"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_52637_FeatName",
+  "en": "Jhil Vault Armors",
+  "old": "Jhil Vault Armors",
+  "vi": "Giáp Hầm Jhil"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_91335_SecondModifier",
+  "en": "Jhil's Stamina",
+  "old": "Jhil's Stamina",
+  "vi": "Sức Bền Của Jhil"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51342_Name",
+  "en": "Jin's Adze",
+  "old": "Jin's Adze",
+  "vi": "Rìu Lưỡi Ngang Của Jin"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_51342_RecipeName",
+  "en": "Jin's Adze",
+  "old": "Jin's Adze",
+  "vi": "Rìu Lưỡi Ngang Của Jin"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_19198_Name",
+  "en": "Jungleclaw",
+  "old": "Jungleclaw",
+  "vi": "Vuốt Rừng Rậm"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_20008_RecipeName",
+  "en": "Jungleclaw",
+  "old": "Jungleclaw",
+  "vi": "Vuốt Rừng Rậm"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_20009_RecipeName",
+  "en": "Jungleclaw",
+  "old": "Jungleclaw",
+  "vi": "Vuốt Rừng Rậm"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_20010_RecipeName",
+  "en": "Jungleclaw",
+  "old": "Jungleclaw",
+  "vi": "Vuốt Rừng Rậm"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_20011_RecipeName",
+  "en": "Jungleclaw",
+  "old": "Jungleclaw",
+  "vi": "Vuốt Rừng Rậm"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_20012_RecipeName",
+  "en": "Jungleclaw",
+  "old": "Jungleclaw",
+  "vi": "Vuốt Rừng Rậm"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_20013_RecipeName",
+  "en": "Jungleclaw",
+  "old": "Jungleclaw",
+  "vi": "Vuốt Rừng Rậm"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_20014_RecipeName",
+  "en": "Jungleclaw",
+  "old": "Jungleclaw",
+  "vi": "Vuốt Rừng Rậm"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_20043_RecipeName",
+  "en": "Jungleclaw",
+  "old": "Jungleclaw",
+  "vi": "Vuốt Rừng Rậm"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_20044_RecipeName",
+  "en": "Jungleclaw",
+  "old": "Jungleclaw",
+  "vi": "Vuốt Rừng Rậm"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_20045_RecipeName",
+  "en": "Jungleclaw",
+  "old": "Jungleclaw",
+  "vi": "Vuốt Rừng Rậm"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_20046_RecipeName",
+  "en": "Jungleclaw",
+  "old": "Jungleclaw",
+  "vi": "Vuốt Rừng Rậm"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_20047_RecipeName",
+  "en": "Jungleclaw",
+  "old": "Jungleclaw",
+  "vi": "Vuốt Rừng Rậm"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_20048_RecipeName",
+  "en": "Jungleclaw",
+  "old": "Jungleclaw",
+  "vi": "Vuốt Rừng Rậm"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_20049_RecipeName",
+  "en": "Jungleclaw",
+  "old": "Jungleclaw",
+  "vi": "Vuốt Rừng Rậm"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_52423_FeatName",
+  "en": "Khari Raider",
+  "old": "Khari Raider",
+  "vi": "Kẻ Cướp Khari"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_52424_FeatName",
+  "en": "Khari Soldier",
+  "old": "Khari Soldier",
+  "vi": "Lính Khari"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_10020_Name",
+  "en": "Khari Steel",
+  "old": "Khari Steel",
+  "vi": "Thép Khari"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24125_Name",
+  "en": "Knave's Knives",
+  "old": "Knave's Knives",
+  "vi": "Dao Của Kẻ Bất Lương"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_14_FeatName",
+  "en": "Knight",
+  "old": "Knight",
+  "vi": "Hiệp Sĩ"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24119_Name",
+  "en": "Knock",
+  "old": "Knock",
+  "vi": "Gõ"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_96150_FeatName",
+  "en": "Kurak's Vestments",
+  "old": "Kurak's Vestments",
+  "vi": "Lễ Phục Của Kurak"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_112_FeatName",
+  "en": "Legslicer",
+  "old": "Legslicer",
+  "vi": "Kẻ Chém Chân"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24012_Name",
+  "en": "Legslicer",
+  "old": "Legslicer",
+  "vi": "Kẻ Chém Chân"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24156_Name",
+  "en": "Legslicer",
+  "old": "Legslicer",
+  "vi": "Kẻ Chém Chân"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_24156_RecipeName",
+  "en": "Legslicer",
+  "old": "Legslicer",
+  "vi": "Kẻ Chém Chân"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "971A86154CE6C8ABB41A0F869D4E3EDD",
+  "en": "Lemurian",
+  "old": "Lemurian",
+  "vi": "Lemuria"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_92239_Name",
+  "en": "Lesser ????",
+  "old": "Lesser ????",
+  "vi": "???? Thấp Cấp"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "CraftingStationNameTable_899198_StationName",
+  "en": "Leyshrine",
+  "old": "Leyshrine",
+  "vi": "Đền Ley"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "CraftingStationNameTable_899200_StationName",
+  "en": "Leyshrine",
+  "old": "Leyshrine",
+  "vi": "Đền Ley"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "CraftingStationNameTable_899202_StationName",
+  "en": "Leyshrine",
+  "old": "Leyshrine",
+  "vi": "Đền Ley"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "CraftingStationNameTable_899250_StationName",
+  "en": "Leyshrine",
+  "old": "Leyshrine",
+  "vi": "Đền Ley"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_129_FeatName",
+  "en": "Lion Slayer",
+  "old": "Lion Slayer",
+  "vi": "Kẻ Giết Sư Tử"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24029_Name",
+  "en": "Lion Slayer",
+  "old": "Lion Slayer",
+  "vi": "Kẻ Giết Sư Tử"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24173_Name",
+  "en": "Lion Slayer",
+  "old": "Lion Slayer",
+  "vi": "Kẻ Giết Sư Tử"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_24173_RecipeName",
+  "en": "Lion Slayer",
+  "old": "Lion Slayer",
+  "vi": "Kẻ Giết Sư Tử"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_188_FeatName",
+  "en": "Longshot",
+  "old": "Longshot",
+  "vi": "Phát Bắn Xa"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24088_Name",
+  "en": "Longshot",
+  "old": "Longshot",
+  "vi": "Phát Bắn Xa"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24232_Name",
+  "en": "Longshot",
+  "old": "Longshot",
+  "vi": "Phát Bắn Xa"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_24232_RecipeName",
+  "en": "Longshot",
+  "old": "Longshot",
+  "vi": "Phát Bắn Xa"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51547_Name",
+  "en": "Lovetap",
+  "old": "Lovetap",
+  "vi": "Cú Vỗ Yêu"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_51547_RecipeName",
+  "en": "Lovetap",
+  "old": "Lovetap",
+  "vi": "Cú Vỗ Yêu"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51464_Name",
+  "en": "Lusttaker",
+  "old": "Lusttaker",
+  "vi": "Kẻ Đoạt Dục Vọng"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_51464_RecipeName",
+  "en": "Lusttaker",
+  "old": "Lusttaker",
+  "vi": "Kẻ Đoạt Dục Vọng"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_50505_Name",
+  "en": "Lying Bastard Sword",
+  "old": "Lying Bastard Sword",
+  "vi": "Kiếm Lai Dối Trá"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_50503_Name",
+  "en": "Maelstrom",
+  "old": "Maelstrom",
+  "vi": "Xoáy Nước Maelstrom"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_50526_Name",
+  "en": "Maelstrom Light",
+  "old": "Maelstrom Light",
+  "vi": "Ánh Sáng Maelstrom"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_10026_Name",
+  "en": "Magi Skull",
+  "old": "Magi Skull",
+  "vi": "Sọ Pháp Sư"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_205_FeatName",
+  "en": "Massacre",
+  "old": "Massacre",
+  "vi": "Thảm Sát"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24105_Name",
+  "en": "Massacre",
+  "old": "Massacre",
+  "vi": "Thảm Sát"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24249_Name",
+  "en": "Massacre",
+  "old": "Massacre",
+  "vi": "Thảm Sát"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_24249_RecipeName",
+  "en": "Massacre",
+  "old": "Massacre",
+  "vi": "Thảm Sát"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24135_Name",
+  "en": "Mastodon Killer",
+  "old": "Mastodon Killer",
+  "vi": "Kẻ Giết Voi Ma Mút"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_154_FeatName",
+  "en": "Mercenary",
+  "old": "Mercenary",
+  "vi": "Lính Đánh Thuê"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24054_Name",
+  "en": "Mercenary",
+  "old": "Mercenary",
+  "vi": "Lính Đánh Thuê"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24198_Name",
+  "en": "Mercenary",
+  "old": "Mercenary",
+  "vi": "Lính Đánh Thuê"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_24198_RecipeName",
+  "en": "Mercenary",
+  "old": "Mercenary",
+  "vi": "Lính Đánh Thuê"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_167_FeatName",
+  "en": "Metal-Eater",
+  "old": "Metal-Eater",
+  "vi": "Kẻ Ăn Kim Loại"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24067_Name",
+  "en": "Metal-Eater",
+  "old": "Metal-Eater",
+  "vi": "Kẻ Ăn Kim Loại"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24211_Name",
+  "en": "Metal-Eater",
+  "old": "Metal-Eater",
+  "vi": "Kẻ Ăn Kim Loại"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_24211_RecipeName",
+  "en": "Metal-Eater",
+  "old": "Metal-Eater",
+  "vi": "Kẻ Ăn Kim Loại"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51449_Name",
+  "en": "Misha's Bite",
+  "old": "Misha's Bite",
+  "vi": "Cú Cắn Của Misha"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51569_Name",
+  "en": "Mistmourn",
+  "old": "Mistmourn",
+  "vi": "Sương Tang Tóc"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_51569_RecipeName",
+  "en": "Mistmourn",
+  "old": "Mistmourn",
+  "vi": "Sương Tang Tóc"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51394_Name",
+  "en": "Mitra's Justice",
+  "old": "Mitra's Justice",
+  "vi": "Công Lý Của Mitra"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_50487_Name",
+  "en": "Morning Sun",
+  "old": "Morning Sun",
+  "vi": "Mặt Trời Ban Mai"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "69F69C724BB6AD2A0E3430B2F8ADC72F",
+  "en": "Mounds of the Dead",
+  "old": "Mounds of the Dead",
+  "vi": "Gò Người Chết"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51605_Name",
+  "en": "Musashi's Black Blade",
+  "old": "Musashi's Black Blade",
+  "vi": "Hắc Kiếm Của Musashi"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "CraftingStationNameTable_89981_StationName",
+  "en": "Nest of Zath",
+  "old": "Nest of Zath",
+  "vi": "Tổ Của Zath"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "CraftingStationNameTable_89984_StationName",
+  "en": "Nest of Zath",
+  "old": "Nest of Zath",
+  "vi": "Tổ Của Zath"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_80979_FeatName",
+  "en": "Nest of Zath",
+  "old": "Nest of Zath",
+  "vi": "Tổ Của Zath"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_80979_Name",
+  "en": "Nest of Zath",
+  "old": "Nest of Zath",
+  "vi": "Tổ Của Zath"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_80980_RecipeName",
+  "en": "Nest of Zath",
+  "old": "Nest of Zath",
+  "vi": "Tổ Của Zath"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_150_FeatName",
+  "en": "Night Light",
+  "old": "Night Light",
+  "vi": "Đèn Đêm"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24050_Name",
+  "en": "Night Light",
+  "old": "Night Light",
+  "vi": "Đèn Đêm"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24194_Name",
+  "en": "Night Light",
+  "old": "Night Light",
+  "vi": "Đèn Đêm"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_24194_RecipeName",
+  "en": "Night Light",
+  "old": "Night Light",
+  "vi": "Đèn Đêm"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24130_Name",
+  "en": "Nimblefinger",
+  "old": "Nimblefinger",
+  "vi": "Ngón Tay Nhanh Nhẹn"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_41012_FeatName",
+  "en": "Oar",
+  "old": "Oar",
+  "vi": "Mái Chèo"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51213_Name",
+  "en": "Oar",
+  "old": "Oar",
+  "vi": "Mái Chèo"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_51213_RecipeName",
+  "en": "Oar",
+  "old": "Oar",
+  "vi": "Mái Chèo"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_183_FeatName",
+  "en": "Once-Upon-A-String",
+  "old": "Once-Upon-A-String",
+  "vi": "Ngày Xửa Ngày Xưa Trên Dây Cung"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24083_Name",
+  "en": "Once-Upon-A-String",
+  "old": "Once-Upon-A-String",
+  "vi": "Ngày Xửa Ngày Xưa Trên Dây Cung"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24227_Name",
+  "en": "Once-Upon-A-String",
+  "old": "Once-Upon-A-String",
+  "vi": "Ngày Xửa Ngày Xưa Trên Dây Cung"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_24227_RecipeName",
+  "en": "Once-Upon-A-String",
+  "old": "Once-Upon-A-String",
+  "vi": "Ngày Xửa Ngày Xưa Trên Dây Cung"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_19035_Name",
+  "en": "Pebblenose",
+  "old": "Pebblenose",
+  "vi": "Mũi Sỏi"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_119_FeatName",
+  "en": "Penetrator",
+  "old": "Penetrator",
+  "vi": "Kẻ Xuyên Thủng"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24019_Name",
+  "en": "Penetrator",
+  "old": "Penetrator",
+  "vi": "Kẻ Xuyên Thủng"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24163_Name",
+  "en": "Penetrator",
+  "old": "Penetrator",
+  "vi": "Kẻ Xuyên Thủng"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_24163_RecipeName",
+  "en": "Penetrator",
+  "old": "Penetrator",
+  "vi": "Kẻ Xuyên Thủng"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_92247_Name",
+  "en": "Phoenix Symbol",
+  "old": "Phoenix Symbol",
+  "vi": "Biểu Tượng Phượng Hoàng"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_899244_RecipeName",
+  "en": "Phoenix Symbol",
+  "old": "Phoenix Symbol",
+  "vi": "Biểu Tượng Phượng Hoàng"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51816_Name",
+  "en": "Phoenix-engraved Sword",
+  "old": "Phoenix-engraved Sword",
+  "vi": "Kiếm Khắc Phượng Hoàng"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_51816_RecipeName",
+  "en": "Phoenix-engraved Sword",
+  "old": "Phoenix-engraved Sword",
+  "vi": "Kiếm Khắc Phượng Hoàng"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "CraftingStationNameTable_80941_StationName",
+  "en": "Pleasure Place of Derketo",
+  "old": "Pleasure Place of Derketo",
+  "vi": "Chốn Hoan Lạc Của Derketo"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "CraftingStationNameTable_80945_StationName",
+  "en": "Pleasure Place of Derketo",
+  "old": "Pleasure Place of Derketo",
+  "vi": "Chốn Hoan Lạc Của Derketo"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_80945_FeatName",
+  "en": "Pleasure Place of Derketo",
+  "old": "Pleasure Place of Derketo",
+  "vi": "Chốn Hoan Lạc Của Derketo"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_80945_Name",
+  "en": "Pleasure Place of Derketo",
+  "old": "Pleasure Place of Derketo",
+  "vi": "Chốn Hoan Lạc Của Derketo"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_80945_RecipeName",
+  "en": "Pleasure Place of Derketo",
+  "old": "Pleasure Place of Derketo",
+  "vi": "Chốn Hoan Lạc Của Derketo"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51391_SecondModifier",
+  "en": "Power Draw",
+  "old": "Power Draw",
+  "vi": "Hút Sức Mạnh"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51556_SecondModifier",
+  "en": "Power Draw",
+  "old": "Power Draw",
+  "vi": "Hút Sức Mạnh"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51557_SecondModifier",
+  "en": "Power Draw",
+  "old": "Power Draw",
+  "vi": "Hút Sức Mạnh"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_52953_FeatName",
+  "en": "Primitive Man Armorset",
+  "old": "Primitive Man Armorset",
+  "vi": "Bộ Giáp Người Nguyên Thủy"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51428_Name",
+  "en": "Primitive Skirt",
+  "old": "Primitive Skirt",
+  "vi": "Váy Nguyên Thủy"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_51428_RecipeName",
+  "en": "Primitive Skirt",
+  "old": "Primitive Skirt",
+  "vi": "Váy Nguyên Thủy"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_92236_Name",
+  "en": "Pristine Khari Bow",
+  "old": "Pristine Khari Bow",
+  "vi": "Cung Khari Hoàn Mỹ"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_92257_RecipeName",
+  "en": "Pristine Khari Bow",
+  "old": "Pristine Khari Bow",
+  "vi": "Cung Khari Hoàn Mỹ"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_92238_Name",
+  "en": "Pristine Khari Daggers",
+  "old": "Pristine Khari Daggers",
+  "vi": "Dao Găm Khari Hoàn Mỹ"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_92259_RecipeName",
+  "en": "Pristine Khari Daggers",
+  "old": "Pristine Khari Daggers",
+  "vi": "Dao Găm Khari Hoàn Mỹ"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_92237_Name",
+  "en": "Pristine Khari Sword",
+  "old": "Pristine Khari Sword",
+  "vi": "Kiếm Khari Hoàn Mỹ"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_92258_RecipeName",
+  "en": "Pristine Khari Sword",
+  "old": "Pristine Khari Sword",
+  "vi": "Kiếm Khari Hoàn Mỹ"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_50513_Name",
+  "en": "Quake",
+  "old": "Quake",
+  "vi": "Động Đất"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_50515_Name",
+  "en": "Quivering Arrow",
+  "old": "Quivering Arrow",
+  "vi": "Mũi Tên Run Rẩy"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_50504_Name",
+  "en": "Rage Hammer",
+  "old": "Rage Hammer",
+  "vi": "Búa Thịnh Nộ"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24121_Name",
+  "en": "Raging Axe",
+  "old": "Raging Axe",
+  "vi": "Rìu Cuồng Nộ"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_19003_FeatName",
+  "en": "Ratcatcher's Whistle",
+  "old": "Ratcatcher's Whistle",
+  "vi": "Còi Của Kẻ Bắt Chuột"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_92125_Name",
+  "en": "Ratcatcher's Whistle",
+  "old": "Ratcatcher's Whistle",
+  "vi": "Còi Của Kẻ Bắt Chuột"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_92125_RecipeName",
+  "en": "Ratcatcher's Whistle",
+  "old": "Ratcatcher's Whistle",
+  "vi": "Còi Của Kẻ Bắt Chuột"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_171_FeatName",
+  "en": "Razorshard",
+  "old": "Razorshard",
+  "vi": "Mảnh Dao Cạo"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24071_Name",
+  "en": "Razorshard",
+  "old": "Razorshard",
+  "vi": "Mảnh Dao Cạo"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24215_Name",
+  "en": "Razorshard",
+  "old": "Razorshard",
+  "vi": "Mảnh Dao Cạo"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_24215_RecipeName",
+  "en": "Razorshard",
+  "old": "Razorshard",
+  "vi": "Mảnh Dao Cạo"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_50482_Name",
+  "en": "Rebellious Adze",
+  "old": "Rebellious Adze",
+  "vi": "Rìu Lưỡi Ngang Nổi Loạn"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_11022_Name",
+  "en": "Red Crystal",
+  "old": "Red Crystal",
+  "vi": "Pha Lê Đỏ"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24127_Name",
+  "en": "Reliable Butcher",
+  "old": "Reliable Butcher",
+  "vi": "Đồ Tể Đáng Tin"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_50488_Name",
+  "en": "Render",
+  "old": "Render",
+  "vi": "Kẻ Xé Toạc"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_133_FeatName",
+  "en": "Revealed Truth",
+  "old": "Revealed Truth",
+  "vi": "Sự Thật Được Hé Lộ"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24033_Name",
+  "en": "Revealed Truth",
+  "old": "Revealed Truth",
+  "vi": "Sự Thật Được Hé Lộ"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24177_Name",
+  "en": "Revealed Truth",
+  "old": "Revealed Truth",
+  "vi": "Sự Thật Được Hé Lộ"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_24177_RecipeName",
+  "en": "Revealed Truth",
+  "old": "Revealed Truth",
+  "vi": "Sự Thật Được Hé Lộ"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_131_FeatName",
+  "en": "Rime",
+  "old": "Rime",
+  "vi": "Sương Giá"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24031_Name",
+  "en": "Rime",
+  "old": "Rime",
+  "vi": "Sương Giá"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24175_Name",
+  "en": "Rime",
+  "old": "Rime",
+  "vi": "Sương Giá"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_24175_RecipeName",
+  "en": "Rime",
+  "old": "Rime",
+  "vi": "Sương Giá"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_50578_FirstModifier",
+  "en": "Ripping",
+  "old": "Ripping",
+  "vi": "Xé Rách"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_50516_Name",
+  "en": "Riptide",
+  "old": "Riptide",
+  "vi": "Sóng Dữ"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_19110_Name",
+  "en": "Rocknose",
+  "old": "Rocknose",
+  "vi": "Mũi Đá"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_19102_RecipeName",
+  "en": "Rocknose",
+  "old": "Rocknose",
+  "vi": "Mũi Đá"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_19103_RecipeName",
+  "en": "Rocknose",
+  "old": "Rocknose",
+  "vi": "Mũi Đá"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_19104_RecipeName",
+  "en": "Rocknose",
+  "old": "Rocknose",
+  "vi": "Mũi Đá"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_19105_RecipeName",
+  "en": "Rocknose",
+  "old": "Rocknose",
+  "vi": "Mũi Đá"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_19106_RecipeName",
+  "en": "Rocknose",
+  "old": "Rocknose",
+  "vi": "Mũi Đá"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_19107_RecipeName",
+  "en": "Rocknose",
+  "old": "Rocknose",
+  "vi": "Mũi Đá"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_19108_RecipeName",
+  "en": "Rocknose",
+  "old": "Rocknose",
+  "vi": "Mũi Đá"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_19211_RecipeName",
+  "en": "Rocknose",
+  "old": "Rocknose",
+  "vi": "Mũi Đá"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_19212_RecipeName",
+  "en": "Rocknose",
+  "old": "Rocknose",
+  "vi": "Mũi Đá"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_19213_RecipeName",
+  "en": "Rocknose",
+  "old": "Rocknose",
+  "vi": "Mũi Đá"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_19214_RecipeName",
+  "en": "Rocknose",
+  "old": "Rocknose",
+  "vi": "Mũi Đá"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_19215_RecipeName",
+  "en": "Rocknose",
+  "old": "Rocknose",
+  "vi": "Mũi Đá"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_19216_RecipeName",
+  "en": "Rocknose",
+  "old": "Rocknose",
+  "vi": "Mũi Đá"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_19217_RecipeName",
+  "en": "Rocknose",
+  "old": "Rocknose",
+  "vi": "Mũi Đá"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_138_FeatName",
+  "en": "Rushing Edge",
+  "old": "Rushing Edge",
+  "vi": "Lưỡi Lao Nhanh"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24038_Name",
+  "en": "Rushing Edge",
+  "old": "Rushing Edge",
+  "vi": "Lưỡi Lao Nhanh"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24182_Name",
+  "en": "Rushing Edge",
+  "old": "Rushing Edge",
+  "vi": "Lưỡi Lao Nhanh"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_24182_RecipeName",
+  "en": "Rushing Edge",
+  "old": "Rushing Edge",
+  "vi": "Lưỡi Lao Nhanh"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_19107_Name",
+  "en": "Sand Reaper",
+  "old": "Sand Reaper",
+  "vi": "Thần Gặt Cát"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_19108_Name",
+  "en": "Sand Reaper",
+  "old": "Sand Reaper",
+  "vi": "Thần Gặt Cát"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_19109_Name",
+  "en": "Sand Reaper",
+  "old": "Sand Reaper",
+  "vi": "Thần Gặt Cát"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_19071_RecipeName",
+  "en": "Sand Reaper",
+  "old": "Sand Reaper",
+  "vi": "Thần Gặt Cát"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_19072_RecipeName",
+  "en": "Sand Reaper",
+  "old": "Sand Reaper",
+  "vi": "Thần Gặt Cát"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_19073_RecipeName",
+  "en": "Sand Reaper",
+  "old": "Sand Reaper",
+  "vi": "Thần Gặt Cát"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_19074_RecipeName",
+  "en": "Sand Reaper",
+  "old": "Sand Reaper",
+  "vi": "Thần Gặt Cát"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_19075_RecipeName",
+  "en": "Sand Reaper",
+  "old": "Sand Reaper",
+  "vi": "Thần Gặt Cát"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_19076_RecipeName",
+  "en": "Sand Reaper",
+  "old": "Sand Reaper",
+  "vi": "Thần Gặt Cát"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_19077_RecipeName",
+  "en": "Sand Reaper",
+  "old": "Sand Reaper",
+  "vi": "Thần Gặt Cát"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_19180_RecipeName",
+  "en": "Sand Reaper",
+  "old": "Sand Reaper",
+  "vi": "Thần Gặt Cát"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_19181_RecipeName",
+  "en": "Sand Reaper",
+  "old": "Sand Reaper",
+  "vi": "Thần Gặt Cát"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_19182_RecipeName",
+  "en": "Sand Reaper",
+  "old": "Sand Reaper",
+  "vi": "Thần Gặt Cát"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_19183_RecipeName",
+  "en": "Sand Reaper",
+  "old": "Sand Reaper",
+  "vi": "Thần Gặt Cát"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_19184_RecipeName",
+  "en": "Sand Reaper",
+  "old": "Sand Reaper",
+  "vi": "Thần Gặt Cát"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_19185_RecipeName",
+  "en": "Sand Reaper",
+  "old": "Sand Reaper",
+  "vi": "Thần Gặt Cát"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_19186_RecipeName",
+  "en": "Sand Reaper",
+  "old": "Sand Reaper",
+  "vi": "Thần Gặt Cát"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51607_Name",
+  "en": "Scorpion Ward",
+  "old": "Scorpion Ward",
+  "vi": "Bùa Chống Bọ Cạp"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51393_Name",
+  "en": "Set's Tongue",
+  "old": "Set's Tongue",
+  "vi": "Lưỡi Của Set"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24123_Name",
+  "en": "Severer",
+  "old": "Severer",
+  "vi": "Kẻ Cắt Đứt"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51322_Name",
+  "en": "Shadow's Bite",
+  "old": "Shadow's Bite",
+  "vi": "Cú Cắn Của Bóng Tối"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_51322_RecipeName",
+  "en": "Shadow's Bite",
+  "old": "Shadow's Bite",
+  "vi": "Cú Cắn Của Bóng Tối"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51321_Name",
+  "en": "Shadow's Sting",
+  "old": "Shadow's Sting",
+  "vi": "Nọc Của Bóng Tối"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_51321_RecipeName",
+  "en": "Shadow's Sting",
+  "old": "Shadow's Sting",
+  "vi": "Nọc Của Bóng Tối"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_19114_Name",
+  "en": "Shaleback",
+  "old": "Shaleback",
+  "vi": "Lưng Đá Phiến"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_19115_Name",
+  "en": "Shaleback",
+  "old": "Shaleback",
+  "vi": "Lưng Đá Phiến"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_19116_Name",
+  "en": "Shaleback",
+  "old": "Shaleback",
+  "vi": "Lưng Đá Phiến"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_19117_Name",
+  "en": "Shaleback",
+  "old": "Shaleback",
+  "vi": "Lưng Đá Phiến"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_19085_RecipeName",
+  "en": "Shaleback",
+  "old": "Shaleback",
+  "vi": "Lưng Đá Phiến"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_19086_RecipeName",
+  "en": "Shaleback",
+  "old": "Shaleback",
+  "vi": "Lưng Đá Phiến"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_19087_RecipeName",
+  "en": "Shaleback",
+  "old": "Shaleback",
+  "vi": "Lưng Đá Phiến"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_19088_RecipeName",
+  "en": "Shaleback",
+  "old": "Shaleback",
+  "vi": "Lưng Đá Phiến"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_19089_RecipeName",
+  "en": "Shaleback",
+  "old": "Shaleback",
+  "vi": "Lưng Đá Phiến"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_19090_RecipeName",
+  "en": "Shaleback",
+  "old": "Shaleback",
+  "vi": "Lưng Đá Phiến"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_19091_RecipeName",
+  "en": "Shaleback",
+  "old": "Shaleback",
+  "vi": "Lưng Đá Phiến"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_19194_RecipeName",
+  "en": "Shaleback",
+  "old": "Shaleback",
+  "vi": "Lưng Đá Phiến"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_19195_RecipeName",
+  "en": "Shaleback",
+  "old": "Shaleback",
+  "vi": "Lưng Đá Phiến"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_19196_RecipeName",
+  "en": "Shaleback",
+  "old": "Shaleback",
+  "vi": "Lưng Đá Phiến"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_19197_RecipeName",
+  "en": "Shaleback",
+  "old": "Shaleback",
+  "vi": "Lưng Đá Phiến"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_19198_RecipeName",
+  "en": "Shaleback",
+  "old": "Shaleback",
+  "vi": "Lưng Đá Phiến"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_19199_RecipeName",
+  "en": "Shaleback",
+  "old": "Shaleback",
+  "vi": "Lưng Đá Phiến"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_19200_RecipeName",
+  "en": "Shaleback",
+  "old": "Shaleback",
+  "vi": "Lưng Đá Phiến"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51609_Name",
+  "en": "Shark Bite",
+  "old": "Shark Bite",
+  "vi": "Cú Cắn Cá Mập"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_51609_RecipeName",
+  "en": "Shark Bite",
+  "old": "Shark Bite",
+  "vi": "Cú Cắn Cá Mập"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_19_FeatName",
+  "en": "Sharp Iron Sword",
+  "old": "Sharp Iron Sword",
+  "vi": "Kiếm Sắt Sắc"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51960_Name",
+  "en": "Sharp Iron Sword",
+  "old": "Sharp Iron Sword",
+  "vi": "Kiếm Sắt Sắc"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_51960_RecipeName",
+  "en": "Sharp Iron Sword",
+  "old": "Sharp Iron Sword",
+  "vi": "Kiếm Sắt Sắc"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_179_FeatName",
+  "en": "Shines-like-Silver",
+  "old": "Shines-like-Silver",
+  "vi": "Sáng Như Bạc"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24079_Name",
+  "en": "Shines-like-Silver",
+  "old": "Shines-like-Silver",
+  "vi": "Sáng Như Bạc"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24223_Name",
+  "en": "Shines-like-Silver",
+  "old": "Shines-like-Silver",
+  "vi": "Sáng Như Bạc"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_24223_RecipeName",
+  "en": "Shines-like-Silver",
+  "old": "Shines-like-Silver",
+  "vi": "Sáng Như Bạc"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_19105_Name",
+  "en": "Shoebill",
+  "old": "Shoebill",
+  "vi": "Cò Mỏ Giày"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_19132_Name",
+  "en": "Shoebill",
+  "old": "Shoebill",
+  "vi": "Cò Mỏ Giày"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_19133_Name",
+  "en": "Shoebill",
+  "old": "Shoebill",
+  "vi": "Cò Mỏ Giày"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_19098_RecipeName",
+  "en": "Shoebill",
+  "old": "Shoebill",
+  "vi": "Cò Mỏ Giày"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_19099_RecipeName",
+  "en": "Shoebill",
+  "old": "Shoebill",
+  "vi": "Cò Mỏ Giày"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_19100_RecipeName",
+  "en": "Shoebill",
+  "old": "Shoebill",
+  "vi": "Cò Mỏ Giày"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_19101_RecipeName",
+  "en": "Shoebill",
+  "old": "Shoebill",
+  "vi": "Cò Mỏ Giày"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_19207_RecipeName",
+  "en": "Shoebill",
+  "old": "Shoebill",
+  "vi": "Cò Mỏ Giày"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_19208_RecipeName",
+  "en": "Shoebill",
+  "old": "Shoebill",
+  "vi": "Cò Mỏ Giày"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_19209_RecipeName",
+  "en": "Shoebill",
+  "old": "Shoebill",
+  "vi": "Cò Mỏ Giày"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_19210_RecipeName",
+  "en": "Shoebill",
+  "old": "Shoebill",
+  "vi": "Cò Mỏ Giày"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51372_Name",
+  "en": "Silent Slash",
+  "old": "Silent Slash",
+  "vi": "Nhát Chém Lặng Lẽ"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_51372_RecipeName",
+  "en": "Silent Slash",
+  "old": "Silent Slash",
+  "vi": "Nhát Chém Lặng Lẽ"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_199_FeatName",
+  "en": "Slayer's Blades",
+  "old": "Slayer's Blades",
+  "vi": "Lưỡi Của Kẻ Sát Nhân"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24099_Name",
+  "en": "Slayer's Blades",
+  "old": "Slayer's Blades",
+  "vi": "Lưỡi Của Kẻ Sát Nhân"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24243_Name",
+  "en": "Slayer's Blades",
+  "old": "Slayer's Blades",
+  "vi": "Lưỡi Của Kẻ Sát Nhân"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_24243_RecipeName",
+  "en": "Slayer's Blades",
+  "old": "Slayer's Blades",
+  "vi": "Lưỡi Của Kẻ Sát Nhân"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51467_Name",
+  "en": "Snakebite",
+  "old": "Snakebite",
+  "vi": "Rắn Cắn"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_51467_RecipeName",
+  "en": "Snakebite",
+  "old": "Snakebite",
+  "vi": "Rắn Cắn"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_139_FeatName",
+  "en": "Song-Of-Iron",
+  "old": "Song-Of-Iron",
+  "vi": "Bài Ca Sắt"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24039_Name",
+  "en": "Song-Of-Iron",
+  "old": "Song-Of-Iron",
+  "vi": "Bài Ca Sắt"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24183_Name",
+  "en": "Song-Of-Iron",
+  "old": "Song-Of-Iron",
+  "vi": "Bài Ca Sắt"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_24183_RecipeName",
+  "en": "Song-Of-Iron",
+  "old": "Song-Of-Iron",
+  "vi": "Bài Ca Sắt"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_173_FeatName",
+  "en": "Sovereign",
+  "old": "Sovereign",
+  "vi": "Đấng Tối Cao"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24073_Name",
+  "en": "Sovereign",
+  "old": "Sovereign",
+  "vi": "Đấng Tối Cao"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24217_Name",
+  "en": "Sovereign",
+  "old": "Sovereign",
+  "vi": "Đấng Tối Cao"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_24217_RecipeName",
+  "en": "Sovereign",
+  "old": "Sovereign",
+  "vi": "Đấng Tối Cao"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_50512_ThirdModifier",
+  "en": "Specter Coating",
+  "old": "Specter Coating",
+  "vi": "Lớp Phủ Bóng Ma"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51533_ThirdModifier",
+  "en": "Specter Coating",
+  "old": "Specter Coating",
+  "vi": "Lớp Phủ Bóng Ma"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_92127_Name",
+  "en": "Specter Coating",
+  "old": "Specter Coating",
+  "vi": "Lớp Phủ Bóng Ma"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_92127_RecipeName",
+  "en": "Specter Coating",
+  "old": "Specter Coating",
+  "vi": "Lớp Phủ Bóng Ma"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_50512_Name",
+  "en": "Specter's Bane",
+  "old": "Specter's Bane",
+  "vi": "Khắc Tinh Bóng Ma"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_164_FeatName",
+  "en": "Spire",
+  "old": "Spire",
+  "vi": "Ngọn Tháp"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24064_Name",
+  "en": "Spire",
+  "old": "Spire",
+  "vi": "Ngọn Tháp"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24208_Name",
+  "en": "Spire",
+  "old": "Spire",
+  "vi": "Ngọn Tháp"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_24208_RecipeName",
+  "en": "Spire",
+  "old": "Spire",
+  "vi": "Ngọn Tháp"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51559_Name",
+  "en": "Splinter",
+  "old": "Splinter",
+  "vi": "Mảnh Vụn"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_51559_RecipeName",
+  "en": "Splinter",
+  "old": "Splinter",
+  "vi": "Mảnh Vụn"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_51206_FeatName",
+  "en": "Steel Javelin",
+  "old": "Steel Javelin",
+  "vi": "Lao Thép"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51206_Name",
+  "en": "Steel Javelin",
+  "old": "Steel Javelin",
+  "vi": "Lao Thép"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_51206_RecipeName",
+  "en": "Steel Javelin",
+  "old": "Steel Javelin",
+  "vi": "Lao Thép"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_12006_RecipeName",
+  "en": "Stitch",
+  "old": "Stitch",
+  "vi": "Mũi Khâu"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51580_Name",
+  "en": "Strangely Familiar Axe",
+  "old": "Strangely Familiar Axe",
+  "vi": "Rìu Quen Quen Lạ Lạ"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_51580_RecipeName",
+  "en": "Strangely Familiar Axe",
+  "old": "Strangely Familiar Axe",
+  "vi": "Rìu Quen Quen Lạ Lạ"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_104_FeatName",
+  "en": "Sunburn",
+  "old": "Sunburn",
+  "vi": "Cháy Nắng"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24004_Name",
+  "en": "Sunburn",
+  "old": "Sunburn",
+  "vi": "Cháy Nắng"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24148_Name",
+  "en": "Sunburn",
+  "old": "Sunburn",
+  "vi": "Cháy Nắng"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_24148_RecipeName",
+  "en": "Sunburn",
+  "old": "Sunburn",
+  "vi": "Cháy Nắng"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_55050_FeatName",
+  "en": "Sundered Manacles",
+  "old": "Sundered Manacles",
+  "vi": "Xiềng Xích Đứt Gãy"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_10102_Name",
+  "en": "Sundered Manacles",
+  "old": "Sundered Manacles",
+  "vi": "Xiềng Xích Đứt Gãy"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_18378_RecipeName",
+  "en": "Sundered Manacles",
+  "old": "Sundered Manacles",
+  "vi": "Xiềng Xích Đứt Gãy"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_145_FeatName",
+  "en": "Surprise Blow",
+  "old": "Surprise Blow",
+  "vi": "Đòn Bất Ngờ"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24045_Name",
+  "en": "Surprise Blow",
+  "old": "Surprise Blow",
+  "vi": "Đòn Bất Ngờ"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24189_Name",
+  "en": "Surprise Blow",
+  "old": "Surprise Blow",
+  "vi": "Đòn Bất Ngờ"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_24189_RecipeName",
+  "en": "Surprise Blow",
+  "old": "Surprise Blow",
+  "vi": "Đòn Bất Ngờ"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_1_FeatName",
+  "en": "Survivalist",
+  "old": "Survivalist",
+  "vi": "Kẻ Sinh Tồn"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_208_FeatName",
+  "en": "Swift Blow",
+  "old": "Swift Blow",
+  "vi": "Đòn Nhanh"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24108_Name",
+  "en": "Swift Blow",
+  "old": "Swift Blow",
+  "vi": "Đòn Nhanh"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24252_Name",
+  "en": "Swift Blow",
+  "old": "Swift Blow",
+  "vi": "Đòn Nhanh"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_24252_RecipeName",
+  "en": "Swift Blow",
+  "old": "Swift Blow",
+  "vi": "Đòn Nhanh"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_18995_Name",
+  "en": "Swift Foal",
+  "old": "Swift Foal",
+  "vi": "Ngựa Con Nhanh Nhẹn"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_15020_FeatName",
+  "en": "Tablet of Power",
+  "old": "Tablet of Power",
+  "vi": "Phiến Đá Quyền Năng"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_11012_Name",
+  "en": "Tablet of Power",
+  "old": "Tablet of Power",
+  "vi": "Phiến Đá Quyền Năng"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_11012_RecipeName",
+  "en": "Tablet of Power",
+  "old": "Tablet of Power",
+  "vi": "Phiến Đá Quyền Năng"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51066_Name",
+  "en": "Telith's Lament",
+  "old": "Telith's Lament",
+  "vi": "Lời Than Của Telith"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51086_Name",
+  "en": "Telith's Lament",
+  "old": "Telith's Lament",
+  "vi": "Lời Than Của Telith"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_51066_RecipeName",
+  "en": "Telith's Lament",
+  "old": "Telith's Lament",
+  "vi": "Lời Than Của Telith"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51075_Name",
+  "en": "Telith's Sorrow",
+  "old": "Telith's Sorrow",
+  "vi": "Nỗi Buồn Của Telith"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_51075_RecipeName",
+  "en": "Telith's Sorrow",
+  "old": "Telith's Sorrow",
+  "vi": "Nỗi Buồn Của Telith"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51375_Name",
+  "en": "The Beak",
+  "old": "The Beak",
+  "vi": "Cái Mỏ"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_51375_RecipeName",
+  "en": "The Beak",
+  "old": "The Beak",
+  "vi": "Cái Mỏ"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24139_Name",
+  "en": "The Black Phalanx",
+  "old": "The Black Phalanx",
+  "vi": "Đội Phương Trận Đen"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51550_Name",
+  "en": "The Brittle Bastard",
+  "old": "The Brittle Bastard",
+  "vi": "Thằng Khốn Giòn"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_51550_RecipeName",
+  "en": "The Brittle Bastard",
+  "old": "The Brittle Bastard",
+  "vi": "Thằng Khốn Giòn"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "6C99E47047339D5DFFA532BDF6381995",
+  "en": "The Disjunction",
+  "old": "The Disjunction",
+  "vi": "Sự Chia Cắt"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_50508_Name",
+  "en": "The Festering One",
+  "old": "The Festering One",
+  "vi": "Kẻ Mưng Mủ"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51536_Name",
+  "en": "The Grim",
+  "old": "The Grim",
+  "vi": "Kẻ Nghiệt Ngã"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_51536_RecipeName",
+  "en": "The Grim",
+  "old": "The Grim",
+  "vi": "Kẻ Nghiệt Ngã"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51574_Name",
+  "en": "The Impaler",
+  "old": "The Impaler",
+  "vi": "Kẻ Xiên Người"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_51574_RecipeName",
+  "en": "The Impaler",
+  "old": "The Impaler",
+  "vi": "Kẻ Xiên Người"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24140_Name",
+  "en": "The Mallet",
+  "old": "The Mallet",
+  "vi": "Cái Vồ"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_181_FeatName",
+  "en": "The Oak",
+  "old": "The Oak",
+  "vi": "Cây Sồi"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24081_Name",
+  "en": "The Oak",
+  "old": "The Oak",
+  "vi": "Cây Sồi"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24225_Name",
+  "en": "The Oak",
+  "old": "The Oak",
+  "vi": "Cây Sồi"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_24225_RecipeName",
+  "en": "The Oak",
+  "old": "The Oak",
+  "vi": "Cây Sồi"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51543_Name",
+  "en": "The Papyrus Blade",
+  "old": "The Papyrus Blade",
+  "vi": "Kiếm Giấy Cói"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_51543_RecipeName",
+  "en": "The Papyrus Blade",
+  "old": "The Papyrus Blade",
+  "vi": "Kiếm Giấy Cói"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51549_Name",
+  "en": "The Unintelligible",
+  "old": "The Unintelligible",
+  "vi": "Kẻ Không Thể Hiểu"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_51549_RecipeName",
+  "en": "The Unintelligible",
+  "old": "The Unintelligible",
+  "vi": "Kẻ Không Thể Hiểu"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_114_FeatName",
+  "en": "Titan's Fingernail",
+  "old": "Titan's Fingernail",
+  "vi": "Móng Tay Của Titan"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24014_Name",
+  "en": "Titan's Fingernail",
+  "old": "Titan's Fingernail",
+  "vi": "Móng Tay Của Titan"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24158_Name",
+  "en": "Titan's Fingernail",
+  "old": "Titan's Fingernail",
+  "vi": "Móng Tay Của Titan"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_24158_RecipeName",
+  "en": "Titan's Fingernail",
+  "old": "Titan's Fingernail",
+  "vi": "Móng Tay Của Titan"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_80204_FeatName",
+  "en": "Torchbearer",
+  "old": "Torchbearer",
+  "vi": "Người Cầm Đuốc"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_127_FeatName",
+  "en": "Transferrance",
+  "old": "Transferrance",
+  "vi": "Chuyển Hóa"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24027_Name",
+  "en": "Transferrance",
+  "old": "Transferrance",
+  "vi": "Chuyển Hóa"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24171_Name",
+  "en": "Transferrance",
+  "old": "Transferrance",
+  "vi": "Chuyển Hóa"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_24171_RecipeName",
+  "en": "Transferrance",
+  "old": "Transferrance",
+  "vi": "Chuyển Hóa"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_50481_Name",
+  "en": "Trollbane",
+  "old": "Trollbane",
+  "vi": "Khắc Tinh Quỷ Lùn"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_50481_RecipeName",
+  "en": "Trollbane",
+  "old": "Trollbane",
+  "vi": "Khắc Tinh Quỷ Lùn"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_14191_Name",
+  "en": "True Indigo",
+  "old": "True Indigo",
+  "vi": "Chàm Thật"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_14189_RecipeName",
+  "en": "True Indigo",
+  "old": "True Indigo",
+  "vi": "Chàm Thật"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_204_FeatName",
+  "en": "Tundra",
+  "old": "Tundra",
+  "vi": "Lãnh Nguyên"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24104_Name",
+  "en": "Tundra",
+  "old": "Tundra",
+  "vi": "Lãnh Nguyên"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24248_Name",
+  "en": "Tundra",
+  "old": "Tundra",
+  "vi": "Lãnh Nguyên"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_24248_RecipeName",
+  "en": "Tundra",
+  "old": "Tundra",
+  "vi": "Lãnh Nguyên"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_19207_Name",
+  "en": "Tuskbeast",
+  "old": "Tuskbeast",
+  "vi": "Thú Ngà"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_20106_RecipeName",
+  "en": "Tuskbeast",
+  "old": "Tuskbeast",
+  "vi": "Thú Ngà"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_20107_RecipeName",
+  "en": "Tuskbeast",
+  "old": "Tuskbeast",
+  "vi": "Thú Ngà"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_20108_RecipeName",
+  "en": "Tuskbeast",
+  "old": "Tuskbeast",
+  "vi": "Thú Ngà"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_20109_RecipeName",
+  "en": "Tuskbeast",
+  "old": "Tuskbeast",
+  "vi": "Thú Ngà"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_20110_RecipeName",
+  "en": "Tuskbeast",
+  "old": "Tuskbeast",
+  "vi": "Thú Ngà"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_20111_RecipeName",
+  "en": "Tuskbeast",
+  "old": "Tuskbeast",
+  "vi": "Thú Ngà"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_20112_RecipeName",
+  "en": "Tuskbeast",
+  "old": "Tuskbeast",
+  "vi": "Thú Ngà"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_20113_RecipeName",
+  "en": "Tuskbeast",
+  "old": "Tuskbeast",
+  "vi": "Thú Ngà"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_20114_RecipeName",
+  "en": "Tuskbeast",
+  "old": "Tuskbeast",
+  "vi": "Thú Ngà"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_20115_RecipeName",
+  "en": "Tuskbeast",
+  "old": "Tuskbeast",
+  "vi": "Thú Ngà"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_186_FeatName",
+  "en": "Twice-Upon-An-Arrow",
+  "old": "Twice-Upon-An-Arrow",
+  "vi": "Hai Lần Trên Một Mũi Tên"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24086_Name",
+  "en": "Twice-Upon-An-Arrow",
+  "old": "Twice-Upon-An-Arrow",
+  "vi": "Hai Lần Trên Một Mũi Tên"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24230_Name",
+  "en": "Twice-Upon-An-Arrow",
+  "old": "Twice-Upon-An-Arrow",
+  "vi": "Hai Lần Trên Một Mũi Tên"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_24230_RecipeName",
+  "en": "Twice-Upon-An-Arrow",
+  "old": "Twice-Upon-An-Arrow",
+  "vi": "Hai Lần Trên Một Mũi Tên"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_50485_Name",
+  "en": "Twin Light",
+  "old": "Twin Light",
+  "vi": "Song Quang"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24086_FirstModifier",
+  "en": "Twin Shot",
+  "old": "Twin Shot",
+  "vi": "Song Tiễn"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24230_FirstModifier",
+  "en": "Twin Shot",
+  "old": "Twin Shot",
+  "vi": "Song Tiễn"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "5DE059324D872C71D2BE6CA0D9FE4C5A",
+  "en": "Unnamed City",
+  "old": "Unnamed City",
+  "vi": "Thành Phố Không Tên"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_576_FeatName",
+  "en": "Vault Armories",
+  "old": "Vault Armories",
+  "vi": "Kho Vũ Khí Hầm"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51575_Name",
+  "en": "Vaulting Pole",
+  "old": "Vaulting Pole",
+  "vi": "Sào Nhảy"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_51575_RecipeName",
+  "en": "Vaulting Pole",
+  "old": "Vaulting Pole",
+  "vi": "Sào Nhảy"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_192_FeatName",
+  "en": "Vein Cut",
+  "old": "Vein Cut",
+  "vi": "Cắt Mạch"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24092_Name",
+  "en": "Vein Cut",
+  "old": "Vein Cut",
+  "vi": "Cắt Mạch"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24236_Name",
+  "en": "Vein Cut",
+  "old": "Vein Cut",
+  "vi": "Cắt Mạch"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_24236_RecipeName",
+  "en": "Vein Cut",
+  "old": "Vein Cut",
+  "vi": "Cắt Mạch"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_11008_FeatName",
+  "en": "Venomous Eyes",
+  "old": "Venomous Eyes",
+  "vi": "Mắt Độc"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24128_Name",
+  "en": "War Sickles",
+  "old": "War Sickles",
+  "vi": "Song Liềm Chiến"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_899196_FirstModifier",
+  "en": "Warming Strong",
+  "old": "Warming Strong",
+  "vi": "Ấm Áp Mạnh Mẽ"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_50575_FirstModifier",
+  "en": "Whirlwind",
+  "old": "Whirlwind",
+  "vi": "Lốc Xoáy"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_178_FeatName",
+  "en": "Wicked Edge",
+  "old": "Wicked Edge",
+  "vi": "Lưỡi Ác Độc"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24078_Name",
+  "en": "Wicked Edge",
+  "old": "Wicked Edge",
+  "vi": "Lưỡi Ác Độc"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24222_Name",
+  "en": "Wicked Edge",
+  "old": "Wicked Edge",
+  "vi": "Lưỡi Ác Độc"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_24222_RecipeName",
+  "en": "Wicked Edge",
+  "old": "Wicked Edge",
+  "vi": "Lưỡi Ác Độc"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_19092_Name",
+  "en": "Wight",
+  "old": "Wight",
+  "vi": "Bóng Ma"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "FeatTable_157_FeatName",
+  "en": "Wild Swing",
+  "old": "Wild Swing",
+  "vi": "Cú Vung Hoang Dã"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24057_Name",
+  "en": "Wild Swing",
+  "old": "Wild Swing",
+  "vi": "Cú Vung Hoang Dã"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_24201_Name",
+  "en": "Wild Swing",
+  "old": "Wild Swing",
+  "vi": "Cú Vung Hoang Dã"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_24201_RecipeName",
+  "en": "Wild Swing",
+  "old": "Wild Swing",
+  "vi": "Cú Vung Hoang Dã"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_52610_Name",
+  "en": "Winter's Majesty",
+  "old": "Winter's Majesty",
+  "vi": "Uy Nghi Của Mùa Đông"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_52610_RecipeName",
+  "en": "Winter's Majesty",
+  "old": "Winter's Majesty",
+  "vi": "Uy Nghi Của Mùa Đông"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_11007_Name",
+  "en": "Wolf-Eye",
+  "old": "Wolf-Eye",
+  "vi": "Mắt Sói"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_11007_RecipeName",
+  "en": "Wolf-Eye",
+  "old": "Wolf-Eye",
+  "vi": "Mắt Sói"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51371_SecondModifier",
+  "en": "Wolf-Storm",
+  "old": "Wolf-Storm",
+  "vi": "Bão Sói"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51388_Name",
+  "en": "World Breaker",
+  "old": "World Breaker",
+  "vi": "Kẻ Phá Vỡ Thế Giới"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51351_Name",
+  "en": "Yakith Spike",
+  "old": "Yakith Spike",
+  "vi": "Gai Yakith"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_51351_RecipeName",
+  "en": "Yakith Spike",
+  "old": "Yakith Spike",
+  "vi": "Gai Yakith"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_52614_Name",
+  "en": "Ymir's Stride",
+  "old": "Ymir's Stride",
+  "vi": "Sải Bước Của Ymir"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_52614_RecipeName",
+  "en": "Ymir's Stride",
+  "old": "Ymir's Stride",
+  "vi": "Sải Bước Của Ymir"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51854_Name",
+  "en": "Yog Cleaver",
+  "old": "Yog Cleaver",
+  "vi": "Dao Chặt Yog"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "RecipesTable_51854_RecipeName",
+  "en": "Yog Cleaver",
+  "old": "Yog Cleaver",
+  "vi": "Dao Chặt Yog"
+ },
+ {
+  "file": "Exiles_Items.locres",
+  "ns": "",
+  "key": "ItemTable_51396_Name",
+  "en": "Yog's Touch",
+  "old": "Yog's Touch",
+  "vi": "Cái Chạm Của Yog"
+ },
+ {
+  "file": "Exiles_Khitai_DLC.locres",
+  "ns": "",
+  "key": "Khitai_DLC_FeatTable_8031_FeatName",
+  "en": "Khitan Warpaints",
+  "old": "Khitan Warpaints",
+  "vi": "Sơn Chiến Khitan"
+ },
+ {
+  "file": "Exiles_Pict_DLC.locres",
+  "ns": "",
+  "key": "DLC_Pict_FeatTable_6031_FeatName",
+  "en": "Pictish Warpaints",
+  "old": "Pictish Warpaints",
+  "vi": "Sơn Chiến Pict"
+ },
+ {
+  "file": "Exiles_Pict_DLC.locres",
+  "ns": "",
+  "key": "DLC_Pict_ItemTable_6353_Name",
+  "en": "Shaleback",
+  "old": "Shaleback",
+  "vi": "Lưng Đá Phiến"
+ },
+ {
+  "file": "Exiles_Pict_DLC.locres",
+  "ns": "",
+  "key": "DLC_Pict_ItemTable_6361_Name",
+  "en": "Shaleback",
+  "old": "Shaleback",
+  "vi": "Lưng Đá Phiến"
+ },
+ {
+  "file": "Exiles_Pict_DLC.locres",
+  "ns": "",
+  "key": "DLC_Pict_ItemTable_6362_Name",
+  "en": "Shaleback",
+  "old": "Shaleback",
+  "vi": "Lưng Đá Phiến"
+ },
+ {
+  "file": "Exiles_Pict_DLC.locres",
+  "ns": "",
+  "key": "DLC_Pict_ItemTable_6363_Name",
+  "en": "Shaleback",
+  "old": "Shaleback",
+  "vi": "Lưng Đá Phiến"
+ },
+ {
+  "file": "Exiles_Pict_DLC.locres",
+  "ns": "",
+  "key": "DLC_Pict_RecipesTable_6353_RecipeName",
+  "en": "Shaleback",
+  "old": "Shaleback",
+  "vi": "Lưng Đá Phiến"
+ },
+ {
+  "file": "Exiles_Pict_DLC.locres",
+  "ns": "",
+  "key": "DLC_Pict_RecipesTable_6361_RecipeName",
+  "en": "Shaleback",
+  "old": "Shaleback",
+  "vi": "Lưng Đá Phiến"
+ },
+ {
+  "file": "Exiles_Pict_DLC.locres",
+  "ns": "",
+  "key": "DLC_Pict_RecipesTable_6362_RecipeName",
+  "en": "Shaleback",
+  "old": "Shaleback",
+  "vi": "Lưng Đá Phiến"
+ },
+ {
+  "file": "Exiles_Pict_DLC.locres",
+  "ns": "",
+  "key": "DLC_Pict_RecipesTable_6363_RecipeName",
+  "en": "Shaleback",
+  "old": "Shaleback",
+  "vi": "Lưng Đá Phiến"
+ },
+ {
+  "file": "Exiles_Pict_DLC.locres",
+  "ns": "",
+  "key": "DLC_Pict_SpawnDataTable_pet_pict_shalebackblue_Name",
+  "en": "Shaleback",
+  "old": "Shaleback",
+  "vi": "Lưng Đá Phiến"
+ },
+ {
+  "file": "Exiles_Pict_DLC.locres",
+  "ns": "",
+  "key": "DLC_Pict_SpawnDataTable_pet_pict_shalebackgreen_Name",
+  "en": "Shaleback",
+  "old": "Shaleback",
+  "vi": "Lưng Đá Phiến"
+ },
+ {
+  "file": "Exiles_Pict_DLC.locres",
+  "ns": "",
+  "key": "DLC_Pict_SpawnDataTable_pet_pict_shalebackpurple_Name",
+  "en": "Shaleback",
+  "old": "Shaleback",
+  "vi": "Lưng Đá Phiến"
+ },
+ {
+  "file": "Exiles_Pict_DLC.locres",
+  "ns": "",
+  "key": "DLC_Pict_SpawnDataTable_pet_pict_shalebackred_Name",
+  "en": "Shaleback",
+  "old": "Shaleback",
+  "vi": "Lưng Đá Phiến"
+ },
+ {
+  "file": "Exiles_Pict_DLC.locres",
+  "ns": "",
+  "key": "DLC_Pict_ItemTable_6350_Name",
+  "en": "Shoebill",
+  "old": "Shoebill",
+  "vi": "Cò Mỏ Giày"
+ },
+ {
+  "file": "Exiles_Pict_DLC.locres",
+  "ns": "",
+  "key": "DLC_Pict_ItemTable_6356_Name",
+  "en": "Shoebill",
+  "old": "Shoebill",
+  "vi": "Cò Mỏ Giày"
+ },
+ {
+  "file": "Exiles_Pict_DLC.locres",
+  "ns": "",
+  "key": "DLC_Pict_ItemTable_6357_Name",
+  "en": "Shoebill",
+  "old": "Shoebill",
+  "vi": "Cò Mỏ Giày"
+ },
+ {
+  "file": "Exiles_Pict_DLC.locres",
+  "ns": "",
+  "key": "DLC_Pict_RecipesTable_6350_RecipeName",
+  "en": "Shoebill",
+  "old": "Shoebill",
+  "vi": "Cò Mỏ Giày"
+ },
+ {
+  "file": "Exiles_Pict_DLC.locres",
+  "ns": "",
+  "key": "DLC_Pict_RecipesTable_6356_RecipeName",
+  "en": "Shoebill",
+  "old": "Shoebill",
+  "vi": "Cò Mỏ Giày"
+ },
+ {
+  "file": "Exiles_Pict_DLC.locres",
+  "ns": "",
+  "key": "DLC_Pict_RecipesTable_6357_RecipeName",
+  "en": "Shoebill",
+  "old": "Shoebill",
+  "vi": "Cò Mỏ Giày"
+ },
+ {
+  "file": "Exiles_Pict_DLC.locres",
+  "ns": "",
+  "key": "DLC_Pict_SpawnDataTable_pet_pict_shoebillgreen_Name",
+  "en": "Shoebill",
+  "old": "Shoebill",
+  "vi": "Cò Mỏ Giày"
+ },
+ {
+  "file": "Exiles_Pict_DLC.locres",
+  "ns": "",
+  "key": "DLC_Pict_SpawnDataTable_pet_pict_shoebillred_Name",
+  "en": "Shoebill",
+  "old": "Shoebill",
+  "vi": "Cò Mỏ Giày"
+ },
+ {
+  "file": "Exiles_Pict_DLC.locres",
+  "ns": "",
+  "key": "DLC_Pict_SpawnDataTable_pet_pict_shoebillwhite_Name",
+  "en": "Shoebill",
+  "old": "Shoebill",
+  "vi": "Cò Mỏ Giày"
+ },
+ {
+  "file": "Exiles_RPPack_DLC.locres",
+  "ns": "",
+  "key": "DLC_RPpack_FeatTable_4004_FeatName",
+  "en": "Derketo Warpaints",
+  "old": "Derketo Warpaints",
+  "vi": "Sơn Chiến Derketo"
+ },
+ {
+  "file": "Exiles_RiddleOfSteel_DLC.locres",
+  "ns": "",
+  "key": "DLC_Riddle_FeatTable_8041_FeatName",
+  "en": "Neca Warpaints",
+  "old": "Neca Warpaints",
+  "vi": "Sơn Chiến Neca"
+ },
+ {
+  "file": "Exiles_Siptah_DLC.locres",
+  "ns": "",
+  "key": "DLC_Siptah_FeatTable_1000_FeatName",
+  "en": "Salvager",
+  "old": "Salvager",
+  "vi": "Kẻ Tận Dụng"
+ },
+ {
+  "file": "Exiles_Siptah_DLC.locres",
+  "ns": "",
+  "key": "B41CF3954B62B793AD77AC9F01144D4C",
+  "en": "Surge",
+  "old": "Surge",
+  "vi": "Dâng Trào"
+ },
+ {
+  "file": "Exiles_Siptah_DLC.locres",
+  "ns": "",
+  "key": "0B86FD82484DB8E45E21C0A62460E941",
+  "en": "Wild Surge",
+  "old": "Wild Surge",
+  "vi": "Dâng Trào Hoang Dã"
+ },
+ {
+  "file": "Exiles_Special_DLC.locres",
+  "ns": "",
+  "key": "DT_BattlePassRewards_BP01-18_DisplayName",
+  "en": "Arcane Staff",
+  "old": "Arcane Staff",
+  "vi": "Trượng Phép"
+ },
+ {
+  "file": "Exiles_Special_DLC.locres",
+  "ns": "",
+  "key": "Special_FeatTable_641_FeatName",
+  "en": "Arcane Staff",
+  "old": "Arcane Staff",
+  "vi": "Trượng Phép"
+ },
+ {
+  "file": "Exiles_Special_DLC.locres",
+  "ns": "",
+  "key": "Special_FeatTable_702_FeatName",
+  "en": "Arcane Staff",
+  "old": "Arcane Staff",
+  "vi": "Trượng Phép"
+ },
+ {
+  "file": "Exiles_Special_DLC.locres",
+  "ns": "",
+  "key": "Special_ItemTable_175_Name",
+  "en": "Arcane Staff",
+  "old": "Arcane Staff",
+  "vi": "Trượng Phép"
+ },
+ {
+  "file": "Exiles_Special_DLC.locres",
+  "ns": "",
+  "key": "Special_ItemTable_176_Name",
+  "en": "Arcane Staff",
+  "old": "Arcane Staff",
+  "vi": "Trượng Phép"
+ },
+ {
+  "file": "Exiles_Special_DLC.locres",
+  "ns": "",
+  "key": "Special_ItemTable_856_Name",
+  "en": "Arcane Staff",
+  "old": "Arcane Staff",
+  "vi": "Trượng Phép"
+ },
+ {
+  "file": "Exiles_Special_DLC.locres",
+  "ns": "",
+  "key": "Special_ItemTable_857_Name",
+  "en": "Arcane Staff",
+  "old": "Arcane Staff",
+  "vi": "Trượng Phép"
+ },
+ {
+  "file": "Exiles_Special_DLC.locres",
+  "ns": "",
+  "key": "Special_RecipesTable_175_RecipeName",
+  "en": "Arcane Staff",
+  "old": "Arcane Staff",
+  "vi": "Trượng Phép"
+ },
+ {
+  "file": "Exiles_Special_DLC.locres",
+  "ns": "",
+  "key": "Special_RecipesTable_176_RecipeName",
+  "en": "Arcane Staff",
+  "old": "Arcane Staff",
+  "vi": "Trượng Phép"
+ },
+ {
+  "file": "Exiles_Special_DLC.locres",
+  "ns": "",
+  "key": "Special_RecipesTable_856_RecipeName",
+  "en": "Arcane Staff",
+  "old": "Arcane Staff",
+  "vi": "Trượng Phép"
+ },
+ {
+  "file": "Exiles_Special_DLC.locres",
+  "ns": "",
+  "key": "Special_RecipesTable_857_RecipeName",
+  "en": "Arcane Staff",
+  "old": "Arcane Staff",
+  "vi": "Trượng Phép"
+ },
+ {
+  "file": "Exiles_Special_DLC.locres",
+  "ns": "",
+  "key": "StoreItems_3-641_Name",
+  "en": "Arcane Staff",
+  "old": "Arcane Staff",
+  "vi": "Trượng Phép"
+ },
+ {
+  "file": "Exiles_Special_DLC.locres",
+  "ns": "",
+  "key": "StoreItems_3-702_Name",
+  "en": "Arcane Staff",
+  "old": "Arcane Staff",
+  "vi": "Trượng Phép"
+ },
+ {
+  "file": "Exiles_Special_DLC.locres",
+  "ns": "",
+  "key": "StoreItems_3-703_Name",
+  "en": "Arcane Staff",
+  "old": "Arcane Staff",
+  "vi": "Trượng Phép"
+ },
+ {
+  "file": "Exiles_Special_DLC.locres",
+  "ns": "",
+  "key": "StoreItems_SmallBundle-ArcaneStaff_Name",
+  "en": "Arcane Staff",
+  "old": "Arcane Staff",
+  "vi": "Trượng Phép"
+ },
+ {
+  "file": "Exiles_Special_DLC.locres",
+  "ns": "",
+  "key": "DT_BattlePassRewards_BP01-34_DisplayName",
+  "en": "Arcane Statue",
+  "old": "Arcane Statue",
+  "vi": "Tượng Phép Thuật"
+ },
+ {
+  "file": "Exiles_Special_DLC.locres",
+  "ns": "",
+  "key": "Special_FeatTable_707_FeatName",
+  "en": "Arcane Statue",
+  "old": "Arcane Statue",
+  "vi": "Tượng Phép Thuật"
+ },
+ {
+  "file": "Exiles_Special_DLC.locres",
+  "ns": "",
+  "key": "Special_ItemTable_862_Name",
+  "en": "Arcane Statue",
+  "old": "Arcane Statue",
+  "vi": "Tượng Phép Thuật"
+ },
+ {
+  "file": "Exiles_Special_DLC.locres",
+  "ns": "",
+  "key": "Special_RecipesTable_862_RecipeName",
+  "en": "Arcane Statue",
+  "old": "Arcane Statue",
+  "vi": "Tượng Phép Thuật"
+ },
+ {
+  "file": "Exiles_Special_DLC.locres",
+  "ns": "",
+  "key": "StoreItems_3-707_Name",
+  "en": "Arcane Statue",
+  "old": "Arcane Statue",
+  "vi": "Tượng Phép Thuật"
+ },
+ {
+  "file": "Exiles_Special_DLC.locres",
+  "ns": "",
+  "key": "ADCA9B424CD68ECEEAFC56A2A1B15629",
+  "en": "Caravan Trader's Kit",
+  "old": "Caravan Trader's Kit",
+  "vi": "Bộ Đồ Thương Nhân Đoàn Lữ Hành"
+ },
+ {
+  "file": "Exiles_Special_DLC.locres",
+  "ns": "",
+  "key": "StoreItems_MidBundle-DemonRevisited_Name",
+  "en": "Demonology Revisited",
+  "old": "Demonology Revisited",
+  "vi": "Ma Thuật Học Tái Hiện"
+ },
+ {
+  "file": "Exiles_Special_DLC.locres",
+  "ns": "",
+  "key": "StoreItems_MedBundle-ExoticAnimalsGrandMenagerie_Name",
+  "en": "Grand Menagerie",
+  "old": "Grand Menagerie",
+  "vi": "Vườn Thú Lớn"
+ },
+ {
+  "file": "Exiles_Special_DLC.locres",
+  "ns": "",
+  "key": "Special_ItemTable_9046_Name",
+  "en": "Greater Pictish Sabretooth",
+  "old": "Greater Pictish Sabretooth",
+  "vi": "Hổ Răng Kiếm Pict Lớn"
+ },
+ {
+  "file": "Exiles_Special_DLC.locres",
+  "ns": "",
+  "key": "Special_RecipesTable_9061_RecipeName",
+  "en": "Greater Pictish Sabretooth",
+  "old": "Greater Pictish Sabretooth",
+  "vi": "Hổ Răng Kiếm Pict Lớn"
+ },
+ {
+  "file": "Exiles_Special_DLC.locres",
+  "ns": "",
+  "key": "Special_FeatTable_606_FeatName",
+  "en": "Gurnakhi Vandal",
+  "old": "Gurnakhi Vandal",
+  "vi": "Kẻ Phá Hoại Gurnakhi"
+ },
+ {
+  "file": "Exiles_Special_DLC.locres",
+  "ns": "",
+  "key": "StoreItems_3-606_Name",
+  "en": "Gurnakhi Vandal",
+  "old": "Gurnakhi Vandal",
+  "vi": "Kẻ Phá Hoại Gurnakhi"
+ },
+ {
+  "file": "Exiles_Special_DLC.locres",
+  "ns": "",
+  "key": "Special_FeatTable_96141_FeatName",
+  "en": "Iron Servitor Shaper",
+  "old": "Iron Servitor Shaper",
+  "vi": "Thợ Tạo Hình Người Hầu Sắt"
+ },
+ {
+  "file": "Exiles_Special_DLC.locres",
+  "ns": "",
+  "key": "Special_FeatTable_96307_FeatName",
+  "en": "Khitan Demoncaller",
+  "old": "Khitan Demoncaller",
+  "vi": "Kẻ Gọi Quỷ Khitan"
+ },
+ {
+  "file": "Exiles_Special_DLC.locres",
+  "ns": "",
+  "key": "StoreItems_3-96307_Name",
+  "en": "Khitan Demoncaller",
+  "old": "Khitan Demoncaller",
+  "vi": "Kẻ Gọi Quỷ Khitan"
+ },
+ {
+  "file": "Exiles_Special_DLC.locres",
+  "ns": "",
+  "key": "DLC_Special_Emotes_195_Name",
+  "en": "Sharpen Daggers",
+  "old": "Sharpen Daggers",
+  "vi": "Mài Dao Găm"
+ },
+ {
+  "file": "Exiles_Special_DLC.locres",
+  "ns": "",
+  "key": "StoreItems_4-195_Name",
+  "en": "Sharpen Daggers",
+  "old": "Sharpen Daggers",
+  "vi": "Mài Dao Găm"
+ },
+ {
+  "file": "Exiles_Special_DLC.locres",
+  "ns": "",
+  "key": "Special_FeatTable_725_FeatName",
+  "en": "Silent Legion Rhino Saddle",
+  "old": "Silent Legion Rhino Saddle",
+  "vi": "Yên Tê Giác Đạo Quân Câm Lặng"
+ },
+ {
+  "file": "Exiles_Special_DLC.locres",
+  "ns": "",
+  "key": "Special_ItemTable_900_Name",
+  "en": "Silent Legion Rhino Saddle",
+  "old": "Silent Legion Rhino Saddle",
+  "vi": "Yên Tê Giác Đạo Quân Câm Lặng"
+ },
+ {
+  "file": "Exiles_Special_DLC.locres",
+  "ns": "",
+  "key": "Special_RecipesTable_905_RecipeName",
+  "en": "Silent Legion Rhino Saddle",
+  "old": "Silent Legion Rhino Saddle",
+  "vi": "Yên Tê Giác Đạo Quân Câm Lặng"
+ },
+ {
+  "file": "Exiles_Special_DLC.locres",
+  "ns": "",
+  "key": "StoreItems_3-725_Name",
+  "en": "Silent Legion Rhino Saddle",
+  "old": "Silent Legion Rhino Saddle",
+  "vi": "Yên Tê Giác Đạo Quân Câm Lặng"
+ },
+ {
+  "file": "Exiles_Special_DLC.locres",
+  "ns": "",
+  "key": "9EB27B8D404EEE7A229DA69B6CCBC55D",
+  "en": "The Courtly Exile",
+  "old": "The Courtly Exile",
+  "vi": "Kẻ Lưu Đày Quý Tộc"
+ },
+ {
+  "file": "Exiles_Special_DLC.locres",
+  "ns": "ST_VEN_Placeables",
+  "key": "VEN_Vendhyan_Jhoola_Name",
+  "en": "Vendhyan Jhoola",
+  "old": "Vendhyan Jhoola",
+  "vi": "Xích Đu Vendhya"
+ },
+ {
+  "file": "Exiles_Turan_DLC.locres",
+  "ns": "",
+  "key": "DLC_Turan_FeatTable_5031_FeatName",
+  "en": "Turan Warpaints",
+  "old": "Turan Warpaints",
+  "vi": "Sơn Chiến Turan"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Wildlife_Siptah_Scavenger_Name",
+  "en": "Aardwolf Scavenger",
+  "old": "Aardwolf Scavenger",
+  "vi": "Sói Đất Ăn Xác"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Wildlife_Siptah_Scavenger_Spotted_Name",
+  "en": "Aardwolf Scavenger",
+  "old": "Aardwolf Scavenger",
+  "vi": "Sói Đất Ăn Xác"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_pet_scavenger_Name",
+  "en": "Aardwolf Scavenger",
+  "old": "Aardwolf Scavenger",
+  "vi": "Sói Đất Ăn Xác"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "6842FE8945758A23126A078D045AA613",
+  "en": "Anvil Hunter Treasure Seeker Thrall",
+  "old": "Anvil Hunter Treasure Seeker Thrall",
+  "vi": "Thrall Tìm Kho Báu Săn Đe"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "4384F8EE4E11D19F9FFAD48FC99B9D33",
+  "en": "Asura's Chosen",
+  "old": "Asura's Chosen",
+  "vi": "Người Được Asura Chọn"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "MapMarkers_Siptah_59_Name",
+  "en": "Asura's Sight",
+  "old": "Asura's Sight",
+  "vi": "Tầm Nhìn Asura"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "NPCPerksDataTable_315_DisplayName",
+  "en": "Bad Dog!",
+  "old": "Bad Dog!",
+  "vi": "Chó Hư!"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "F5AF1BFC40E9966198901E8B38781BBF",
+  "en": "Bazaar",
+  "old": "Bazaar",
+  "vi": "Chợ"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "B24FB2AE4EA86E1906A16F8E958D4DD3",
+  "en": "CEO",
+  "old": "CEO",
+  "vi": "Giám đốc điều hành"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "C100BD834D8752CCBD5C8F89EAC77141",
+  "en": "COO",
+  "old": "COO",
+  "vi": "Giám đốc vận hành"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Relic_Hunter_Captain_Name",
+  "en": "Captain",
+  "old": "Captain",
+  "vi": "Thuyền trưởng"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "DEC97459417B9B6D5E7CAF84DC83DBD7",
+  "en": "Carnage",
+  "old": "Carnage",
+  "vi": "Tàn Sát"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Wildlife_Siptah_DevolvedBatBoss_Name",
+  "en": "Champion Demon-bat",
+  "old": "Champion Demon-bat",
+  "vi": "Quỷ Dơi Vô Địch"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Wildlife_Siptah_DevolvedFiend_Boss_Name",
+  "en": "Champion Fiend",
+  "old": "Champion Fiend",
+  "vi": "Ác Quỷ Vô Địch"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Wildlife_Siptah_DevolvedBirdBoss_Name",
+  "en": "Champion Jhil-brood",
+  "old": "Champion Jhil-brood",
+  "vi": "Jhil Non Vô Địch"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "28F4C7B24509FAFE0924DC8BF59C310F",
+  "en": "Classic Menu Music",
+  "old": "Classic Menu Music",
+  "vi": "Nhạc Menu Cổ Điển"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "525CD8D24BF9EA3F499BC3865BDB2075",
+  "en": "Client",
+  "old": "Client",
+  "vi": "Máy khách"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_pet_snake_cobra_alpha_Name",
+  "en": "Cobra Alpha",
+  "old": "Cobra Alpha",
+  "vi": "Rắn Hổ Mang Đầu Đàn"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "9AD6EAD3499BE88BFC51F7BD992BF1D9",
+  "en": "Coup De Grace",
+  "old": "Coup De Grace",
+  "vi": "Nhát Kết Liễu"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "NPCPerksDataTable_127_DisplayName",
+  "en": "Crusher",
+  "old": "Crusher",
+  "vi": "Kẻ Nghiền Nát"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "NPCPerksDataTable_139_DisplayName",
+  "en": "Crusher",
+  "old": "Crusher",
+  "vi": "Kẻ Nghiền Nát"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Wildlife_Miniboss_HyenaAlpha_Name",
+  "en": "Demonic Hyena",
+  "old": "Demonic Hyena",
+  "vi": "Linh Cẩu Quỷ"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "165ED3A14F97416B0BB3D0994084B02A",
+  "en": "Doom",
+  "old": "Doom",
+  "vi": "Diệt Vong"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "66AE90F247C9C6D318AD2496A9C75129",
+  "en": "Doom",
+  "old": "Doom",
+  "vi": "Diệt Vong"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "7B0B040C4C7A71DFBC15E98F96543A34",
+  "en": "Doom",
+  "old": "Doom",
+  "vi": "Diệt Vong"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Purge_Champion_Ranger_1_Name",
+  "en": "Dunerunner",
+  "old": "Dunerunner",
+  "vi": "Kẻ Chạy Cồn Cát"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Purge_Champion_Ranger_2_Name",
+  "en": "Dunerunner",
+  "old": "Dunerunner",
+  "vi": "Kẻ Chạy Cồn Cát"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Purge_Champion_Ranger_3_Name",
+  "en": "Dunerunner",
+  "old": "Dunerunner",
+  "vi": "Kẻ Chạy Cồn Cát"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Wildlife_Elephant_Baby_Name",
+  "en": "Elephant",
+  "old": "Elephant",
+  "vi": "Voi"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Wildlife_Elephant_Miniboss_Name",
+  "en": "Elephant",
+  "old": "Elephant",
+  "vi": "Voi"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Wildlife_Elephant_Name",
+  "en": "Elephant",
+  "old": "Elephant",
+  "vi": "Voi"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_pet_Elephant_Name",
+  "en": "Elephant",
+  "old": "Elephant",
+  "vi": "Voi"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "MapMarkers_Siptah_107_Name",
+  "en": "Elephant Graveyard",
+  "old": "Elephant Graveyard",
+  "vi": "Nghĩa Địa Voi"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "7A073FE74B548CBC153A22B3154513D9",
+  "en": "FSR Framegen",
+  "old": "FSR Framegen",
+  "vi": "FPS: 60"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Dogs_of_the_Desert_Surge_Fighter_Elite_Name",
+  "en": "Fleshtearer",
+  "old": "Fleshtearer",
+  "vi": "Kẻ Xé Thịt"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "DT_ConstructionSubClassData_Frontier_ConstructionSubClass",
+  "en": "Frontier",
+  "old": "Frontier",
+  "vi": "Biên Giới"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Wildlife_Frost_Giant_Bodyguard_Name",
+  "en": "Frost Giant Bodyguard",
+  "old": "Frost Giant Bodyguard",
+  "vi": "Vệ Sĩ Người Khổng Lồ Băng"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_pet_FrostGiant_2_Name",
+  "en": "Frost Giant Bodyguard",
+  "old": "Frost Giant Bodyguard",
+  "vi": "Vệ Sĩ Người Khổng Lồ Băng"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_pet_FrostGiant_Name",
+  "en": "Frost Giant Bodyguard",
+  "old": "Frost Giant Bodyguard",
+  "vi": "Vệ Sĩ Người Khổng Lồ Băng"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Purge_Siptah_Ghoul_Bloodied_Name",
+  "en": "Ghoul",
+  "old": "Ghoul",
+  "vi": "Ma Cà Rồng"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Purge_Siptah_Ghoul_Flesh_Name",
+  "en": "Ghoul",
+  "old": "Ghoul",
+  "vi": "Ma Cà Rồng"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "E1FE85684BC870BD5D7F06AE2D3C6200",
+  "en": "Giant Kings",
+  "old": "Giant Kings",
+  "vi": "Vua Khổng Lồ"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_GnashteethBurning-Meat_Name",
+  "en": "Gnashteeth Burning-Meat",
+  "old": "Gnashteeth Burning-Meat",
+  "vi": "Khỉ Đột Lưng Bạc"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_DungeonSag_Wildlife_GorillaBoss_Name",
+  "en": "Gorilla Silverback",
+  "old": "Gorilla Silverback",
+  "vi": "Đại Xà"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Wildlife_GorillaSilverback_Name",
+  "en": "Gorilla Silverback",
+  "old": "Gorilla Silverback",
+  "vi": "Đại Xà"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "NPCPerksDataTable_255_DisplayName",
+  "en": "Great Ophidian",
+  "old": "Great Ophidian",
+  "vi": "Sói Đất Ăn Xác Lớn"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_pet_scavenger_alpha_Name",
+  "en": "Greater Aardwolf Scavenger",
+  "old": "Greater Aardwolf Scavenger",
+  "vi": "Linh Cẩu Lớn"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "NPCPerksDataTable_205_DisplayName",
+  "en": "Hallowed",
+  "old": "Hallowed",
+  "vi": "Thánh Hóa"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "2CDED4754C19BB97D7B7848AF33BE0D5",
+  "en": "Hard Worker",
+  "old": "Hard Worker",
+  "vi": "Người Chăm Chỉ"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "B91591604C1DF0CB49E91CA29BC3788B",
+  "en": "Hard Worker",
+  "old": "Hard Worker",
+  "vi": "Người Chăm Chỉ"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "35D8C1AC4BB1C588A472E1A5700B6214",
+  "en": "Headache",
+  "old": "Headache",
+  "vi": "Nhức Đầu"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "C730FC7B41555A1309EF7FA71A9C48A2",
+  "en": "Headache",
+  "old": "Headache",
+  "vi": "Nhức Đầu"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "D07B945E43EF295170FE73899E528586",
+  "en": "Headache",
+  "old": "Headache",
+  "vi": "Nhức Đầu"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_DungeonSag_Wildlife_HyenaSpotted_Name",
+  "en": "Hyena",
+  "old": "Hyena",
+  "vi": "Linh Cẩu"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_pet_SpottedHyena_Name",
+  "en": "Hyena",
+  "old": "Hyena",
+  "vi": "Linh Cẩu"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_pet_Stripedhyena_Name",
+  "en": "Hyena",
+  "old": "Hyena",
+  "vi": "Linh Cẩu"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "FA6B3F7B4644BEEF05BB6F8B1D114781",
+  "en": "Iron Age",
+  "old": "Iron Age",
+  "vi": "Thời Đại Sắt"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "NPCPerksDataTable_111_DisplayName",
+  "en": "Iron Guts",
+  "old": "Iron Guts",
+  "vi": "Ruột Sắt"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "NPCPerksDataTable_177_DisplayName",
+  "en": "Iron Guts",
+  "old": "Iron Guts",
+  "vi": "Ruột Sắt"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "NPCPerksDataTable_27_DisplayName",
+  "en": "Iron Guts",
+  "old": "Iron Guts",
+  "vi": "Ruột Sắt"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "NPCPerksDataTable_280_DisplayName",
+  "en": "Iron Guts",
+  "old": "Iron Guts",
+  "vi": "Ruột Sắt"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "NPCPerksDataTable_39_DisplayName",
+  "en": "Iron Guts",
+  "old": "Iron Guts",
+  "vi": "Ruột Sắt"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "NPCPerksDataTable_63_DisplayName",
+  "en": "Iron Guts",
+  "old": "Iron Guts",
+  "vi": "Ruột Sắt"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "NPCPerksDataTable_75_DisplayName",
+  "en": "Iron Guts",
+  "old": "Iron Guts",
+  "vi": "Ruột Sắt"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "NPCPerksDataTable_87_DisplayName",
+  "en": "Iron Guts",
+  "old": "Iron Guts",
+  "vi": "Ruột Sắt"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "NPCPerksDataTable_99_DisplayName",
+  "en": "Iron Guts",
+  "old": "Iron Guts",
+  "vi": "Ruột Sắt"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "D132A83C4652E6722E04ACB49F67E844",
+  "en": "Iron Lungs",
+  "old": "Iron Lungs",
+  "vi": "Phổi Sắt"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Wildlife_RocknoseIron_Name",
+  "en": "Iron Rocknose",
+  "old": "Iron Rocknose",
+  "vi": "Mũi Đá Sắt"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Wildlife_Siptah_Bobcat_Name",
+  "en": "Island Lynx",
+  "old": "Island Lynx",
+  "vi": "Linh Miêu Đảo"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_pet_bobcat_Name",
+  "en": "Island Lynx",
+  "old": "Island Lynx",
+  "vi": "Linh Miêu Đảo"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Wildlife_ReptileKomodoBaby_Name",
+  "en": "Komodo Hatchling",
+  "old": "Komodo Hatchling",
+  "vi": "Komodo Non"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "864F8ED04D23FD5780971CBAA222ABBA",
+  "en": "Light",
+  "old": "Light",
+  "vi": "Ánh sáng"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "DT_ConstructionSubClassData_Lights_ConstructionSubClass",
+  "en": "Lights",
+  "old": "Lights",
+  "vi": "Đèn"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_LotFrostspeaker_Name",
+  "en": "Lot Frostspeaker",
+  "old": "Lot Frostspeaker",
+  "vi": "Lò Đốt Sen"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "GolemAttributeTemplates_5_DisplayName",
+  "en": "Lotus Burner",
+  "old": "Lotus Burner",
+  "vi": "Hóa Thân Rận"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "9EBD09344CFDF1CC1573EEBEF64E43B1",
+  "en": "Low End Laptop Mode",
+  "old": "Low End Laptop Mode",
+  "vi": "Chế độ laptop cấu hình thấp"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "MapMarkers_Siptah_130_Name",
+  "en": "Lunatic's Reach",
+  "old": "Lunatic's Reach",
+  "vi": "Lumen - Chất lượng GI"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "A6C8B93446B202A9C100BA91D0A3067B",
+  "en": "Maelstrom",
+  "old": "Maelstrom",
+  "vi": "Xoáy Nước Maelstrom"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "NPCPerksDataTable_239_DisplayName",
+  "en": "Mean Hog",
+  "old": "Mean Hog",
+  "vi": "Lợn Hung Dữ"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Purge_Siptah_MiGo_Name",
+  "en": "MiGo Abductor",
+  "old": "MiGo Abductor",
+  "vi": "Mi-Go Bắt Cóc"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Purge_Siptah_MiGo_var_Name",
+  "en": "MiGo Abductor",
+  "old": "MiGo Abductor",
+  "vi": "Mi-Go Bắt Cóc"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Event_MiGoExperiment_Name",
+  "en": "MiGo Experiment",
+  "old": "MiGo Experiment",
+  "vi": "Thí Nghiệm Mi-Go"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Purge_Siptah_MiGoExperiment_Name",
+  "en": "MiGo Experiment",
+  "old": "MiGo Experiment",
+  "vi": "Thí Nghiệm Mi-Go"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Wildlife_Siptah_MiGoExperiment_Name",
+  "en": "MiGo Experiment",
+  "old": "MiGo Experiment",
+  "vi": "Thí Nghiệm Mi-Go"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "F79007CA49B349DB61121AA0226B8EE7",
+  "en": "Movement Penalty:",
+  "old": "Movement Penalty:",
+  "vi": "Phạt di chuyển:"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "F2E747FA487982B957733F956A6869F9",
+  "en": "Mule Kick",
+  "old": "Mule Kick",
+  "vi": "Cú Đá Của La"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "87A79127496965CEF282B6994EA0B18D",
+  "en": "Natalie Iwaniuk",
+  "old": "Natalie Iwaniuk",
+  "vi": "Cận Thị"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "NPCPerksDataTable_18_DisplayName",
+  "en": "Nearsighted",
+  "old": "Nearsighted",
+  "vi": "Nemedia"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "NPCPerksDataTable_290_DisplayName",
+  "en": "Nearsighted",
+  "old": "Nearsighted",
+  "vi": "Nemedia"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Wildlife_Children_of_Jhil_nestmother_Name",
+  "en": "Nest Mother",
+  "old": "Nest Mother",
+  "vi": "Mẹ Tổ"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "7310D9E744014BA5D17A1EBE50F76322",
+  "en": "Nimble Tumbler",
+  "old": "Nimble Tumbler",
+  "vi": "Kẻ Nhào Lộn Nhanh Nhẹn"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "NPCPerksDataTable_110_DisplayName",
+  "en": "Omnivore",
+  "old": "Omnivore",
+  "vi": "Ăn Tạp"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "NPCPerksDataTable_146_DisplayName",
+  "en": "Omnivore",
+  "old": "Omnivore",
+  "vi": "Ăn Tạp"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "NPCPerksDataTable_176_DisplayName",
+  "en": "Omnivore",
+  "old": "Omnivore",
+  "vi": "Ăn Tạp"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "NPCPerksDataTable_26_DisplayName",
+  "en": "Omnivore",
+  "old": "Omnivore",
+  "vi": "Ăn Tạp"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "NPCPerksDataTable_38_DisplayName",
+  "en": "Omnivore",
+  "old": "Omnivore",
+  "vi": "Ăn Tạp"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "NPCPerksDataTable_98_DisplayName",
+  "en": "Omnivore",
+  "old": "Omnivore",
+  "vi": "Ăn Tạp"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Caravan_Guards_Boss_Name",
+  "en": "Praetorian",
+  "old": "Praetorian",
+  "vi": "Cận Vệ"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "NPCPerksDataTable_324_DisplayName",
+  "en": "Rabid Vengeance",
+  "old": "Rabid Vengeance",
+  "vi": "Báo Thù Điên Loạn"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Wildlife_ReptileKomodoAlbino_Boss_Name",
+  "en": "Raging Albino Komodo",
+  "old": "Raging Albino Komodo",
+  "vi": "Komodo Bạch Tạng Cuồng Nộ"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "NPCPerksDataTable_103_DisplayName",
+  "en": "Raging Strength",
+  "old": "Raging Strength",
+  "vi": "Sức Mạnh Cuồng Nộ"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "NPCPerksDataTable_237_DisplayName",
+  "en": "Razorback",
+  "old": "Razorback",
+  "vi": "Lưng Dao"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "8FE57CEE4A8065E81343C9ACD6A34F73",
+  "en": "Resurgence",
+  "old": "Resurgence",
+  "vi": "Hồi Sinh"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "CA96BE6045AC7876CB9BAA9FFF02B46D",
+  "en": "Resurgence",
+  "old": "Resurgence",
+  "vi": "Hồi Sinh"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Wildlife_Siptah_Boss_Risen_Name",
+  "en": "Risen Bones",
+  "old": "Risen Bones",
+  "vi": "Xương Trỗi Dậy"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_AbandonedCity_UndeadLizardMan_Name",
+  "en": "Risen Monstrosity",
+  "old": "Risen Monstrosity",
+  "vi": "Quái Vật Trỗi Dậy"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_AbandonedCity_Skeleton_Armor_Name",
+  "en": "Risen Warrior",
+  "old": "Risen Warrior",
+  "vi": "Chiến Binh Trỗi Dậy"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Darfari_Cannibals_Ritualist_Name",
+  "en": "Ritualist",
+  "old": "Ritualist",
+  "vi": "Người Làm Lễ"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "246B57A4492A3A48EB22FC845F91A4FC",
+  "en": "Rituals",
+  "old": "Rituals",
+  "vi": "Nghi Lễ"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "73105EA146BBEFAECDF5489A98AABB81",
+  "en": "Rituals",
+  "old": "Rituals",
+  "vi": "Nghi Lễ"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "289E12684B6307C5B9CCE091917E0916",
+  "en": "River",
+  "old": "River",
+  "vi": "Sông"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Wildlife_Siptah_Undead_Archer_Vault_Name",
+  "en": "Roaming Remains",
+  "old": "Roaming Remains",
+  "vi": "Hài Cốt Lang Thang"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Wildlife_Siptah_Undead_Fighter_Vault_Name",
+  "en": "Roaming Remains",
+  "old": "Roaming Remains",
+  "vi": "Hài Cốt Lang Thang"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Wildlife_Rocknose_Name",
+  "en": "Rocknose",
+  "old": "Rocknose",
+  "vi": "Mũi Đá"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_pet_Rocknose_Name",
+  "en": "Rocknose",
+  "old": "Rocknose",
+  "vi": "Mũi Đá"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Wildlife_LocustGreen_Name",
+  "en": "Sand Reaper",
+  "old": "Sand Reaper",
+  "vi": "Thần Gặt Cát"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Wildlife_LocustOrange_Name",
+  "en": "Sand Reaper",
+  "old": "Sand Reaper",
+  "vi": "Thần Gặt Cát"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Wildlife_LocustWhite_Name",
+  "en": "Sand Reaper",
+  "old": "Sand Reaper",
+  "vi": "Thần Gặt Cát"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Wildlife_LocustYellowNeon_Name",
+  "en": "Sand Reaper",
+  "old": "Sand Reaper",
+  "vi": "Thần Gặt Cát"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Wildlife_LocustYellow_Name",
+  "en": "Sand Reaper",
+  "old": "Sand Reaper",
+  "vi": "Thần Gặt Cát"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_pet_GreenLocust_Name",
+  "en": "Sand Reaper",
+  "old": "Sand Reaper",
+  "vi": "Thần Gặt Cát"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_pet_OrangeLocust_Name",
+  "en": "Sand Reaper",
+  "old": "Sand Reaper",
+  "vi": "Thần Gặt Cát"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_pet_YellowLocust_Name",
+  "en": "Sand Reaper",
+  "old": "Sand Reaper",
+  "vi": "Thần Gặt Cát"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "NPCPerksDataTable_62_DisplayName",
+  "en": "Scavenger",
+  "old": "Scavenger",
+  "vi": "Kẻ Ăn Xác"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "NPCPerksDataTable_74_DisplayName",
+  "en": "Scavenger",
+  "old": "Scavenger",
+  "vi": "Kẻ Ăn Xác"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "NPCPerksDataTable_86_DisplayName",
+  "en": "Scavenger",
+  "old": "Scavenger",
+  "vi": "Kẻ Ăn Xác"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Wildlife_Serpentment_Brute_Name",
+  "en": "Serpentman Brute",
+  "old": "Serpentman Brute",
+  "vi": "Người Rắn Vũ Phu"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Wildlife_Serpentmen_Warrior_Low_Name",
+  "en": "Serpentman Hordeling",
+  "old": "Serpentman Hordeling",
+  "vi": "Người Rắn Lâu La"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Wildlife_Serpentmen_Swords_1_Name",
+  "en": "Serpentman Savager",
+  "old": "Serpentman Savager",
+  "vi": "Người Rắn Tàn Bạo"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Wildlife_Serpentmen_Swords_2_Name",
+  "en": "Serpentman Savager",
+  "old": "Serpentman Savager",
+  "vi": "Người Rắn Tàn Bạo"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Wildlife_Serpentmen_Swords_3_Name",
+  "en": "Serpentman Savager",
+  "old": "Serpentman Savager",
+  "vi": "Người Rắn Tàn Bạo"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Wildlife_Serpentmen_Bow_1_Name",
+  "en": "Serpentman Spotter",
+  "old": "Serpentman Spotter",
+  "vi": "Người Rắn Trinh Sát"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Wildlife_Serpentmen_Bow_2_Name",
+  "en": "Serpentman Spotter",
+  "old": "Serpentman Spotter",
+  "vi": "Người Rắn Trinh Sát"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Wildlife_Serpentmen_Bow_3_Name",
+  "en": "Serpentman Spotter",
+  "old": "Serpentman Spotter",
+  "vi": "Người Rắn Trinh Sát"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Purge_Siptah_ShaggaiHuntress_DarkBluePurple_Name",
+  "en": "Shaggai Huntress",
+  "old": "Shaggai Huntress",
+  "vi": "Nữ Thợ Săn Shaggai"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Purge_Siptah_ShaggaiHuntress_RedFlesh_Name",
+  "en": "Shaggai Huntress",
+  "old": "Shaggai Huntress",
+  "vi": "Nữ Thợ Săn Shaggai"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Wildlife_Siptah_ShaggaiHuntress_DarkBluePurple_Name",
+  "en": "Shaggai Huntress",
+  "old": "Shaggai Huntress",
+  "vi": "Nữ Thợ Săn Shaggai"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Wildlife_Siptah_ShaggaiHuntress_RedFlesh_Name",
+  "en": "Shaggai Huntress",
+  "old": "Shaggai Huntress",
+  "vi": "Nữ Thợ Săn Shaggai"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_pet_ShalebackBlue_Name",
+  "en": "Shaleback",
+  "old": "Shaleback",
+  "vi": "Lưng Đá Phiến"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_pet_ShalebackGreen_Name",
+  "en": "Shaleback",
+  "old": "Shaleback",
+  "vi": "Lưng Đá Phiến"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_pet_ShalebackPurple_Name",
+  "en": "Shaleback",
+  "old": "Shaleback",
+  "vi": "Lưng Đá Phiến"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_pet_ShalebackRed_Name",
+  "en": "Shaleback",
+  "old": "Shaleback",
+  "vi": "Lưng Đá Phiến"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "58E1235847A9FD468446688F21ED86A4",
+  "en": "Shatter",
+  "old": "Shatter",
+  "vi": "Vỡ Vụn"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Wildlife_JungleBird_Green_Name",
+  "en": "Shoebill",
+  "old": "Shoebill",
+  "vi": "Cò Mỏ Giày"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Wildlife_JungleBird_Grey_Name",
+  "en": "Shoebill",
+  "old": "Shoebill",
+  "vi": "Cò Mỏ Giày"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Wildlife_JungleBird_Pink_Name",
+  "en": "Shoebill",
+  "old": "Shoebill",
+  "vi": "Cò Mỏ Giày"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_pet_GreenJungleBird_Name",
+  "en": "Shoebill",
+  "old": "Shoebill",
+  "vi": "Cò Mỏ Giày"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_pet_RedJungleBird_Name",
+  "en": "Shoebill",
+  "old": "Shoebill",
+  "vi": "Cò Mỏ Giày"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_pet_WhiteJungleBird_Name",
+  "en": "Shoebill",
+  "old": "Shoebill",
+  "vi": "Cò Mỏ Giày"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "NPCPerksDataTable_240_DisplayName",
+  "en": "Sinewy Simian",
+  "old": "Sinewy Simian",
+  "vi": "Khỉ Gân Guốc"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Wildlife_Siptah_ForestBird_Name",
+  "en": "Siptah Pelican",
+  "old": "Siptah Pelican",
+  "vi": "Bồ Nông Siptah"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Wildlife_Siptah_ForestBird_longAILOD_Name",
+  "en": "Siptah Pelican",
+  "old": "Siptah Pelican",
+  "vi": "Bồ Nông Siptah"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_pet_forestbird_Name",
+  "en": "Siptah Pelican",
+  "old": "Siptah Pelican",
+  "vi": "Bồ Nông Siptah"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Wildlife_Siptah_Rhino_Name",
+  "en": "Siptah Rhinocerous",
+  "old": "Siptah Rhinocerous",
+  "vi": "Tê Giác Siptah"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_pet_furryrhino_Name",
+  "en": "Siptah Rhinocerous",
+  "old": "Siptah Rhinocerous",
+  "vi": "Tê Giác Siptah"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Aesir_Archer_Skald_Name",
+  "en": "Skald",
+  "old": "Skald",
+  "vi": "Thi Sĩ"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_pet_skeleton_t2_Name",
+  "en": "Skeleton Warrior",
+  "old": "Skeleton Warrior",
+  "vi": "Chiến Binh Xương"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Sherpa_Votaries_1_Name",
+  "en": "Skelos Bearer I",
+  "old": "Skelos Bearer I",
+  "vi": "Người Mang Skelos I"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Sherpa_Votaries_2_Name",
+  "en": "Skelos Bearer II",
+  "old": "Skelos Bearer II",
+  "vi": "Người Mang Skelos II"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Sherpa_Votaries_3_Name",
+  "en": "Skelos Bearer III",
+  "old": "Skelos Bearer III",
+  "vi": "Người Mang Skelos III"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Votaries_Of_Skelos_Champion_Name",
+  "en": "Skelos Cultist Champion",
+  "old": "Skelos Cultist Champion",
+  "vi": "Nhà Vô Địch Giáo Phái Skelos"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "NPCPerksDataTable_244_DisplayName",
+  "en": "Skittering Horror",
+  "old": "Skittering Horror",
+  "vi": "Kinh Hoàng Bò Lổm Ngổm"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "NPCPerksDataTable_150_DisplayName",
+  "en": "Slaughterer",
+  "old": "Slaughterer",
+  "vi": "Kẻ Tàn Sát"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "E9BE772A44B6AD07D561109668FFA955",
+  "en": "Specter",
+  "old": "Specter",
+  "vi": "Bóng Ma"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "2B7CE93340DC688540C83A820D10BBE9",
+  "en": "Steel Thewed",
+  "old": "Steel Thewed",
+  "vi": "Gân Thép"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Black_Corsairs_Armorer_4b_Name",
+  "en": "Stitch",
+  "old": "Stitch",
+  "vi": "Mũi Khâu"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "62DE376F4921F7DC7E6663B65F17472D",
+  "en": "Survivalist",
+  "old": "Survivalist",
+  "vi": "Kẻ Sinh Tồn"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "A4099AD4403B4FE96A36CB97CAC689D1",
+  "en": "Switch Panel",
+  "old": "Switch Panel",
+  "vi": "Bảng Chuyển"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "8A50A10A4AFFAF3DE0ED308FBF3625FB",
+  "en": "Tenacity",
+  "old": "Tenacity",
+  "vi": "Kiên Cường"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Tendonhacker_Name",
+  "en": "Tendonhacker",
+  "old": "Tendonhacker",
+  "vi": "Kẻ Chặt Gân"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Wildlife_Serpentmen_Boss_Priest_Name",
+  "en": "The Degenerate",
+  "old": "The Degenerate",
+  "vi": "Kẻ Thoái Hóa"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Boss_SpiderGiantSkull_SiptahRuins_Name",
+  "en": "The Devourer",
+  "old": "The Devourer",
+  "vi": "Kẻ Nuốt Chửng"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "MapMarkers_216_Name",
+  "en": "The Disjunction",
+  "old": "The Disjunction",
+  "vi": "Sự Chia Cắt"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Wildlife_UndeadLizardMan_TheExecutioner_Name",
+  "en": "The Executioner",
+  "old": "The Executioner",
+  "vi": "Đao Phủ"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Wildlife_Siptah_Boss_TheFamished_Name",
+  "en": "The Famished",
+  "old": "The Famished",
+  "vi": "Kẻ Đói Khát"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Boss_GateGuardian_Name",
+  "en": "The Gate Guardian",
+  "old": "The Gate Guardian",
+  "vi": "Người Gác Cổng"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_AbandonedCity_Boss_TheGraveWalker_Name",
+  "en": "The Gravewalker",
+  "old": "The Gravewalker",
+  "vi": "Kẻ Đi Trên Mồ"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Wildlife_Rocknose_King_Boss_Tutorial_Name",
+  "en": "The Harbinger",
+  "old": "The Harbinger",
+  "vi": "Sứ Giả Điềm Gở"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Boss_AlligatorGiantRuins_Name",
+  "en": "The Hunger",
+  "old": "The Hunger",
+  "vi": "Cơn Đói"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Boss_HeadlessJudge_Name",
+  "en": "The Judge",
+  "old": "The Judge",
+  "vi": "Quan Tòa"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Boss_The_Kinscourge_Name",
+  "en": "The Kinscourge",
+  "old": "The Kinscourge",
+  "vi": "Tai Họa Đồng Tộc"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Surge_Giant_Calamity_Boss_Name",
+  "en": "The Kinscourge",
+  "old": "The Kinscourge",
+  "vi": "Tai Họa Đồng Tộc"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Wildlife_Siptah_Boss_LoneWanderer_Name",
+  "en": "The Lone Wanderer",
+  "old": "The Lone Wanderer",
+  "vi": "Kẻ Lang Thang Cô Độc"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_TheMartyr-maker_Name",
+  "en": "The Martyr-maker",
+  "old": "The Martyr-maker",
+  "vi": "Kẻ Tạo Liệt Sĩ"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Invader_Fighter_Boss_Minstrel_Name",
+  "en": "The Minstrel",
+  "old": "The Minstrel",
+  "vi": "Người Hát Rong"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_TheMongrel_Name",
+  "en": "The Mongrel",
+  "old": "The Mongrel",
+  "vi": "Con Lai"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Wildlife_Siptah_Dog_LowlevelBoss_Name",
+  "en": "The Mongrel",
+  "old": "The Mongrel",
+  "vi": "Con Lai"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Invader_Sorcerer_4_Zingarian2_Name",
+  "en": "The One that Walks Unknown",
+  "old": "The One that Walks Unknown",
+  "vi": "Kẻ Đi Không Ai Biết"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_DungeonDagon_Wildlife_DeepOne_Human_endboss_Name",
+  "en": "The Ritual Keeper",
+  "old": "The Ritual Keeper",
+  "vi": "Người Giữ Nghi Lễ"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_DungeonDagon_Wildlife_DeepOne_HumanFish_Name",
+  "en": "The Scholar",
+  "old": "The Scholar",
+  "vi": "Học Giả"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Wildlife_Siptah_Skeletonboss_Slayer_Name",
+  "en": "The Slaughterer",
+  "old": "The Slaughterer",
+  "vi": "Kẻ Tàn Sát"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_AbandonedCity_Boss_TheWatcher_Name",
+  "en": "The Watcher",
+  "old": "The Watcher",
+  "vi": "Người Canh Gác"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_DungeonDagon_Wildlife_DeepOne_Human_boss1_Name",
+  "en": "The Watcher Above",
+  "old": "The Watcher Above",
+  "vi": "Người Canh Gác Bên Trên"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_AbandonedCity_Boss_TheWrangler_Name",
+  "en": "The Wrangler",
+  "old": "The Wrangler",
+  "vi": "Người Thuần Thú"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "NPCPerksDataTable_89_DisplayName",
+  "en": "Toothy Grin",
+  "old": "Toothy Grin",
+  "vi": "Nụ Cười Nanh"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Wildlife_Siptah_TwoHornRhino_Name",
+  "en": "Tuskbeast",
+  "old": "Tuskbeast",
+  "vi": "Thú Ngà"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_pet_megarhino_Name",
+  "en": "Tuskbeast",
+  "old": "Tuskbeast",
+  "vi": "Thú Ngà"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Wildlife_Siptah_DevolvedDrownedBlue_Name",
+  "en": "Twice-drowned",
+  "old": "Twice-drowned",
+  "vi": "Chết Đuối Hai Lần"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Wildlife_Siptah_DevolvedDrownedGreen_Name",
+  "en": "Twice-drowned",
+  "old": "Twice-drowned",
+  "vi": "Chết Đuối Hai Lần"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Wildlife_Siptah_DevolvedDrownedMidrange_Name",
+  "en": "Twice-drowned",
+  "old": "Twice-drowned",
+  "vi": "Chết Đuối Hai Lần"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Wildlife_Siptah_DevolvedDrownedBoss_Name",
+  "en": "Twice-drowned Champion",
+  "old": "Twice-drowned Champion",
+  "vi": "Nhà Vô Địch Chết Đuối Hai Lần"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Wildlife_Siptah_DevolvedDrowned_Underling_Blue_Name",
+  "en": "Twice-drowned Underling",
+  "old": "Twice-drowned Underling",
+  "vi": "Lâu La Chết Đuối Hai Lần"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Wildlife_Siptah_DevolvedDrowned_Underling_Brown_Name",
+  "en": "Twice-drowned Underling",
+  "old": "Twice-drowned Underling",
+  "vi": "Lâu La Chết Đuối Hai Lần"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Wildlife_Siptah_DevolvedDrowned_Underling_Name",
+  "en": "Twice-drowned Underling",
+  "old": "Twice-drowned Underling",
+  "vi": "Lâu La Chết Đuối Hai Lần"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Dogs_of_the_Desert_Surge_Default_Animal_Werehyena_Name",
+  "en": "Werehyena",
+  "old": "Werehyena",
+  "vi": "Người Linh Cẩu"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_DungeonSag_Wildlife_Werehyena_Spotted_Name",
+  "en": "Werehyena",
+  "old": "Werehyena",
+  "vi": "Người Linh Cẩu"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_DungeonSag_Wildlife_Werehyena_Striped_Name",
+  "en": "Werehyena",
+  "old": "Werehyena",
+  "vi": "Người Linh Cẩu"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Wildlife_Werehyena_Spotted_Name",
+  "en": "Werehyena",
+  "old": "Werehyena",
+  "vi": "Người Linh Cẩu"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Wildlife_Werehyena_Striped_Name",
+  "en": "Werehyena",
+  "old": "Werehyena",
+  "vi": "Người Linh Cẩu"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Wildlife_Wight_1_Name",
+  "en": "Wight",
+  "old": "Wight",
+  "vi": "Bóng Ma"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Wildlife_Wight_2_Name",
+  "en": "Wight",
+  "old": "Wight",
+  "vi": "Bóng Ma"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Wildlife_Wight_3_Name",
+  "en": "Wight",
+  "old": "Wight",
+  "vi": "Bóng Ma"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_Wildlife_Wight_4_Name",
+  "en": "Wight",
+  "old": "Wight",
+  "vi": "Bóng Ma"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "SpawnDataTable_pet_skeleton_t3_Name",
+  "en": "Wight",
+  "old": "Wight",
+  "vi": "Bóng Ma"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "",
+  "key": "EmotesDataTable_26_Name",
+  "en": "Work Metal",
+  "old": "Work Metal",
+  "vi": "Kim Loại Gia Công"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "ST_General_AnvilGiantKingsDungeon",
+  "key": "AnvilDungeonUndeadGiantKingBossName",
+  "en": "The Anvil Keeper",
+  "old": "The Anvil Keeper",
+  "vi": "Người Giữ Đe"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "ST_UI_GeneralText",
+  "key": "Sigil_Greedy_Name",
+  "en": "Drowned",
+  "old": "Drowned",
+  "vi": "Kẻ Chết Đuối"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "ST_UI_GeneralText",
+  "key": "Sigil_Hardy_Name",
+  "en": "Goblin",
+  "old": "Goblin",
+  "vi": "Yêu Tinh"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "ST_UI_GeneralText",
+  "key": "Sigil_Rigorous_Name",
+  "en": "Gremlin",
+  "old": "Gremlin",
+  "vi": "Tiểu Quỷ"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "ST_UI_GeneralText",
+  "key": "Sigil_TrueGrit_Name",
+  "en": "Harpy",
+  "old": "Harpy",
+  "vi": "Nữ Quái Harpy"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "ST_UI_GeneralText",
+  "key": "Surge",
+  "en": "Surge",
+  "old": "Surge",
+  "vi": "Dâng Trào"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "ST_UI_GeneralText",
+  "key": "Sigil_Adrenaline_Name",
+  "en": "Twice Drowned",
+  "old": "Twice Drowned",
+  "vi": "Chết Đuối Hai Lần"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "ST_UI_GeneralText",
+  "key": "Vaults",
+  "en": "Vaults",
+  "old": "Vaults",
+  "vi": "Hầm"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "ST_UI_GeneralText",
+  "key": "Sigil_Cavalier_Name",
+  "en": "Wolf-Brother",
+  "old": "Wolf-Brother",
+  "vi": "Anh Em Sói"
+ },
+ {
+  "file": "Exiles_UI.locres",
+  "ns": "ST_UI_GeneralText",
+  "key": "Sigil_Bloodthirsty_Name",
+  "en": "Wolfmen",
+  "old": "Wolfmen",
+  "vi": "Người Sói"
+ },
+ {
+  "file": "Exiles_Yamatai_DLC.locres",
+  "ns": "",
+  "key": "DLC_Yamatai_SpawnTable_pet_Japan_hyena_Name",
+  "en": "Hyena",
+  "old": "Hyena",
+  "vi": "Linh Cẩu"
+ },
+ {
+  "file": "Exiles_Yamatai_DLC.locres",
+  "ns": "",
+  "key": "DLC_Yamatai_SpawnTable_pet_Japan_hyenastriped_Name",
+  "en": "Hyena",
+  "old": "Hyena",
+  "vi": "Linh Cẩu"
+ },
+ {
+  "file": "Exiles_Yamatai_DLC.locres",
+  "ns": "",
+  "key": "DLC_Yamatai_ItemTable_3354_Name",
+  "en": "Rocknose",
+  "old": "Rocknose",
+  "vi": "Mũi Đá"
+ },
+ {
+  "file": "Exiles_Yamatai_DLC.locres",
+  "ns": "",
+  "key": "DLC_Yamatai_RecipesTable_3354_RecipeName",
+  "en": "Rocknose",
+  "old": "Rocknose",
+  "vi": "Mũi Đá"
+ },
+ {
+  "file": "Exiles_Yamatai_DLC.locres",
+  "ns": "",
+  "key": "DLC_Yamatai_SpawnTable_pet_Japan_rocknose_Name",
+  "en": "Rocknose",
+  "old": "Rocknose",
+  "vi": "Mũi Đá"
+ },
+ {
+  "file": "Exiles_Yamatai_DLC.locres",
+  "ns": "",
+  "key": "DLC_Yamatai_FeatTable_3031_FeatName",
+  "en": "Yamatai Warpaints",
+  "old": "Yamatai Warpaints",
+  "vi": "Sơn Chiến Yamatai"
+ }
+]
