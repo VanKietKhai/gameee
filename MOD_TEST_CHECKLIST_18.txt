@@ -1,0 +1,188 @@
+﻿DANH SÁCH 18 MOD SERVER + CHECKLIST TEST TRONG GAME
+Conan Exiles Enhanced 3.0.0 (CL-378787) — staging — cập nhật 07/10/2026
+Nguồn: mô tả của tác giả nhúng trong từng file .pak đang chạy trên server.
+
+CHUẨN BỊ CHUNG
+- Vào server: Direct Connect 127.0.0.1:7777 (máy chủ), 192.168.0.244:7777 (LAN), 26.84.226.21:7777 (Radmin VPN).
+- Bật admin: console (phím ~) -> MakeMeAdmin <mật khẩu>   (hoặc Esc -> Settings -> Server Settings -> Make Me Admin)
+- God mode: console gõ  God   hoặc bảng admin Ctrl+Shift+C / Shift+Insert.
+- Phím Insert mở console có thể bị tắt trên bản Enhanced -> dùng ~ (hoặc thêm ConsoleKeys=Insert, xem mục 10).
+- Đánh dấu [x] vào ô khi test xong, ghi chú lỗi ngay dưới mục đó.
+
+=====================================================================
+ 1. StackMe10K v1.1.1  (Workshop 3735091187)
+=====================================================================
+Tính năng: tăng kích thước stack vật phẩm lên 10.000.
+[ ] Nhặt/craft nhiều vật liệu (đá, gỗ, sợi...): 1 ô chứa được tới 10.000.
+Lưu ý: ITQoL cũng có "Stack Size Multiplier" — ĐỪNG bật cái của ITQoL cùng lúc.
+
+=====================================================================
+ 2. Savage Paragon v1.4.2  (Workshop 3766043945)
+=====================================================================
+Tính năng: tiến cấp sau level 60. Level hiển thị vẫn là 60; XP kiếm được SAU 60 đổ vào thanh Paragon
+(tối đa Paragon 100). Mỗi cấp Paragon = 1 điểm. Bảng 6 cây: Strength, Agility, Vitality, Authority,
+Grit, Expertise (~150 nút chỉ số nhỏ + 46 kỹ năng lớn, kỹ năng lớn tốn 2 điểm).
+Mở bảng: từ MÀN HÌNH STATS (bảng chỉ số nhân vật). Thanh XP Paragon chỉ hiện TRONG bảng, không có trên HUD.
+Reset điểm: Potion of Paragon Memory (học cùng Grandmaster Alchemist).
+Admin: có lệnh console xem/nạp/reset Paragon (xem mục ghim "Admin Commands" trên trang Workshop).
+Tác giả ghi: chơi trên dedicated server mới test trong editor (beta).
+[ ] Ở level 60, mở màn hình Stats -> thấy nút mở bảng Paragon.
+[ ] Giết NPC để có XP sau 60 -> thanh Paragon trong bảng tăng, được 1 điểm.
+[ ] Cộng 1 điểm vào 1 nút nhỏ, thoát game vào lại -> điểm vẫn còn.
+[ ] (tùy chọn) Craft Potion of Paragon Memory -> reset điểm.
+
+=====================================================================
+ 3. Grit & Grease (Weapon Infusions) v1.0.4  (Workshop 3801774752)
+=====================================================================
+Tính năng: dầu/nhựa nguyên tố bôi vũ khí (không chiếm ô kit), craft ở bàn Alchemy, học feat ở tab
+Survival từ level 10. 5 hệ: Lửa, Băng, Gió, Máu, Sét; 3 bậc Weak/Strong/Grand (+10/20/30% sát thương
+nguyên tố). Không dùng cho cung. Thrall cũng dùng nếu có trong túi.
+[ ] Học feat Grit & Grease (tab Survival), craft 1 lọ ở bàn Alchemy.
+[ ] Dùng lên vũ khí cận chiến -> thấy hiệu ứng quanh vũ khí, sát thương tăng.
+[ ] Cất vũ khí -> hiệu ứng tắt.
+
+=====================================================================
+ 4. Thrall Reputation v1.0.3  (Workshop 3787066846)
+=====================================================================
+Tính năng: độ thân thiết của thrall/pet đang đi theo (5 bậc: Unfamiliar -> Casual -> Friendly -> Close ->
+Devoted). Tăng khi thu hoạch, giết địch, craft, hoặc theo thời gian. Từ bậc Casual: buff "Friends with
+Benefits" (tăng sát thương, máu, stamina). Bảng party hiện tối đa 5 follower.
+[ ] Cho 1 thrall đi theo -> thấy bảng party (tên, level, máu, reputation).
+[ ] Mở bảng chỉ số thrall -> thấy reputation dưới thanh máu.
+[ ] Đi cùng một lúc (giết vài con) -> reputation tăng.
+
+=====================================================================
+ 5. Improved Thralls & QoL (ITQoL) v1.5.8  (Workshop 3758661389)
+=====================================================================
+MỌI TÍNH NĂNG TẮT MẶC ĐỊNH. Admin bật bằng: DataCmd ImprovedThrallsQoL
+Người chơi tự chỉnh: DataCmd ImprovedThrallsQoLUser
+Nhóm tính năng: túi đồ/kho (Fast Deposit, nhân stack, nhân ô rương, kéo nhiên liệu vào trạm,
+Organizer Chest, thanh tìm & lấy đồ từ rương gần, xem công thức trạm tự động); đồ đặt (tự khóa, mật mã
+cửa, nhặt hết đồ đặt); cấm item/feat toàn server; vũ khí/giáp tùy chỉnh chỉ số; giới hạn xây dựng;
+chỉ số pet/golem/thrall; thrall tự uống thuốc, vác NPC bất tỉnh, thắp đèn; follower (bỏ vào túi, tăng số
+follower, triệu hồi, gửi về nhà, UI quản lý, nhật ký chết); party người chơi + chia XP; >10 phép mới
+(có Portal); hồi sinh thrall (Altar of the Fallen); Fortress of Souls; hộp thư; hộp may rủi; Realm.
+[ ] Gõ DataCmd ImprovedThrallsQoL -> bảng cài đặt admin mở.
+[ ] Bật Organizer Chest (+ Search and Retrieve) — thay cho mod Sorting Chest đã bỏ.
+[ ] Đặt Organizer Chest, cho đồ vào -> đồ được sắp xếp; thử thanh tìm đồ.
+[ ] (tùy chọn) Bật Player Party + Shared XP, thử với bạn bè.
+KHÔNG bật Stack Size Multiplier (đã có StackMe10K).
+
+=====================================================================
+ 6. [Enhanced] WO - Riding Thralls v1.0.9  (Workshop 3803149679)
+=====================================================================
+Tính năng: follower tự cưỡi ngựa/lạc đà/tê giác cùng bạn. 3 chế độ: One Per Mount, Share Mounts,
+Ride With Me (chở follower sau lưng). Cài đặt riêng từng người chơi, có lưu.
+Cách lấy: craft "Stables' Registrar" trong túi đồ (không cần trạm) — tìm "Registrar".
+[ ] Craft Registrar, đặt gần chuồng, chọn chế độ.
+[ ] Có ngựa + follower -> lên ngựa, follower cũng lên ngựa đi theo.
+Lỗi đã biết (tác giả): follower trên ngựa đôi khi lệch hình trên client; khi đánh nhau có thể đứng trên ngựa.
+
+=====================================================================
+ 7. Ancient Realms Enhanced (WIP) v0.1.260707  (Workshop 3755775098)
+=====================================================================
+Tính năng: bộ xây dựng kiến trúc đá lớn (tường thành, tháp, cổng, cầu, mái, trang trí...). Đang phát
+triển, có thể đổi tên/công thức giữa các bản.
+[ ] Mở menu xây dựng/feat -> thấy các mảnh Ancient Realms, đặt thử vài mảnh.
+Lưu ý: server log luôn có 37 LoadError của mod này — đã kiểm định là bình thường.
+
+=====================================================================
+ 8. Cannibal Captivity v0.0.16 (Enhanced)  (Workshop 3765743138)
+=====================================================================
+Tính năng: trại Darfari ăn thịt người phía Đông cây cầu sập (ô 3F trên bản đồ), có kho báu và lồng
+nhốt thrall đủ loại để giải cứu.
+[ ] Tới ô 3F (Đông cây cầu sập) -> thấy trại, lồng thrall, rương.
+[ ] Phá lồng/đánh trại -> có thể bắt thrall.
+
+=====================================================================
+ 9. Night Terrors v1.3.7  (Workshop 3723538551)
+=====================================================================
+Tính năng: ban đêm có thể gặp quỷ, valkyrie tha hóa, undead; vũ khí Hellforge/Blighted mới; triệu
+hồi lesser valkyrie; có thể "kết bạn" với valkyrie tha hóa.
+[ ] Ở ngoài trời vào ban đêm một lúc -> gặp đợt quái của mod.
+
+=====================================================================
+10. PvE Plus Ambush (Enhanced) v1.0.5  (Workshop 3721274811)
+=====================================================================
+Tính năng: người chơi từ level 9 bị phục kích định kỳ bởi NPC theo cấp độ (mỗi người một đồng hồ).
+Admin chỉnh (khi đã admin): console  DataCMD PvEAmbushConfig   hoặc ModControlPanel (Shift+End).
+Cài đặt: thời gian giữa các trận, khoảng cách spawn, số địch, tự xóa địch, độ khó trên level 60.
+Lưu ý: đổi cài đặt chỉ có hiệu lực từ lượt phục kích kế tiếp.
+Nếu không có phím ~: vào ConanSandbox\Saved\Config\Windows\Input.ini, thêm dưới [/Script/Engine.InputSettings]:
+   ConsoleKeys=Insert
+[ ] Gõ DataCMD PvEAmbushConfig -> bảng cấu hình mở.
+[ ] Đặt thời gian ngắn để test -> nghe tiếng tù và cảnh báo, rồi bị phục kích.
+
+=====================================================================
+11. Player DBNO System v1.1.1  (Workshop 3718882569)
+=====================================================================
+Tính năng: bị đánh "chết" khi có thành viên clan ở gần -> bị hạ gục (chưa chết), đồng đội hồi sinh
+được nếu không bị ngắt trong thời gian giới hạn. CẦN ít nhất 2 người cùng clan.
+Lệnh admin: dc toggleplayerdbno | dc setpdbnotimer <giây> (mặc định 60) | dc setpdbnorange <10-100 m> (mặc định 60)
+[ ] Cùng bạn bè chung clan: một người bị hạ -> nằm gục, người kia hồi sinh được.
+
+=====================================================================
+12. Simple Minimap v5.2.1  (Workshop 3719513784)
+=====================================================================
+Tính năng: minimap góc màn hình; giữ F1 để dùng chuột (zoom +/-, xem nhãn); kéo icon người chơi để di
+chuyển minimap; 5 mức zoom; hiện thành viên clan, xác chết, nhà/giường; chế độ la bàn; đồng hồ.
+Đánh dấu: mở bản đồ, Shift+Click để thêm marker (không giới hạn), chia sẻ marker cho clan.
+Nút ẩn minimap ở góc trên cùng bên phải.
+[ ] Thấy minimap; giữ F1 bấm +/-.
+[ ] Mở bản đồ, Shift+Click thêm marker -> marker hiện trên minimap.
+Lưu ý: F1 và Shift+Click đã bị mod này dùng.
+
+=====================================================================
+13. Chest Labels v5.1.2  (Workshop 3735258746)
+=====================================================================
+Tính năng: hiện chữ (tên đã đổi) trên rương gỗ, rương lớn, tủ. Bật/tắt trong menu tròn (radial).
+[ ] Đặt rương gỗ, đổi tên -> chữ hiện trên rương; tắt/bật qua menu tròn.
+
+=====================================================================
+14. MQ14MainQuest (Mod #14 — tự làm, file local)
+=====================================================================
+Tính năng: chuỗi Nhiệm vụ chính. Hiện có Quest 01: Xuống The Dregs — hạ Abyssal Remnant (ô D4).
+Mọi người chơi trong 50 m khi boss chết đều được tính (không cần đòn kết liễu). Banner khi hoàn thành.
+Phím F7: bảng "NHIỆM VỤ CHÍNH". Tiến độ lưu theo nhân vật, giữ sau restart.
+[x] F7 hiện bảng; giết boss -> banner + ✔ (đã test 07/10, đã lưu sau restart).
+[ ] Người chơi thứ 2 đứng trong 50 m khi boss chết -> cũng được tính.
+[ ] Người chơi đứng xa hơn 50 m -> KHÔNG được tính.
+
+=====================================================================
+15. Better Thrall ICONS (1.0.2) - Enhanced  (Workshop 3736778117)
+=====================================================================
+Tính năng: icon thrall theo bậc trong túi/kho. Màu: Trắng = T1-3, Xanh = T4, +Vàng = "Tier 5",
++Đỏ = Purge. Priest có icon riêng theo vị thần.
+[ ] Bỏ vài thrall khác bậc vào rương/túi -> icon đúng màu theo bậc.
+
+=====================================================================
+16. Better Tavern PATRONS (1.1.4) - Enhanced  (Workshop 3729932396)
+=====================================================================
+Tính năng: khách quán rượu (thrall thuê được) đa dạng hơn gần như mọi thrall trong game; tỉ lệ:
+Tier1 15% / T2 40% / T3 35% / T4 10%; vai trò: Fighter 24%, Archer 24%, Crafter 35%, Dancer 10%,
+Bearer 5%, Sorcerer 2% (1% Fighter T4 thành "Tier 5"). Khách thuê được xuất hiện sớm nhất sau 15 phút.
+[ ] Xây quán rượu, chờ >=15 phút -> có khách thuê được, đa dạng phe/vai trò.
+Lưu ý: khách "chung chung" không thuê được là cơ chế gốc của game.
+
+=====================================================================
+17. ModControlPanel (Enhanced) v1.1.9  (Workshop 3722388367)
+=====================================================================
+Tính năng: bảng cài đặt chung cho các mod hỗ trợ (vd. PvE Plus Ambush).
+Mở: Shift+End  hoặc console  DataCmd ModControlPanel
+[ ] Bấm Shift+End -> bảng mở; thấy mục PvE Plus Ambush khi đang là admin.
+
+=====================================================================
+18. Edit Appearance 1.2.8  (Workshop 3751947496)
+=====================================================================
+Tính năng: chỉnh ngoại hình người chơi và NPC/thrall (mặt, thân, giáp/transmog, nhuộm, giới tính,
+giọng); lưu profile để áp cho nhân vật khác; admin chỉnh giới hạn thanh trượt.
+Cách dùng: nhấn V (chế độ vanity) rồi GIỮ E để sửa nhân vật của mình; với thrall: dùng menu tròn
+(radial) trên thrall. Muốn sửa nhân vật không phải của mình -> bật tùy chọn admin trong mod.
+[ ] V + giữ E -> mở bảng chỉnh nhân vật mình, đổi thử, lưu.
+[ ] Menu tròn trên 1 thrall -> chỉnh ngoại hình thrall; lưu profile và áp cho thrall khác.
+
+---------------------------------------------------------------------
+GHI CHÚ PHÍM TẮT (tránh trùng)
+F7 = Main Quest (MQ14) | F1 giữ = chuột minimap | Shift+Click bản đồ = marker minimap
+Shift+End = ModControlPanel | V + giữ E = Edit Appearance | ~ = console | Ctrl+Shift+C = bảng admin
+Khi gặp lỗi: thoát game, ghi lại giờ + mod + mô tả, gửi lại để kiểm tra log server/client.
