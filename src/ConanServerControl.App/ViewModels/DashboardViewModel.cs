@@ -1,13 +1,10 @@
 using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.IO;
 using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ConanServerControl.App.Services;
 using ConanServerControl.Core.Abstractions;
 using ConanServerControl.Core.Models;
-using ConanServerControl.Infrastructure.Diagnostics;
 
 namespace ConanServerControl.App.ViewModels;
 
@@ -15,36 +12,21 @@ public partial class DashboardViewModel : ObservableObject
 {
     private readonly IServerProcessManager _server;
     private readonly ISettingsService _settings;
-    private readonly IBackupService _backups;
-    private readonly IServerUpdateService _updates;
-    private readonly IDelayedRestartService _delayed;
     private readonly IActivityLog _activity;
     private readonly IUiDialogs _dialogs;
-    private readonly IAppPaths _paths;
-    private readonly DiagnosticsService _diagnostics;
     private readonly INetworkInfoService _network;
 
     public DashboardViewModel(
         IServerProcessManager server,
         ISettingsService settings,
-        IBackupService backups,
-        IServerUpdateService updates,
-        IDelayedRestartService delayed,
         IActivityLog activity,
         IUiDialogs dialogs,
-        IAppPaths paths,
-        DiagnosticsService diagnostics,
         INetworkInfoService network)
     {
         _server = server;
         _settings = settings;
-        _backups = backups;
-        _updates = updates;
-        _delayed = delayed;
         _activity = activity;
         _dialogs = dialogs;
-        _paths = paths;
-        _diagnostics = diagnostics;
         _network = network;
         ApplyState(_server.State);
         _server.StateChanged += (_, state) =>
@@ -107,84 +89,16 @@ public partial class DashboardViewModel : ObservableObject
     private Task StartAsync() => Run(() => _server.StartAsync());
 
     [RelayCommand]
-    private Task StopAsync() => Run(() => _server.StopAsync());
+    private Task StopAsync() => PlayersAgree("tắt") ? Run(() => _server.StopAsync()) : Task.CompletedTask;
 
     [RelayCommand]
-    private Task RestartAsync() => Run(() => _server.RestartAsync());
+    private Task RestartAsync() => PlayersAgree("khởi động lại") ? Run(() => _server.RestartAsync()) : Task.CompletedTask;
 
-    [RelayCommand]
-    private async Task DelayedRestartAsync()
+    private bool PlayersAgree(string action)
     {
-        if (!_dialogs.Confirm("Delayed restart", "Warn players and restart in 10 minutes? You can cancel from the Updates page."))
-        {
-            return;
-        }
-
-        await Run(() => _delayed.StartAsync(new DelayedRestartRequest
-        {
-            Delay = RestartDelay.Minutes10,
-            BackupFirst = true,
-            Reason = "dashboard-delayed-restart"
-        }));
-    }
-
-    [RelayCommand]
-    private async Task CheckUpdatesAsync()
-    {
-        await Run(async () =>
-        {
-            var result = await _updates.CheckAsync();
-            ApplyState(_server.State);
-            _dialogs.Alert("Update check", result.Summary);
-        });
-    }
-
-    [RelayCommand]
-    private Task UpdateServerAsync() => Run(() => _updates.UpdateAsync(restartAfter: false));
-
-    [RelayCommand]
-    private Task UpdateModsAsync() => Run(() => _updates.UpdateModsAsync(restartAfter: false));
-
-    [RelayCommand]
-    private Task UpdateEverythingAsync() => Run(() => _updates.UpdateEverythingAsync());
-
-    [RelayCommand]
-    private Task BackupNowAsync() => Run(async () =>
-    {
-        var record = await _backups.BackupNowAsync("dashboard");
-        LastBackup = record.CreatedAt.ToLocalTime().ToString("g");
-        _dialogs.Alert("Backup", $"Backup created:{Environment.NewLine}{record.DirectoryPath}");
-    });
-
-    [RelayCommand]
-    private void OpenServerFolder()
-    {
-        var dir = _settings.Current.ServerPaths.ServerInstallDirectory
-                  ?? _settings.Current.ServerPaths.ServerWorkingDirectory;
-        OpenDirectory(dir, "The dedicated server folder is not configured. Set it in Settings.");
-    }
-
-    [RelayCommand]
-    private void OpenLogs() => OpenDirectory(_paths.LogsDirectory, "Logs directory was not created yet.");
-
-    [RelayCommand]
-    private void OpenWebAdmin()
-    {
-        if (!_settings.Current.WebAdmin.Enabled)
-        {
-            _dialogs.Alert("Web Admin", "Enable Web Admin and set a password on the Settings page, then restart the manager.");
-            return;
-        }
-
-        var snap = _diagnostics.Capture();
-        try
-        {
-            Process.Start(new ProcessStartInfo { FileName = snap.WebAdminUrl, UseShellExecute = true });
-        }
-        catch (Exception ex)
-        {
-            _dialogs.Alert("Web Admin", $"Could not open {snap.WebAdminUrl}{Environment.NewLine}{ex.Message}");
-        }
+        var count = _server.State.PlayerCount;
+        return count == 0
+            || _dialogs.Confirm("Đang có người chơi", $"Đang có {count} người chơi online. Vẫn {action} server ngay?");
     }
 
     private async Task Run(Func<Task> work)
@@ -267,16 +181,5 @@ public partial class DashboardViewModel : ObservableObject
         {
             // Activity table may not exist until the hosted initializer finishes.
         }
-    }
-
-    private void OpenDirectory(string? path, string missingMessage)
-    {
-        if (string.IsNullOrWhiteSpace(path) || !Directory.Exists(path))
-        {
-            _dialogs.Alert("Folder not found", missingMessage);
-            return;
-        }
-
-        Process.Start(new ProcessStartInfo { FileName = path, UseShellExecute = true });
     }
 }

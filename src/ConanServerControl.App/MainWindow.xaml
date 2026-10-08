@@ -20,14 +20,7 @@
         </StackPanel>
         <StackPanel>
           <Button Style="{StaticResource NavButton}" Content="Dashboard" Command="{Binding NavigateCommand}" CommandParameter="Dashboard" />
-          <Button Style="{StaticResource NavButton}" Content="Server" Command="{Binding NavigateCommand}" CommandParameter="Server" />
-          <Button Style="{StaticResource NavButton}" Content="Mods" Command="{Binding NavigateCommand}" CommandParameter="Mods" />
-          <Button Style="{StaticResource NavButton}" Content="Players" Command="{Binding NavigateCommand}" CommandParameter="Players" />
-          <Button Style="{StaticResource NavButton}" Content="Backups" Command="{Binding NavigateCommand}" CommandParameter="Backups" />
-          <Button Style="{StaticResource NavButton}" Content="Updates" Command="{Binding NavigateCommand}" CommandParameter="Updates" />
-          <Button Style="{StaticResource NavButton}" Content="Logs" Command="{Binding NavigateCommand}" CommandParameter="Logs" />
-          <Button Style="{StaticResource NavButton}" Content="Settings" Command="{Binding NavigateCommand}" CommandParameter="Settings" />
-          <Button Style="{StaticResource NavButton}" Content="Diagnostics" Command="{Binding NavigateCommand}" CommandParameter="Diagnostics" />
+          <Button Style="{StaticResource NavButton}" Content="Cài đặt" Command="{Binding NavigateCommand}" CommandParameter="Settings" />
         </StackPanel>
       </DockPanel>
     </Border>

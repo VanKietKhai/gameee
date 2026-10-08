@@ -1,8 +1,0 @@
-<UserControl x:Class="ConanServerControl.App.Views.LogsView"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-  <DockPanel>
-    <TextBlock DockPanel.Dock="Top" Text="Live application log (secrets are not written here)" Margin="0,0,0,8" />
-    <ListBox ItemsSource="{Binding Lines}" FontFamily="Consolas" Background="{StaticResource SurfaceBrush}" Foreground="{StaticResource TextBrush}" />
-  </DockPanel>
-</UserControl>

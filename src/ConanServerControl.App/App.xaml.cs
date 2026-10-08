@@ -48,24 +48,10 @@ public partial class App : Application
                 services.AddHostedService<UpdateWatchService>();
                 services.AddSingleton<IUiDialogs, WpfDialogService>();
                 services.AddSingleton<DashboardViewModel>();
-                services.AddSingleton<ServerViewModel>();
-                services.AddSingleton<ModsViewModel>();
-                services.AddSingleton<PlayersViewModel>();
-                services.AddSingleton<BackupsViewModel>();
-                services.AddSingleton<UpdatesViewModel>();
-                services.AddSingleton<LogsViewModel>();
                 services.AddSingleton<SettingsViewModel>();
-                services.AddSingleton<DiagnosticsViewModel>();
                 services.AddSingleton<MainViewModel>();
                 services.AddSingleton<DashboardView>();
-                services.AddSingleton<ServerView>();
-                services.AddSingleton<ModsView>();
-                services.AddSingleton<PlayersView>();
-                services.AddSingleton<BackupsView>();
-                services.AddSingleton<UpdatesView>();
-                services.AddSingleton<LogsView>();
                 services.AddSingleton<SettingsView>();
-                services.AddSingleton<DiagnosticsView>();
                 services.AddSingleton<MainWindow>();
             })
             .Build();

@@ -48,7 +48,7 @@
         </Border>
         <Border Grid.Column="2" Background="{StaticResource SurfaceBrush}" CornerRadius="12" Padding="16" Margin="0,0,0,12">
           <StackPanel>
-            <TextBlock Text="BACKUPS / REMOTE" Foreground="{StaticResource MutedBrush}" />
+            <TextBlock Text="BACKUP / CẬP NHẬT" Foreground="{StaticResource MutedBrush}" />
             <TextBlock Margin="0,8,0,0" Text="{Binding LastBackup, StringFormat=Last backup: {0}}" TextWrapping="Wrap" />
             <TextBlock Text="{Binding LastUpdateCheck, StringFormat=Last check: {0}}" TextWrapping="Wrap" />
             <TextBlock Margin="0,12,0,0" Text="{Binding ErrorText}" Foreground="{StaticResource DangerBrush}" TextWrapping="Wrap" />
@@ -57,18 +57,9 @@
       </Grid>
 
       <WrapPanel>
-        <Button Style="{StaticResource PrimaryButton}" Content="START SERVER" Command="{Binding StartCommand}" />
-        <Button Style="{StaticResource DangerButton}" Content="STOP SERVER" Command="{Binding StopCommand}" />
-        <Button Style="{StaticResource PrimaryButton}" Content="RESTART SERVER" Command="{Binding RestartCommand}" />
-        <Button Style="{StaticResource GhostButton}" Content="DELAYED RESTART" Command="{Binding DelayedRestartCommand}" />
-        <Button Style="{StaticResource GhostButton}" Content="CHECK UPDATES" Command="{Binding CheckUpdatesCommand}" />
-        <Button Style="{StaticResource GhostButton}" Content="UPDATE SERVER" Command="{Binding UpdateServerCommand}" />
-        <Button Style="{StaticResource GhostButton}" Content="UPDATE MODS" Command="{Binding UpdateModsCommand}" />
-        <Button Style="{StaticResource GhostButton}" Content="UPDATE EVERYTHING &amp; RESTART" Command="{Binding UpdateEverythingCommand}" />
-        <Button Style="{StaticResource GhostButton}" Content="BACKUP NOW" Command="{Binding BackupNowCommand}" />
-        <Button Style="{StaticResource GhostButton}" Content="OPEN SERVER FOLDER" Command="{Binding OpenServerFolderCommand}" />
-        <Button Style="{StaticResource GhostButton}" Content="OPEN LOGS" Command="{Binding OpenLogsCommand}" />
-        <Button Style="{StaticResource GhostButton}" Content="WEB ADMIN" Command="{Binding OpenWebAdminCommand}" />
+        <Button Style="{StaticResource PrimaryButton}" Content="BẬT SERVER" Command="{Binding StartCommand}" />
+        <Button Style="{StaticResource DangerButton}" Content="TẮT SERVER" Command="{Binding StopCommand}" />
+        <Button Style="{StaticResource GhostButton}" Content="KHỞI ĐỘNG LẠI" Command="{Binding RestartCommand}" />
       </WrapPanel>
 
       <TextBlock Text="ACTIVITY" Foreground="{StaticResource MutedBrush}" Margin="0,16,0,8" />

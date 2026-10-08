@@ -36,7 +36,7 @@ public partial class MainViewModel : ObservableObject
 
         if (!settings.Current.IsSetupComplete)
         {
-            Banner = "First-run wizard is not finished. Open Settings and choose the Conan dedicated server executable to get started.";
+            Banner = "Chưa cấu hình đường dẫn server. Nhờ trợ lý thiết lập giúp.";
         }
     }
 
@@ -66,14 +66,7 @@ public partial class MainViewModel : ObservableObject
         CurrentView = page switch
         {
             "Dashboard" => _services.GetRequiredService<DashboardView>(),
-            "Server" => _services.GetRequiredService<ServerView>(),
-            "Mods" => _services.GetRequiredService<ModsView>(),
-            "Players" => _services.GetRequiredService<PlayersView>(),
-            "Backups" => _services.GetRequiredService<BackupsView>(),
-            "Updates" => _services.GetRequiredService<UpdatesView>(),
-            "Logs" => _services.GetRequiredService<LogsView>(),
             "Settings" => _services.GetRequiredService<SettingsView>(),
-            "Diagnostics" => _services.GetRequiredService<DiagnosticsView>(),
             _ => CurrentView
         };
     }
