@@ -121,12 +121,26 @@ public static class WebAdminExtensions
         app.UseAuthorization();
         app.UseRateLimiter();
 
-        app.MapGet("/api/status", (IServerProcessManager server, ISettingsService settings, DiagnosticsService diagnostics) =>
+        app.MapGet("/api/status", (
+            IServerProcessManager server,
+            ISettingsService settings,
+            DiagnosticsService diagnostics,
+            INetworkInfoService network,
+            IDelayedRestartService countdown) =>
         {
             var state = server.State.Clone();
             var snap = diagnostics.Capture();
+            var ip = network.GetRadminVpnIPv4() ?? network.GetLanIPv4() ?? "127.0.0.1";
+            var remaining = countdown.IsCountdownActive ? countdown.Remaining : null;
             return Results.Json(new
             {
+                joinAddress = $"{ip}:{settings.Current.Server.GamePort}",
+                playerNames = state.Players.Select(p => p.Name).ToArray(),
+                installedBuild = state.InstalledBuild,
+                availableBuild = state.AvailableBuild,
+                serverUpdateAvailable = state.ServerUpdateAvailable,
+                countdownMinutes = remaining is null ? (int?)null : Math.Max(0, (int)Math.Ceiling(remaining.Value.TotalMinutes)),
+                countdownStopOnly = countdown.IsStopOnly,
                 server = settings.Current.Server.ServerName,
                 status = state.Status.ToString(),
                 health = state.Health.ToString(),
@@ -241,16 +255,42 @@ public static class WebAdminExtensions
         }).RequireAuthorization();
 
         app.MapPost("/api/server/start", (HttpContext http, IServerProcessManager server, IActivityLog activity) =>
-            RunAction(http, activity, "Start Server", () => server.StartAsync(http.RequestAborted)))
+            RunDetached(http, activity, "Start Server", () => server.StartAsync()))
             .RequireAuthorization();
 
         app.MapPost("/api/server/stop", (HttpContext http, IServerProcessManager server, IActivityLog activity) =>
-            RunAction(http, activity, "Stop Server", () => server.StopAsync(false, http.RequestAborted)))
+            RunDetached(http, activity, "Stop Server", () => server.StopAsync(false)))
             .RequireAuthorization();
 
         app.MapPost("/api/server/restart", (HttpContext http, IServerProcessManager server, IActivityLog activity) =>
-            RunAction(http, activity, "Restart Server", () => server.RestartAsync(http.RequestAborted)))
+            RunDetached(http, activity, "Restart Server", () => server.RestartAsync()))
             .RequireAuthorization();
+
+        // Stop or restart after a countdown with in-game warnings at 30/10/5/1 minutes.
+        app.MapPost("/api/server/scheduled", async (
+            HttpContext http,
+            ScheduledActionDto dto,
+            IDelayedRestartService countdown,
+            IActivityLog activity) =>
+        {
+            var antiforgeryError = await ValidateAntiforgeryAsync(http);
+            if (antiforgeryError is not null)
+            {
+                return antiforgeryError;
+            }
+
+            var stopOnly = !string.Equals(dto.Action, "restart", StringComparison.OrdinalIgnoreCase);
+            var actor = http.User.Identity?.Name ?? "web";
+            await countdown.StartAsync(new DelayedRestartRequest
+            {
+                Delay = RestartDelay.Minutes30,
+                StopOnly = stopOnly,
+                BackupFirst = false,
+                Reason = stopOnly ? "web-scheduled-stop" : "web-scheduled-restart"
+            }, CancellationToken.None);
+            await activity.AddAsync("Server", $"{actor} scheduled a {(stopOnly ? "stop" : "restart")} in 30 minutes.", actor);
+            return Results.Ok(new { ok = true });
+        }).RequireAuthorization();
 
         app.MapPost("/api/server/backup", (HttpContext http, IBackupService backups, IActivityLog activity) =>
             RunAction(http, activity, "created backup", async () => { await backups.BackupNowAsync("web-admin", http.RequestAborted); }))
@@ -287,7 +327,7 @@ public static class WebAdminExtensions
                 Delay = (RestartDelay)minutes,
                 BackupFirst = true,
                 Reason = "web-delayed-restart"
-            }, http.RequestAborted);
+            }, CancellationToken.None);
             await activity.AddAsync("Server", $"{actor} requested delayed restart ({minutes} minutes).", actor);
             return Results.Ok(new { ok = true });
         }).RequireAuthorization();
@@ -328,6 +368,35 @@ public static class WebAdminExtensions
         }
     }
 
+    /// <summary>
+    /// Starts a long server operation in the background and answers at once, so closing the
+    /// browser or locking the phone cannot cancel it. Failures go to the activity log.
+    /// </summary>
+    private static async Task<IResult> RunDetached(HttpContext http, IActivityLog activity, string action, Func<Task> work)
+    {
+        var antiforgeryError = await ValidateAntiforgeryAsync(http);
+        if (antiforgeryError is not null)
+        {
+            return antiforgeryError;
+        }
+
+        var actor = http.User.Identity?.Name ?? "web";
+        await activity.AddAsync("Web", $"{actor} requested {action}.", actor);
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                await work();
+            }
+            catch (Exception ex)
+            {
+                var detail = ex is UserFacingException facing ? facing.FormatForDisplay() : ex.Message;
+                await activity.AddAsync("Web", $"{action} failed: {detail}", actor);
+            }
+        });
+        return Results.Ok(new { ok = true });
+    }
+
     private static async Task<IResult> RunAction(HttpContext http, IActivityLog activity, string action, Func<Task> work)
     {
         var antiforgeryError = await ValidateAntiforgeryAsync(http);
@@ -360,6 +429,12 @@ public sealed class LoginRequest
     public string? Username { get; set; }
 
     public string? Password { get; set; }
+}
+
+public sealed class ScheduledActionDto
+{
+    /// <summary>"stop" or "restart".</summary>
+    public string? Action { get; set; }
 }
 
 public sealed class DelayedRestartDto

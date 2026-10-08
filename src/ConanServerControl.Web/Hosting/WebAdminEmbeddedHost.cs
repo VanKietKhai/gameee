@@ -53,6 +53,7 @@ public sealed class WebAdminEmbeddedHost : IHostedService
         Forward<IRconService>(builder.Services);
         Forward<IServerUpdateService>(builder.Services);
         Forward<IDelayedRestartService>(builder.Services);
+        Forward<INetworkInfoService>(builder.Services);
         Forward<IWorkshopModService>(builder.Services);
         Forward<DiagnosticsService>(builder.Services);
         builder.Services.AddConanWebAdmin();

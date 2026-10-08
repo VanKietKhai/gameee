@@ -1,6 +1,17 @@
-const statusPill = document.getElementById('status-pill');
-const banner = document.getElementById('banner');
+const $ = id => document.getElementById(id);
 let csrfToken = '';
+let last = null;
+
+const STATUS = {
+  Online: ['ĐANG CHẠY', 'online'],
+  Offline: ['ĐÃ TẮT', 'offline'],
+  Starting: ['ĐANG KHỞI ĐỘNG', 'starting'],
+  Stopping: ['ĐANG TẮT', 'starting'],
+  Restarting: ['ĐANG KHỞI ĐỘNG LẠI', 'starting'],
+  Updating: ['ĐANG CẬP NHẬT', 'starting'],
+  Error: ['LỖI', 'error'],
+  Unresponsive: ['KHÔNG PHẢN HỒI', 'error']
+};
 
 async function loadCsrf() {
   const response = await fetch('/api/csrf', { credentials: 'same-origin' });
@@ -14,7 +25,8 @@ async function loadCsrf() {
 
 async function api(path, options) {
   options = options || {};
-  if (!csrfToken && (options.method || 'GET').toUpperCase() !== 'GET') {
+  const method = (options.method || 'GET').toUpperCase();
+  if (!csrfToken && method !== 'GET') {
     await loadCsrf();
   }
   const headers = Object.assign({}, options.headers || {});
@@ -28,139 +40,155 @@ async function api(path, options) {
   }
   const payload = await response.json().catch(() => ({}));
   if (!response.ok) {
-    throw new Error(payload.error || 'Request failed');
+    throw new Error(payload.error || 'Có lỗi xảy ra.');
   }
   return payload;
 }
 
-function showBanner(text, isError) {
-  banner.hidden = !text;
-  banner.textContent = text || '';
-  banner.style.background = isError ? '#3a1c1c' : '#3a3114';
-  banner.style.color = isError ? '#e85d5d' : '#f5c542';
+function post(path, body) {
+  return api(path, {
+    method: 'POST',
+    headers: body ? { 'Content-Type': 'application/json' } : {},
+    body: body ? JSON.stringify(body) : undefined
+  });
 }
 
-function renderTextList(element, items, emptyText, toText) {
+function showBanner(text, isError) {
+  const banner = $('banner');
+  banner.hidden = !text;
+  banner.textContent = text || '';
+  banner.className = 'banner' + (isError ? ' bad' : '');
+}
+
+function fillList(element, items, emptyText, toText) {
   element.replaceChildren();
-  if (!items || items.length === 0) {
+  const rows = items && items.length ? items : [null];
+  for (const item of rows) {
     const li = document.createElement('li');
-    li.textContent = emptyText;
+    li.textContent = item === null ? emptyText : toText(item);
     element.appendChild(li);
-    return;
   }
-  for (const item of items) {
-    const li = document.createElement('li');
-    li.textContent = toText(item);
-    element.appendChild(li);
+}
+
+function render(s) {
+  last = s;
+  const [label, css] = STATUS[s.status] || [String(s.status || '').toUpperCase(), 'offline'];
+  $('status-pill').textContent = label;
+  $('status-pill').className = 'pill ' + css;
+  $('server-name').textContent = s.server || 'Conan Server';
+  $('uptime').textContent = s.uptime ? 'Đã chạy ' + s.uptime : ' ';
+  $('join-address').textContent = s.joinAddress || '—';
+  $('player-count').textContent = `${s.players} / ${s.maxPlayers}`;
+  fillList($('player-list'), s.playerNames, 'Chưa có ai online.', n => n);
+
+  const online = s.status === 'Online' || s.status === 'Unresponsive';
+  const busy = s.busy || ['Starting', 'Stopping', 'Restarting', 'Updating'].includes(s.status);
+  $('start').hidden = online || s.status === 'Starting';
+  $('stop').hidden = !online;
+  $('restart').hidden = !online;
+  for (const id of ['start', 'stop', 'restart']) {
+    $(id).disabled = busy;
+  }
+
+  $('countdown').hidden = s.countdownMinutes == null;
+  if (s.countdownMinutes != null) {
+    $('countdown-text').textContent =
+      `Server sẽ ${s.countdownStopOnly ? 'tắt' : 'khởi động lại'} sau ${s.countdownMinutes} phút`;
+  }
+
+  let build = s.installedBuild ? 'Build server ' + s.installedBuild : '';
+  if (s.serverUpdateAvailable && s.availableBuild) {
+    build += ` - có bản mới ${s.availableBuild}`;
+  }
+  if (s.modsNeedingUpdate) {
+    build += ` - ${s.modsNeedingUpdate} mod có bản mới`;
+  }
+  $('build').textContent = build || ' ';
+
+  if (s.crashLoop) {
+    showBanner('Server crash liên tục, đã ngừng tự khởi động lại.', true);
+  } else if (s.lastError) {
+    showBanner(s.lastError, true);
+  } else if (s.busy && s.currentAction) {
+    showBanner('Đang xử lý: ' + s.currentAction, false);
+  } else {
+    showBanner('', false);
   }
 }
 
 async function refresh() {
   try {
-    const meResponse = await fetch('/api/me', { credentials: 'same-origin' });
-    if (meResponse.status === 401) {
-      window.location.href = '/login.html';
-      return;
-    }
-    const me = await meResponse.json();
-    if (!me.authenticated) {
-      window.location.href = '/login.html';
-      return;
-    }
-    await loadCsrf();
-    const status = await api('/api/status');
-    document.getElementById('server-name').textContent = status.server || 'Dedicated server';
-    statusPill.textContent = status.status || 'OFFLINE';
-    statusPill.className = 'pill ' + String(status.status || 'offline').toLowerCase();
-    document.getElementById('players').textContent = `${status.players} / ${status.maxPlayers}`;
-    document.getElementById('uptime').textContent = status.uptime || '—';
-    document.getElementById('updates').textContent = `${status.modsNeedingUpdate || 0} mods`;
-    if (status.crashLoop) {
-      showBanner('SERVER CRASH LOOP DETECTED. Automatic restart is paused.', true);
-    } else if (status.lastError) {
-      showBanner(status.lastError, true);
-    } else if (status.busy) {
-      showBanner(status.currentAction || 'Working...', false);
-    } else {
-      showBanner('', false);
-    }
-
+    render(await api('/api/status'));
     const activity = await api('/api/activity');
-    const list = document.getElementById('activity');
-    const items = (activity || []).slice().reverse().slice(0, 12);
-    renderTextList(list, items, 'No activity yet.', item => {
-      const time = new Date(item.timestamp).toLocaleTimeString();
-      return `${time} ${item.message}`;
+    const items = (activity || []).slice().reverse().slice(0, 8); // API returns oldest first
+    fillList($('activity'), items, 'Chưa có hoạt động.', item => {
+      const time = new Date(item.timestamp).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+      return `${time}  ${item.message}`;
     });
   } catch (err) {
     if (err.message !== 'auth') {
-      showBanner(err.message, true);
+      showBanner('Không kết nối được tới máy chủ. Kiểm tra Tailscale đang bật.', true);
     }
   }
 }
 
-document.querySelectorAll('button[data-action]').forEach(button => {
-  button.addEventListener('click', async () => {
-    button.disabled = true;
-    try {
-      await api(button.dataset.action, { method: 'POST' });
-      await refresh();
-    } catch (err) {
-      showBanner(err.message, true);
-    } finally {
-      button.disabled = false;
-    }
-  });
-});
-
-document.getElementById('delayed').addEventListener('click', async () => {
-  const minutes = window.prompt('Restart in how many minutes? (5, 10, 15, 30, 60)', '10');
-  if (!minutes) {
-    return;
-  }
+async function act(fn) {
   try {
-    await api('/api/server/delayed-restart', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ minutes: Number(minutes) })
-    });
-    await refresh();
+    await fn();
   } catch (err) {
     showBanner(err.message, true);
   }
-});
+  setTimeout(refresh, 500);
+}
 
-document.getElementById('view-players').addEventListener('click', async () => {
-  const panel = document.getElementById('players-panel');
-  panel.hidden = !panel.hidden;
-  if (panel.hidden) {
+function askStopOrRestart(action) {
+  const verb = action === 'stop' ? 'tắt' : 'khởi động lại';
+  const players = last ? last.players : 0;
+  if (!players) {
+    if (window.confirm(`Không có ai online. ${verb.charAt(0).toUpperCase() + verb.slice(1)} server ngay?`)) {
+      act(() => post('/api/server/' + action));
+    }
     return;
   }
-  const players = await api('/api/players');
-  renderTextList(
-    document.getElementById('player-list'),
-    players,
-    'No players online (or RCON is not connected).',
-    p => p.name);
-});
+  $('sheet-text').textContent = `Đang có ${players} người chơi online. Bạn muốn ${verb} server thế nào?`;
+  $('sheet').hidden = false;
+  $('sheet-later').onclick = () => { $('sheet').hidden = true; act(() => post('/api/server/scheduled', { action })); };
+  $('sheet-now').onclick = () => { $('sheet').hidden = true; act(() => post('/api/server/' + action)); };
+}
 
-document.getElementById('view-logs').addEventListener('click', async () => {
-  const panel = document.getElementById('logs-panel');
-  panel.hidden = !panel.hidden;
-  if (panel.hidden) {
-    return;
+function copyText(text) {
+  // navigator.clipboard needs HTTPS; over plain http (Tailscale address) fall back to a selection copy.
+  if (navigator.clipboard && window.isSecureContext) {
+    return navigator.clipboard.writeText(text);
   }
-  const logs = await api('/api/logs');
-  renderTextList(
-    document.getElementById('log-list'),
-    (logs || []).slice(-40).reverse(),
-    'No log lines yet.',
-    l => `${l.level}: ${l.message}`);
-});
+  const area = document.createElement('textarea');
+  area.value = text;
+  area.setAttribute('readonly', '');
+  area.style.position = 'fixed';
+  area.style.opacity = '0';
+  document.body.appendChild(area);
+  area.select();
+  area.setSelectionRange(0, text.length);
+  const ok = document.execCommand('copy');
+  document.body.removeChild(area);
+  return ok ? Promise.resolve() : Promise.reject(new Error('copy'));
+}
 
-document.getElementById('logout').addEventListener('click', async () => {
+$('start').addEventListener('click', () => act(() => post('/api/server/start')));
+$('stop').addEventListener('click', () => askStopOrRestart('stop'));
+$('restart').addEventListener('click', () => askStopOrRestart('restart'));
+$('sheet-cancel').addEventListener('click', () => { $('sheet').hidden = true; });
+$('cancel-countdown').addEventListener('click', () => act(() => post('/api/server/cancel-restart')));
+$('copy').addEventListener('click', () => {
+  const text = $('join-address').textContent;
+  copyText(text)
+    .then(() => { $('copy-feedback').textContent = 'Đã copy ' + text; })
+    .catch(() => { $('copy-feedback').textContent = 'Không copy được, hãy giữ tay vào địa chỉ để copy.'; });
+  setTimeout(() => { $('copy-feedback').textContent = ' '; }, 3000);
+});
+$('logout').addEventListener('click', async () => {
   try {
-    await api('/api/logout', { method: 'POST' });
+    await post('/api/logout');
   } catch (err) {
     if (err.message !== 'auth') {
       showBanner(err.message, true);
@@ -172,3 +200,4 @@ document.getElementById('logout').addEventListener('click', async () => {
 
 refresh();
 setInterval(refresh, 5000);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) refresh(); });

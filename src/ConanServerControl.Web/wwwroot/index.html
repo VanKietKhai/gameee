@@ -1,65 +1,69 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Conan Server Control</title>
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Conan Server" />
+  <title>Conan Server</title>
   <link rel="stylesheet" href="/css/site.css" />
 </head>
 <body>
   <header class="top">
     <div>
-      <h1>Conan Server Control</h1>
-      <p class="muted" id="server-name">Dedicated server</p>
+      <h1 id="server-name">Conan Server</h1>
+      <p class="muted" id="uptime">&nbsp;</p>
     </div>
-    <span id="status-pill" class="pill offline">OFFLINE</span>
+    <span id="status-pill" class="pill offline">ĐÃ TẮT</span>
   </header>
-
-  <section class="cards">
-    <article>
-      <h2>Players</h2>
-      <p class="stat" id="players">0 / 0</p>
-    </article>
-    <article>
-      <h2>Uptime</h2>
-      <p class="stat" id="uptime">—</p>
-    </article>
-    <article>
-      <h2>Updates</h2>
-      <p class="stat" id="updates">—</p>
-    </article>
-  </section>
-
-  <section class="actions">
-    <button data-action="/api/server/start">Start</button>
-    <button data-action="/api/server/stop" class="danger">Stop</button>
-    <button data-action="/api/server/restart">Restart</button>
-    <button id="delayed">Delayed Restart</button>
-    <button data-action="/api/server/backup">Backup</button>
-    <button data-action="/api/server/check-updates">Check Updates</button>
-    <button data-action="/api/server/update-mods">Update Mods</button>
-    <button data-action="/api/server/update-server">Update Server</button>
-    <button id="view-players">View Players</button>
-    <button id="view-logs">View Logs</button>
-    <button id="logout" class="ghost">Sign out</button>
-  </section>
 
   <p id="banner" class="banner" hidden></p>
 
+  <section id="countdown" class="countdown" hidden>
+    <span id="countdown-text"></span>
+    <button id="cancel-countdown" class="danger small">HUỶ HẸN GIỜ</button>
+  </section>
+
+  <section class="card">
+    <h2>Direct Connect</h2>
+    <div class="join">
+      <code id="join-address">—</code>
+      <button id="copy" class="ghost small">COPY</button>
+    </div>
+    <p class="muted" id="copy-feedback">&nbsp;</p>
+  </section>
+
+  <section class="card">
+    <h2>Người chơi <span id="player-count">0 / 0</span></h2>
+    <ul id="player-list" class="plain"></ul>
+  </section>
+
+  <section class="actions">
+    <button id="start">BẬT SERVER</button>
+    <button id="stop" class="danger">TẮT SERVER</button>
+    <button id="restart" class="ghost">KHỞI ĐỘNG LẠI</button>
+  </section>
+
+  <section class="card">
+    <h2>Thông tin</h2>
+    <p class="muted" id="build">&nbsp;</p>
+  </section>
+
   <section>
-    <h2>Activity</h2>
+    <h2>Hoạt động gần đây</h2>
     <ul id="activity" class="log"></ul>
   </section>
 
-  <section id="players-panel" hidden>
-    <h2>Players</h2>
-    <ul id="player-list" class="log"></ul>
-  </section>
+  <button id="logout" class="ghost wide">Đăng xuất</button>
 
-  <section id="logs-panel" hidden>
-    <h2>Logs</h2>
-    <ul id="log-list" class="log"></ul>
-  </section>
+  <div id="sheet" class="sheet" hidden>
+    <div class="sheet-card">
+      <p id="sheet-text"></p>
+      <button id="sheet-later">Báo trước 30 / 10 / 5 / 1 phút</button>
+      <button id="sheet-now" class="danger">Làm ngay</button>
+      <button id="sheet-cancel" class="ghost">Thôi</button>
+    </div>
+  </div>
 
   <script src="/js/site.js"></script>
 </body>
