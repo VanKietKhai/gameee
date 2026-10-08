@@ -103,7 +103,17 @@
     <Setter Property="Margin" Value="0,8,0,0" />
   </Style>
 
+  <!-- The default ComboBox is light, so its text must be dark. The global TextBlock style above
+       would otherwise paint the items white on white; a local Foreground in the template wins. -->
   <Style TargetType="ComboBox">
     <Setter Property="Padding" Value="6" />
+    <Setter Property="Foreground" Value="#FF1A1D23" />
+    <Setter Property="ItemTemplate">
+      <Setter.Value>
+        <DataTemplate>
+          <TextBlock Text="{Binding}" Foreground="#FF1A1D23" />
+        </DataTemplate>
+      </Setter.Value>
+    </Setter>
   </Style>
 </ResourceDictionary>
