@@ -196,6 +196,9 @@ public interface IDelayedRestartService
 
     TimeSpan? Remaining { get; }
 
+    /// <summary>True when the active countdown ends in a stop rather than a restart.</summary>
+    bool IsStopOnly { get; }
+
     Task StartAsync(DelayedRestartRequest request, CancellationToken cancellationToken = default);
 
     Task CancelAsync();

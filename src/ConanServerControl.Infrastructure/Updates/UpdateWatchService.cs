@@ -196,8 +196,7 @@ public sealed class UpdateWatchService : BackgroundService
 
     private async Task WarnPlayersAsync(CancellationToken cancellationToken)
     {
-        var lead = Math.Clamp(_settings.Current.Updates.WarningLeadMinutes, 1, 60);
-        var marks = new[] { lead, 5, 1 }.Where(m => m <= lead).Distinct().OrderByDescending(m => m).ToArray();
+        var marks = RconMessages.MarksFor(RconMessages.CountdownMarksMinutes[0]).ToArray();
         for (var i = 0; i < marks.Length; i++)
         {
             try

@@ -7,6 +7,29 @@ namespace ConanServerControl.Core.Notifications;
 /// </summary>
 public static class RconMessages
 {
+    /// <summary>Warning marks before any planned stop, restart or update: 30, 10, 5 and 1 minute.</summary>
+    public static readonly IReadOnlyList<int> CountdownMarksMinutes = new[] { 30, 10, 5, 1 };
+
+    /// <summary>
+    /// The marks that fit a countdown of <paramref name="totalMinutes"/>, largest first. A total that
+    /// is not itself a mark (for example 15) is announced first so players hear about it at once.
+    /// </summary>
+    public static IReadOnlyList<int> MarksFor(int totalMinutes)
+    {
+        if (totalMinutes <= 0)
+        {
+            return Array.Empty<int>();
+        }
+
+        var marks = CountdownMarksMinutes.Where(m => m <= totalMinutes).ToList();
+        if (!marks.Contains(totalMinutes))
+        {
+            marks.Insert(0, totalMinutes);
+        }
+
+        return marks;
+    }
+
     /// <summary>Sent right before the graceful shutdown command (stop, restart, update).</summary>
     public const string ShuttingDown = "[SERVER] Server đang tắt. Hẹn gặp lại mọi người!";
 
@@ -14,11 +37,14 @@ public static class RconMessages
     public static string UpdateWarning(int minutes) =>
         $"[SERVER] Server sẽ tắt sau {minutes} phút để cập nhật. Hãy về nơi an toàn và thoát game.";
 
-    /// <summary>Delayed restart countdown, minute marks.</summary>
-    public static string RestartWarningMinutes(int minutes) =>
-        $"[SERVER] Server sẽ khởi động lại sau {minutes} phút. Hãy về nơi an toàn.";
+    /// <summary>Scheduled restart countdown.</summary>
+    public static string RestartWarning(int minutes) =>
+        $"[SERVER] Server sẽ khởi động lại sau {minutes} phút. Hãy về nơi an toàn và thoát game.";
 
-    /// <summary>Delayed restart countdown, last seconds.</summary>
-    public static string RestartWarningSeconds(int seconds) =>
-        $"[SERVER] Server khởi động lại sau {seconds} giây. Thoát game ngay để lưu nhân vật.";
+    /// <summary>Scheduled stop countdown.</summary>
+    public static string StopWarning(int minutes) =>
+        $"[SERVER] Server sẽ tắt sau {minutes} phút. Hãy về nơi an toàn và thoát game.";
+
+    /// <summary>A scheduled stop or restart was called off.</summary>
+    public const string CountdownCancelled = "[SERVER] Đã huỷ lịch tắt server. Mọi người chơi tiếp nhé!";
 }

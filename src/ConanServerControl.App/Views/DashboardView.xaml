@@ -61,6 +61,20 @@
         <Button Style="{StaticResource DangerButton}" Content="TẮT SERVER" Command="{Binding StopCommand}" />
         <Button Style="{StaticResource GhostButton}" Content="KHỞI ĐỘNG LẠI" Command="{Binding RestartCommand}" />
       </WrapPanel>
+      <DockPanel Margin="0,8,0,0" LastChildFill="False">
+        <DockPanel.Style>
+          <Style TargetType="DockPanel">
+            <Setter Property="Visibility" Value="Collapsed" />
+            <Style.Triggers>
+              <DataTrigger Binding="{Binding CountdownActive}" Value="True">
+                <Setter Property="Visibility" Value="Visible" />
+              </DataTrigger>
+            </Style.Triggers>
+          </Style>
+        </DockPanel.Style>
+        <TextBlock DockPanel.Dock="Left" Text="{Binding CountdownText}" Foreground="{StaticResource WarningBrush}" FontWeight="SemiBold" VerticalAlignment="Center" />
+        <Button DockPanel.Dock="Left" Style="{StaticResource DangerButton}" Content="HUỶ HẸN GIỜ" Command="{Binding CancelCountdownCommand}" Margin="12,0,0,0" />
+      </DockPanel>
 
       <TextBlock Text="ACTIVITY" Foreground="{StaticResource MutedBrush}" Margin="0,16,0,8" />
       <ItemsControl ItemsSource="{Binding Activity}">

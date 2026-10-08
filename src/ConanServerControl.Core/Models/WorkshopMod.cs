@@ -164,5 +164,8 @@ public sealed class DelayedRestartRequest
 
     public bool UpdateMods { get; set; }
 
+    /// <summary>Stop the server at the end of the countdown instead of restarting it.</summary>
+    public bool StopOnly { get; set; }
+
     public string? Reason { get; set; }
 }

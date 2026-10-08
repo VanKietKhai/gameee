@@ -15,19 +15,22 @@ public partial class DashboardViewModel : ObservableObject
     private readonly IActivityLog _activity;
     private readonly IUiDialogs _dialogs;
     private readonly INetworkInfoService _network;
+    private readonly IDelayedRestartService _countdown;
 
     public DashboardViewModel(
         IServerProcessManager server,
         ISettingsService settings,
         IActivityLog activity,
         IUiDialogs dialogs,
-        INetworkInfoService network)
+        INetworkInfoService network,
+        IDelayedRestartService countdown)
     {
         _server = server;
         _settings = settings;
         _activity = activity;
         _dialogs = dialogs;
         _network = network;
+        _countdown = countdown;
         ApplyState(_server.State);
         _server.StateChanged += (_, state) =>
             Application.Current?.Dispatcher.BeginInvoke(() => ApplyState(state));
@@ -56,6 +59,8 @@ public partial class DashboardViewModel : ObservableObject
     [ObservableProperty] private bool actionsLocked;
     [ObservableProperty] private string? errorText;
     [ObservableProperty] private string copyFeedback = string.Empty;
+    [ObservableProperty] private string countdownText = string.Empty;
+    [ObservableProperty] private bool countdownActive;
 
     /// <summary>Address friends type into Direct Connect: the advertised IP plus the game port.</summary>
     public string JoinAddress => $"{ServerIp}:{GamePort}";
@@ -89,16 +94,44 @@ public partial class DashboardViewModel : ObservableObject
     private Task StartAsync() => Run(() => _server.StartAsync());
 
     [RelayCommand]
-    private Task StopAsync() => PlayersAgree("tắt") ? Run(() => _server.StopAsync()) : Task.CompletedTask;
+    private Task StopAsync() => StopOrRestartAsync(stopOnly: true);
 
     [RelayCommand]
-    private Task RestartAsync() => PlayersAgree("khởi động lại") ? Run(() => _server.RestartAsync()) : Task.CompletedTask;
+    private Task RestartAsync() => StopOrRestartAsync(stopOnly: false);
 
-    private bool PlayersAgree(string action)
+    [RelayCommand]
+    private Task CancelCountdownAsync() => Run(() => _countdown.CancelAsync());
+
+    /// <summary>
+    /// With players online, offer the 30-minute countdown (in-game warnings at 30/10/5/1 minutes)
+    /// instead of an immediate stop.
+    /// </summary>
+    private Task StopOrRestartAsync(bool stopOnly)
     {
+        var action = stopOnly ? "tắt" : "khởi động lại";
         var count = _server.State.PlayerCount;
-        return count == 0
-            || _dialogs.Confirm("Đang có người chơi", $"Đang có {count} người chơi online. Vẫn {action} server ngay?");
+        if (count == 0)
+        {
+            return Run(() => stopOnly ? _server.StopAsync() : _server.RestartAsync());
+        }
+
+        var choice = _dialogs.Ask(
+            "Đang có người chơi",
+            $"Đang có {count} người chơi online.{Environment.NewLine}{Environment.NewLine}" +
+            $"Yes = báo trong game trước 30 / 10 / 5 / 1 phút rồi mới {action}.{Environment.NewLine}" +
+            $"No = {action} ngay bây giờ.{Environment.NewLine}Cancel = thôi.");
+        return choice switch
+        {
+            true => Run(() => _countdown.StartAsync(new DelayedRestartRequest
+            {
+                Delay = RestartDelay.Minutes30,
+                StopOnly = stopOnly,
+                BackupFirst = false,
+                Reason = stopOnly ? "dashboard-scheduled-stop" : "dashboard-scheduled-restart"
+            })),
+            false => Run(() => stopOnly ? _server.StopAsync() : _server.RestartAsync()),
+            _ => Task.CompletedTask
+        };
     }
 
     private async Task Run(Func<Task> work)
@@ -107,6 +140,7 @@ public partial class DashboardViewModel : ObservableObject
         {
             ActionsLocked = true;
             await work();
+            ApplyState(_server.State);
             await ReloadActivityAsync();
         }
         catch (Exception ex)
@@ -161,6 +195,11 @@ public partial class DashboardViewModel : ObservableObject
             ? state.LastErrorGuidance ?? state.LastError
             : state.LastError;
         PipelineText = state.CurrentAction ?? string.Empty;
+        var remaining = _countdown.IsCountdownActive ? _countdown.Remaining : null;
+        CountdownActive = remaining is not null;
+        CountdownText = remaining is null
+            ? string.Empty
+            : $"Server sẽ {(_countdown.IsStopOnly ? "tắt" : "khởi động lại")} sau {Math.Max(0, (int)Math.Ceiling(remaining.Value.TotalMinutes))} phút";
     }
 
     private async Task ReloadActivityAsync()

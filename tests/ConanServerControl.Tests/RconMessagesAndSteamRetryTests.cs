@@ -10,8 +10,9 @@ public class RconMessagesTests
     {
         new object[] { RconMessages.ShuttingDown },
         new object[] { RconMessages.UpdateWarning(10) },
-        new object[] { RconMessages.RestartWarningMinutes(5) },
-        new object[] { RconMessages.RestartWarningSeconds(30) }
+        new object[] { RconMessages.RestartWarning(5) },
+        new object[] { RconMessages.StopWarning(30) },
+        new object[] { RconMessages.CountdownCancelled }
     };
 
     [Theory]
@@ -20,14 +21,26 @@ public class RconMessagesTests
     {
         Assert.DoesNotContain('"', message);
         Assert.True(message.Length < 200);
-        Assert.StartsWith("[SERVER] Server", message);
+        Assert.StartsWith("[SERVER] ", message);
     }
 
     [Fact]
     public void Countdowns_carry_the_number()
     {
         Assert.Equal("[SERVER] Server sẽ tắt sau 10 phút để cập nhật. Hãy về nơi an toàn và thoát game.", RconMessages.UpdateWarning(10));
-        Assert.Contains("30 giây", RconMessages.RestartWarningSeconds(30));
+        Assert.Equal("[SERVER] Server sẽ tắt sau 30 phút. Hãy về nơi an toàn và thoát game.", RconMessages.StopWarning(30));
+    }
+
+    [Theory]
+    [InlineData(30, new[] { 30, 10, 5, 1 })]
+    [InlineData(60, new[] { 60, 30, 10, 5, 1 })]
+    [InlineData(15, new[] { 15, 10, 5, 1 })]
+    [InlineData(10, new[] { 10, 5, 1 })]
+    [InlineData(1, new[] { 1 })]
+    [InlineData(0, new int[0])]
+    public void Countdown_warns_at_30_10_5_1_minutes(int total, int[] expected)
+    {
+        Assert.Equal(expected, RconMessages.MarksFor(total));
     }
 }
 

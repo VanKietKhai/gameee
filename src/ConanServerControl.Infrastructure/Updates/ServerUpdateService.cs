@@ -496,9 +496,12 @@ public sealed class DelayedRestartService : IDelayedRestartService
 
     public TimeSpan? Remaining => _deadline is null ? null : _deadline.Value - DateTimeOffset.UtcNow;
 
+    public bool IsStopOnly { get; private set; }
+
     public async Task StartAsync(DelayedRestartRequest request, CancellationToken cancellationToken = default)
     {
-        await CancelAsync().ConfigureAwait(false);
+        CancelCountdown();
+        IsStopOnly = request.StopOnly;
         _cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         var token = _cts.Token;
         var delay = TimeSpan.FromMinutes((int)request.Delay);
@@ -509,13 +512,31 @@ public sealed class DelayedRestartService : IDelayedRestartService
         _ = Task.Run(() => RunCountdownAsync(request, token), token);
     }
 
-    public Task CancelAsync()
+    public async Task CancelAsync()
+    {
+        var wasActive = IsCountdownActive;
+        CancelCountdown();
+        if (!wasActive)
+        {
+            return;
+        }
+
+        try
+        {
+            await _rcon.AnnounceAsync(RconMessages.CountdownCancelled).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogDebug(ex, "Could not announce the cancelled countdown via RCON.");
+        }
+    }
+
+    private void CancelCountdown()
     {
         _cts?.Cancel();
         _cts?.Dispose();
         _cts = null;
         _deadline = null;
-        return Task.CompletedTask;
     }
 
     private async Task RunCountdownAsync(DelayedRestartRequest request, CancellationToken token)
@@ -523,13 +544,7 @@ public sealed class DelayedRestartService : IDelayedRestartService
         try
         {
             var totalMinutes = (int)request.Delay;
-            var marks = new[] { 10, 5, 1 }
-                .Where(m => m <= totalMinutes)
-                .Select(m => TimeSpan.FromMinutes(m))
-                .Concat([TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(10)])
-                .Distinct()
-                .OrderByDescending(t => t)
-                .ToArray();
+            var marks = RconMessages.MarksFor(totalMinutes).Select(m => TimeSpan.FromMinutes(m)).ToArray();
 
             if (totalMinutes == 0)
             {
@@ -548,9 +563,9 @@ public sealed class DelayedRestartService : IDelayedRestartService
                     await Task.Delay(wait, token).ConfigureAwait(false);
                 }
 
-                var text = mark.TotalMinutes >= 1
-                    ? RconMessages.RestartWarningMinutes((int)mark.TotalMinutes)
-                    : RconMessages.RestartWarningSeconds((int)mark.TotalSeconds);
+                var text = request.StopOnly
+                    ? RconMessages.StopWarning((int)mark.TotalMinutes)
+                    : RconMessages.RestartWarning((int)mark.TotalMinutes);
                 try
                 {
                     await _rcon.AnnounceAsync(text, token).ConfigureAwait(false);
@@ -590,6 +605,12 @@ public sealed class DelayedRestartService : IDelayedRestartService
         if (request.BackupFirst)
         {
             await _backups.BackupNowAsync(request.Reason ?? "delayed-restart", token).ConfigureAwait(false);
+        }
+
+        if (request.StopOnly)
+        {
+            await _server.StopAsync(cancellationToken: token).ConfigureAwait(false);
+            return;
         }
 
         await _server.RestartAsync(token).ConfigureAwait(false);

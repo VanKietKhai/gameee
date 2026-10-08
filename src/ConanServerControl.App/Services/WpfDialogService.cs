@@ -12,6 +12,9 @@ public interface IUiDialogs
     void Alert(string title, string message);
 
     bool Confirm(string title, string message);
+
+    /// <summary>Yes = true, No = false, Cancel = null.</summary>
+    bool? Ask(string title, string message);
 }
 
 public sealed class WpfDialogService : IUiDialogs
@@ -45,4 +48,12 @@ public sealed class WpfDialogService : IUiDialogs
     {
         return MessageBox.Show(message, title, MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes;
     }
+
+    public bool? Ask(string title, string message) =>
+        MessageBox.Show(message, title, MessageBoxButton.YesNoCancel, MessageBoxImage.Question) switch
+        {
+            MessageBoxResult.Yes => true,
+            MessageBoxResult.No => false,
+            _ => null
+        };
 }
