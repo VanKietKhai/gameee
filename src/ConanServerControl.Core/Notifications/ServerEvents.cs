@@ -18,6 +18,7 @@ public enum ServerEventKind
     UpdateStarted,
     UpdateCompleted,
     UpdateFailed,
+    AdminMessage,
     Test
 }
 

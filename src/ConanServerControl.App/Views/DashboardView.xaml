@@ -76,6 +76,22 @@
         <Button DockPanel.Dock="Left" Style="{StaticResource DangerButton}" Content="HUỶ HẸN GIỜ" Command="{Binding CancelCountdownCommand}" Margin="12,0,0,0" />
       </DockPanel>
 
+      <Border Background="{StaticResource SurfaceBrush}" CornerRadius="12" Padding="16" Margin="0,16,0,0">
+        <StackPanel>
+          <TextBlock Text="GỬI THÔNG BÁO" Foreground="{StaticResource MutedBrush}" />
+          <DockPanel Margin="0,8,0,0">
+            <Button DockPanel.Dock="Right" Style="{StaticResource PrimaryButton}" Content="GỬI" Command="{Binding AnnounceCommand}" Margin="8,0,0,0" />
+            <TextBox Text="{Binding AnnounceText, UpdateSourceTrigger=PropertyChanged}" MaxLength="200"
+                     ToolTip="Ví dụ: Tối nay 23h tắt server để cập nhật mod, khoảng 15 phút." />
+          </DockPanel>
+          <WrapPanel>
+            <CheckBox Content="Trong game (server đang chạy)" IsChecked="{Binding AnnounceToGame}" Margin="0,8,16,0" />
+            <CheckBox Content="Lên Discord" IsChecked="{Binding AnnounceToDiscord}" />
+          </WrapPanel>
+          <TextBlock Text="{Binding AnnounceFeedback}" Foreground="{StaticResource SuccessBrush}" Margin="0,6,0,0" TextWrapping="Wrap" />
+        </StackPanel>
+      </Border>
+
       <TextBlock Text="ACTIVITY" Foreground="{StaticResource MutedBrush}" Margin="0,16,0,8" />
       <ItemsControl ItemsSource="{Binding Activity}">
         <ItemsControl.ItemTemplate>

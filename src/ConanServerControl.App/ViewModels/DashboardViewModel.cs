@@ -16,6 +16,7 @@ public partial class DashboardViewModel : ObservableObject
     private readonly IUiDialogs _dialogs;
     private readonly INetworkInfoService _network;
     private readonly IDelayedRestartService _countdown;
+    private readonly Core.Notifications.IAdminAnnouncer _announcer;
 
     public DashboardViewModel(
         IServerProcessManager server,
@@ -23,7 +24,8 @@ public partial class DashboardViewModel : ObservableObject
         IActivityLog activity,
         IUiDialogs dialogs,
         INetworkInfoService network,
-        IDelayedRestartService countdown)
+        IDelayedRestartService countdown,
+        Core.Notifications.IAdminAnnouncer announcer)
     {
         _server = server;
         _settings = settings;
@@ -31,6 +33,7 @@ public partial class DashboardViewModel : ObservableObject
         _dialogs = dialogs;
         _network = network;
         _countdown = countdown;
+        _announcer = announcer;
         ApplyState(_server.State);
         _server.StateChanged += (_, state) =>
             Application.Current?.Dispatcher.BeginInvoke(() => ApplyState(state));
@@ -61,6 +64,27 @@ public partial class DashboardViewModel : ObservableObject
     [ObservableProperty] private string copyFeedback = string.Empty;
     [ObservableProperty] private string countdownText = string.Empty;
     [ObservableProperty] private bool countdownActive;
+    [ObservableProperty] private string announceText = string.Empty;
+    [ObservableProperty] private bool announceToGame = true;
+    [ObservableProperty] private bool announceToDiscord = true;
+    [ObservableProperty] private string announceFeedback = string.Empty;
+
+    [RelayCommand]
+    private async Task AnnounceAsync()
+    {
+        var result = await _announcer.SendAsync(AnnounceText, AnnounceToGame, AnnounceToDiscord, "app");
+        if (!result.SentToGame && !result.SentToDiscord)
+        {
+            AnnounceFeedback = result.Error ?? "Chưa gửi được.";
+            return;
+        }
+
+        AnnounceText = string.Empty;
+        var where = result.SentToGame && result.SentToDiscord ? "vào game và Discord"
+            : result.SentToGame ? "vào game" : "lên Discord";
+        AnnounceFeedback = $"Đã gửi {where}." + (result.Error is null ? string.Empty : " " + result.Error);
+        await ReloadActivityAsync();
+    }
 
     /// <summary>Address friends type into Direct Connect: the advertised IP plus the game port.</summary>
     public string JoinAddress => $"{ServerIp}:{GamePort}";

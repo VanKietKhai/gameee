@@ -53,4 +53,9 @@ button.wide { width: 100%; margin-top: 16px; }
 .login-body { min-height: 100vh; display: grid; place-items: center; }
 .login-card { background: var(--card); padding: 24px; border-radius: 20px; width: min(92vw, 420px); }
 label { display: block; margin: 12px 0; }
+textarea { width: 100%; padding: 12px; border-radius: 10px; border: 0; background: #1a1d23; color: var(--text); font-size: 1rem; font-family: inherit; resize: vertical; }
+.checks { display: flex; gap: 18px; margin: 10px 0 4px; }
+label.check { margin: 0; display: flex; align-items: center; gap: 8px; }
+label.check input { width: auto; margin: 0; }
+button.tight { margin-top: 8px; }
 input { width: 100%; margin-top: 6px; padding: 14px; border-radius: 10px; border: 0; background: #1a1d23; color: var(--text); font-size: 1rem; }

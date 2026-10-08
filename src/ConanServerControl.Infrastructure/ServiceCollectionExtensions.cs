@@ -61,6 +61,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IIntegrationDiagnosticsService, IntegrationDiagnosticsService>();
         services.AddSingleton<IActivityLog, ActivityLogService>();
         services.AddSingleton<IServerEventBus, ServerEventBus>();
+        services.AddSingleton<IAdminAnnouncer, AdminAnnouncer>();
         services.AddSingleton<ISteamBuildInfoClient, SteamCmdNetBuildInfoClient>();
 
         services.AddHttpClient(SteamCmdService.HttpClientName, client =>

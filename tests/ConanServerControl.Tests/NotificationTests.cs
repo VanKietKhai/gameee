@@ -300,7 +300,7 @@ public class DiscordEmbedFactoryTests
     {
         foreach (var kind in Enum.GetValues<ServerEventKind>())
         {
-            var embed = DiscordEmbedFactory.Create(new ServerEvent { Kind = kind, PlayerName = "p", Items = new[] { "Mod A" } }, Context);
+            var embed = DiscordEmbedFactory.Create(new ServerEvent { Kind = kind, PlayerName = "p", Detail = "d", Items = new[] { "Mod A" } }, Context);
             Assert.False(string.IsNullOrWhiteSpace(embed.Title), kind.ToString());
             Assert.False(string.IsNullOrWhiteSpace(embed.Description), kind.ToString());
         }

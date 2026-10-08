@@ -66,6 +66,7 @@ public static class DiscordEmbedFactory
             ServerEventKind.UpdateCompleted => ("🆙 Cập nhật xong", UpdatedBody(e), Green),
             ServerEventKind.UpdateFailed => ("❌ Cập nhật thất bại",
                 $"{DescribeAction(e.Action)} không thành công: {e.Detail ?? "không rõ lỗi"}.{Environment.NewLine}Dữ liệu thế giới không bị xoá; chờ admin kiểm tra.", Red),
+            ServerEventKind.AdminMessage => ("📢 Thông báo từ admin", Escape(e.Detail ?? string.Empty), Blue),
             ServerEventKind.Test => ("🔔 Thử thông báo", "Webhook Discord của Conan Server Control đang hoạt động.", Grey),
             _ => (e.Kind.ToString(), e.Detail ?? string.Empty, Grey)
         };

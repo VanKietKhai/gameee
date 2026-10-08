@@ -45,6 +45,17 @@
   </section>
 
   <section class="card">
+    <h2>Gửi thông báo</h2>
+    <textarea id="announce-text" maxlength="200" rows="2" placeholder="Ví dụ: 23h tắt server để cập nhật mod, khoảng 15 phút."></textarea>
+    <div class="checks">
+      <label class="check"><input type="checkbox" id="announce-game" checked /> Trong game</label>
+      <label class="check"><input type="checkbox" id="announce-discord" checked /> Discord</label>
+    </div>
+    <button id="announce" class="wide tight">GỬI</button>
+    <p class="muted" id="announce-feedback">&nbsp;</p>
+  </section>
+
+  <section class="card">
     <h2>Thông tin</h2>
     <p class="muted" id="build">&nbsp;</p>
   </section>

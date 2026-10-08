@@ -174,6 +174,27 @@ function copyText(text) {
   return ok ? Promise.resolve() : Promise.reject(new Error('copy'));
 }
 
+$('announce').addEventListener('click', async () => {
+  const feedback = $('announce-feedback');
+  const button = $('announce');
+  button.disabled = true;
+  try {
+    const result = await post('/api/announce', {
+      message: $('announce-text').value,
+      toGame: $('announce-game').checked,
+      toDiscord: $('announce-discord').checked
+    });
+    const where = result.sentToGame && result.sentToDiscord ? 'vào game và Discord'
+      : result.sentToGame ? 'vào game' : 'lên Discord';
+    feedback.textContent = 'Đã gửi ' + where + '.' + (result.warning ? ' ' + result.warning : '');
+    $('announce-text').value = '';
+    setTimeout(refresh, 500);
+  } catch (err) {
+    feedback.textContent = err.message;
+  } finally {
+    button.disabled = false;
+  }
+});
 $('start').addEventListener('click', () => act(() => post('/api/server/start')));
 $('stop').addEventListener('click', () => askStopOrRestart('stop'));
 $('restart').addEventListener('click', () => askStopOrRestart('restart'));

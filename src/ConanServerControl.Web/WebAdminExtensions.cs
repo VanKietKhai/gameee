@@ -266,6 +266,25 @@ public static class WebAdminExtensions
             RunDetached(http, activity, "Restart Server", () => server.RestartAsync()))
             .RequireAuthorization();
 
+        // Operator message: in-game broadcast (server online) and/or Discord.
+        app.MapPost("/api/announce", async (
+            HttpContext http,
+            AnnounceDto dto,
+            ConanServerControl.Core.Notifications.IAdminAnnouncer announcer) =>
+        {
+            var antiforgeryError = await ValidateAntiforgeryAsync(http);
+            if (antiforgeryError is not null)
+            {
+                return antiforgeryError;
+            }
+
+            var actor = http.User.Identity?.Name ?? "web";
+            var result = await announcer.SendAsync(dto.Message, dto.ToGame, dto.ToDiscord, actor, CancellationToken.None);
+            return !result.SentToGame && !result.SentToDiscord
+                ? Results.Json(new { error = result.Error }, statusCode: 400)
+                : Results.Ok(new { ok = true, sentToGame = result.SentToGame, sentToDiscord = result.SentToDiscord, warning = result.Error });
+        }).RequireAuthorization();
+
         // Stop or restart after a countdown with in-game warnings at 30/10/5/1 minutes.
         app.MapPost("/api/server/scheduled", async (
             HttpContext http,
@@ -429,6 +448,15 @@ public sealed class LoginRequest
     public string? Username { get; set; }
 
     public string? Password { get; set; }
+}
+
+public sealed class AnnounceDto
+{
+    public string? Message { get; set; }
+
+    public bool ToGame { get; set; } = true;
+
+    public bool ToDiscord { get; set; } = true;
 }
 
 public sealed class ScheduledActionDto
