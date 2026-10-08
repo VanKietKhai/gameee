@@ -79,7 +79,8 @@
       <TextBlock Text="Tần suất kiểm tra" Margin="0,8,0,4" />
       <ComboBox ItemsSource="{Binding UpdateCheckIntervals}" SelectedItem="{Binding UpdateCheckInterval}" HorizontalAlignment="Left" MinWidth="160" />
       <TextBlock Text="Khi có bản mới: Manual = chỉ báo; Automatic = tự sao lưu rồi cập nhật khi server trống; Scheduled = tự cập nhật trong khung giờ bảo trì. Game client luôn do Steam cập nhật." TextWrapping="Wrap" Margin="0,8,0,4" />
-      <ComboBox ItemsSource="{Binding AutomationModes}" SelectedItem="{Binding UpdateAutomationMode}" HorizontalAlignment="Left" MinWidth="160" Margin="0,0,0,12" />
+      <ComboBox ItemsSource="{Binding AutomationModes}" SelectedItem="{Binding UpdateAutomationMode}" HorizontalAlignment="Left" MinWidth="160" Margin="0,0,0,8" />
+      <CheckBox Content="Bật Cloudflare WARP khi SteamCMD tải (tự tắt khi tải xong)" IsChecked="{Binding UseCloudflareWarp}" Margin="0,0,0,12" />
 
       <CheckBox Content="Start Conan server when the manager launches" IsChecked="{Binding StartServerOnLaunch}" />
       <CheckBox Content="Restart server after crash" IsChecked="{Binding RestartAfterCrash}" />

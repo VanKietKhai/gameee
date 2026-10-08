@@ -20,6 +20,7 @@ public sealed class ServerUpdateService : IServerUpdateService
     private readonly ILogger<ServerUpdateService> _logger;
     private readonly ISteamBuildInfoClient? _buildInfo;
     private readonly IServerEventBus? _events;
+    private readonly ISteamNetworkGuard? _network;
     private readonly UpdatePipelineStateMachine _pipeline = new();
 
     public ServerUpdateService(
@@ -32,7 +33,8 @@ public sealed class ServerUpdateService : IServerUpdateService
         IActivityLog activityLog,
         ILogger<ServerUpdateService> logger,
         ISteamBuildInfoClient? buildInfo = null,
-        IServerEventBus? events = null)
+        IServerEventBus? events = null,
+        ISteamNetworkGuard? network = null)
     {
         _settings = settings;
         _steamCmd = steamCmd;
@@ -44,6 +46,7 @@ public sealed class ServerUpdateService : IServerUpdateService
         _logger = logger;
         _buildInfo = buildInfo;
         _events = events;
+        _network = network;
     }
 
     public async Task<ServerUpdateCheckResult> CheckAsync(CancellationToken cancellationToken = default)
@@ -269,31 +272,39 @@ public sealed class ServerUpdateService : IServerUpdateService
                     }
                 }
 
-                if (updateServer)
+                // One network session for every SteamCMD download of this update; it ends before
+                // the server is started again.
+                var steamNetwork = (updateServer || (updateMods && modStep is null)) && _network is not null
+                    ? await _network.AcquireAsync(actionName, cancellationToken).ConfigureAwait(false)
+                    : NoOpAsyncDisposable.Instance;
+                await using (steamNetwork.ConfigureAwait(false))
                 {
-                    var install = _settings.Current.ServerPaths.ServerInstallDirectory
-                                  ?? _settings.Current.ServerPaths.ServerWorkingDirectory!;
-                    mutationStarted = true;
-                    Report(progress, _pipeline.TransitionTo(UpdatePipelineState.UpdatingServer, "Downloading server files..."));
-                    await _steamCmd.InstallOrUpdateDedicatedServerAsync(
-                            install,
-                            _settings.Current.SteamCmd.ValidateAfterUpdate,
-                            new Progress<string>(line => _logger.LogInformation("SteamCMD: {Line}", line)),
-                            cancellationToken)
-                        .ConfigureAwait(false);
-                }
-
-                if (updateMods)
-                {
-                    mutationStarted = true;
-                    Report(progress, _pipeline.TransitionTo(UpdatePipelineState.UpdatingMods, modStepDescription ?? "Updating Steam Workshop mods..."));
-                    if (modStep is not null)
+                    if (updateServer)
                     {
-                        await modStep(cancellationToken).ConfigureAwait(false);
+                        var install = _settings.Current.ServerPaths.ServerInstallDirectory
+                                      ?? _settings.Current.ServerPaths.ServerWorkingDirectory!;
+                        mutationStarted = true;
+                        Report(progress, _pipeline.TransitionTo(UpdatePipelineState.UpdatingServer, "Downloading server files..."));
+                        await _steamCmd.InstallOrUpdateDedicatedServerAsync(
+                                install,
+                                _settings.Current.SteamCmd.ValidateAfterUpdate,
+                                new Progress<string>(line => _logger.LogInformation("SteamCMD: {Line}", line)),
+                                cancellationToken)
+                            .ConfigureAwait(false);
                     }
-                    else
+
+                    if (updateMods)
                     {
-                        await _mods.ApplyUpdatesAsync(workshopIds, cancellationToken).ConfigureAwait(false);
+                        mutationStarted = true;
+                        Report(progress, _pipeline.TransitionTo(UpdatePipelineState.UpdatingMods, modStepDescription ?? "Updating Steam Workshop mods..."));
+                        if (modStep is not null)
+                        {
+                            await modStep(cancellationToken).ConfigureAwait(false);
+                        }
+                        else
+                        {
+                            await _mods.ApplyUpdatesAsync(workshopIds, cancellationToken).ConfigureAwait(false);
+                        }
                     }
                 }
 

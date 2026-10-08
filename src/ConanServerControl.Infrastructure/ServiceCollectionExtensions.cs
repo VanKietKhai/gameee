@@ -41,6 +41,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IProcessStarter, SystemProcessStarter>();
         services.AddSingleton<IProcessRunner, ProcessRunner>();
         services.AddSingleton<IServerProcessManager, ServerProcessManager>();
+        services.AddSingleton<ISteamNetworkGuard, WarpNetworkGuard>();
         services.AddSingleton<ISteamCmdService, SteamCmdService>();
         services.AddSingleton<ISteamWorkshopClient, SteamWorkshopClient>();
         services.AddSingleton<IRconService, RconService>();

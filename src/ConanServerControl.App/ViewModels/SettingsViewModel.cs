@@ -52,6 +52,7 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty] private bool restartAfterCrash = true;
     [ObservableProperty] private string bindMode = "LocalhostOnly";
     [ObservableProperty] private bool discordEnabled = true;
+    [ObservableProperty] private bool useCloudflareWarp;
     [ObservableProperty] private string? discordWebhookInput;
     [ObservableProperty] private bool discordWebhookConfigured;
     [ObservableProperty] private bool notifyPlayerEvents = true;
@@ -223,6 +224,7 @@ public partial class SettingsViewModel : ObservableObject
             s.Notifications.NotifyPlayerEvents = NotifyPlayerEvents;
             s.Notifications.NotifyUpdates = NotifyUpdates;
             s.Updates.CheckInterval = UpdateCheckInterval;
+            s.SteamCmd.UseCloudflareWarp = UseCloudflareWarp;
             s.Updates.AutomationMode = UpdateAutomationMode;
             s.IsSetupComplete = !string.IsNullOrWhiteSpace(ServerExecutablePath);
         });
@@ -307,6 +309,7 @@ public partial class SettingsViewModel : ObservableObject
         NotifyPlayerEvents = s.Notifications.NotifyPlayerEvents;
         NotifyUpdates = s.Notifications.NotifyUpdates;
         UpdateCheckInterval = s.Updates.CheckInterval;
+        UseCloudflareWarp = s.SteamCmd.UseCloudflareWarp;
         UpdateAutomationMode = s.Updates.AutomationMode;
     }
 

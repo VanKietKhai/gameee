@@ -72,6 +72,15 @@ public sealed class SteamCmdSettings
     public string? SteamUsername { get; set; }
 
     public bool ValidateAfterUpdate { get; set; } = true;
+
+    /// <summary>
+    /// Connect Cloudflare WARP while SteamCMD downloads and disconnect it afterwards
+    /// (SteamCMD cannot reach Steam on some networks without it).
+    /// </summary>
+    public bool UseCloudflareWarp { get; set; }
+
+    /// <summary>Optional warp-cli.exe path; the default install path is used when empty.</summary>
+    public string? WarpCliPath { get; set; }
 }
 
 public sealed class StandaloneClientSettings

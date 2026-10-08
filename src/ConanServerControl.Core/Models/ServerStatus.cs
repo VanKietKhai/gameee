@@ -41,6 +41,7 @@ public enum UpdateCheckInterval
     Minutes15 = 15,
     Minutes30 = 30,
     Hours1 = 60,
+    Hours2 = 120,
     Hours3 = 180,
     Hours6 = 360,
     Hours12 = 720,

@@ -1,5 +1,5 @@
 <UserControl x:Class="ConanServerControl.App.Views.ServerView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-  <TextBox Text="{Binding Notes}" IsReadOnly="True" TextWrapping="Wrap" AcceptsReturn="True" />
+  <TextBox Text="{Binding Notes, Mode=OneWay}" IsReadOnly="True" TextWrapping="Wrap" AcceptsReturn="True" />
 </UserControl>

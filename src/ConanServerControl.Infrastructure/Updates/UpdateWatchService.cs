@@ -20,6 +20,7 @@ public sealed class UpdateWatchService : BackgroundService
     private static readonly TimeSpan FirstCheckDelay = TimeSpan.FromMinutes(2);
     private static readonly TimeSpan BusyRetry = TimeSpan.FromMinutes(2);
     private static readonly TimeSpan WaitForEmptyRetry = TimeSpan.FromMinutes(5);
+    private static readonly TimeSpan FailureCooldown = TimeSpan.FromHours(6);
 
     private readonly ISettingsService _settings;
     private readonly IServerUpdateService _updates;
@@ -30,6 +31,7 @@ public sealed class UpdateWatchService : BackgroundService
     private readonly IActivityLog _activity;
     private readonly ILogger<UpdateWatchService> _logger;
     private readonly string _statePath;
+    private DateTimeOffset? _lastAutomaticFailure;
 
     public UpdateWatchService(
         ISettingsService settings,
@@ -103,6 +105,12 @@ public sealed class UpdateWatchService : BackgroundService
             return null;
         }
 
+        if (_lastAutomaticFailure is { } failedAt && DateTimeOffset.UtcNow - failedAt < FailureCooldown)
+        {
+            // Do not hammer Steam or repeat the failure notice every check.
+            return null;
+        }
+
         var online = _server.State.Status is ServerStatus.Online;
         if (online && _server.State.PlayerCount > 0)
         {
@@ -136,7 +144,8 @@ public sealed class UpdateWatchService : BackgroundService
         }
         catch (Exception ex) when (ex is not OperationCanceledException)
         {
-            // The pipeline already logged it and published UpdateFailed. Do not retry in a loop.
+            // The pipeline already logged it and published UpdateFailed. Retry after the cooldown.
+            _lastAutomaticFailure = DateTimeOffset.UtcNow;
             _logger.LogError(ex, "Automatic update failed.");
         }
 

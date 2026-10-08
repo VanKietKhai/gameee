@@ -17,19 +17,22 @@ public sealed class SteamCmdService : ISteamCmdService
     private readonly IProcessRunner _runner;
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly ILogger<SteamCmdService> _logger;
+    private readonly ISteamNetworkGuard? _network;
 
     public SteamCmdService(
         ISettingsService settings,
         IAppPaths paths,
         IProcessRunner runner,
         IHttpClientFactory httpClientFactory,
-        ILogger<SteamCmdService> logger)
+        ILogger<SteamCmdService> logger,
+        ISteamNetworkGuard? network = null)
     {
         _settings = settings;
         _paths = paths;
         _runner = runner;
         _httpClientFactory = httpClientFactory;
         _logger = logger;
+        _network = network;
     }
 
     public string? ExecutablePath
@@ -268,6 +271,9 @@ public sealed class SteamCmdService : ISteamCmdService
         var argumentLine = string.Join(' ', arguments);
         _logger.LogInformation("SteamCMD: {Exe} {Args}", exe, argumentLine);
 
+        await using var network = _network is null
+            ? NoOpAsyncDisposable.Instance
+            : await _network.AcquireAsync("SteamCMD", cancellationToken).ConfigureAwait(false);
         var result = await _runner.RunAsync(
                 new ProcessStartRequest
                 {
