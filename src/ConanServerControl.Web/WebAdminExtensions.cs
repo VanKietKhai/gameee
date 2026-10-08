@@ -113,7 +113,9 @@ public static class WebAdminExtensions
             });
             app.UseStaticFiles(new StaticFileOptions
             {
-                FileProvider = new PhysicalFileProvider(wwwroot)
+                FileProvider = new PhysicalFileProvider(wwwroot),
+                // Phones keep pages for days; always revalidate so an app update reaches them.
+                OnPrepareResponse = ctx => ctx.Context.Response.Headers.CacheControl = "no-cache"
             });
         }
 
