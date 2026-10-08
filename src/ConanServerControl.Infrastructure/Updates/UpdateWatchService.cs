@@ -202,7 +202,7 @@ public sealed class UpdateWatchService : BackgroundService
         {
             try
             {
-                await _rcon.AnnounceAsync($"[SERVER] Server se tat sau {marks[i]} phut de cap nhat. Hay ve noi an toan va thoat game.", cancellationToken)
+                await _rcon.AnnounceAsync(RconMessages.UpdateWarning(marks[i]), cancellationToken)
                     .ConfigureAwait(false);
             }
             catch (Exception ex) when (ex is not OperationCanceledException)

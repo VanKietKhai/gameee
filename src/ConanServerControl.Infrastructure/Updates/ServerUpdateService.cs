@@ -549,8 +549,8 @@ public sealed class DelayedRestartService : IDelayedRestartService
                 }
 
                 var text = mark.TotalMinutes >= 1
-                    ? $"Server restart in {(int)mark.TotalMinutes} minutes."
-                    : $"Server restart in {(int)mark.TotalSeconds} seconds.";
+                    ? RconMessages.RestartWarningMinutes((int)mark.TotalMinutes)
+                    : RconMessages.RestartWarningSeconds((int)mark.TotalSeconds);
                 try
                 {
                     await _rcon.AnnounceAsync(text, token).ConfigureAwait(false);

@@ -165,6 +165,9 @@ public sealed class SteamCmdService : ISteamCmdService
             Quote(installDirectory),
             "+login",
             "anonymous",
+            // Without fresh app info SteamCMD may fail with "Missing configuration".
+            "+app_info_update",
+            "1",
             "+app_update",
             AppConstants.ConanDedicatedServerAppId.ToString()
         };
@@ -178,6 +181,15 @@ public sealed class SteamCmdService : ISteamCmdService
 
         var result = await RunSteamCmdAsync(args, TimeSpan.FromHours(2), progress, cancellationToken)
             .ConfigureAwait(false);
+
+        if (!result.Succeeded && !result.TimedOut && IsTransientAppUpdateFailure(result))
+        {
+            // Typical right after SteamCMD updated itself: the second run has the app info.
+            _logger.LogWarning("SteamCMD app_update failed transiently (exit code {Code}); retrying once.", result.ExitCode);
+            progress?.Report("SteamCMD needs a second attempt; retrying...");
+            result = await RunSteamCmdAsync(args, TimeSpan.FromHours(2), progress, cancellationToken)
+                .ConfigureAwait(false);
+        }
 
         if (!result.Succeeded)
         {
@@ -239,6 +251,12 @@ public sealed class SteamCmdService : ISteamCmdService
 
         return result;
     }
+
+    /// <summary>"Missing configuration" or a run that ended in a SteamCMD self-update.</summary>
+    internal static bool IsTransientAppUpdateFailure(ProcessExecutionResult result) =>
+        result.StandardOutput.Contains("Missing configuration", StringComparison.OrdinalIgnoreCase)
+        || result.StandardError.Contains("Missing configuration", StringComparison.OrdinalIgnoreCase)
+        || result.ExitCode == 8;
 
     private void EnsureInstalled()
     {

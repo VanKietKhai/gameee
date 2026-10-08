@@ -417,7 +417,7 @@ public sealed class ServerProcessManager : IServerProcessManager, IDisposable
 
         try
         {
-            await _rcon.AnnounceAsync("Server is shutting down.", cancellationToken).ConfigureAwait(false);
+            await _rcon.AnnounceAsync(Core.Notifications.RconMessages.ShuttingDown, cancellationToken).ConfigureAwait(false);
         }
         catch (Exception ex) when (!cancellationToken.IsCancellationRequested)
         {
