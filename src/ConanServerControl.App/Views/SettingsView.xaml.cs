@@ -18,6 +18,13 @@ public partial class SettingsView : UserControl
             {
                 DiscordWebhookBox.Clear();
             }
+
+            if (e.PropertyName == nameof(SettingsViewModel.RemotePasswordInput)
+                && string.IsNullOrEmpty(viewModel.RemotePasswordInput)
+                && RemotePasswordBox.Password.Length > 0)
+            {
+                RemotePasswordBox.Clear();
+            }
         };
     }
 
@@ -26,6 +33,14 @@ public partial class SettingsView : UserControl
         if (DataContext is SettingsViewModel viewModel)
         {
             viewModel.DiscordWebhookInput = DiscordWebhookBox.Password;
+        }
+    }
+
+    private void RemotePasswordBox_OnPasswordChanged(object sender, RoutedEventArgs e)
+    {
+        if (DataContext is SettingsViewModel viewModel)
+        {
+            viewModel.RemotePasswordInput = RemotePasswordBox.Password;
         }
     }
 }

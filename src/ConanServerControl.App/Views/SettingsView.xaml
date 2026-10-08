@@ -25,6 +25,13 @@
       <ComboBox ItemsSource="{Binding AutomationModes}" SelectedItem="{Binding UpdateAutomationMode}" HorizontalAlignment="Left" MinWidth="160" />
       <CheckBox Content="Bật Cloudflare WARP khi SteamCMD tải (tự tắt khi tải xong)" IsChecked="{Binding UseCloudflareWarp}" Margin="0,8,0,16" />
 
+      <TextBlock Text="ĐIỀU KHIỂN TỪ XA (ĐIỆN THOẠI)" Foreground="{StaticResource MutedBrush}" />
+      <CheckBox Content="Cho phép bật / tắt server từ điện thoại qua Tailscale" IsChecked="{Binding RemoteEnabled}" />
+      <TextBlock Text="Mật khẩu đăng nhập mới (ít nhất 8 ký tự, chỉ ghi, lưu dạng băm)" Margin="0,12,0,4" />
+      <PasswordBox x:Name="RemotePasswordBox" Margin="0,0,0,4" PasswordChanged="RemotePasswordBox_OnPasswordChanged" />
+      <TextBlock Text="{Binding RemotePasswordStatus}" Foreground="{StaticResource MutedBrush}" />
+      <TextBlock Text="{Binding RemoteAddress}" TextWrapping="Wrap" Margin="0,4,0,16" />
+
       <Button Style="{StaticResource PrimaryButton}" Content="LƯU CÀI ĐẶT" Command="{Binding SaveCommand}" HorizontalAlignment="Left" />
     </StackPanel>
   </ScrollViewer>

@@ -61,6 +61,7 @@ public sealed class DiagnosticsService
         {
             Core.Models.WebBindMode.Lan => "0.0.0.0",
             Core.Models.WebBindMode.Custom when !string.IsNullOrWhiteSpace(web.CustomBindAddress) => web.CustomBindAddress,
+            Core.Models.WebBindMode.Tailscale => Health.NetworkInfoService.FindTailscaleIPv4() ?? "127.0.0.1",
             _ => "127.0.0.1"
         };
     }

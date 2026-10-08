@@ -4,6 +4,7 @@ using ConanServerControl.App.Services;
 using ConanServerControl.Core.Abstractions;
 using ConanServerControl.Core.Models;
 using ConanServerControl.Core.Notifications;
+using ConanServerControl.Core.Security;
 using ConanServerControl.Infrastructure.Notifications;
 
 namespace ConanServerControl.App.ViewModels;
@@ -17,12 +18,14 @@ public partial class SettingsViewModel : ObservableObject
     private readonly ISettingsService _settings;
     private readonly IUiDialogs _dialogs;
     private readonly IDiscordNotifier _discord;
+    private readonly INetworkInfoService _network;
 
-    public SettingsViewModel(ISettingsService settings, IUiDialogs dialogs, IDiscordNotifier discord)
+    public SettingsViewModel(ISettingsService settings, IUiDialogs dialogs, IDiscordNotifier discord, INetworkInfoService network)
     {
         _settings = settings;
         _dialogs = dialogs;
         _discord = discord;
+        _network = network;
         LoadFromSettings();
     }
 
@@ -36,6 +39,14 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty] private bool notifyUpdates = true;
     [ObservableProperty] private UpdateCheckInterval updateCheckInterval = UpdateCheckInterval.Hours2;
     [ObservableProperty] private AutomationMode updateAutomationMode = AutomationMode.Manual;
+    [ObservableProperty] private bool remoteEnabled;
+    [ObservableProperty] private string? remotePasswordInput;
+    [ObservableProperty] private bool remotePasswordConfigured;
+    [ObservableProperty] private string remoteAddress = string.Empty;
+
+    public string RemotePasswordStatus => RemotePasswordConfigured ? "Đã đặt mật khẩu" : "Chưa đặt mật khẩu";
+
+    partial void OnRemotePasswordConfiguredChanged(bool value) => OnPropertyChanged(nameof(RemotePasswordStatus));
 
     public UpdateCheckInterval[] UpdateCheckIntervals { get; } = Enum.GetValues<UpdateCheckInterval>();
 
@@ -71,7 +82,29 @@ public partial class SettingsViewModel : ObservableObject
             s.Updates.CheckInterval = UpdateCheckInterval;
             s.Updates.AutomationMode = UpdateAutomationMode;
             s.SteamCmd.UseCloudflareWarp = UseCloudflareWarp;
+            s.WebAdmin.Enabled = RemoteEnabled;
+            if (RemoteEnabled)
+            {
+                // Phone access only through the private Tailscale network, never the LAN or internet.
+                s.WebAdmin.BindMode = WebBindMode.Tailscale;
+            }
         });
+
+        var restartNeeded = false;
+        if (!string.IsNullOrEmpty(RemotePasswordInput))
+        {
+            if (RemotePasswordInput.Length < 8)
+            {
+                _dialogs.Alert("Mật khẩu", "Mật khẩu điều khiển từ xa cần ít nhất 8 ký tự. Mật khẩu chưa được lưu.");
+                return;
+            }
+
+            var hash = PasswordHasher.Hash(RemotePasswordInput);
+            await _settings.UpdateSecretsAsync(sec => sec.WebAdminPasswordHash = hash);
+            RemotePasswordInput = string.Empty;
+            RemotePasswordConfigured = true;
+            restartNeeded = true;
+        }
 
         if (!string.IsNullOrWhiteSpace(DiscordWebhookInput))
         {
@@ -89,7 +122,11 @@ public partial class SettingsViewModel : ObservableObject
             }
         }
 
-        _dialogs.Alert("Đã lưu", "Cài đặt đã được lưu.");
+        restartNeeded |= RemoteEnabled != _remoteEnabledAtLoad;
+        _remoteEnabledAtLoad = RemoteEnabled;
+        _dialogs.Alert("Đã lưu", restartNeeded
+            ? "Cài đặt đã được lưu. Tắt app rồi mở lại để áp dụng phần điều khiển từ xa."
+            : "Cài đặt đã được lưu.");
     }
 
     private void LoadFromSettings()
@@ -105,5 +142,15 @@ public partial class SettingsViewModel : ObservableObject
         UpdateCheckInterval = s.Updates.CheckInterval;
         UpdateAutomationMode = s.Updates.AutomationMode;
         UseCloudflareWarp = s.SteamCmd.UseCloudflareWarp;
+        RemoteEnabled = s.WebAdmin.Enabled;
+        _remoteEnabledAtLoad = RemoteEnabled;
+        RemotePasswordInput = null;
+        RemotePasswordConfigured = !string.IsNullOrEmpty(_settings.Secrets.WebAdminPasswordHash);
+        var tailscale = _network.GetTailscaleIPv4();
+        RemoteAddress = tailscale is null
+            ? "Chưa thấy Tailscale trên máy này. Cài Tailscale và đăng nhập, rồi mở lại app."
+            : $"Trên điện thoại (bật Tailscale) mở: http://{tailscale}:{s.WebAdmin.Port}   - tên đăng nhập: {s.WebAdmin.Username}";
     }
+
+    private bool _remoteEnabledAtLoad;
 }

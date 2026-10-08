@@ -144,7 +144,10 @@ public sealed class NetworkInfoService : INetworkInfoService
         return list;
     }
 
-    public string? GetTailscaleIPv4()
+    public string? GetTailscaleIPv4() => FindTailscaleIPv4();
+
+    /// <summary>IPv4 (100.x) of the Tailscale adapter, or null when Tailscale is not connected.</summary>
+    public static string? FindTailscaleIPv4()
     {
         try
         {

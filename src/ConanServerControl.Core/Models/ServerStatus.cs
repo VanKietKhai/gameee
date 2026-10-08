@@ -32,7 +32,10 @@ public enum WebBindMode
 {
     LocalhostOnly = 0,
     Lan = 1,
-    Custom = 2
+    Custom = 2,
+
+    /// <summary>Only the Tailscale address (private phone access); localhost when Tailscale is down.</summary>
+    Tailscale = 3
 }
 
 public enum UpdateCheckInterval
