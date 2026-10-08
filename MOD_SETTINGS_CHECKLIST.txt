@@ -125,3 +125,35 @@ E. SERVER (ServerSettings.ini - tu dong giu qua reset, khong can nhap lai)
 ----------------------------------------------------------------
   Balance da ap (x5 khai thac, PlayerDamage 0.8, NPCDamage 1.35, ...), DropEquipmentOnDeath=2,
   EverybodyCanLootCorpse=False, gioi han thrall (cho ap): 15 / 12 / 5.
+
+----------------------------------------------------------------
+F. DEATHTRAUMA (them 09/10/2026)  - Settings > Server > Administration, hoac console (admin)
+----------------------------------------------------------------
+Muc tieu: giu do kho 8/10. Server da kho san (PlayerDamageTaken 1.15, NPCDamage 1.35,
+roi tui do khi chet, phuc kich Night Terrors + PvE Ambush 30%) nen Trauma o muc NHE HON mac dinh.
+Go "dc trauma status" truoc va sau de xem don vi thuc te (phut / %).
+  Thoi gian Trauma ................. dc trauma duration 20      (mac dinh 30 phut)
+  Giam chi so moi cap .............. dc trauma loss 10          (mac dinh 15%)
+  Mau/the luc toi thieu ............ dc trauma minstats 70      (toi da ~3 cap anh huong)
+  Doi/khat toi thieu ............... dc trauma minneeds 70
+  Ve xac de go Trauma .............. dc trauma recovery on      (khuyen khich chay ve xac lay tui do)
+  Cach tinh gio .................... dc trauma timer corpse     (chet lien tiep khong reset gio)
+  Tu sat / thao vong tay ........... giu mac dinh: 2 cap, x2 thoi gian (chong lach luat)
+  Grace sau khi hoi sinh ........... dc trauma grace on  +  dc trauma grace duration 30
+  Thuoc chua Trauma ................ dc trauma potion tier1     (can KHOI DONG LAI server)
+  Danh dau xac ..................... giu mac dinh ON / 100 m
+DBNO (cuu dong doi): dung DBNO cua DeathTrauma, TAT Player DBNO cu
+  Death DBNO ....................... BAT (trong bang Administration), thoi gian 90 s
+  Giu phim cuu ..................... 5 s ; mau sau khi cuu 25%
+  KO DBNO .......................... TAT
+  Sau khi bat Death DBNO: go "dc toggleplayerdbno" de TAT Player DBNO (tranh 2 he thong cung chay).
+  Ly do chon DeathTrauma: cung dieu kien (dong doi trong ban kinh), them nut Bo cuoc (Give Up),
+  cuu bang giu phim 5 s, chinh duoc mau sau khi cuu, va duoc cuu thi KHONG bi Trauma.
+
+----------------------------------------------------------------
+G. IRA'S RAGDOLL MOD (them 09/10/2026)
+----------------------------------------------------------------
+  Khong co cai dat server - cai mod la ai cung dung duoc.
+  Phim mac dinh F7 TRUNG voi bang nhiem vu MQ14 (F7). Doi phim ragdoll:
+  Settings > Controls > Ira's Ragdoll Mod  -> vi du F9. Cung co trong menu Emote.
+  Cay xeng "The Floppenheimer" (admin spawn) chi tac dung PvP.
