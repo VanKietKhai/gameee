@@ -14,7 +14,15 @@
             <TextBlock Text="SERVER" Foreground="{StaticResource MutedBrush}" />
             <TextBlock Text="{Binding StatusText}" FontSize="22" FontWeight="Bold" Margin="0,6,0,8" />
             <TextBlock Text="{Binding ServerName}" />
-            <TextBlock Text="{Binding ServerIp}" Foreground="{StaticResource MutedBrush}" />
+            <TextBlock Margin="0,8,0,2" Text="DIRECT CONNECT" Foreground="{StaticResource MutedBrush}" FontSize="11" />
+            <DockPanel LastChildFill="False">
+              <TextBox DockPanel.Dock="Left" Text="{Binding JoinAddress, Mode=OneWay}" IsReadOnly="True"
+                       FontSize="16" FontWeight="SemiBold" MinWidth="170" VerticalContentAlignment="Center"
+                       ToolTip="IP:cổng để vào thẳng server (Direct Connect)" />
+              <Button DockPanel.Dock="Left" Style="{StaticResource GhostButton}" Content="COPY" Margin="8,0,0,0"
+                      Command="{Binding CopyJoinAddressCommand}" ToolTip="Copy IP:cổng vào clipboard" />
+            </DockPanel>
+            <TextBlock Text="{Binding CopyFeedback}" Foreground="{StaticResource SuccessBrush}" FontSize="11" />
             <TextBlock Margin="0,8,0,0" Foreground="{StaticResource MutedBrush}"
                        Text="{Binding GamePort, StringFormat=Game {0}}" />
             <TextBlock Foreground="{StaticResource MutedBrush}" Text="{Binding QueryPort, StringFormat=Query {0}}" />
@@ -24,6 +32,7 @@
             <TextBlock Text="{Binding Ram, StringFormat=RAM {0}}" />
             <TextBlock Text="{Binding Version, StringFormat=Build {0}}" />
             <TextBlock Text="{Binding LatestBuild}" Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" />
+            <TextBlock Text="{Binding ClientBuild}" Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" />
           </StackPanel>
         </Border>
         <Border Grid.Column="1" Background="{StaticResource SurfaceBrush}" CornerRadius="12" Padding="16" Margin="0,0,12,12">

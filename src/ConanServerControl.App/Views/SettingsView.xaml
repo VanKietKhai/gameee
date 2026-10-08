@@ -66,6 +66,21 @@
       <TextBlock Text="Bind mode: LocalhostOnly, LAN, or Custom" Margin="0,8,0,4" />
       <TextBox Text="{Binding BindMode}" Margin="0,0,0,12" />
 
+      <TextBlock Text="Discord" Foreground="{StaticResource MutedBrush}" />
+      <CheckBox Content="Gửi thông báo trạng thái server lên Discord" IsChecked="{Binding DiscordEnabled}" Margin="0,4,0,0" />
+      <CheckBox Content="Báo người chơi vào / thoát / mất kết nối" IsChecked="{Binding NotifyPlayerEvents}" />
+      <CheckBox Content="Báo bản cập nhật server / mod / game" IsChecked="{Binding NotifyUpdates}" />
+      <TextBlock Text="Webhook URL (chỉ ghi, lưu mã hoá bằng Windows DPAPI, không hiện lại)" Margin="0,8,0,4" />
+      <PasswordBox x:Name="DiscordWebhookBox" Margin="0,0,0,4" PasswordChanged="DiscordWebhookBox_OnPasswordChanged" />
+      <TextBlock Text="{Binding DiscordWebhookStatus}" Foreground="{StaticResource MutedBrush}" Margin="0,0,0,8" />
+      <Button Style="{StaticResource GhostButton}" Content="Gửi thử Discord" Command="{Binding TestDiscordCommand}" HorizontalAlignment="Left" Margin="0,0,0,12" />
+
+      <TextBlock Text="Kiểm tra cập nhật (Steam)" Foreground="{StaticResource MutedBrush}" />
+      <TextBlock Text="Tần suất kiểm tra" Margin="0,8,0,4" />
+      <ComboBox ItemsSource="{Binding UpdateCheckIntervals}" SelectedItem="{Binding UpdateCheckInterval}" HorizontalAlignment="Left" MinWidth="160" />
+      <TextBlock Text="Khi có bản mới: Manual = chỉ báo; Automatic = tự sao lưu rồi cập nhật khi server trống; Scheduled = tự cập nhật trong khung giờ bảo trì. Game client luôn do Steam cập nhật." TextWrapping="Wrap" Margin="0,8,0,4" />
+      <ComboBox ItemsSource="{Binding AutomationModes}" SelectedItem="{Binding UpdateAutomationMode}" HorizontalAlignment="Left" MinWidth="160" Margin="0,0,0,12" />
+
       <CheckBox Content="Start Conan server when the manager launches" IsChecked="{Binding StartServerOnLaunch}" />
       <CheckBox Content="Restart server after crash" IsChecked="{Binding RestartAfterCrash}" />
 

@@ -88,6 +88,17 @@ public sealed class ServerUpdateCheckResult
 
     public bool UpdateAvailable { get; init; }
 
+    public bool ServerUpdateAvailable { get; init; }
+
+    public string? ClientInstalledBuild { get; init; }
+
+    public string? ClientAvailableBuild { get; init; }
+
+    public bool ClientUpdateAvailable { get; init; }
+
+    /// <summary>Workshop mods with a newer Steam timestamp than the installed copy.</summary>
+    public IReadOnlyList<WorkshopMod> ModsNeedingUpdate { get; init; } = Array.Empty<WorkshopMod>();
+
     public string Summary { get; init; } = string.Empty;
 }
 

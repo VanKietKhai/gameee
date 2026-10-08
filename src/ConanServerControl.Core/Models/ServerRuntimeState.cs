@@ -41,6 +41,12 @@ public sealed class ServerRuntimeState
 
     public bool ServerUpdateAvailable { get; set; }
 
+    public string? ClientInstalledBuild { get; set; }
+
+    public string? ClientAvailableBuild { get; set; }
+
+    public bool ClientUpdateAvailable { get; set; }
+
     public int InstalledModCount { get; set; }
 
     public int ModsRequiringUpdate { get; set; }
@@ -81,6 +87,9 @@ public sealed class ServerRuntimeState
             InstalledBuild = InstalledBuild,
             AvailableBuild = AvailableBuild,
             ServerUpdateAvailable = ServerUpdateAvailable,
+            ClientInstalledBuild = ClientInstalledBuild,
+            ClientAvailableBuild = ClientAvailableBuild,
+            ClientUpdateAvailable = ClientUpdateAvailable,
             InstalledModCount = InstalledModCount,
             ModsRequiringUpdate = ModsRequiringUpdate,
             LastBackupAt = LastBackupAt,

@@ -3,6 +3,7 @@ using System.Text;
 using ConanServerControl.Core.Abstractions;
 using ConanServerControl.Core.Exceptions;
 using ConanServerControl.Core.Models;
+using ConanServerControl.Core.Notifications;
 using Microsoft.Extensions.Logging;
 
 namespace ConanServerControl.Infrastructure.Rcon;
@@ -214,28 +215,6 @@ public sealed class RconService : IRconService, IDisposable
         return buffer;
     }
 
-    private static IReadOnlyList<PlayerInfo> ParsePlayers(string response)
-    {
-        if (string.IsNullOrWhiteSpace(response) ||
-            response.Contains("no players", StringComparison.OrdinalIgnoreCase))
-        {
-            return Array.Empty<PlayerInfo>();
-        }
-
-        var players = new List<PlayerInfo>();
-        foreach (var raw in response.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries))
-        {
-            var line = raw.Trim();
-            if (line.Length == 0 || line.StartsWith("idx", StringComparison.OrdinalIgnoreCase))
-            {
-                continue;
-            }
-
-            var parts = line.Split(',');
-            var name = parts.Length > 1 ? parts[1].Trim().Trim('"') : line;
-            players.Add(new PlayerInfo { Name = name });
-        }
-
-        return players;
-    }
+    private static IReadOnlyList<PlayerInfo> ParsePlayers(string response) =>
+        RconPlayerListParser.Parse(response);
 }

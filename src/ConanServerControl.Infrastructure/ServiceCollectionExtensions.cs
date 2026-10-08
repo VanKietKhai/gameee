@@ -1,4 +1,6 @@
 using ConanServerControl.Core.Abstractions;
+using ConanServerControl.Core.Notifications;
+using ConanServerControl.Core.Updates;
 using ConanServerControl.Infrastructure.Backups;
 using ConanServerControl.Infrastructure.Concurrency;
 using ConanServerControl.Infrastructure.Data;
@@ -8,6 +10,7 @@ using ConanServerControl.Infrastructure.Health;
 using ConanServerControl.Infrastructure.Hosting;
 using ConanServerControl.Infrastructure.Logging;
 using ConanServerControl.Infrastructure.Mods;
+using ConanServerControl.Infrastructure.Notifications;
 using ConanServerControl.Infrastructure.Paths;
 using ConanServerControl.Infrastructure.ProcessManagement;
 using ConanServerControl.Infrastructure.Rcon;
@@ -56,6 +59,8 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<DiagnosticsService>();
         services.AddSingleton<IIntegrationDiagnosticsService, IntegrationDiagnosticsService>();
         services.AddSingleton<IActivityLog, ActivityLogService>();
+        services.AddSingleton<IServerEventBus, ServerEventBus>();
+        services.AddSingleton<ISteamBuildInfoClient, SteamCmdNetBuildInfoClient>();
 
         services.AddHttpClient(SteamCmdService.HttpClientName, client =>
         {
@@ -67,6 +72,18 @@ public static class ServiceCollectionExtensions
             client.Timeout = TimeSpan.FromSeconds(30);
             client.DefaultRequestHeaders.UserAgent.ParseAdd("ConanServerControl/0.1");
         });
+
+        services.AddHttpClient(SteamCmdNetBuildInfoClient.HttpClientName, client =>
+        {
+            client.Timeout = TimeSpan.FromSeconds(20);
+            client.DefaultRequestHeaders.UserAgent.ParseAdd("ConanServerControl/0.1");
+        });
+        // The webhook URL is a secret: keep HttpClient request logging away from it.
+        services.AddHttpClient(DiscordWebhookNotifier.HttpClientName, client =>
+        {
+            client.Timeout = TimeSpan.FromSeconds(20);
+            client.DefaultRequestHeaders.UserAgent.ParseAdd("ConanServerControl/0.1");
+        }).RemoveAllLoggers();
 
         services.AddDbContextFactory<AppDbContext>(options =>
         {

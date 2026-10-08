@@ -2,6 +2,7 @@ using ConanServerControl.Core;
 using ConanServerControl.Core.Abstractions;
 using ConanServerControl.Core.Exceptions;
 using ConanServerControl.Core.Models;
+using ConanServerControl.Core.Notifications;
 using ConanServerControl.Core.Updates;
 using Microsoft.Extensions.Logging;
 
@@ -17,6 +18,8 @@ public sealed class ServerUpdateService : IServerUpdateService
     private readonly IServerActionGate _gate;
     private readonly IActivityLog _activityLog;
     private readonly ILogger<ServerUpdateService> _logger;
+    private readonly ISteamBuildInfoClient? _buildInfo;
+    private readonly IServerEventBus? _events;
     private readonly UpdatePipelineStateMachine _pipeline = new();
 
     public ServerUpdateService(
@@ -27,7 +30,9 @@ public sealed class ServerUpdateService : IServerUpdateService
         IWorkshopModService mods,
         IServerActionGate gate,
         IActivityLog activityLog,
-        ILogger<ServerUpdateService> logger)
+        ILogger<ServerUpdateService> logger,
+        ISteamBuildInfoClient? buildInfo = null,
+        IServerEventBus? events = null)
     {
         _settings = settings;
         _steamCmd = steamCmd;
@@ -37,47 +42,91 @@ public sealed class ServerUpdateService : IServerUpdateService
         _gate = gate;
         _activityLog = activityLog;
         _logger = logger;
+        _buildInfo = buildInfo;
+        _events = events;
     }
 
     public async Task<ServerUpdateCheckResult> CheckAsync(CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        var install = _settings.Current.ServerPaths.ServerInstallDirectory
-                      ?? _settings.Current.ServerPaths.ServerWorkingDirectory;
-        string? installed = null;
-        if (!string.IsNullOrWhiteSpace(install))
-        {
-            var manifest = Path.Combine(install, "steamapps", $"appmanifest_{AppConstants.ConanDedicatedServerAppId}.acf");
-            if (File.Exists(manifest))
-            {
-                installed = TryReadBuildId(File.ReadAllText(manifest));
-            }
-        }
+        var installed = SteamBuildInfo.FindInstalledBuild(AppConstants.ConanDedicatedServerAppId, ServerInstallDirectory());
+        // The game client normally sits in the same Steam library as the server.
+        var clientInstalled = SteamBuildInfo.FindInstalledBuild(
+            AppConstants.ConanExilesAppId,
+            _settings.Current.Client.RootDirectory,
+            ServerInstallDirectory());
+        var latest = await LatestBuildAsync(AppConstants.ConanDedicatedServerAppId, cancellationToken).ConfigureAwait(false);
+        var clientLatest = clientInstalled is null
+            ? null
+            : await LatestBuildAsync(AppConstants.ConanExilesAppId, cancellationToken).ConfigureAwait(false);
 
         await _mods.CheckForUpdatesAsync(cancellationToken).ConfigureAwait(false);
-        var modsNeeding = _settings.Current.Mods.Mods.Count(m => m.UpdateAvailable);
+        var modsNeeding = _settings.Current.Mods.Mods.Where(m => m.UpdateAvailable).ToArray();
+        var serverUpdate = SteamBuildInfo.IsNewer(installed, latest?.BuildId);
+        var clientUpdate = SteamBuildInfo.IsNewer(clientInstalled, clientLatest?.BuildId);
         _server.State.InstalledBuild = installed;
+        _server.State.AvailableBuild = latest?.BuildId;
+        _server.State.ServerUpdateAvailable = serverUpdate;
+        _server.State.ClientInstalledBuild = clientInstalled;
+        _server.State.ClientAvailableBuild = clientLatest?.BuildId;
+        _server.State.ClientUpdateAvailable = clientUpdate;
         _server.State.LastUpdateCheckAt = DateTimeOffset.UtcNow;
-        _server.State.ModsRequiringUpdate = modsNeeding;
+        _server.State.ModsRequiringUpdate = modsNeeding.Length;
         _server.State.InstalledModCount = _settings.Current.Mods.Mods.Count;
 
         var serverLine = installed is null
             ? "Installed dedicated server build is unknown. Use Update Server to let SteamCMD refresh files."
-            : $"Installed dedicated server build: {installed}. Latest Steam depot comparison is not available without a Steam Web API key; Update Server still runs SteamCMD app_update.";
-        var modsLine = modsNeeding == 0
+            : latest is null
+                ? $"Installed dedicated server build: {installed}. The latest Steam build could not be looked up."
+                : serverUpdate
+                    ? $"Dedicated server update available: installed build {installed}, Steam build {latest.BuildId}."
+                    : $"Dedicated server is up to date (build {installed}).";
+        var clientLine = clientInstalled is null || clientLatest is null
+            ? string.Empty
+            : clientUpdate
+                ? $" Game client update available: installed build {clientInstalled}, Steam build {clientLatest.BuildId}."
+                : $" Game client is up to date (build {clientInstalled}).";
+        var modsLine = modsNeeding.Length == 0
             ? "No Workshop mod updates were flagged."
-            : $"{modsNeeding} Workshop mod(s) have a newer Steam timestamp than the last successful install.";
+            : $"{modsNeeding.Length} Workshop mod(s) have a newer Steam timestamp than the last successful install: {string.Join(", ", modsNeeding.Select(m => m.Name))}.";
 
-        var summary = serverLine + " " + modsLine;
+        var summary = serverLine + clientLine + " " + modsLine;
         _logger.LogInformation("Update check: {Summary}", summary);
         await _activityLog.AddAsync("Updates", summary, cancellationToken: cancellationToken).ConfigureAwait(false);
         return new ServerUpdateCheckResult
         {
             InstalledBuild = installed,
-            AvailableBuild = null,
-            UpdateAvailable = modsNeeding > 0,
+            AvailableBuild = latest?.BuildId,
+            UpdateAvailable = serverUpdate || modsNeeding.Length > 0,
+            ServerUpdateAvailable = serverUpdate,
+            ClientInstalledBuild = clientInstalled,
+            ClientAvailableBuild = clientLatest?.BuildId,
+            ClientUpdateAvailable = clientUpdate,
+            ModsNeedingUpdate = modsNeeding,
             Summary = summary
         };
+    }
+
+    private string? ServerInstallDirectory() =>
+        _settings.Current.ServerPaths.ServerInstallDirectory
+        ?? _settings.Current.ServerPaths.ServerWorkingDirectory;
+
+    private async Task<SteamPublicBuild?> LatestBuildAsync(int appId, CancellationToken cancellationToken)
+    {
+        if (_buildInfo is null)
+        {
+            return null;
+        }
+
+        try
+        {
+            return await _buildInfo.GetPublicBuildAsync(appId, cancellationToken).ConfigureAwait(false);
+        }
+        catch (Exception ex) when (!cancellationToken.IsCancellationRequested)
+        {
+            _logger.LogWarning(ex, "Could not look up the latest Steam build of app {AppId}.", appId);
+            return null;
+        }
     }
 
     public Task UpdateAsync(bool restartAfter, IProgress<PipelineProgress>? progress = null, CancellationToken cancellationToken = default) =>
@@ -167,6 +216,8 @@ public sealed class ServerUpdateService : IServerUpdateService
 
         using (lease)
         {
+            _events?.Publish(new ServerEvent { Kind = ServerEventKind.UpdateStarted, Action = actionName });
+            var modNames = updateMods ? ModsFlaggedForUpdate(workshopIds) : Array.Empty<string>();
             _pipeline.Begin();
             var wasRunning = _server.State.Status is not ServerStatus.Offline and not ServerStatus.Error;
             var mutationStarted = false;
@@ -268,6 +319,20 @@ public sealed class ServerUpdateService : IServerUpdateService
                 Report(progress, _pipeline.TransitionTo(UpdatePipelineState.Completed, "Update completed. Existing saves were not deleted."));
                 await _activityLog.AddAsync("Updates", $"{actionName} completed.", cancellationToken: cancellationToken)
                     .ConfigureAwait(false);
+                if (updateServer)
+                {
+                    var build = SteamBuildInfo.FindInstalledBuild(AppConstants.ConanDedicatedServerAppId, ServerInstallDirectory());
+                    _server.State.InstalledBuild = build;
+                    _server.State.ServerUpdateAvailable = SteamBuildInfo.IsNewer(build, _server.State.AvailableBuild);
+                }
+
+                _events?.Publish(new ServerEvent
+                {
+                    Kind = ServerEventKind.UpdateCompleted,
+                    Action = actionName,
+                    InstalledBuild = updateServer ? _server.State.InstalledBuild : null,
+                    Items = modNames
+                });
             }
             catch (Exception ex)
             {
@@ -295,6 +360,7 @@ public sealed class ServerUpdateService : IServerUpdateService
                 var verifiedRestore = batchFailure is { IsSafeToRestart: true };
                 var recoveryRequired = batchFailure is not null && !verifiedRestore;
                 var detail = ex is UserFacingException facing ? facing.Message : ex.Message;
+                _events?.Publish(new ServerEvent { Kind = ServerEventKind.UpdateFailed, Action = actionName, Detail = detail });
 
                 if (recoveryRequired)
                 {
@@ -368,6 +434,12 @@ public sealed class ServerUpdateService : IServerUpdateService
         }
     }
 
+    private string[] ModsFlaggedForUpdate(IReadOnlyList<long>? workshopIds) =>
+        _settings.Current.Mods.Mods
+            .Where(m => m.UpdateAvailable && (workshopIds is null || workshopIds.Contains(m.WorkshopId)))
+            .Select(m => m.Name)
+            .ToArray();
+
     private static ModBatchCommitException? FindModBatchFailure(Exception ex)
     {
         for (var current = ex; current is not null; current = current.InnerException)
@@ -383,26 +455,6 @@ public sealed class ServerUpdateService : IServerUpdateService
 
     private static void Report(IProgress<PipelineProgress>? progress, PipelineProgress snapshot) =>
         progress?.Report(snapshot);
-
-    private static string? TryReadBuildId(string acf)
-    {
-        const string key = "\"buildid\"";
-        var index = acf.IndexOf(key, StringComparison.OrdinalIgnoreCase);
-        if (index < 0)
-        {
-            return null;
-        }
-
-        var rest = acf[(index + key.Length)..];
-        var first = rest.IndexOf('"', StringComparison.Ordinal);
-        var second = rest.IndexOf('"', first + 1);
-        if (first < 0 || second < 0)
-        {
-            return null;
-        }
-
-        return rest.Substring(first + 1, second - first - 1);
-    }
 }
 
 public sealed class DelayedRestartService : IDelayedRestartService

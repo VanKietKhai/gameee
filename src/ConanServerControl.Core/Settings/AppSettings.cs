@@ -35,6 +35,8 @@ public sealed class AppSettings
     public RconSettings Rcon { get; set; } = new();
 
     public AdvancedSettings Advanced { get; set; } = new();
+
+    public NotificationSettings Notifications { get; set; } = new();
 }
 
 public sealed class GeneralSettings
@@ -175,6 +177,22 @@ public sealed class RconSettings
     public string ShutdownCommand { get; set; } = AppConstants.DefaultRconShutdownCommand;
 }
 
+/// <summary>
+/// Discord webhook notifications. The webhook URL itself is a secret and lives in
+/// <see cref="ProtectedSecrets.DiscordWebhookUrl"/>.
+/// </summary>
+public sealed class NotificationSettings
+{
+    public bool DiscordEnabled { get; set; } = true;
+
+    /// <summary>Name shown as the message author in Discord.</summary>
+    public string DiscordUsername { get; set; } = "Conan Server";
+
+    public bool NotifyPlayerEvents { get; set; } = true;
+
+    public bool NotifyUpdates { get; set; } = true;
+}
+
 public sealed class AdvancedSettings
 {
     /// <summary>
@@ -228,4 +246,6 @@ public sealed class ProtectedSecrets
     public string? AdminPassword { get; set; }
 
     public string? SteamPassword { get; set; }
+
+    public string? DiscordWebhookUrl { get; set; }
 }

@@ -5,7 +5,9 @@ using ConanServerControl.App.Views;
 using ConanServerControl.Core.Abstractions;
 using ConanServerControl.Infrastructure;
 using ConanServerControl.Infrastructure.Logging;
+using ConanServerControl.Infrastructure.Notifications;
 using ConanServerControl.Infrastructure.Paths;
+using ConanServerControl.Infrastructure.Updates;
 using ConanServerControl.Web.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -38,6 +40,12 @@ public partial class App : Application
                 services.AddSingleton<ILiveLogBuffer>(liveLog);
                 services.AddConanServerControl(paths);
                 services.AddHostedService<WebAdminEmbeddedHost>();
+                // Notifiers and the update watcher run only in the desktop app, never twice.
+                services.AddSingleton<DiscordWebhookNotifier>();
+                services.AddSingleton<IDiscordNotifier>(sp => sp.GetRequiredService<DiscordWebhookNotifier>());
+                services.AddHostedService(sp => sp.GetRequiredService<DiscordWebhookNotifier>());
+                services.AddHostedService<PlayerActivityService>();
+                services.AddHostedService<UpdateWatchService>();
                 services.AddSingleton<IUiDialogs, WpfDialogService>();
                 services.AddSingleton<DashboardViewModel>();
                 services.AddSingleton<ServerViewModel>();

@@ -66,12 +66,40 @@ public partial class DashboardViewModel : ObservableObject
     [ObservableProperty] private string ram = "—";
     [ObservableProperty] private string version = "Unknown";
     [ObservableProperty] private string latestBuild = "Not checked";
+    [ObservableProperty] private string clientBuild = string.Empty;
     [ObservableProperty] private string modsSummary = "0 installed";
     [ObservableProperty] private string lastBackup = "Never";
     [ObservableProperty] private string lastUpdateCheck = "Never";
     [ObservableProperty] private string pipelineText = string.Empty;
     [ObservableProperty] private bool actionsLocked;
     [ObservableProperty] private string? errorText;
+    [ObservableProperty] private string copyFeedback = string.Empty;
+
+    /// <summary>Address friends type into Direct Connect: the advertised IP plus the game port.</summary>
+    public string JoinAddress => $"{ServerIp}:{GamePort}";
+
+    partial void OnServerIpChanged(string value) => OnPropertyChanged(nameof(JoinAddress));
+
+    partial void OnGamePortChanged(string value) => OnPropertyChanged(nameof(JoinAddress));
+
+    [RelayCommand]
+    private async Task CopyJoinAddressAsync()
+    {
+        try
+        {
+            Clipboard.SetText(JoinAddress);
+            CopyFeedback = $"Đã copy {JoinAddress}";
+        }
+        catch (Exception ex)
+        {
+            CopyFeedback = string.Empty;
+            _dialogs.Alert("Copy", $"Không copy được vào clipboard:{Environment.NewLine}{ex.Message}");
+            return;
+        }
+
+        await Task.Delay(TimeSpan.FromSeconds(3));
+        CopyFeedback = string.Empty;
+    }
 
     public ObservableCollection<string> Activity { get; } = new();
 
@@ -106,8 +134,7 @@ public partial class DashboardViewModel : ObservableObject
         await Run(async () =>
         {
             var result = await _updates.CheckAsync();
-            LatestBuild = result.AvailableBuild ?? result.Summary;
-            Version = result.InstalledBuild ?? Version;
+            ApplyState(_server.State);
             _dialogs.Alert("Update check", result.Summary);
         });
     }
@@ -202,7 +229,16 @@ public partial class DashboardViewModel : ObservableObject
         Cpu = state.CpuUsagePercent is null ? "—" : $"{state.CpuUsagePercent:0.0}%";
         Ram = state.WorkingSetBytes is null ? "—" : $"{state.WorkingSetBytes.Value / 1024d / 1024d:0} MB";
         Version = state.InstalledBuild ?? "Unknown";
-        LatestBuild = state.AvailableBuild ?? "Not checked";
+        LatestBuild = state.AvailableBuild is null
+            ? "Steam: chưa kiểm tra"
+            : state.ServerUpdateAvailable
+                ? $"Steam có bản mới: {state.AvailableBuild}"
+                : $"Steam: {state.AvailableBuild} (mới nhất)";
+        ClientBuild = state.ClientInstalledBuild is null
+            ? string.Empty
+            : state.ClientUpdateAvailable
+                ? $"Client {state.ClientInstalledBuild} - có bản mới {state.ClientAvailableBuild}, mở Steam để cập nhật"
+                : $"Client {state.ClientInstalledBuild}";
         ModsSummary = $"{_settings.Current.Mods.Mods.Count} installed, {_settings.Current.Mods.Mods.Count(m => m.UpdateAvailable)} updates";
         LastBackup = state.LastBackupAt?.ToLocalTime().ToString("g") ?? LastBackup;
         LastUpdateCheck = state.LastUpdateCheckAt?.ToLocalTime().ToString("g") ?? LastUpdateCheck;
