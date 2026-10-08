@@ -149,11 +149,3 @@ DBNO (cuu dong doi): dung DBNO cua DeathTrauma, TAT Player DBNO cu
   Sau khi bat Death DBNO: go "dc toggleplayerdbno" de TAT Player DBNO (tranh 2 he thong cung chay).
   Ly do chon DeathTrauma: cung dieu kien (dong doi trong ban kinh), them nut Bo cuoc (Give Up),
   cuu bang giu phim 5 s, chinh duoc mau sau khi cuu, va duoc cuu thi KHONG bi Trauma.
-
-----------------------------------------------------------------
-G. IRA'S RAGDOLL MOD (them 09/10/2026)
-----------------------------------------------------------------
-  Khong co cai dat server - cai mod la ai cung dung duoc.
-  Phim mac dinh F7 TRUNG voi bang nhiem vu MQ14 (F7). Doi phim ragdoll:
-  Settings > Controls > Ira's Ragdoll Mod  -> vi du F9. Cung co trong menu Emote.
-  Cay xeng "The Floppenheimer" (admin spawn) chi tac dung PvP.
