@@ -149,3 +149,17 @@ DBNO (cuu dong doi): dung DBNO cua DeathTrauma, TAT Player DBNO cu
   Sau khi bat Death DBNO: go "dc toggleplayerdbno" de TAT Player DBNO (tranh 2 he thong cung chay).
   Ly do chon DeathTrauma: cung dieu kien (dong doi trong ban kinh), them nut Bo cuoc (Give Up),
   cuu bang giu phim 5 s, chinh duoc mau sau khi cuu, va duoc cuu thi KHONG bi Trauma.
+
+----------------------------------------------------------------
+G. SLEEP TIGHT (them 09/10/2026) - khong co cai dat
+----------------------------------------------------------------
+  18h-6h: toi giuong (khong dung tui ngu) -> chon Ngu. Du 50% nguoi online ngu thi dem troi nhanh.
+  Kiem tra: giuong gap / giuong Stygian / giuong doi co ngu duoc khong (binh luan cu bao loi).
+
+----------------------------------------------------------------
+H. LBPR - LESS BUILDING PLACEMENT RESTRICTIONS (Enhanced, them 09/10/2026)
+----------------------------------------------------------------
+  Mo bang: Shift + End (ModControlPanel) -> LBPR.
+  Giu TAT: Xay o bat ky dau (trai NPC / dungeon / hang) - giu do kho 8/10.
+  Nen BAT: mui ten xanh chi huong, cho phep cac khoi chong nhau (overlap), TAB xem mau/do ben/do vung.
+  Moi nguoi tu chon: xem truoc dang bong xanh hay vat that.
