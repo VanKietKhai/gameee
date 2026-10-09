@@ -29,7 +29,7 @@ A. IMPROVED THRALLS & QOL - ADMIN SETTINGS  (ESC -> Improved Thralls & QoL, hoac
   Bat Khoa / Mo khoa ................................ Bat
   Tu khoa khi dat ................................... Tat
   Bat mat ma cho cua ................................ Bat
-  Cho phep nhat tat ca .............................. Bat
+  Cho phep nhat tat ca .............................. Tat   (chu server chon 10/10)
 [Cam]                         khong cam gi
 [Quan ly vu khi / giap]       khong dung
 [Xay dung]
@@ -46,7 +46,7 @@ A. IMPROVED THRALLS & QOL - ADMIN SETTINGS  (ESC -> Improved Thralls & QoL, hoac
   Thrall thap den ................................... Bat
   Thay doi he thong thuoc tinh thrall ............... khong dung
 [Nguoi theo]
-  Nhat nguoi theo ................................... Bat
+  Nhat nguoi theo ................................... Tat   (thrall + thu cung; chu server chon 10/10)
   Nguoi theo bo sung ................................ 0
   XP cho nguoi theo khong hoat dong ................. Bat
   Bo qua sat thuong roi ............................. Bat
