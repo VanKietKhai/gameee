@@ -67,6 +67,14 @@ public interface IServerUpdateService
     Task UpdateEverythingAsync(IProgress<PipelineProgress>? progress = null, CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// One locked pipeline run that updates the server (optional) and only the listed Workshop
+    /// mods, so an update does not re-download every mod (Steam drops anonymous logins when
+    /// SteamCMD logs in many times in a row).
+    /// </summary>
+    Task UpdatePendingAsync(bool updateServer, IReadOnlyList<long> workshopIds, IProgress<PipelineProgress>? progress = null, CancellationToken cancellationToken = default) =>
+        updateServer ? UpdateEverythingAsync(progress, cancellationToken) : UpdateModsAsync(false, progress, cancellationToken);
+
+    /// <summary>
     /// Imports an administrator-supplied .pak as a Local mod. Validation and staging happen
     /// first; then the locked pipeline runs (stop if running, verified cold backup, transactional
     /// commit, restart only if it was running). Does not use SteamCMD.

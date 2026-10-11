@@ -18,10 +18,27 @@ namespace ConanServerControl.App;
 public partial class App : Application
 {
     private IHost? _host;
+    private Mutex? _singleInstance;
 
     protected override async void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
+
+        // Two copies would both manage the same dedicated server: on 2026-10-12 the second copy
+        // "restarted" the server that the first had stopped for a mod update.
+        _singleInstance = new Mutex(initiallyOwned: true, @"Local\ConanServerControl.App", out var isFirst);
+        if (!isFirst)
+        {
+            _singleInstance.Dispose();
+            _singleInstance = null;
+            MessageBox.Show(
+                "Conan Server Control đang chạy rồi (xem thanh taskbar). Không mở thêm bản thứ hai.",
+                "Conan Server Control",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information);
+            Shutdown();
+            return;
+        }
         DispatcherUnhandledException += (_, args) =>
         {
             Log.Error(args.Exception, "Unhandled UI exception");
@@ -71,6 +88,8 @@ public partial class App : Application
         }
 
         await Log.CloseAndFlushAsync();
+        _singleInstance?.ReleaseMutex();
+        _singleInstance?.Dispose();
         base.OnExit(e);
     }
 }

@@ -1,4 +1,5 @@
 using ConanServerControl.Core.Abstractions;
+using ConanServerControl.Core.Models;
 using ConanServerControl.Infrastructure.Diagnostics;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,6 +17,7 @@ public sealed class WebAdminEmbeddedHost : IHostedService
     private readonly ISettingsService _settings;
     private readonly ILogger<WebAdminEmbeddedHost> _logger;
     private WebApplication? _web;
+    private readonly CancellationTokenSource _stopping = new();
 
     public WebAdminEmbeddedHost(IServiceProvider root, ISettingsService settings, ILogger<WebAdminEmbeddedHost> logger)
     {
@@ -39,6 +41,43 @@ public sealed class WebAdminEmbeddedHost : IHostedService
             return;
         }
 
+        if (_settings.Current.WebAdmin.BindMode == WebBindMode.Tailscale
+            && ConanServerControl.Infrastructure.Health.NetworkInfoService.FindTailscaleIPv4() is null)
+        {
+            // At Windows start-up Tailscale often connects after the app. Wait for it in the
+            // background instead of falling back to localhost, which the phone cannot reach.
+            _ = Task.Run(() => StartWhenTailscaleIsUpAsync(_stopping.Token));
+            return;
+        }
+
+        await StartWebAsync(cancellationToken).ConfigureAwait(false);
+    }
+
+    private async Task StartWhenTailscaleIsUpAsync(CancellationToken stoppingToken)
+    {
+        var deadline = DateTimeOffset.UtcNow + TimeSpan.FromMinutes(15);
+        _logger.LogInformation("Web Admin is waiting for Tailscale before listening.");
+        try
+        {
+            while (ConanServerControl.Infrastructure.Health.NetworkInfoService.FindTailscaleIPv4() is null
+                   && DateTimeOffset.UtcNow < deadline)
+            {
+                await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken).ConfigureAwait(false);
+            }
+
+            await StartWebAsync(stoppingToken).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException)
+        {
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Web Admin could not start after waiting for Tailscale.");
+        }
+    }
+
+    private async Task StartWebAsync(CancellationToken cancellationToken)
+    {
         var builder = WebApplication.CreateBuilder(new WebApplicationOptions
         {
             Args = Array.Empty<string>(),
@@ -71,6 +110,7 @@ public sealed class WebAdminEmbeddedHost : IHostedService
 
     public async Task StopAsync(CancellationToken cancellationToken)
     {
+        _stopping.Cancel();
         if (_web is not null)
         {
             await _web.StopAsync(cancellationToken).ConfigureAwait(false);

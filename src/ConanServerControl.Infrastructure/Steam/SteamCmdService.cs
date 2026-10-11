@@ -242,6 +242,18 @@ public sealed class SteamCmdService : ISteamCmdService
         var result = await RunSteamCmdAsync(args, TimeSpan.FromHours(1), progress, cancellationToken)
             .ConfigureAwait(false);
 
+        // Steam sometimes refuses an anonymous login ("Try another CM", exit code 5) after several
+        // logins in a row. Wait and retry instead of failing the whole update.
+        for (var attempt = 1; !result.Succeeded && !result.TimedOut && IsTransientLoginFailure(result) && attempt <= 3; attempt++)
+        {
+            var wait = TimeSpan.FromSeconds(20 * attempt);
+            _logger.LogWarning("SteamCMD login was refused for Workshop item {Id} (exit code {Code}); retry {Attempt} in {Wait}.", workshopId, result.ExitCode, attempt, wait);
+            progress?.Report($"Steam refused the login; retrying in {wait.TotalSeconds:0} s...");
+            await Task.Delay(wait, cancellationToken).ConfigureAwait(false);
+            result = await RunSteamCmdAsync(args, TimeSpan.FromHours(1), progress, cancellationToken)
+                .ConfigureAwait(false);
+        }
+
         if (!result.Succeeded)
         {
             throw CreateSteamCmdFailure(
@@ -251,6 +263,12 @@ public sealed class SteamCmdService : ISteamCmdService
 
         return result;
     }
+
+    /// <summary>Steam dropped or refused the login: exit code 5, or a "Try another CM" / no-connection reply.</summary>
+    internal static bool IsTransientLoginFailure(ProcessExecutionResult result) =>
+        result.ExitCode == 5
+        || result.StandardOutput.Contains("Try another CM", StringComparison.OrdinalIgnoreCase)
+        || result.StandardOutput.Contains("No Connection", StringComparison.OrdinalIgnoreCase);
 
     /// <summary>"Missing configuration" or a run that ended in a SteamCMD self-update.</summary>
     internal static bool IsTransientAppUpdateFailure(ProcessExecutionResult result) =>

@@ -129,18 +129,11 @@ public sealed class UpdateWatchService : BackgroundService
         await _activity.AddAsync("Updates", "Automatic update started.", cancellationToken: cancellationToken).ConfigureAwait(false);
         try
         {
-            if (result.ServerUpdateAvailable && modsPending)
-            {
-                await _updates.UpdateEverythingAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
-            }
-            else if (result.ServerUpdateAvailable)
-            {
-                await _updates.UpdateAsync(restartAfter: false, cancellationToken: cancellationToken).ConfigureAwait(false);
-            }
-            else
-            {
-                await _updates.UpdateModsAsync(restartAfter: false, cancellationToken: cancellationToken).ConfigureAwait(false);
-            }
+            // Only the mods Steam reports as newer; re-downloading all of them made Steam drop the
+            // anonymous SteamCMD login (exit code 5) on 2026-10-12.
+            var pendingIds = result.ModsNeedingUpdate.Select(m => m.WorkshopId).ToArray();
+            await _updates.UpdatePendingAsync(result.ServerUpdateAvailable, pendingIds, cancellationToken: cancellationToken)
+                .ConfigureAwait(false);
         }
         catch (Exception ex) when (ex is not OperationCanceledException)
         {

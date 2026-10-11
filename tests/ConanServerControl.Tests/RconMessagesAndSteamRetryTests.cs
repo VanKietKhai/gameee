@@ -57,4 +57,15 @@ public class SteamCmdRetryTests
 
         Assert.Equal(retry, SteamCmdService.IsTransientAppUpdateFailure(result));
     }
+
+    [Theory]
+    [InlineData(5, "", true)]
+    [InlineData(1, "ConnectionDisconnected('Disconnected By Remote Host') : 'Try another CM'", true)]
+    [InlineData(10, "ERROR! Download item 3721274811 failed (Access Denied).", false)]
+    public void Refused_steam_logins_are_retried(int exitCode, string output, bool retry)
+    {
+        var result = new ProcessExecutionResult { ExitCode = exitCode, StandardOutput = output };
+
+        Assert.Equal(retry, SteamCmdService.IsTransientLoginFailure(result));
+    }
 }

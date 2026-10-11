@@ -144,6 +144,17 @@ public sealed class ServerUpdateService : IServerUpdateService
     public Task UpdateEverythingAsync(IProgress<PipelineProgress>? progress = null, CancellationToken cancellationToken = default) =>
         RunLockedAsync("Update everything", restartAfter: false, updateServer: true, updateMods: true, "pre-update-everything", progress, cancellationToken);
 
+    public Task UpdatePendingAsync(bool updateServer, IReadOnlyList<long> workshopIds, IProgress<PipelineProgress>? progress = null, CancellationToken cancellationToken = default) =>
+        RunLockedAsync(
+            updateServer ? (workshopIds.Count > 0 ? "Update everything" : "Update server") : "Update mods",
+            restartAfter: false,
+            updateServer: updateServer,
+            updateMods: workshopIds.Count > 0,
+            updateServer ? "pre-update-everything" : "pre-mod-update",
+            progress,
+            cancellationToken,
+            workshopIds);
+
     public Task ImportLocalModAsync(string sourcePakPath, IProgress<PipelineProgress>? progress = null, CancellationToken cancellationToken = default) =>
         RunLocalModAsync("Import local mod", "pre-local-mod-import", sourcePakPath, replaceModKey: null, progress, cancellationToken);
 
