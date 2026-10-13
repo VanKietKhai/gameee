@@ -30,6 +30,7 @@ public partial class SettingsViewModel : ObservableObject
     }
 
     [ObservableProperty] private bool startServerOnLaunch;
+    [ObservableProperty] private bool startWithWindows;
     [ObservableProperty] private bool restartAfterCrash = true;
     [ObservableProperty] private bool discordEnabled = true;
     [ObservableProperty] private bool useCloudflareWarp;
@@ -75,6 +76,7 @@ public partial class SettingsViewModel : ObservableObject
         await _settings.UpdateAsync(s =>
         {
             s.General.StartServerWhenManagerLaunches = StartServerOnLaunch;
+            s.General.StartManagerWithWindows = StartWithWindows;
             s.Advanced.RestartAfterCrash = RestartAfterCrash;
             s.Notifications.DiscordEnabled = DiscordEnabled;
             s.Notifications.NotifyPlayerEvents = NotifyPlayerEvents;
@@ -124,6 +126,15 @@ public partial class SettingsViewModel : ObservableObject
 
         restartNeeded |= RemoteEnabled != _remoteEnabledAtLoad;
         _remoteEnabledAtLoad = RemoteEnabled;
+        try
+        {
+            WindowsStartup.Apply(StartWithWindows);
+        }
+        catch (Exception ex)
+        {
+            _dialogs.Alert("Khởi động cùng Windows", $"Không ghi được mục khởi động: {ex.Message}");
+        }
+
         _dialogs.Alert("Đã lưu", restartNeeded
             ? "Cài đặt đã được lưu. Tắt app rồi mở lại để áp dụng phần điều khiển từ xa."
             : "Cài đặt đã được lưu.");
@@ -133,6 +144,7 @@ public partial class SettingsViewModel : ObservableObject
     {
         var s = _settings.Current;
         StartServerOnLaunch = s.General.StartServerWhenManagerLaunches;
+        StartWithWindows = WindowsStartup.IsEnabled();
         RestartAfterCrash = s.Advanced.RestartAfterCrash;
         DiscordEnabled = s.Notifications.DiscordEnabled;
         DiscordWebhookInput = null;
@@ -153,4 +165,33 @@ public partial class SettingsViewModel : ObservableObject
     }
 
     private bool _remoteEnabledAtLoad;
+}
+
+/// <summary>
+/// "Open with Windows": a per-user Run entry (HKCU, no admin rights) that starts this exe at
+/// sign-in. Only one copy runs anyway (single-instance guard in App).
+/// </summary>
+internal static class WindowsStartup
+{
+    private const string RunKey = @"Software\Microsoft\Windows\CurrentVersion\Run";
+    private const string ValueName = "ConanServerControl";
+
+    public static bool IsEnabled()
+    {
+        using var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(RunKey);
+        return key?.GetValue(ValueName) is string;
+    }
+
+    public static void Apply(bool enabled)
+    {
+        using var key = Microsoft.Win32.Registry.CurrentUser.CreateSubKey(RunKey);
+        if (enabled)
+        {
+            key.SetValue(ValueName, $"\"{Environment.ProcessPath}\"");
+        }
+        else if (key.GetValue(ValueName) is not null)
+        {
+            key.DeleteValue(ValueName);
+        }
+    }
 }

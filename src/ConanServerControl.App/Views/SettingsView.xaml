@@ -6,6 +6,7 @@
       <TextBlock Text="Cài đặt" FontSize="24" FontWeight="SemiBold" Margin="0,0,0,16" />
 
       <TextBlock Text="SERVER" Foreground="{StaticResource MutedBrush}" />
+      <CheckBox Content="Tự mở app khi bật máy (đăng nhập Windows)" IsChecked="{Binding StartWithWindows}" />
       <CheckBox Content="Tự bật server khi mở app" IsChecked="{Binding StartServerOnLaunch}" />
       <CheckBox Content="Tự khởi động lại server khi bị crash" IsChecked="{Binding RestartAfterCrash}" Margin="0,8,0,16" />
 
