@@ -8,7 +8,9 @@
       <TextBlock Text="SERVER" Foreground="{StaticResource MutedBrush}" />
       <CheckBox Content="Tự mở app khi bật máy (đăng nhập Windows)" IsChecked="{Binding StartWithWindows}" />
       <CheckBox Content="Tự bật server khi mở app" IsChecked="{Binding StartServerOnLaunch}" />
-      <CheckBox Content="Tự khởi động lại server khi bị crash" IsChecked="{Binding RestartAfterCrash}" Margin="0,8,0,16" />
+      <CheckBox Content="Tự khởi động lại server khi bị crash" IsChecked="{Binding RestartAfterCrash}" Margin="0,8,0,8" />
+      <TextBlock Text="Tự khởi động lại định kỳ mỗi (giờ chạy) - 0 = tắt. Có người online thì báo trước 30/10/5/1 phút; log cũ được lưu lại." TextWrapping="Wrap" Margin="0,4,0,4" />
+      <ComboBox ItemsSource="{Binding ScheduledRestartChoices}" SelectedItem="{Binding ScheduledRestartHours}" HorizontalAlignment="Left" MinWidth="100" Margin="0,0,0,16" />
 
       <TextBlock Text="DISCORD" Foreground="{StaticResource MutedBrush}" />
       <CheckBox Content="Gửi thông báo trạng thái server lên Discord" IsChecked="{Binding DiscordEnabled}" />

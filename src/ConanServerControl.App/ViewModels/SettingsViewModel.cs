@@ -31,6 +31,9 @@ public partial class SettingsViewModel : ObservableObject
 
     [ObservableProperty] private bool startServerOnLaunch;
     [ObservableProperty] private bool startWithWindows;
+    [ObservableProperty] private int scheduledRestartHours = 5;
+
+    public int[] ScheduledRestartChoices { get; } = { 0, 3, 4, 5, 6, 8, 12 };
     [ObservableProperty] private bool restartAfterCrash = true;
     [ObservableProperty] private bool discordEnabled = true;
     [ObservableProperty] private bool useCloudflareWarp;
@@ -78,6 +81,7 @@ public partial class SettingsViewModel : ObservableObject
             s.General.StartServerWhenManagerLaunches = StartServerOnLaunch;
             s.General.StartManagerWithWindows = StartWithWindows;
             s.Advanced.RestartAfterCrash = RestartAfterCrash;
+            s.Advanced.ScheduledRestartHours = ScheduledRestartHours;
             s.Notifications.DiscordEnabled = DiscordEnabled;
             s.Notifications.NotifyPlayerEvents = NotifyPlayerEvents;
             s.Notifications.NotifyUpdates = NotifyUpdates;
@@ -146,6 +150,7 @@ public partial class SettingsViewModel : ObservableObject
         StartServerOnLaunch = s.General.StartServerWhenManagerLaunches;
         StartWithWindows = WindowsStartup.IsEnabled();
         RestartAfterCrash = s.Advanced.RestartAfterCrash;
+        ScheduledRestartHours = s.Advanced.ScheduledRestartHours;
         DiscordEnabled = s.Notifications.DiscordEnabled;
         DiscordWebhookInput = null;
         DiscordWebhookConfigured = !string.IsNullOrEmpty(_settings.Secrets.DiscordWebhookUrl);

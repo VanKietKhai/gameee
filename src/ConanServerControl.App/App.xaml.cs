@@ -63,6 +63,7 @@ public partial class App : Application
                 services.AddHostedService(sp => sp.GetRequiredService<DiscordWebhookNotifier>());
                 services.AddHostedService<PlayerActivityService>();
                 services.AddHostedService<UpdateWatchService>();
+                services.AddHostedService<ConanServerControl.Infrastructure.ProcessManagement.ScheduledRestartService>();
                 services.AddSingleton<IUiDialogs, WpfDialogService>();
                 services.AddSingleton<DashboardViewModel>();
                 services.AddSingleton<SettingsViewModel>();

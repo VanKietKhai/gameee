@@ -224,6 +224,12 @@ public sealed class AdvancedSettings
 
     public bool RestartAfterCrash { get; set; } = true;
 
+    /// <summary>
+    /// Restart the server after this many hours of uptime (fresh server log; old logs are archived).
+    /// 0 = off. Players get a 30-minute countdown; with nobody online it restarts at the mark.
+    /// </summary>
+    public int ScheduledRestartHours { get; set; } = 5;
+
     public int CrashRestartMaxAttempts { get; set; } = AppConstants.CrashRestartMaxAttempts;
 
     public int CrashRestartWindowMinutes { get; set; } = AppConstants.CrashRestartWindowMinutes;
