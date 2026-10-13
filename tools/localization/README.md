@@ -32,3 +32,8 @@ Fonts/KelsonSans_0_{Normal,Bold,Light}.ufont with the game's own Engine/Content/
 Limits: texts that a mod builds from plain strings or its own language table (for example Extended
 Thrall Stats labels) cannot be translated this way. A Vietnamese patch update replaces the pak, so
 the merge must be redone.
+
+2026-10-14 fixes: `translations/trov_fix_20261014.json` restores the Lesser Wheel of Pain name (ItemTable_89911_Name; the
+original Viet hoa patch had a lore paragraph pasted into it). Fonts/Hyborian_0_Default.ufont (used by mod dialogs such as
+WO Riding Thralls; 117 glyphs, no Vietnamese) is replaced by the patch's CrimsonPro-Regular.ufont. Installed patch SHA-256 235DC69C...;
+previous patch backed up in E:\CSC-M3-Live\client-backupsihoa-before-hyborian-20261014.
