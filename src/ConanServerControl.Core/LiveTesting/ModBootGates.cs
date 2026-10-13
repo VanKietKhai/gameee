@@ -110,6 +110,11 @@ public static class ModBootGates
 
     public const string AncientRealmsPakFileName = "Ancient_Realms.pak";
 
+    public const string RoomForOneMorePakFileName = "WO_RoomForOneMore.pak";
+
+    /// <summary>Workshop 3811298984, v1.0.0 (2026-10-01), the file tested on 2026-10-04 and 2026-10-14.</summary>
+    public const string RoomForOneMoreValidatedSha256 = "FA6086538C5FC6D42737DC001336918D9AA79AFF01412E89F0567BFF2C1A52FA";
+
     /// <summary>The Ancient Realms file validated in Batch C (6 boots, 3 of them on a quiet host).</summary>
     public const string AncientRealmsValidatedSha256 = "12F7E7192043270FC5F2290C5989F8B8285494BA47A054646790B4A042D1FD1A";
 
@@ -163,6 +168,18 @@ public static class ModBootGates
             "file; accepted by the operator 2026-10-03 as known non-blocking (not broadened).")
         {
             MaxOccurrences = 2
+        },
+        new KnownBootWarning(
+            "ROOM-FOR-ONE-MORE-MERGE-DATATABLE-NULL",
+            RoomForOneMorePakFileName,
+            RoomForOneMoreValidatedSha256,
+            "LogModController: Error: AModController::MergeDataTables - ToBeAddedDataTable is null",
+            "Exactly 5 lines right after /Game/Mods/WO_RoomForOneMore/WO_BP_RT_ModController registers (the mod ships a " +
+            "copy of the Riding Thralls controller whose merge tables are not packaged), on 2026-10-04 and again on " +
+            "2026-10-14 with Riding Thralls removed. Server reached readiness, no crash. Accepted by the operator " +
+            "2026-10-14 as known non-blocking for this exact file only; at most 5.")
+        {
+            MaxOccurrences = 5
         }
     ];
 
@@ -601,17 +618,16 @@ public static class ModBootGates
         foreach (var line in problemLines)
         {
             var message = StripLogPrefix(line);
+            // Several mods can print the same message (each rule caps its own count): a line goes to the
+            // first matching rule that still has room. Lines beyond every cap are unknown problems.
             var rule = catalog.KnownWarnings.FirstOrDefault(w =>
                 string.Equals(message, w.ExactMessage, StringComparison.Ordinal) &&
                 installedPakSha256.TryGetValue(w.ModPakFileName, out var sha256) &&
-                string.Equals(sha256, w.ValidatedPakSha256, StringComparison.OrdinalIgnoreCase));
+                string.Equals(sha256, w.ValidatedPakSha256, StringComparison.OrdinalIgnoreCase) &&
+                seen.GetValueOrDefault(w.Id) < w.MaxOccurrences);
             if (rule is not null)
             {
-                var count = seen[rule.Id] = seen.GetValueOrDefault(rule.Id) + 1;
-                if (count > rule.MaxOccurrences)
-                {
-                    rule = null; // more occurrences than were validated: the extra lines are unknown problems
-                }
+                seen[rule.Id] = seen.GetValueOrDefault(rule.Id) + 1;
             }
 
             if (rule is null)

@@ -178,7 +178,9 @@ public sealed class LoadErrorSignatureTests
         {
             LoadErrorBaselines = ModBootGates.LoadErrorBaselines.Where(b => b.Signatures is null).ToList(),
             // The priest-variant noise kind was added after Phase 2 (operator decision A, 2026-10-07).
-            BaseGameNoise = ModBootGates.BaseGameNoise.Where(k => k.Id is not "SPAWNTABLE-PRIEST-VARIANT" and not "TEMPERATURE-HEATMAP-NOT-LOADED").ToList()
+            BaseGameNoise = ModBootGates.BaseGameNoise.Where(k => k.Id is not "SPAWNTABLE-PRIEST-VARIANT" and not "TEMPERATURE-HEATMAP-NOT-LOADED").ToList(),
+            // Room For One More's merge rule was added later (operator decision A, 2026-10-14).
+            KnownWarnings = ModBootGates.KnownWarnings.Where(w => w.Id != "ROOM-FOR-ONE-MORE-MERGE-DATATABLE-NULL").ToList()
         };
 
         Assert.DoesNotContain("Signatures", System.Text.Json.JsonSerializer.Serialize(withoutSignatures), StringComparison.Ordinal);

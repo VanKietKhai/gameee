@@ -74,16 +74,24 @@ public sealed class M3ModBootGateTests
     [Fact]
     public void Known_warning_rules_are_exactly_the_itqol_mailbox_line_the_seven_ancient_realms_lines_and_the_capped_merge_error()
     {
-        Assert.Equal(9, ModBootGates.KnownWarnings.Count);
+        Assert.Equal(10, ModBootGates.KnownWarnings.Count);
         Assert.Equal(
             ["ANCIENT-REALMS-DANGLING-REF-1", "ANCIENT-REALMS-DANGLING-REF-2", "ANCIENT-REALMS-DANGLING-REF-3",
              "ANCIENT-REALMS-DANGLING-REF-4", "ANCIENT-REALMS-DANGLING-REF-5", "ANCIENT-REALMS-DANGLING-REF-6",
-             "ANCIENT-REALMS-DANGLING-REF-7", "ANCIENT-REALMS-MERGE-DATATABLE-NULL", "ITQOL-MAILBOX-HEALTHPOOL"],
+             "ANCIENT-REALMS-DANGLING-REF-7", "ANCIENT-REALMS-MERGE-DATATABLE-NULL", "ITQOL-MAILBOX-HEALTHPOOL",
+             "ROOM-FOR-ONE-MORE-MERGE-DATATABLE-NULL"],
             ModBootGates.KnownWarnings.Select(w => w.Id).OrderBy(id => id, StringComparer.Ordinal));
         // Only the merge error may repeat, and only twice; every other known line is accepted once per boot at most by its own gate.
         var merge = Assert.Single(ModBootGates.KnownWarnings, w => w.Id == "ANCIENT-REALMS-MERGE-DATATABLE-NULL");
         Assert.Equal(2, merge.MaxOccurrences);
         Assert.Equal(ValidatedAncientRealmsSha256, merge.ValidatedPakSha256);
+
+        // Operator decision A, 2026-10-14: Room For One More's 5 identical merge lines, for its tested file only.
+        var rfom = Assert.Single(ModBootGates.KnownWarnings, w => w.Id == "ROOM-FOR-ONE-MORE-MERGE-DATATABLE-NULL");
+        Assert.Equal(5, rfom.MaxOccurrences);
+        Assert.Equal("WO_RoomForOneMore.pak", rfom.ModPakFileName);
+        Assert.Equal("FA6086538C5FC6D42737DC001336918D9AA79AFF01412E89F0567BFF2C1A52FA", rfom.ValidatedPakSha256);
+        Assert.Equal(merge.ExactMessage, rfom.ExactMessage);
 
         var mailbox = Assert.Single(ModBootGates.KnownWarnings, w => w.ModPakFileName == "ImprovedThrallsAndQoL.pak");
         Assert.Equal("ITQOL-MAILBOX-HEALTHPOOL", mailbox.Id);

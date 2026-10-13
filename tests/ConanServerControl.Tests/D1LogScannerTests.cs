@@ -227,6 +227,31 @@ public sealed class D1LogScannerTests
     }
 
     [Fact]
+    public void Room_for_one_more_adds_exactly_five_merge_errors_on_top_of_ancient_realms()
+    {
+        var ar = ModBootGates.KnownWarnings.Single(w => w.Id == "ANCIENT-REALMS-MERGE-DATATABLE-NULL");
+        var rfom = ModBootGates.KnownWarnings.Single(w => w.Id == "ROOM-FOR-ONE-MORE-MERGE-DATATABLE-NULL");
+        var line = "[2026.10.13-20.54.35:694][  0]" + rfom.ExactMessage;
+        var both = new Dictionary<string, string>
+        {
+            [ar.ModPakFileName] = ar.ValidatedPakSha256,
+            [rfom.ModPakFileName] = rfom.ValidatedPakSha256
+        };
+
+        // 2026-10-14 boot: 2 (Ancient Realms) + 5 (Room For One More).
+        var seven = ModBootGates.ClassifyProblems(Enumerable.Repeat(line, 7), both);
+        Assert.Empty(seven.Problems);
+        Assert.Equal(2, seven.Known.Count(k => k.Warning.Id == ar.Id));
+        Assert.Equal(5, seven.Known.Count(k => k.Warning.Id == rfom.Id));
+
+        Assert.Single(ModBootGates.ClassifyProblems(Enumerable.Repeat(line, 8), both).Problems);
+
+        // A different Room For One More file is not covered.
+        var otherRfom = new Dictionary<string, string>(both) { [rfom.ModPakFileName] = new string('0', 64) };
+        Assert.Equal(5, ModBootGates.ClassifyProblems(Enumerable.Repeat(line, 7), otherRfom).Problems.Count);
+    }
+
+    [Fact]
     public void Duplicate_lines_are_not_collapsed()
     {
         Assert.Equal(2, ModBootGates.SelectProblemLines([D1Errors[0], D1Errors[0]], []).Count);
